@@ -12,7 +12,7 @@ import imageio
 from aicsimageio import AICSImage
 
 class ImageViewer(QWidget):
-    def __init__(self, viewer, layer):
+    def __init__(self, viewer):
         super().__init__()
 
         # creating a label
@@ -23,7 +23,7 @@ class ImageViewer(QWidget):
         self.label.setFont(QFont('Arial', 15))
 
         self.viewer = viewer
-        self.layer = layer
+
 
         # set window title
         self.setWindowTitle("Image Drag and Drop ")
@@ -53,11 +53,11 @@ class ImageViewer(QWidget):
         self.curr_image = None
 
     def add_files(self):
-        f_names = QFileDialog.getOpenFileNames(self, "Open File", "c\\", "Tiff Files (*.tiff)")
+        f_names = QFileDialog.getOpenFileNames(self, "Open File", "c\\", "All Files (*)")
 
         for file in f_names[0]:
             img = file
-            self.layer = self.add_image(img)
+            self.add_image(img)
 
 
     def dragEnterEvent(self, event):
@@ -88,7 +88,7 @@ class ImageViewer(QWidget):
             # if event doesn't have image
             # then ignore the event to drop
             event.ignore()
-    def currentImageChangeEvent(self, event):
+    def currentImageChangeEvent(self, event): #stay here
         if self.curr_image is not None:
 
             self.viewer.layers.clear()
@@ -97,15 +97,13 @@ class ImageViewer(QWidget):
         img = AICSImage(self.curr_image)
         img = img.data
 
-        new_layer = self.viewer.add_image(img)
+        self.viewer.add_image(img)
 
 
 
     def add_image(self, image_path):
 
         item = QListWidgetItem(image_path)
-
-
         self.file_widget.addItem(item)
 
 

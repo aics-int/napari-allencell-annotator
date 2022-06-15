@@ -8,39 +8,40 @@ Replace code below according to your needs.
 """
 from typing import TYPE_CHECKING
 
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout
 from magicgui import magic_factory
+from napari_plugin_engine import napari_hook_implementation
 from qtpy.QtWidgets import QHBoxLayout, QPushButton, QWidget
+
+from view.annotator_view import AnnotatorMenu
+from view.images_view import ImageViewer
 
 if TYPE_CHECKING:
     import napari
 
 
-class ExampleQWidget(QWidget):
+class MainWidget(QMainWindow):
     # your QWidget.__init__ can optionally request the napari viewer instance
     # in one of two ways:
     # 1. use a parameter called `napari_viewer`, as done here
     # 2. use a type annotation of 'napari.viewer.Viewer' for any parameter
     def __init__(self, napari_viewer):
         super().__init__()
+        self.central = QWidget()
+        self.setCentralWidget(self.central)
+        self.central_layout = QVBoxLayout()
         self.viewer = napari_viewer
+        self.layer = None
+        self.drag_drop = ImageViewer(self.viewer, self.layer)
+        self.annotator = AnnotatorMenu(self.viewer, self.layer)
+        self.central_layout.addWidget(self.drag_drop, stretch=2)
+        self.central_layout.addWidget(self.annotator, stretch=5)
 
-        btn = QPushButton("Click me!")
-        btn.clicked.connect(self._on_click)
-
-        self.setLayout(QHBoxLayout())
-        self.layout().addWidget(btn)
-
-    def _on_click(self):
-        print("napari has", len(self.viewer.layers), "layers")
+        self.central.setLayout(self.central_layout)
 
 
-@magic_factory
-def example_magic_widget(img_layer: "napari.layers.Image"):
-    print(f"you have selected {img_layer}")
 
-
-# Uses the `autogenerate: true` flag in the plugin manifest
-# to indicate it should be wrapped as a magicgui to autogenerate
-# a widget.
-def example_function_widget(img_layer: "napari.layers.Image"):
-    print(f"you have selected {img_layer}")
+@napari_hook_implementation
+def napari_experimental_provide_dock_widget():
+    # you can return either a single widget, or a sequence of widgets
+    return [MainWidget, {"name": "Workflow editor"}]

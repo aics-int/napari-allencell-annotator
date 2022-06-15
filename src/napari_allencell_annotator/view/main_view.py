@@ -21,9 +21,9 @@ class MainWindow(QMainWindow):
         self.central_layout = QVBoxLayout()
         self.viewer = napari_viewer
         self.layer = None
-        self.drag_drop= ImageViewer(self.viewer, self.layer)
-        self.annotator = AnnotatorMenu(self.viewer, self.layer)
-        self.central_layout.addWidget(self.drag_drop, stretch=2)
+        self.images= ImageViewer(self.viewer)
+        self.annotator = AnnotatorMenu(self.viewer, self.images)
+        self.central_layout.addWidget(self.images, stretch=2)
         self.central_layout.addWidget(self.annotator,stretch=5)
 
         self.central.setLayout(self.central_layout)

@@ -1,5 +1,7 @@
 import sys
-
+import csv
+from tkinter import filedialog
+import os
 import napari
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt
@@ -12,16 +14,15 @@ import imageio
 from aicsimageio import AICSImage
 
 class AnnotatorMenu(QWidget):
-    def __init__(self, viewer, layer):
+    def __init__(self, viewer, images):
         super().__init__()
         # creating a label
         self.label = QLabel('Annotations')
         self.label.setAlignment(Qt.AlignCenter)
         self.label.setFont(QFont('Arial', 15))
-
+        self.images = images
 
         self.viewer = viewer
-        self.layer = layer
         # set window title
         self.setWindowTitle("Annotations Menu")
         # set window geometry
@@ -49,7 +50,7 @@ class AnnotatorMenu(QWidget):
         self.layout.addWidget(self.check_box,3,0,1,1)
         self.pos = QLineEdit()
         self.pos.setReadOnly(True)
-        self.pos.setPlaceholderText('Click on Position')
+        self.pos.setPlaceholderText('Double Click on Position')
         self.layout.addWidget(self.pos, 3,1,1,2)
         self.mitos_label = QLabel('Phase of Mitosis:')
 
@@ -65,11 +66,37 @@ class AnnotatorMenu(QWidget):
         self.description.setPlaceholderText('Enter text here...')
         self.layout.addWidget(self.description, 6,0,3,3)
 
-        self.save_btn = QPushButton('Save and Export Annotations')
-        self.layout.addWidget(self.save_btn, 9, 0, 1, 3)
+        self.save_btn = QPushButton('Save and Export')
+        self.save_btn.clicked.connect(self.save_annotations)
+
+        self.delete_btn = QPushButton('Delete')
+        self.delete_btn.clicked.connect(self.delete_annotations)
+        self.layout.addWidget(self.save_btn, 9, 0, 1, 2)
+        self.layout.addWidget(self.delete_btn, 9,2,1,1)
 
         self.setLayout(self.layout)
 
+    def save_annotations(self):
+        """"""
+        file_path = filedialog.askdirectory() + '/'
+        if self.images.curr_image is not None:
+            name = os.path.basename(self.images.curr_image)
+            name = os.path.splitext(name)[0]
+            file_path = file_path + name + '.csv'
+            img = self.make_array(self.images.curr_image)
+            #numpy.savetxt(file_path,img, delimiter=',')
+            with open(file_path, 'w') as csvfile:
+                filewriter = csv.writer(csvfile)
+                filewriter.writerow(img)
+
+    def make_array(self, image):
+        img = AICSImage(image)
+        img = img.data
+
+        return img
+
+    def delete_annotations(self):
+        """"""
 
     def select_location(self):
         if self.check_box.isChecked():
@@ -77,7 +104,7 @@ class AnnotatorMenu(QWidget):
 
         else:
             self.viewer.mouse_double_click_callbacks.remove(self.disp_position)
-            self.pos.setText()
+            self.pos.setText('')
 
 
     def disp_position(self, event, bla):
