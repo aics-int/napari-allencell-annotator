@@ -53,9 +53,7 @@ class ImageViewer(QWidget):
         self.curr_image = None
 
     def add_files(self):
-        f_names = QFileDialog.getOpenFileNames(
-            self, "Open File", "c\\", "All Files (*.)"
-        )
+        f_names = QFileDialog.getOpenFileNames(self, "Open File", "c\\")
 
         for file in f_names[0]:
             img = file
