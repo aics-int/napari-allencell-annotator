@@ -2,47 +2,11 @@ name: napari-allencell-annotator
 display_name: napari Annotator
 contributions:
   commands:
-    - id: napari-allencell-annotator.get_reader
-      python_name: napari_allencell_annotator._reader:napari_get_reader
-      title: Open data with napari Annotator
-    - id: napari-allencell-annotator.write_multiple
-      python_name: napari_allencell_annotator._writer:write_multiple
-      title: Save multi-layer data with napari Annotator
-    - id: napari-allencell-annotator.write_single_image
-      python_name: napari_allencell_annotator._writer:write_single_image
-      title: Save image data with napari Annotator
-    - id: napari-allencell-annotator.make_sample_data
-      python_name: napari_allencell_annotator._sample_data:make_sample_data
-      title: Load sample data from napari Annotator
-    - id: napari-allencell-annotator.make_qwidget
-      python_name: napari_allencell_annotator._widget:ExampleQWidget
-      title: Make example QWidget
-    - id: napari-allencell-annotator.make_magic_widget
-      python_name: napari_allencell_annotator._widget:example_magic_widget
-      title: Make example magic widget
-    - id: napari-allencell-annotator.make_func_widget
-      python_name: napari_allencell_annotator._widget:example_function_widget
-      title: Make example function widget
-  readers:
-    - command: napari-allencell-annotator.get_reader
-      accepts_directories: false
-      filename_patterns: ['*.npy']
-  writers:
-    - command: napari-allencell-annotator.write_multiple
-      layer_types: ['image*','labels*']
-      filename_extensions: []
-    - command: napari-allencell-annotator.write_single_image
-      layer_types: ['image']
-      filename_extensions: ['.npy']
-  sample_data:
-    - command: napari-allencell-annotator.make_sample_data
-      display_name: napari Annotator
-      key: unique_id.1
+    - id: napari-allencell-annotator.make_widget
+    title: Image Annotator
+    python_name: napari_allencell_annotator.make_widget
+
   widgets:
-    - command: napari-allencell-annotator.make_qwidget
-      display_name: Example QWidget
-    - command: napari-allencell-annotator.make_magic_widget
-      display_name: Example Magic Widget
-    - command: napari-allencell-annotator.make_func_widget
+    - command: napari-allencell-annotator.make_widget
+      display_name: Annotator
       autogenerate: true
-      display_name: Example Function Widget

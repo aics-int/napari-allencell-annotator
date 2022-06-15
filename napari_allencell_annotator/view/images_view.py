@@ -4,12 +4,13 @@ import napari
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QFont
-from PyQt5.QtWidgets import * #TODO import formatting
+from PyQt5.QtWidgets import *  # TODO import formatting
 from skimage import data
 from PIL import Image
 import numpy
 import imageio
 from aicsimageio import AICSImage
+
 
 class ImageViewer(QWidget):
     def __init__(self, viewer):
@@ -18,12 +19,11 @@ class ImageViewer(QWidget):
         # creating a label
         self.label = QLabel()
         self.label.setAlignment(Qt.AlignCenter)
-        self.label.setText('Images')
+        self.label.setText("Images")
 
-        self.label.setFont(QFont('Arial', 15))
+        self.label.setFont(QFont("Arial", 15))
 
         self.viewer = viewer
-
 
         # set window title
         self.setWindowTitle("Image Drag and Drop ")
@@ -39,7 +39,9 @@ class ImageViewer(QWidget):
         self.file_widget.setSelectionMode(QAbstractItemView.SingleSelection)
 
         self.file_widget.setSelectionRectVisible(True)
-        self.file_widget.currentItemChanged.connect(self.currentImageChangeEvent)
+        self.file_widget.currentItemChanged.connect(
+            self.currentImageChangeEvent
+        )
 
         self.scroll = QScrollArea()
         self.scroll.setWidget(self.file_widget)
@@ -47,18 +49,19 @@ class ImageViewer(QWidget):
         self.drag_layout.addWidget(self.scroll, stretch=10)
         self.setLayout(self.drag_layout)
 
-        self.add_btn = QPushButton('Add')
+        self.add_btn = QPushButton("Add")
         self.drag_layout.addWidget(self.add_btn, stretch=1)
         self.add_btn.clicked.connect(self.add_files)
         self.curr_image = None
 
     def add_files(self):
-        f_names = QFileDialog.getOpenFileNames(self, "Open File", "c\\", "Tiff Files (*.tiff)")
+        f_names = QFileDialog.getOpenFileNames(
+            self, "Open File", "c\\", "Tiff Files (*.tiff)"
+        )
 
         for file in f_names[0]:
             img = file
             self.add_image(img)
-
 
     def dragEnterEvent(self, event):
         # check if the event has image or not
@@ -88,6 +91,7 @@ class ImageViewer(QWidget):
             # if event doesn't have image
             # then ignore the event to drop
             event.ignore()
+
     def currentImageChangeEvent(self, event):
         if self.curr_image is not None:
 
@@ -99,14 +103,8 @@ class ImageViewer(QWidget):
 
         new_layer = self.viewer.add_image(img)
 
-
-
     def add_image(self, image_path):
 
         item = QListWidgetItem(image_path)
 
-
         self.file_widget.addItem(item)
-
-
-
