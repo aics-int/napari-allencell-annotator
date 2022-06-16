@@ -1,4 +1,5 @@
-class MainModel():
+SUPPORTED_FILE_TYPES = ['All Files (*)']
 
-    def __init__(self):
-        """"""
+
+def get_file_types():
+    return SUPPORTED_FILE_TYPES
