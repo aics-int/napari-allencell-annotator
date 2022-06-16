@@ -39,13 +39,16 @@ class ImageViewer(QWidget):
 
         self.add_btn = QPushButton("Add Files")
         self.layout.addWidget(self.add_btn, stretch=1)
-        self.add_btn.clicked.connect(self.add_files)
+        self.add_btn.clicked.connect(self.get_files)
         self.curr_image = None
 
-    def add_files(self):
+    def get_files(self):
         f_names = QFileDialog.getOpenFileNames(self, "Open File", "c\\")
-        #TODO: limit file types
+        # TODO: limit file types
         for file in f_names[0]:
+            self.add_file(file)
+
+    def add_file(self, file):
             item = QListWidgetItem(file)
             self.file_widget.addItem(item)
 
@@ -58,7 +61,7 @@ class ImageViewer(QWidget):
             event.setDropAction(Qt.CopyAction)
             image_paths = event.mimeData().urls()
             for path in image_paths:
-                self.add_image(path.toLocalFile())
+                self.add_file(path.toLocalFile())
             event.accept()
         else:
             event.ignore()
