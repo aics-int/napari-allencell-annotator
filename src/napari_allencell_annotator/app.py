@@ -1,16 +1,19 @@
 import sys
 
+import napari
 from PyQt5.QtWidgets import QApplication
-import model.main_model as MainModel
 from controller.main_controller import MainController
-from view.main_view import MainWindow
+
 
 
 class App(QApplication):
     def __init__(self, sys_argv):
         super(App, self).__init__(sys_argv)
         self.model = MainModel
-        self.view = MainWindow()
+
+        self.napari = napari.Viewer()
+        self.view = ImageViewer(self.napari)
+        self.napari.window.add_dock_widget(self.view, area="right")
         self.main_controller = MainController(self.model, self.view)
 
         self.view.show()
