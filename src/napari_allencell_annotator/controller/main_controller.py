@@ -1,23 +1,35 @@
-from aicsimageio import AICSImage, exceptions
-from napari.utils.notifications import show_info
+
+from aicsimageio import exceptions
 
 class MainController():
-
+    """Main controller to integrate view and model for image annotations"""
     def __init__(self, model, view):
-        """"""
         self.model = model
         self.view = view
+        self.view.set_ctrl(self)
 
         self._connect_slots()
 
     def _connect_slots(self):
-        self.view.images.file_widget.currentItemChanged.connect(self.curr_img_change)
+        """Connect signals to slots. """
+        self.view.file_widget.currentItemChanged.connect(self.curr_img_change)
+
 
     def curr_img_change(self, event):
-        self.view.images.curr_image = event.text()
+        """
+        Convert new image selection into an AICSImage.
+        Alert user of a failed AICS conversion.
+        """
         try:
-            img = AICSImage(self.view.images.curr_image)
-            img = img.data
-            self.view.images.display_img(img)
+            img = self.model.aicsimageio_convert(event.text())
+            self.view.set_curr_img(img)
         except exceptions.UnsupportedFileFormatError:
-            show_info("AICS Image Conversion Failed")
+            self.view.error_alert("AICS Image Conversion Failed")
+
+    def is_supported(self, file):
+        """"""
+        if self.model.is_supported(file):
+            return True
+        else:
+            return False
+
