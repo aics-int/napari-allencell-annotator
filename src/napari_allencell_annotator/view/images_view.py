@@ -1,4 +1,8 @@
-from PyQt5.QtCore import Qt, QEvent
+from os import listdir
+import os
+from typing import List
+
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 import numpy
 
@@ -9,15 +13,14 @@ from PyQt5.QtWidgets import (
     QListWidget,
     QAbstractItemView,
     QScrollArea,
-    QPushButton,
-    QListWidgetItem,
-    QFileDialog,
 )
 import napari
 from napari.utils.notifications import show_info
+from napari_allencell_annotator.widgets.file_input import FileInput, FileInputMode
+from napari_allencell_annotator.widgets.list_item import ListItem
 
 
-class ImageView(QWidget):
+class ImagesView(QWidget):
     """
     A class used to create a view for image file uploading and selecting.
 
@@ -37,6 +40,9 @@ class ImageView(QWidget):
     set_curr_img(img:numpy.uint8)
         Sets the current image and displays the selection
     """
+    field_input_dir: FileInput
+    field_output_dir: FileInput
+
     def __init__(self, napari: napari.Viewer, ctrl):
         """
         Parameters
@@ -47,6 +53,15 @@ class ImageView(QWidget):
             The controller
         """
         super().__init__()
+
+        # Input dir
+        self.field_input_dir = FileInput(mode=FileInputMode.DIRECTORY, placeholder_text="Select a folder...")
+        self.field_input_dir.file_selected.connect(lambda: self._dir_selected(self.field_input_dir.selected_file[0]))
+        #row3 = FormRow("3.  Input directory:", self.field_input_dir)
+
+        self.field_input_file = FileInput(mode=FileInputMode.FILE, placeholder_text="Select files...")
+        self.field_input_file.file_selected.connect(lambda: self._file_selected(self.field_input_file.selected_file))
+
         self.label = QLabel()
         self.label.setAlignment(Qt.AlignCenter)
         self.label.setText("Images")
@@ -66,17 +81,15 @@ class ImageView(QWidget):
 
         self.setLayout(self.layout)
 
-        self.add_btn = QPushButton("Add Files")
-        self.layout.addWidget(self.add_btn, stretch=1)
-
+        self.layout.addWidget(self.field_input_dir)
+        self.layout.addWidget(self.field_input_file)
         self.curr_img = None
         self.ctrl = ctrl
-        self.add_btn.clicked.connect(self._get_files)
         self.napari = napari
         self.napari.window.add_dock_widget(self, area="right")
         self.show()
 
-    def set_curr_img(self,img: numpy.uint8):
+    def set_curr_img(self,img: numpy.ndarray):
         """
         Sets the current image and displays it.
 
@@ -99,6 +112,15 @@ class ImageView(QWidget):
         """
         show_info(alert)
 
+    def _dir_selected(self, dir: str):
+        for file in listdir(dir):
+            self._add_file(dir + "/" + file)
+
+    def _file_selected(self, file_list: List[str]):
+        for file in file_list:
+            self._add_file(file)
+
+
     def _add_file(self, file: str):
         """
         Adds a file to the list.
@@ -113,32 +135,17 @@ class ImageView(QWidget):
             The file to be added
         """
         if self.ctrl.is_supported(file):
-            item = QListWidgetItem(file)
-            self.file_widget.addItem(item)
+            ListItem(file,self.file_widget)
         else:
             self.error_alert("Unsupported file type:" + file)
 
-    def dragEnterEvent(self, event:QEvent.Type):
-       event.accept()
-
-    def dropEvent(self, event:QEvent.Type):
-        """Add file names for files dropped into the view."""
-        if event.mimeData().hasImage:
-            event.setDropAction(Qt.CopyAction)
-            image_paths = event.mimeData().urls()
-            for path in image_paths:
-                self._add_file(path.toLocalFile())
-            event.accept()
-        else:
-            event.ignore()
-
-    def _get_files(self):
-        """Get user files from QFileDialog."""
-        f_names = QFileDialog.getOpenFileNames(self, "Open File", "c\\")
-        for file in f_names[0]:
-            self._add_file(file)
 
     def _display_img(self):
         """Display the current image in napari."""
         self.napari.layers.clear()
         self.napari.add_image(self.curr_img)
+
+
+
+
+

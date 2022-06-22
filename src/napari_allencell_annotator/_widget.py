@@ -14,7 +14,7 @@ from napari_plugin_engine import napari_hook_implementation
 from qtpy.QtWidgets import QHBoxLayout, QPushButton, QWidget
 
 from view.annotator_view import AnnotatorMenu
-from view.images_view import ImageViewer
+from view.images_view import ImagesView
 
 if TYPE_CHECKING:
     import napari

@@ -1,9 +1,13 @@
+import os
+
 import napari
 from PyQt5.QtWidgets import QListWidgetItem
 
-from napari_allencell_annotator.view.images_view import ImageView
+from napari_allencell_annotator.view.images_view import ImagesView
 from napari_allencell_annotator.model import images_model
-from aicsimageio import exceptions
+from aicsimageio import exceptions, AICSImage
+from napari_allencell_annotator.constants.constants import SUPPORTED_FILE_TYPES
+
 
 class ImageController():#TODO: rename
     """
@@ -23,7 +27,7 @@ class ImageController():#TODO: rename
     """
     def __init__(self):
         self.model = images_model
-        self.view = ImageView(napari.Viewer(),self)
+        self.view = ImagesView(napari.Viewer(),self)
         self._connect_slots()
 
     def _connect_slots(self):
@@ -44,24 +48,31 @@ class ImageController():#TODO: rename
         event : QListWidgetItem.ItemType
         """
         try:
-            img = self.model.aicsimageio_convert(event.text())
+            img = AICSImage(event.file_path).data
             self.view.set_curr_img(img)
         except exceptions.UnsupportedFileFormatError:
             self.view.error_alert("AICS Image Conversion Failed")
 
-    def is_supported(self, file_name: str)->bool:
+
+    def is_supported(self, file_name: str) -> bool:
         """
-        Returns true if file name is supported by the annotator.
+        Check if the provided file name is a supported file.
+
+        This function checks if the file name extension is in
+        the supported file types set.
 
         Parameters
         ----------
         file_name : str
-            The file name to be tested
+            Name of the file to check.
+
         Returns
         -------
         bool
-            The result of model.is_supported
+            True if the file is supported.
         """
-        return self.model.is_supported(file_name)
-
-
+        _, extension = os.path.splitext(file_name)
+        if extension in SUPPORTED_FILE_TYPES:
+            return True
+        else:
+            return False
