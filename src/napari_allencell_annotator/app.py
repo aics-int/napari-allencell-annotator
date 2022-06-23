@@ -1,7 +1,7 @@
 import sys
 
 from PyQt5.QtWidgets import QApplication
-from controller.images_controller import ImageController
+from controller.images_controller import ImagesController
 
 
 
@@ -11,7 +11,7 @@ class App(QApplication):
     """
     def __init__(self, sys_argv):
         super(App, self).__init__(sys_argv)
-        ImageController()
+        ImagesController()
 
 
 if __name__ == '__main__':

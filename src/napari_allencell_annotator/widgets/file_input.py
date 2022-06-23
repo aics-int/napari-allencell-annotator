@@ -67,12 +67,16 @@ class FileInput(QWidget):
                 options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
             )
         else:
-            file_path = [QFileDialog.getExistingDirectory(
+            file_path = QFileDialog.getExistingDirectory(
                 self,
                 "Select a directory",
                 "c\\",
                 options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
-            )]
+            )
+            if len(file_path) > 0:
+                file_path = [file_path]
+            else:
+                file_path = None
 
         if file_path:
             self._selected_file = file_path

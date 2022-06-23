@@ -1,6 +1,3 @@
-from os import listdir
-import os
-from typing import List
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
@@ -28,20 +25,19 @@ class ImagesView(QWidget):
     ----------
     napari : napari.Viewer
         a napari viewer where the plugin will be used
-    curr_img : numpy.uint8
+    curr_img : numpy.ndarray
         the currently selected image
-    ctrl : TODO
+    ctrl
         a controller for the view
 
     Methods
     -------
-    error_alert(alert:str)
+    alert(alert:str)
         Displays the alert message on the napari viewer
-    set_curr_img(img:numpy.uint8)
+    set_curr_img(img:numpy.ndarray)
         Sets the current image and displays the selection
     """
-    field_input_dir: FileInput
-    field_output_dir: FileInput
+
 
     def __init__(self, napari: napari.Viewer, ctrl):
         """
@@ -49,25 +45,24 @@ class ImagesView(QWidget):
         ----------
         napari : napari.Viewer
             The napari viewer for the plugin
-        ctrl : TODO
+        ctrl
             The controller
         """
         super().__init__()
+        self.input_dir: FileInput
+        self.input_file: FileInput
 
-        # Input dir
-        self.field_input_dir = FileInput(mode=FileInputMode.DIRECTORY, placeholder_text="Select a folder...")
-        self.field_input_dir.file_selected.connect(lambda: self._dir_selected(self.field_input_dir.selected_file[0]))
-        #row3 = FormRow("3.  Input directory:", self.field_input_dir)
+        self.input_dir = FileInput(mode=FileInputMode.DIRECTORY, placeholder_text="Select a folder...")
 
-        self.field_input_file = FileInput(mode=FileInputMode.FILE, placeholder_text="Select files...")
-        self.field_input_file.file_selected.connect(lambda: self._file_selected(self.field_input_file.selected_file))
+
+        self.input_file = FileInput(mode=FileInputMode.FILE, placeholder_text="Select files...")
+
 
         self.label = QLabel()
         self.label.setAlignment(Qt.AlignCenter)
         self.label.setText("Images")
 
         self.label.setFont(QFont("Arial", 15))
-        self.setAcceptDrops(True)
         self.layout = QVBoxLayout()
         self.layout.addWidget(self.label, stretch=1)
 
@@ -81,11 +76,12 @@ class ImagesView(QWidget):
 
         self.setLayout(self.layout)
 
-        self.layout.addWidget(self.field_input_dir)
-        self.layout.addWidget(self.field_input_file)
+        self.layout.addWidget(self.input_dir)
+        self.layout.addWidget(self.input_file)
         self.curr_img = None
         self.ctrl = ctrl
         self.napari = napari
+
         self.napari.window.add_dock_widget(self, area="right")
         self.show()
 
@@ -95,13 +91,13 @@ class ImagesView(QWidget):
 
         Parameters
         ----------
-        img: numpy.uint8
+        img: numpy.ndarray
             The selected image array
         """
         self.curr_img = img
         self._display_img()
 
-    def error_alert(self, alert: str):
+    def alert(self, alert_msg: str):
         """
         Displays an error alert on the napari viewer.
 
@@ -110,18 +106,15 @@ class ImagesView(QWidget):
         alert : str
             The message to be displayed
         """
-        show_info(alert)
+        show_info(alert_msg)
 
-    def _dir_selected(self, dir: str):
-        for file in listdir(dir):
-            self._add_file(dir + "/" + file)
+    def get_dir(self):
+        return self.input_dir.selected_file[0]
 
-    def _file_selected(self, file_list: List[str]):
-        for file in file_list:
-            self._add_file(file)
+    def get_file(self):
+        return self.input_file.selected_file
 
-
-    def _add_file(self, file: str):
+    def add_file(self, file: str):
         """
         Adds a file to the list.
 
@@ -134,16 +127,16 @@ class ImagesView(QWidget):
         file : str
             The file to be added
         """
-        if self.ctrl.is_supported(file):
-            ListItem(file,self.file_widget)
-        else:
-            self.error_alert("Unsupported file type:" + file)
+
+        ListItem(file,self.file_widget)
+
 
 
     def _display_img(self):
         """Display the current image in napari."""
-        self.napari.layers.clear()
-        self.napari.add_image(self.curr_img)
+        if self.curr_img is not None:
+            self.napari.layers.clear()
+            self.napari.add_image(self.curr_img)
 
 
 

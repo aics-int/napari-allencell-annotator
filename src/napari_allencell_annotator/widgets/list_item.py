@@ -1,6 +1,7 @@
 import os
 
-from PyQt5.QtWidgets import QListWidgetItem, QListWidget
+from PyQt5.QtWidgets import QListWidgetItem, QListWidget, QStyle
+from qtpy import QtGui
 
 
 class ListItem(QListWidgetItem):
@@ -17,5 +18,6 @@ class ListItem(QListWidgetItem):
         QListWidgetItem.__init__(self, parent)
         self.setText(os.path.basename(file_path))
         self.file_path = file_path
+        self.setIcon(QtGui.QIcon('SP_TrashIcon'))
 
         #TODO: TRASH, SELECT

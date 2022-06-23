@@ -11,10 +11,8 @@ from typing import TYPE_CHECKING
 from PyQt5.QtWidgets import QMainWindow, QVBoxLayout
 from magicgui import magic_factory
 from napari_plugin_engine import napari_hook_implementation
-from qtpy.QtWidgets import QHBoxLayout, QPushButton, QWidget
-
-from view.annotator_view import AnnotatorMenu
-from view.images_view import ImagesView
+from qtpy.QtWidgets import QWidget
+from napari_allencell_annotator.view.images_view import ImagesView
 
 if TYPE_CHECKING:
     import napari
@@ -32,8 +30,7 @@ class MainWidget(QMainWindow):
         self.central_layout = QVBoxLayout()
         self.viewer = napari_viewer
         self.layer = None
-        self.drag_drop = ImageViewer(self.viewer, self.layer)
-        self.annotator = AnnotatorMenu(self.viewer, self.layer)
+        self.drag_drop = ImagesView(self.viewer, self.layer)
         self.central_layout.addWidget(self.drag_drop, stretch=2)
         self.central_layout.addWidget(self.annotator, stretch=5)
 

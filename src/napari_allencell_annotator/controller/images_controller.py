@@ -1,4 +1,5 @@
 import os
+from typing import List
 
 import napari
 from PyQt5.QtWidgets import QListWidgetItem
@@ -9,15 +10,15 @@ from aicsimageio import exceptions, AICSImage
 from napari_allencell_annotator.constants.constants import SUPPORTED_FILE_TYPES
 
 
-class ImageController():#TODO: rename
+class ImagesController():
     """
     A Main controller to integrate view and model for image annotations
 
     Attributes
     ----------
-    model: TODO
+    model
         the model functions
-    view: TODO
+    view
         the GUI and napari viewer
 
     Methods
@@ -33,7 +34,8 @@ class ImageController():#TODO: rename
     def _connect_slots(self):
         """Connects signals to slots. """
         self.view.file_widget.currentItemChanged.connect(self._curr_img_change)
-
+        self.view.input_dir.file_selected.connect(lambda: self._dir_selected(self.view.get_dir()))
+        self.view.input_file.file_selected.connect(lambda: self._file_selected(self.view.get_file()))
 
     def _curr_img_change(self, event:QListWidgetItem.ItemType):
         """
@@ -51,7 +53,7 @@ class ImageController():#TODO: rename
             img = AICSImage(event.file_path).data
             self.view.set_curr_img(img)
         except exceptions.UnsupportedFileFormatError:
-            self.view.error_alert("AICS Image Conversion Failed")
+            self.view.alert("AICS Image Conversion Failed")
 
 
     def is_supported(self, file_name: str) -> bool:
@@ -76,3 +78,43 @@ class ImageController():#TODO: rename
             return True
         else:
             return False
+
+    def _dir_selected(self, dir: str):
+        """
+        Adds all files in a directory to the GUI.
+
+        Parameters
+        ----------
+        dir : str
+            The directory path
+        """
+        if dir is None:
+            self.view.alert("No selection provided")
+        elif len(os.listdir(dir)) < 1:
+            self.view.alert("Folder is empty")
+        else:
+            for file in os.listdir(dir):
+                file = dir + "/" + file
+                if self.is_supported(file):
+                    self.view.add_file(file)
+                else:
+                    self.view.alert("Unsupported file type:" + file)
+
+
+    def _file_selected(self, file_list: List[str]):
+        """
+        Adds all selected files to the GUI.
+
+        Parameters
+        ----------
+        file_list : List[str]
+            The list of files
+        """
+        if file_list is None or len(file_list) < 1:
+            self.view.alert("No selection provided")
+        else:
+            for file in file_list:
+                if self. is_supported(file):
+                    self._add_file(file)
+                else:
+                    self.view.alert("Unsupported file type:" + file)
