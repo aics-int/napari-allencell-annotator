@@ -9,11 +9,12 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QListWidget,
     QAbstractItemView,
-    QScrollArea,
+    QScrollArea, QGridLayout, QPushButton,
 )
 import napari
 from napari.utils.notifications import show_info
 from napari_allencell_annotator.widgets.file_input import FileInput, FileInputMode
+from napari_allencell_annotator.widgets.list_widget import ListWidget
 from napari_allencell_annotator.widgets.list_item import ListItem
 
 
@@ -49,35 +50,48 @@ class ImagesView(QWidget):
             The controller
         """
         super().__init__()
-        self.input_dir: FileInput
-        self.input_file: FileInput
-
-        self.input_dir = FileInput(mode=FileInputMode.DIRECTORY, placeholder_text="Select a folder...")
-
-
-        self.input_file = FileInput(mode=FileInputMode.FILE, placeholder_text="Select files...")
-
 
         self.label = QLabel()
         self.label.setAlignment(Qt.AlignCenter)
         self.label.setText("Images")
 
-        self.label.setFont(QFont("Arial", 15))
-        self.layout = QVBoxLayout()
-        self.layout.addWidget(self.label, stretch=1)
+        self.label.setFont(QFont("Arial", 12))
+        self.layout = QGridLayout()
+        self.layout.addWidget(self.label,0,0,1,4)
 
-        self.file_widget = QListWidget()
-        self.file_widget.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.input_dir: FileInput
+        self.input_file: FileInput
+
+        self.input_dir = FileInput(mode=FileInputMode.DIRECTORY, placeholder_text="Add a folder...")
+
+        self.input_file = FileInput(mode=FileInputMode.FILE, placeholder_text="Add files...")
+        self.layout.addWidget(self.input_dir, 1,0,1,2)
+        self.layout.addWidget(self.input_file,1,2,1,2)
+
+        self.file_widget = ListWidget()
+        self.file_widget.items_selected.connect(self.toggle_delete)
+        #self.file_widget.setSelectionMode(QAbstractItemView.SingleSelection)
 
         self.scroll = QScrollArea()
         self.scroll.setWidget(self.file_widget)
         self.scroll.setWidgetResizable(True)
-        self.layout.addWidget(self.scroll, stretch=10)
+        self.layout.addWidget(self.scroll, 2,0,10,4)
+
+        self.shuffle = QPushButton("Shuffle and Hide")
+        self.shuffle.setEnabled(False)
+        self.delete = QPushButton("Delete")
+        self.delete.setEnabled(False)
+
+        self.delete.clicked.connect(self.file_widget.delete_selected)
+
+
+
+        self.layout.addWidget(self.shuffle, 13, 0, 1, 3)
+        self.layout.addWidget(self.delete, 13, 3, 1, 1)
 
         self.setLayout(self.layout)
 
-        self.layout.addWidget(self.input_dir)
-        self.layout.addWidget(self.input_file)
+
         self.curr_img = None
         self.ctrl = ctrl
         self.napari = napari
@@ -108,29 +122,13 @@ class ImagesView(QWidget):
         """
         show_info(alert_msg)
 
-    def get_dir(self):
-        return self.input_dir.selected_file[0]
+    def toggle_delete(self, selected: bool):
+        if selected:
+            self.delete.setEnabled(True)
+        elif not selected:
+            self.delete.setEnabled(False)
 
-    def get_file(self):
-        return self.input_file.selected_file
-
-    def add_file(self, file: str):
-        """
-        Adds a file to the list.
-
-        Tests if the controller supports the file then
-        adds it to the list. Displays an error alert if
-        the file is unsupported.
-
-        Parameters
-        ----------
-        file : str
-            The file to be added
-        """
-
-        ListItem(file,self.file_widget)
-
-
+#TODO signal for first thing added and last thing deleted, catch and toggle shuffle button
 
     def _display_img(self):
         """Display the current image in napari."""

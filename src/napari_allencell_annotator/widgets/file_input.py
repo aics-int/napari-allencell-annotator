@@ -16,12 +16,12 @@ class FileInput(QWidget):
     A file input Widget that includes a file dialog for selecting a file / directory
     and a text box to display the selected file
     inputs:
-        mode (FileInputMode): set file dialog selection type to File or Directory
+        mode (FileInputMode): files file dialog selection type to File or Directory
         filter (str): standard QFileDialog file filter. Ex: "JSON Files (*.json)"
         initial_text (str): text to display in the widget before a file has been selected
     """
 
-    file_selected = Signal(str)
+    file_selected = Signal(list)
     _selected_file: List[str] = None
 
     def __init__(
@@ -80,5 +80,5 @@ class FileInput(QWidget):
 
         if file_path:
             self._selected_file = file_path
-            self.file_selected.emit(file_path[0])
+            self.file_selected.emit(file_path)
 

@@ -34,8 +34,9 @@ class ImagesController():
     def _connect_slots(self):
         """Connects signals to slots. """
         self.view.file_widget.currentItemChanged.connect(self._curr_img_change)
-        self.view.input_dir.file_selected.connect(lambda: self._dir_selected(self.view.get_dir()))
-        self.view.input_file.file_selected.connect(lambda: self._file_selected(self.view.get_file()))
+        self.view.input_dir.file_selected.connect(self._dir_selected)
+        self.view.input_file.file_selected.connect(self._file_selected)
+
 
     def _curr_img_change(self, event:QListWidgetItem.ItemType):
         """
@@ -61,7 +62,7 @@ class ImagesController():
         Check if the provided file name is a supported file.
 
         This function checks if the file name extension is in
-        the supported file types set.
+        the supported file types files.
 
         Parameters
         ----------
@@ -79,7 +80,7 @@ class ImagesController():
         else:
             return False
 
-    def _dir_selected(self, dir: str):
+    def _dir_selected(self, dir: List[str]):
         """
         Adds all files in a directory to the GUI.
 
@@ -88,17 +89,19 @@ class ImagesController():
         dir : str
             The directory path
         """
-        if dir is None:
-            self.view.alert("No selection provided")
-        elif len(os.listdir(dir)) < 1:
-            self.view.alert("Folder is empty")
+        if dir is not None:
+            dir = dir[0]
+            if len(os.listdir(dir)) < 1:
+                self.view.alert("Folder is empty")
+            else:
+                for file in os.listdir(dir):
+                    file = dir + "/" + file
+                    if self.is_supported(file):
+                        self.view.file_widget.add_item(file)
+                    else:
+                        self.view.alert("Unsupported file type:" + file)
         else:
-            for file in os.listdir(dir):
-                file = dir + "/" + file
-                if self.is_supported(file):
-                    self.view.add_file(file)
-                else:
-                    self.view.alert("Unsupported file type:" + file)
+            self.view.alert("No selection provided")
 
 
     def _file_selected(self, file_list: List[str]):
@@ -115,6 +118,6 @@ class ImagesController():
         else:
             for file in file_list:
                 if self. is_supported(file):
-                    self._add_file(file)
+                    self.view.file_widget.add_item(file)
                 else:
                     self.view.alert("Unsupported file type:" + file)

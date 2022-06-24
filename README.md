@@ -14,7 +14,7 @@ A plugin to use with napari to annotate images and export .csv data
 This [napari] plugin was generated with [Cookiecutter] using [@napari]'s [cookiecutter-napari-plugin] template.
 
 <!--
-Don't miss the full getting started guide to set up your new package:
+Don't miss the full getting started guide to files up your new package:
 https://github.com/napari/cookiecutter-napari-plugin#getting-started
 
 and review the napari docs for plugin developers:
