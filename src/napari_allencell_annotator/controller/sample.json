@@ -1,0 +1,24 @@
+{
+  "annotation_name": {
+    "type": "string",
+    "default": "text"
+  },
+  "annotation_name_2": {
+    "type": "number",
+    "default": 2
+  },
+  "annotation_name_3": {
+    "type": "bool",
+    "default": true
+  },
+  "annotation_name_4": {
+    "type": "list",
+    "default": "a",
+    "options": [
+      "a",
+      "b",
+      "c",
+      "d"
+    ]
+  }
+}
