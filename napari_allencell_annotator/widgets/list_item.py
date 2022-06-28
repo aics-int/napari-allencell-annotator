@@ -34,14 +34,15 @@ class ListItem(QListWidgetItem):
 
         self.widget.setLayout(self.layout)
         self.setSizeHint(self.widget.sizeHint())
-        parent.setItemWidget(self, self.widget)
+        if parent is not None:
+            parent.setItemWidget(self, self.widget)
 
     @property
     def file_path(self) -> str:
         return self._file_path
 
     def __hash__(self) :
-        return hash((self.file_path))
+        return hash(self.file_path)
 
     def __eq__(self, other):
         """ Compares two ListItems file_path attributes"""

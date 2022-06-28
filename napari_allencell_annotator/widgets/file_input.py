@@ -28,7 +28,6 @@ class FileInput(QWidget):
             self,
             parent: QWidget = None,
             mode: FileInputMode = FileInputMode.FILE,
-            filter: str = None,
             placeholder_text: str = None,
     ):
         super().__init__(parent)
@@ -60,7 +59,6 @@ class FileInput(QWidget):
                 self,
                 "Select a file",
                 "c\\",
-                filter=self._filter,
                 options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
             )
         else:

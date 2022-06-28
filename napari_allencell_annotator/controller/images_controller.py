@@ -25,9 +25,10 @@ class ImagesController():
     is_supported(file_name:str)->bool
         Returns True if a file is a supported file type.
     """
+
     def __init__(self):
         self.model: images_model = images_model
-        self.view: ImagesView = ImagesView(napari.Viewer(),self)
+        self.view: ImagesView = ImagesView(napari.Viewer(), self)
         self._connect_slots()
 
     def _connect_slots(self):
@@ -58,7 +59,8 @@ class ImagesController():
             for f in files:
                 self.view.file_widget.add_item(f, hidden=False)
 
-    def is_supported(self, file_name: str) -> bool:
+    @staticmethod
+    def is_supported(file_name: str) -> bool:
         """
         Check if the provided file name is a supported file.
 
@@ -75,6 +77,8 @@ class ImagesController():
         bool
             True if the file is supported.
         """
+        if file_name is None:
+            return False
         _, extension = os.path.splitext(file_name)
         if extension in SUPPORTED_FILE_TYPES:
             return True
@@ -104,7 +108,6 @@ class ImagesController():
         else:
             self.view.alert("No selection provided")
 
-
     def _file_selected_evt(self, file_list: List[str]):
         """
         Adds all selected files to the GUI.
@@ -118,7 +121,7 @@ class ImagesController():
             self.view.alert("No selection provided")
         else:
             for file in file_list:
-                if self. is_supported(file):
+                if self.is_supported(file):
                     self.view.file_widget.add_new_item(file)
                 else:
                     self.view.alert("Unsupported file type:" + file)
