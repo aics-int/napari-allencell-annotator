@@ -4,7 +4,7 @@ from PyQt5 import QtCore
 
 
 from napari_allencell_annotator.controller.images_controller import ImagesController
-from constants.constants import SUPPORTED_FILE_TYPES
+from napari_allencell_annotator.constants.constants import SUPPORTED_FILE_TYPES
 
 class TestImagesController:
     def test_connect_slots(self, qtbot):

@@ -12,8 +12,8 @@ import napari
 from aicsimageio import AICSImage, exceptions
 from napari.utils.notifications import show_info
 
-from widgets.file_input import FileInput, FileInputMode
-from widgets.list_widget import ListWidget
+from napari_allencell_annotator.widgets.file_input import FileInput, FileInputMode
+from napari_allencell_annotator.widgets.list_widget import ListWidget
 
 
 class ImagesView(QWidget):

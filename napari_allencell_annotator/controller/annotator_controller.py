@@ -1,5 +1,5 @@
 import json
-from view.annotator_view import AnnotatorView
+from napari_allencell_annotator.view.annotator_view import AnnotatorView
 import napari
 import os
 

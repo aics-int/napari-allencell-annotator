@@ -3,7 +3,7 @@ from typing import Set, List
 
 from qtpy.QtCore import Signal
 
-from widgets.list_item import ListItem
+from napari_allencell_annotator.widgets.list_item import ListItem
 
 class ListWidget(QListWidget):
     """

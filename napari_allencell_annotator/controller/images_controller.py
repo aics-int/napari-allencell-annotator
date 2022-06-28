@@ -4,9 +4,9 @@ import random
 
 import napari
 
-from view.images_view import ImagesView
-from model import images_model
-from constants.constants import SUPPORTED_FILE_TYPES
+from napari_allencell_annotator.view.images_view import ImagesView
+from napari_allencell_annotator.model import images_model
+from napari_allencell_annotator.constants.constants import SUPPORTED_FILE_TYPES
 
 
 class ImagesController():

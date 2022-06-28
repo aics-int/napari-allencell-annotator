@@ -1,9 +1,9 @@
 import sys
 
 from PyQt5.QtWidgets import QApplication
-from controller.images_controller import ImagesController
 
-from controller.annotator_controller import AnnotatorController
+from napari_allencell_annotator.controller.images_controller import ImagesController
+from napari_allencell_annotator.controller.annotator_controller import AnnotatorController
 
 class App(QApplication):
     """
