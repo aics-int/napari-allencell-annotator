@@ -90,7 +90,6 @@ class ImagesView(QWidget):
         self.ctrl = ctrl
         self.napari = napari
 
-        self.napari.window.add_dock_widget(self, area="right")
         self.show()
 
 

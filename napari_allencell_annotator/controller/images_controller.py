@@ -26,9 +26,9 @@ class ImagesController():
         Returns True if a file is a supported file type.
     """
 
-    def __init__(self):
+    def __init__(self, viewer: napari.Viewer):
         self.model: images_model = images_model
-        self.view: ImagesView = ImagesView(napari.Viewer(), self)
+        self.view: ImagesView = ImagesView(viewer, self)
         self._connect_slots()
 
     def _connect_slots(self):

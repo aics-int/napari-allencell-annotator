@@ -1,0 +1,6 @@
+{
+  "annotation_name": {
+    "type": "string",
+    "default": "text"
+  }
+}

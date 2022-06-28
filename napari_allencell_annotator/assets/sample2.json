@@ -1,0 +1,46 @@
+{
+  "annotation_name": {
+    "type": "string",
+    "default": "text"
+  },
+  "annotation_name_2": {
+    "type": "number",
+    "default": 2
+  },
+  "annotation_name_3": {
+    "type": "bool",
+    "default": true
+  },
+  "annotation_name_4": {
+    "type": "list",
+    "default": "a",
+    "options": [
+      "a",
+      "b",
+      "c",
+      "d"
+    ]
+  },
+    "annotation_name_5": {
+    "type": "string",
+    "default": "text"
+  },
+  "annotation_name_6": {
+    "type": "number",
+    "default": 2
+  },
+  "annotation_name_7": {
+    "type": "bool",
+    "default": true
+  },
+  "annotation_name_8": {
+    "type": "list",
+    "default": "a",
+    "options": [
+      "a",
+      "b",
+      "c",
+      "d"
+    ]
+  }
+}
