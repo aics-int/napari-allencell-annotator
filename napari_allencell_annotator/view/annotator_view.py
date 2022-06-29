@@ -3,7 +3,7 @@ from typing import Dict
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QSpinBox, QCheckBox, QComboBox, \
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QLineEdit, QSpinBox, QCheckBox, QComboBox, \
     QGridLayout, QListWidget, QScrollArea, QListWidgetItem, QPushButton
 import napari
 
@@ -15,7 +15,7 @@ class AnnotatorViewMode(Enum):
 
 
 class AnnotatorView(QWidget):
-    def __init__(self, napari: napari.Viewer, annot_data: Dict = None, mode: AnnotatorViewMode = AnnotatorViewMode.ADD):
+    def __init__(self, viewer: napari.Viewer, annot_data: Dict = None, mode: AnnotatorViewMode = AnnotatorViewMode.ADD):
         super().__init__()
         self._mode = mode
         label = QLabel("Annotations")
@@ -34,7 +34,7 @@ class AnnotatorView(QWidget):
         self._render_gui(annot_data)
 
         self.setLayout(self.layout)
-        self.napari = napari
+        self.viewer = viewer
 
         self.show()
 
@@ -50,8 +50,8 @@ class AnnotatorView(QWidget):
             self.import_btn = QPushButton("Import Existing Annotations")
             self.import_btn.setEnabled(True)
 
-            self.layout.addWidget(self.create_btn, 12, 0, 1, 3)
-            self.layout.addWidget(self.import_btn, 12, 3, 1, 1)
+            self.layout.addWidget(self.create_btn, 12, 0, 1, 2)
+            self.layout.addWidget(self.import_btn, 12, 2, 1, 2)
         else:
             self.read_data(annot_data)
             if self.mode == AnnotatorViewMode.VIEW:
@@ -60,8 +60,8 @@ class AnnotatorView(QWidget):
                 self.start_btn = QPushButton("Start Annotating")
                 self.start_btn.setEnabled(True)
 
-                self.layout.addWidget(self.cancel_btn, 12, 0, 1, 3)
-                self.layout.addWidget(self.start_btn, 12, 3, 1, 1)
+                self.layout.addWidget(self.cancel_btn, 12, 0, 1, 1)
+                self.layout.addWidget(self.start_btn, 12, 1, 1, 3)
 
             elif self.mode == AnnotatorViewMode.VIEW:
                 self.back_btn = QPushButton("< Previous")
@@ -69,8 +69,8 @@ class AnnotatorView(QWidget):
                 self.next_btn = QPushButton("Next >")
                 self.next_btn.setEnabled(True)
 
-                self.layout.addWidget(self.back_btn, 12, 0, 1, 3)
-                self.layout.addWidget(self.back_btn, 12, 3, 1, 1)
+                self.layout.addWidget(self.back_btn, 12, 0, 1, 2)
+                self.layout.addWidget(self.back_btn, 12, 2, 1, 2)
 
     def read_data(self, annot_data):
         for name in annot_data.keys():
@@ -83,13 +83,19 @@ class AnnotatorView(QWidget):
         layout.addWidget(label, stretch=1)
         annot_type: str = dict['type']
         if annot_type == "string":
-            item = QLineEdit()
+            item = QLineEdit(dict['default'])
         elif annot_type == "number":
             item = QSpinBox()
+            item.setValue(dict['default'])
         elif annot_type == "bool":
             item = QCheckBox()
+            if dict['default'] == 'true' or dict['default']:
+                item.setChecked(True)
         elif annot_type == "list":
             item = QComboBox()
+            for opt in dict['options']:
+                item.addItem(opt)
+            item.setCurrentText(dict['default'])
         layout.addWidget(item, stretch=2)
         layout.addStretch()
         layout.setSpacing(10)
