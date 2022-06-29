@@ -9,12 +9,28 @@
 
 A plugin to use with napari to annotate images and export .csv data
 
+The Allen Cell Image Annotator plugin for napari provides an intuitive
+graphical user interface to create, add, and export custom image annotations
+on large data sets. The Allen Cell Image Annotator is a Python-based open source toolkit
+developed at the Allen Institute for Cell Science. This toolkit allows 
+users to easily upload, shuffle, and hide images. Users can create annotations (text, checkbox, drop-down, and spinbox) which 
+are rendered into a custom user interface and can be applied to the uploaded images. Annotation data 
+is exported into a .csv file. 
+
+-   Supports the following image types:
+    - `OME-TIFF`
+    - `TIFF`
+    - `CZI` 
+    - `PNG` 
+    -   `JPEG` 
+
+
 ----------------------------------
 
 This [napari] plugin was generated with [Cookiecutter] using [@napari]'s [cookiecutter-napari-plugin] template.
 
 <!--
-Don't miss the full getting started guide to set up your new package:
+Don't miss the full getting started guide to files up your new package:
 https://github.com/napari/cookiecutter-napari-plugin#getting-started
 
 and review the napari docs for plugin developers:
@@ -27,6 +43,17 @@ You can install `napari-allencell-annotator` via [pip]:
 
     pip install napari-allencell-annotator
 
+
+
+To install latest development version :
+
+    pip install git+https://github.com/bbridge0200/napari-allencell-annotator.git
+
+## Quick Start
+
+In the current version, there are two parts in the plugin: **Image Uploader** and **Annotator**. The **Annotator** allows
+users to create new or upload existing annotations and apply those annotations on the image set they create in the **Image Uploader**
+section of the plugin. 
 
 
 To install latest development version :
