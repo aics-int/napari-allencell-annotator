@@ -22,7 +22,10 @@ class ListItem(QListWidgetItem):
         if hidden:
             self.label = QLabel("Image")
         else:
-            self.label = QLabel(os.path.basename(file_path))
+            path : str = os.path.basename(file_path)
+            if len(path) > 28 :
+                path = path[0:27] + "..."
+            self.label = QLabel(path)
         self.layout.addWidget(self.label,stretch=19)
         self.check = QCheckBox()
         self.check.setCheckState(False)
@@ -30,7 +33,7 @@ class ListItem(QListWidgetItem):
         self.layout.addWidget(self.check,stretch=1)
         self.layout.addStretch()
 
-        self.layout.setContentsMargins(2,2,0,2)
+        self.layout.setContentsMargins(2,2,0,5)
 
         self.widget.setLayout(self.layout)
         self.setSizeHint(self.widget.sizeHint())
