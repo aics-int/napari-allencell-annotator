@@ -10,8 +10,8 @@ import napari
 from aicsimageio import AICSImage, exceptions
 from napari.utils.notifications import show_info
 
-from widgets.file_input import FileInput, FileInputMode
-from widgets.list_widget import ListWidget
+from napari_allencell_annotator.widgets.file_input import FileInput, FileInputMode
+from napari_allencell_annotator.widgets.list_widget import ListWidget
 
 
 class ImagesView(QWidget):
@@ -76,7 +76,7 @@ class ImagesView(QWidget):
         self.delete = QPushButton("Delete Selected")
         self.delete.setEnabled(False)
 
-        self.delete.clicked.connect(self.delete_clicked)
+        self.delete.clicked.connect(self._delete_clicked)
 
         self.layout.addWidget(self.shuffle, 13, 0, 1, 3)
         self.layout.addWidget(self.delete, 13, 3, 1, 1)
@@ -104,18 +104,21 @@ class ImagesView(QWidget):
         else:
             self.shuffle.setText("Shuffle and Hide")
 
-    def delete_clicked(self):
-        msg_box = QMessageBox()
-        msg: str = "Are you sure you want to delete these files?\n"
-        for item in self.file_widget.checked:
-            msg = msg + "--- " + item.file_path + "\n"
+    def _delete_clicked(self):
+        if len(self.file_widget.checked) > 0:
+            msg_box = QMessageBox()
+            msg: str = "Are you sure you want to delete these files?\n"
+            for item in self.file_widget.checked:
+                msg = msg + "--- " + item.file_path + "\n"
 
-        msg_box.setText(msg)
-        msg_box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+            msg_box.setText(msg)
+            msg_box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
 
-        return_value = msg_box.exec()
-        if return_value == QMessageBox.Ok:
-            self.file_widget.delete_checked()
+            return_value = msg_box.exec()
+            if return_value == QMessageBox.Ok:
+                self.file_widget.delete_checked()
+        else:
+            self.alert("No Images Selected")
 
     def alert(self, alert_msg: str):
         """
