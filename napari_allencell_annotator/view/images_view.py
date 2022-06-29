@@ -1,5 +1,3 @@
-from typing import TYPE_CHECKING
-
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 
@@ -22,7 +20,7 @@ class ImagesView(QWidget):
 
     Attributes
     ----------
-    napari : napari.Viewer
+    viewer : napari.Viewer
         a napari viewer where the plugin will be used
     ctrl : ImagesController
         a controller for the view
@@ -33,11 +31,11 @@ class ImagesView(QWidget):
         Displays the alert message on the napari viewer
     """
 
-    def __init__(self, napari: napari.Viewer, ctrl):
+    def __init__(self, viewer: napari.Viewer, ctrl):
         """
         Parameters
         ----------
-        napari : napari.Viewer
+        viewer : napari.Viewer
             The napari viewer for the plugin
         ctrl : ImagesController
             The controller
@@ -48,7 +46,7 @@ class ImagesView(QWidget):
         self.label.setAlignment(Qt.AlignCenter)
         self.label.setText("Images")
 
-        self.label.setFont(QFont("Arial", 12))
+        self.label.setFont(QFont("Arial", 15))
         self.layout = QGridLayout()
         self.layout.addWidget(self.label, 0, 0, 1, 4)
 
@@ -88,10 +86,9 @@ class ImagesView(QWidget):
         self.file_widget.currentItemChanged.connect(self._display_img)
 
         self.ctrl = ctrl
-        self.napari = napari
+        self.napari = viewer
 
         self.show()
-
 
     def _update_shuff_text(self, checked: bool):
         """
@@ -108,16 +105,16 @@ class ImagesView(QWidget):
             self.shuffle.setText("Shuffle and Hide")
 
     def delete_clicked(self):
-        msgBox = QMessageBox()
-        msg : str = "Are you sure you want to delete these files?\n"
+        msg_box = QMessageBox()
+        msg: str = "Are you sure you want to delete these files?\n"
         for item in self.file_widget.checked:
             msg = msg + "--- " + item.file_path + "\n"
 
-        msgBox.setText(msg)
-        msgBox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        msg_box.setText(msg)
+        msg_box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
 
-        returnValue = msgBox.exec()
-        if returnValue == QMessageBox.Ok:
+        return_value = msg_box.exec()
+        if return_value == QMessageBox.Ok:
             self.file_widget.delete_checked()
 
     def alert(self, alert_msg: str):
@@ -126,9 +123,10 @@ class ImagesView(QWidget):
 
         Parameters
         ----------
-        alert : str
+        alert_msg : str
             The message to be displayed
         """
+        #TODO: move to main view
         show_info(alert_msg)
 
     def toggle_add(self, enable: bool):

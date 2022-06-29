@@ -9,13 +9,39 @@ import napari
 
 
 class AnnotatorViewMode(Enum):
+    """
+    Mode for view.
+
+    ADD is used when there is not an annotation set selected
+    VIEW is used when an annotation set has been made/selected, but annotating has not started.
+    ANNOTATE is used when the image set is finalized and annotating has started.
+    """
     ADD = "add"
     VIEW = "view"
     ANNOTATE = "annotate"
 
 
 class AnnotatorView(QWidget):
-    def __init__(self, viewer: napari.Viewer, annot_data: Dict = None, mode: AnnotatorViewMode = AnnotatorViewMode.ADD):
+    """
+    A class used to create a view for annotations.
+
+    Inputs
+    ----------
+    viewer : napari.Viewer
+        a napari viewer where the plugin will be used
+    annot_data : Dict[str, Dict[str, str]]
+        annotation data
+    mode : AnnotatorViewMode
+        a mode for the view
+
+    Methods
+    -------
+    read_data(annot_data: Dict[str, Dict[str, str]])
+        creates gui elements from data and adds them to the view
+    """
+
+    def __init__(self, viewer: napari.Viewer, annot_data: Dict[str, Dict[str, str]] = None,
+                 mode: AnnotatorViewMode = AnnotatorViewMode.ADD):
         super().__init__()
         self._mode = mode
         label = QLabel("Annotations")
@@ -42,8 +68,15 @@ class AnnotatorView(QWidget):
     def mode(self) -> AnnotatorViewMode:
         return self._mode
 
-    def _render_gui(self, annot_data):
-        #TODO: refactor to have two buttons with different modes? if this design is good
+    def _render_gui(self, annot_data: Dict[str, Dict[str, str]]):
+        """
+        Render the GUI buttons depending on the mode.
+
+        Parameters
+        ----------
+        annot_data : Dict[str, Dict[str, str]]
+            Dictionary of annotation names -> dictionaries.
+        """
         if self.mode == AnnotatorViewMode.ADD:
             self.create_btn = QPushButton("Create Annotations")
             self.create_btn.setEnabled(True)
@@ -72,30 +105,49 @@ class AnnotatorView(QWidget):
                 self.layout.addWidget(self.back_btn, 12, 0, 1, 2)
                 self.layout.addWidget(self.back_btn, 12, 2, 1, 2)
 
-    def read_data(self, annot_data):
-        for name in annot_data.keys():
-            self.create_annot(name, annot_data[name])
+    def read_data(self, annot_data: Dict[str, Dict[str, str]]):
+        """
+        Read annotation dictionary into individual annotations.
 
-    def create_annot(self, name: str, dict: Dict):
+        Parameters
+        ----------
+        annot_data : Dict[str, Dict[str, str]]
+        """
+        for name in annot_data.keys():
+            self._create_annot(name, annot_data[name])
+
+    def _create_annot(self, name: str, dictn: Dict[str, str]):
+        """
+        Create annotation widgets from dictionary.
+
+        Parameters
+        ----------
+        name : str
+            annotation name.
+        dictn : Dict[str]
+            annotation types and data.
+        """
         widget = QWidget()
         layout = QHBoxLayout()
         label = QLabel(name)
         layout.addWidget(label, stretch=1)
-        annot_type: str = dict['type']
+        annot_type: str = dictn['type']
         if annot_type == "string":
-            item = QLineEdit(dict['default'])
+            item = QLineEdit(dictn['default'])
         elif annot_type == "number":
             item = QSpinBox()
-            item.setValue(dict['default'])
+            item.setValue(dictn['default'])
         elif annot_type == "bool":
             item = QCheckBox()
-            if dict['default'] == 'true' or dict['default']:
+            if dictn['default'] == 'true' or dictn['default']:
                 item.setChecked(True)
         elif annot_type == "list":
             item = QComboBox()
-            for opt in dict['options']:
+            for opt in dictn['options']:
                 item.addItem(opt)
-            item.setCurrentText(dict['default'])
+            item.setCurrentText(dictn['default'])
+        else:
+            return  # TODO
         layout.addWidget(item, stretch=2)
         layout.addStretch()
         layout.setSpacing(10)
