@@ -4,12 +4,12 @@ import random
 
 import napari
 
-from view.images_view import ImagesView
+from napari_allencell_annotator.view.images_view import ImagesView
 from model import images_model
 from constants.constants import SUPPORTED_FILE_TYPES
 
 
-class ImagesController():
+class ImagesController:
     """
     A Main controller to integrate view and model for image annotations
 
@@ -94,7 +94,7 @@ class ImagesController():
         dir_list : List[str]
             The input list with dir[0] holding directory name.
         """
-        if dir_list is not None:
+        if dir_list is not None and len(dir_list) > 0:
             dir = dir_list[0]
             if len(os.listdir(dir)) < 1:
                 self.view.alert("Folder is empty")
