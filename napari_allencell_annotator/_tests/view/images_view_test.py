@@ -55,3 +55,12 @@ class TestImagesView:
         self._view.file_widget.delete_checked.assert_not_called()
         self._view.alert.assert_not_called()
         # check msg_box text
+
+    def test_toggle_add(self):
+        # check enabled and un-enabled
+        self._view.toggle_add(True)
+        assert self._view.input_dir.isEnabled()
+        assert self._view.input_file.isEnabled()
+        self._view.toggle_add(False)
+        assert not self._view.input_dir.isEnabled()
+        assert not self._view.input_file.isEnabled()
