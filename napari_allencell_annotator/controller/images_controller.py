@@ -29,6 +29,7 @@ class ImagesController:
     def __init__(self, viewer: napari.Viewer):
         self.model: images_model = images_model
         self.view: ImagesView = ImagesView(viewer, self)
+        self.view.show()
         self._connect_slots()
 
     def _connect_slots(self):

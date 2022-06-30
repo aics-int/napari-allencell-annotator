@@ -88,7 +88,6 @@ class ImagesView(QWidget):
         self.ctrl = ctrl
         self.napari = viewer
 
-        self.show()
 
     def _update_shuff_text(self, checked: bool):
         """
@@ -175,7 +174,8 @@ class ImagesView(QWidget):
         self.napari.layers.clear()
         if self.file_widget.currentItem() is not None:
             try:
-                self.napari.add_image(AICSImage(self.file_widget.currentItem().file_path).data)
+                img = AICSImage(self.file_widget.currentItem().file_path)
+                self.napari.add_image(img.data)
             except exceptions.UnsupportedFileFormatError:
                 self.alert("AICS Unsupported File Type")
             except FileNotFoundError:

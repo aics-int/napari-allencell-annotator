@@ -62,8 +62,6 @@ class AnnotatorView(QWidget):
         self.setLayout(self.layout)
         self.viewer = viewer
 
-        self.show()
-
     @property
     def mode(self) -> AnnotatorViewMode:
         return self._mode

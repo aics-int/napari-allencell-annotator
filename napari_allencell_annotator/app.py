@@ -2,8 +2,7 @@ import sys
 
 from PyQt5.QtWidgets import QApplication
 
-from napari_allencell_annotator.controller.images_controller import ImagesController
-from napari_allencell_annotator.controller.annotator_controller import AnnotatorController
+from napari_allencell_annotator.controller.main_controller import MainController
 
 class App(QApplication):
     """

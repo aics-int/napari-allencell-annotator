@@ -28,6 +28,7 @@ class AnnotatorController:
         # open in add mode
         # self.view = AnnotatorView(napari.Viewer(), data)
         # open in view mode
-        self.view = AnnotatorView(viewer, data, mode=AnnotatorViewMode.VIEW)
+        self.view = AnnotatorView(viewer, data, mode=AnnotatorViewMode.ANNOTATE)
+        self.view.show()
         # open in annotate mode
         # self.view = AnnotatorView(viewer, data, mode=AnnotatorViewMode.ANNOTATE)
