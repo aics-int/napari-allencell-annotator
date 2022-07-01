@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Dict
+from typing import Dict, List
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
@@ -29,15 +29,29 @@ class AnnotatorView(QWidget):
     ----------
     viewer : napari.Viewer
         a napari viewer where the plugin will be used
-    annot_data : Dict[str, Dict[str, str]]
-        annotation data
     mode : AnnotatorViewMode
         a mode for the view
 
     Methods
     -------
-    read_data(annot_data: Dict[str, Dict[str, str]])
-        creates gui elements from data and adds them to the view
+    mode() -> AnnotatorViewMode
+
+    set_mode(mode: AnnotatorViewMode)
+
+    set_num_images(num: int)
+        Sets the total images to be annotated.
+
+    set_curr_index(num: int)
+        Sets the index of the currently selected image.
+
+    get_curr_annots() -> List
+        Returns the current annotation values in a list form.
+
+    make_annots_editable()
+        Enables the annotations for editing.
+
+    render_annotations(data : Dict[str,Dict[str, str]]))
+        Renders GUI elements from the dictionary of annotations.
     """
 
     def __init__(self, viewer: napari.Viewer,
@@ -114,40 +128,44 @@ class AnnotatorView(QWidget):
         self._display_mode()
 
     def set_num_images(self, num: int):
+        """Set the total number of images to be annotated"""
         self.num_images = num
 
     def set_curr_index(self, num: int):
+        """Set the index of the currently selected image and display it on progress bar."""
         self.curr_index = num
         self.progress_bar.setText("{} of {} Images".format(self.curr_index + 1, self.num_images))
 
-    def get_curr_annots(self):
+    def get_curr_annots(self) -> List:
+        """
+        Return the current annotation values in a list.
+
+        Returns
+        ----------
+        List
+            a list of annotation values.
+        """
         annots = []
         for i in self.annotation_item_widgets:
             value = ""
-            if isinstance(i,QLineEdit):
+            if isinstance(i, QLineEdit):
                 value = i.text()
-            elif isinstance(i,QSpinBox):
+            elif isinstance(i, QSpinBox):
                 value = i.value()
-            elif isinstance(i,QCheckBox):
+            elif isinstance(i, QCheckBox):
                 value = i.checkState()
-            elif isinstance(i,QComboBox):
+            elif isinstance(i, QComboBox):
                 value = i.currentData()
             annots.append(value)
         return annots
 
     def make_annots_editable(self):
+        """Enable the annotation widgets for editing. """
         for i in self.annotation_item_widgets:
             i.setEnabled(True)
 
     def _display_mode(self):
-        """
-        Render the GUI buttons depending on the mode.
-
-        Parameters
-        ----------
-        annot_data : Dict[str, Dict[str, str]]
-            Dictionary of annotation names -> dictionaries.
-        """
+        """Render GUI buttons visible depending on the mode."""
         if self.mode == AnnotatorViewMode.ADD:
             self.annot_list.clear()
             self.annot_widget.hide()
@@ -163,15 +181,14 @@ class AnnotatorView(QWidget):
             self.view_widget.hide()
             self.add_widget.hide()
 
-        #TODO make it so they can't select a dif image to annotate
-
-    def render_annotations(self, data : Dict[str,Dict[str, str]]):
+    def render_annotations(self, data: Dict[str, Dict[str, str]]):
         """
         Read annotation dictionary into individual annotations.
 
         Parameters
         ----------
         data : Dict[str, Dict[str, str]]
+            The dictionary of annotation types.
         """
         self.annotation_item_widgets = []
         for name in data.keys():
@@ -179,7 +196,7 @@ class AnnotatorView(QWidget):
 
     def _create_annot(self, name: str, dictn: Dict[str, str]):
         """
-        Create annotation widgets from dictionary.
+        Create annotation widgets from dictionary entries.
 
         Parameters
         ----------
