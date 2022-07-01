@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Dict
 import random
 
 import napari
@@ -24,8 +24,19 @@ class ImagesController:
     -------
     is_supported(file_name:str)->bool
         Returns True if a file is a supported file type.
-    """
 
+    start_annotating()
+        Shuffles the images if they haven't been shuffled and sets current item.
+
+    get_curr_img() -> Dict[str,str]
+        Returns a dictionary with the current image attributes.
+
+    next_img()
+        Sets the current image to the next in the list.
+
+    get_num_files(self) -> int
+        Returns the number of files.
+    """
     def __init__(self, viewer: napari.Viewer):
         self.model: images_model = images_model
         self.view: ImagesView = ImagesView(viewer, self)
@@ -128,19 +139,42 @@ class ImagesController:
                     self.view.alert("Unsupported file type:" + file)
 
     def start_annotating(self):
+        """
+        Shuffle images if they haven't been shuffled and set current item
+        to the first item.
+        """
         if not self.view.file_widget.shuffled:
             self._shuffle_clicked(True)
         self.view.file_widget.setCurrentItem(self.view.file_widget.item(0))
 
-    def get_curr_img(self):
+    def get_curr_img(self) -> Dict[str,str]:
+        """
+         Return a dictionary with the current image File Path,
+         File Name, FMS info, and row in the list.
+
+        Returns
+        ----------
+        Dict[str,str]
+            dictionary of attributes.
+        """
         item = self.view.file_widget.curr_item
         info = {"File Name": item.get_name(), "File Path": item.file_path, "FMS": "",
                 "Row": str(self.view.file_widget.curr_row)}
         return info
 
     def next_img(self):
+        """
+        Set the current image to the next in the list, stop incrementing
+        at the last row.
+        """
         if self.view.file_widget.curr_row < self.view.file_widget.length - 1:
             self.view.file_widget.setCurrentItem(self.view.file_widget.item(self.view.file_widget.curr_row + 1))
 
-    def get_num_files(self):
+    def get_num_files(self) -> int:
+        """
+        Returns
+        ----------
+        int
+            number of files.
+        """
         return self.view.file_widget.length

@@ -39,10 +39,10 @@ class ListWidget(QListWidget):
         QListWidget.__init__(self)
         self.checked: Set[ListItem] = set()
         self.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.files : Set[str] = set()
-        self.file_order : List[str] = []
+        self.files: Set[str] = set()
+        self.file_order: List[str] = []
         self.setCurrentItem(None)
-        self.shuffled : bool = False
+        self.shuffled: bool = False
 
     @property
     def length(self) -> int:
@@ -56,7 +56,7 @@ class ListWidget(QListWidget):
     def curr_row(self) -> int:
         return self.row(self.curr_item)
 
-    def clear_for_shuff(self)->List[str]:
+    def clear_for_shuff(self) -> List[str]:
         """
         Clear the list display and return the file_order.
 
@@ -72,7 +72,6 @@ class ListWidget(QListWidget):
         self.checked = set()
         self.clear()
         return self.file_order
-
 
     def add_new_item(self, file: str):
         """
@@ -91,8 +90,7 @@ class ListWidget(QListWidget):
                 self.files_added.emit(True)
             self.add_item(file)
 
-
-    def add_item(self, file: str, hidden:bool = False):
+    def add_item(self, file: str, hidden: bool = False):
         """
         Add a file to the list, but not to the file_order.
 
@@ -129,8 +127,6 @@ class ListWidget(QListWidget):
             if len(self.files) == 0:
                 self.files_added.emit(False)
 
-
-
     def delete_checked(self):
         """
         Delete the checked items.
@@ -159,5 +155,3 @@ class ListWidget(QListWidget):
             self.checked.remove(item)
             if len(self.checked) == 0:
                 self.files_selected.emit(False)
-
-

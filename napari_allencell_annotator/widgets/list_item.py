@@ -10,9 +10,10 @@ class ListItem(QListWidgetItem):
     ----------
     file_path: str
         a path to the file.
-
     Methods
     -------
+    get_name() -> str
+        returns the basename of the file.
     """
     def __init__(self, file_path: str, parent:QListWidget, hidden: bool = False):
         QListWidgetItem.__init__(self, parent)
@@ -44,6 +45,7 @@ class ListItem(QListWidgetItem):
             parent.setItemWidget(self, self.widget)
 
     def get_name(self):
+        """Return basename"""
         return os.path.basename(self._file_path)
 
     @property
@@ -51,7 +53,7 @@ class ListItem(QListWidgetItem):
         return self._file_path
 
     def highlight(self):
-        """"""
+        """highlight item"""
         self.label.setStyleSheet('''
                         QLabel{
                             font-weight: bold;
@@ -60,6 +62,7 @@ class ListItem(QListWidgetItem):
                 ''')
 
     def unhighlight(self):
+        """unhighlight item"""
         self.label.setStyleSheet('''
                                 QLabel{
                                 }

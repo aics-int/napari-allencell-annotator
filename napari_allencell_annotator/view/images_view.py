@@ -4,7 +4,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QWidget,
     QLabel,
-    QScrollArea, QGridLayout, QPushButton, QMessageBox, QVBoxLayout,
+    QScrollArea, QGridLayout, QPushButton, QMessageBox
 )
 import napari
 from aicsimageio import AICSImage, exceptions
@@ -88,7 +88,6 @@ class ImagesView(QWidget):
         self.ctrl = ctrl
         self.napari = viewer
 
-
     def _update_shuff_text(self, checked: bool):
         """
         Update shuffle button text to reflect toggle state.
@@ -102,7 +101,6 @@ class ImagesView(QWidget):
             self.shuffle.setText("Unshuffle and Unhide")
         else:
             self.shuffle.setText("Shuffle and Hide")
-
 
     def _delete_clicked(self):
         if len(self.file_widget.checked) > 0:
@@ -129,7 +127,7 @@ class ImagesView(QWidget):
         alert_msg : str
             The message to be displayed
         """
-        #TODO: move to main view
+        # TODO: move to main view
         show_info(alert_msg)
 
     def toggle_add(self, enable: bool):
@@ -170,7 +168,7 @@ class ImagesView(QWidget):
         elif not files_added:
             self.shuffle.setEnabled(False)
 
-    def _display_img(self, current : ListItem, previous: ListItem):
+    def _display_img(self, current: ListItem, previous: ListItem):
         """Display the current image in napari."""
         self.napari.layers.clear()
         if previous is not None:

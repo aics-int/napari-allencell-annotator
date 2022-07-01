@@ -73,6 +73,7 @@ class AnnotatorView(QWidget):
         self.num_images: int = None
         self.curr_index: int = None
 
+        # Add widget visible in ADD mode
         self.add_widget = QWidget()
         add_layout = QHBoxLayout()
         self.create_btn = QPushButton("Create Annotations")
@@ -86,6 +87,7 @@ class AnnotatorView(QWidget):
         self.layout.addWidget(self.add_widget, 12, 0, 1, 4)
         self.add_widget.hide()
 
+        # view widget visible in VIEW mode
         self.view_widget = QWidget()
         view_layout = QHBoxLayout()
         self.cancel_btn = QPushButton("Cancel")
@@ -99,6 +101,7 @@ class AnnotatorView(QWidget):
         self.layout.addWidget(self.view_widget, 12, 0, 1, 4)
         self.view_widget.hide()
 
+        # annot widget visible in ANNOTATE mode
         self.annot_widget = QWidget()
         annot_layout = QGridLayout()
         self.back_btn = QPushButton("< Previous")
@@ -114,10 +117,10 @@ class AnnotatorView(QWidget):
         self.view_widget.hide()
 
         self._display_mode()
-        self.annotation_item_widgets = []
+        self.annotation_item_widgets : List[QWidget] = []
 
         self.setLayout(self.layout)
-        self.viewer = viewer
+        self.viewer : napari.Viewer = viewer
 
     @property
     def mode(self) -> AnnotatorViewMode:
