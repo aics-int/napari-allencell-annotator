@@ -20,9 +20,9 @@ class ListItem(QListWidgetItem):
         self.widget = QWidget()
         self.layout = QHBoxLayout()
         if hidden:
-            self.label = QLabel("Image")
+            self.label = QLabel("Image " + str(parent.row(self) + 1))
         else:
-            path : str = os.path.basename(file_path)
+            path : str = self.get_name()
             if len(path) > 28 :
                 path = path[0:27] + "..."
             self.label = QLabel(path)
@@ -32,17 +32,38 @@ class ListItem(QListWidgetItem):
         self.check.setCheckable(not hidden)
         self.layout.addWidget(self.check,stretch=1)
         self.layout.addStretch()
-
         self.layout.setContentsMargins(2,2,0,5)
-
+        self.label.setStyleSheet('''
+                QLabel{
+                    border: 0px solid; 
+                }
+        ''')
         self.widget.setLayout(self.layout)
         self.setSizeHint(self.widget.sizeHint())
         if parent is not None:
             parent.setItemWidget(self, self.widget)
 
+    def get_name(self):
+        return os.path.basename(self._file_path)
+
     @property
     def file_path(self) -> str:
         return self._file_path
+
+    def highlight(self):
+        """"""
+        self.label.setStyleSheet('''
+                        QLabel{
+                            font-weight: bold;
+                            text-decoration: underline;
+                        }
+                ''')
+
+    def unhighlight(self):
+        self.label.setStyleSheet('''
+                                QLabel{
+                                }
+                        ''')
 
     def __hash__(self) :
         return hash(self.file_path)

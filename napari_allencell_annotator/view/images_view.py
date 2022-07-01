@@ -4,14 +4,14 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QWidget,
     QLabel,
-    QScrollArea, QGridLayout, QPushButton, QMessageBox,
+    QScrollArea, QGridLayout, QPushButton, QMessageBox, QVBoxLayout,
 )
 import napari
 from aicsimageio import AICSImage, exceptions
 from napari.utils.notifications import show_info
 
 from napari_allencell_annotator.widgets.file_input import FileInput, FileInputMode
-from napari_allencell_annotator.widgets.list_widget import ListWidget
+from napari_allencell_annotator.widgets.list_widget import ListWidget, ListItem
 
 
 class ImagesView(QWidget):
@@ -103,6 +103,7 @@ class ImagesView(QWidget):
         else:
             self.shuffle.setText("Shuffle and Hide")
 
+
     def _delete_clicked(self):
         if len(self.file_widget.checked) > 0:
             msg_box = QMessageBox()
@@ -169,15 +170,18 @@ class ImagesView(QWidget):
         elif not files_added:
             self.shuffle.setEnabled(False)
 
-    def _display_img(self):
+    def _display_img(self, current : ListItem, previous: ListItem):
         """Display the current image in napari."""
         self.napari.layers.clear()
-        if self.file_widget.currentItem() is not None:
+        if previous is not None:
+            previous.unhighlight()
+        if current is not None:
             try:
-                img = AICSImage(self.file_widget.currentItem().file_path)
+                img = AICSImage(current.file_path)
                 self.napari.add_image(img.data)
+                current.highlight()
             except exceptions.UnsupportedFileFormatError:
                 self.alert("AICS Unsupported File Type")
             except FileNotFoundError:
                 self.alert("File no longer exists")
-                self.file_widget.remove_item(self.file_widget.currentItem())
+                self.file_widget.remove_item(current)

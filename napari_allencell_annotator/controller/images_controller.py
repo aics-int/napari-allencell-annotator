@@ -48,7 +48,7 @@ class ImagesController:
         checked : bool
             Toggle state of the shuffle button.
         """
-        files: List[str] = self.view.file_widget.clear_for_shuff()
+        files: List[str] = [i for i in self.view.file_widget.clear_for_shuff()]
         if checked:
             self.view.toggle_add(False)
             random.shuffle(files)
@@ -126,3 +126,21 @@ class ImagesController:
                     self.view.file_widget.add_new_item(file)
                 else:
                     self.view.alert("Unsupported file type:" + file)
+
+    def start_annotating(self):
+        if not self.view.file_widget.shuffled:
+            self._shuffle_clicked(True)
+        self.view.file_widget.setCurrentItem(self.view.file_widget.item(0))
+
+    def get_curr_img(self):
+        item = self.view.file_widget.curr_item
+        info = {"File Name": item.get_name(), "File Path": item.file_path, "FMS": "",
+                "Row": str(self.view.file_widget.curr_row)}
+        return info
+
+    def next_img(self):
+        if self.view.file_widget.curr_row < self.view.file_widget.length - 1:
+            self.view.file_widget.setCurrentItem(self.view.file_widget.item(self.view.file_widget.curr_row + 1))
+
+    def get_num_files(self):
+        return self.view.file_widget.length

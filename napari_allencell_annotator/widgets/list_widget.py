@@ -1,9 +1,10 @@
 from PyQt5.QtWidgets import QListWidget, QAbstractItemView, QWidget
-from typing import Set, List
+from typing import Set, List, Tuple
 
 from qtpy.QtCore import Signal
 
 from napari_allencell_annotator.widgets.list_item import ListItem
+
 
 class ListWidget(QListWidget):
     """
@@ -41,7 +42,19 @@ class ListWidget(QListWidget):
         self.files : Set[str] = set()
         self.file_order : List[str] = []
         self.setCurrentItem(None)
-        self.curr_item = self.currentItem()
+        self.shuffled : bool = False
+
+    @property
+    def length(self) -> int:
+        return self.count()
+
+    @property
+    def curr_item(self) -> ListItem:
+        return self.currentItem()
+
+    @property
+    def curr_row(self) -> int:
+        return self.row(self.curr_item)
 
     def clear_for_shuff(self)->List[str]:
         """
@@ -54,6 +67,7 @@ class ListWidget(QListWidget):
         List[str]
             file_order.
         """
+        self.shuffled = not self.shuffled
         self.setCurrentItem(None)
         self.checked = set()
         self.clear()
