@@ -6,7 +6,7 @@ from napari_allencell_annotator.controller.annotator_controller import Annotator
 from napari_allencell_annotator.controller.annotator_controller import csv
 from napari_allencell_annotator.controller.annotator_controller import AnnotatorViewMode
 
-import napari
+from napari_allencell_annotator.controller.annotator_controller import napari
 
 
 class TestAnnotatorController:

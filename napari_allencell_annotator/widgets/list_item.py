@@ -71,10 +71,10 @@ class ListItem(QListWidgetItem):
                         ''')
 
     def __hash__(self):
-        return hash(self.file_path())
+        return hash(self._file_path)
 
     def __eq__(self, other):
         """ Compares two ListItems file_path attributes"""
         if not isinstance(other, type(self)):
             return NotImplemented
-        return self.file_path() == other.file_path()
+        return self._file_path == other._file_path

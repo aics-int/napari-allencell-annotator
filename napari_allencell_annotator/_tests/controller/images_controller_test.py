@@ -1,10 +1,9 @@
 from unittest import mock
 from unittest.mock import MagicMock, create_autospec
 
-from PyQt5.QtWidgets import QListWidget
 
 from napari_allencell_annotator.controller.images_controller import ImagesController
-from constants.constants import SUPPORTED_FILE_TYPES
+from napari_allencell_annotator.controller.images_controller import SUPPORTED_FILE_TYPES
 import napari
 import os
 
