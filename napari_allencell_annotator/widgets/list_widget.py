@@ -50,7 +50,10 @@ class ListWidget(QListWidget):
 
     @property
     def curr_row(self) -> int:
-        return self.row(self.currentItem())
+        if self.currentItem() is not None:
+            return self.row(self.currentItem())
+        else:
+            return -1
 
     def clear_for_shuff(self) -> List[str]:
         """
