@@ -117,10 +117,10 @@ class AnnotatorView(QWidget):
         self.view_widget.hide()
 
         self._display_mode()
-        self.annotation_item_widgets : List[QWidget] = []
+        self.annotation_item_widgets: List[QWidget] = []
 
         self.setLayout(self.layout)
-        self.viewer : napari.Viewer = viewer
+        self.viewer: napari.Viewer = viewer
 
     @property
     def mode(self) -> AnnotatorViewMode:

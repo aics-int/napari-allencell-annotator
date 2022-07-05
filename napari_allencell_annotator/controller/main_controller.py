@@ -50,7 +50,7 @@ class MainController(QWidget):
             self.images.view.hide()
             self.images.start_annotating()
             self.annots.start_annotating(self.images.get_num_files())
-            self.annots.set_curr_img(self.images.get_curr_img())
+            self.annots.set_curr_img(self.images.curr_img_dict())
 
     def next_image(self):
         """
@@ -61,7 +61,6 @@ class MainController(QWidget):
         if self.annots.view.next_btn.text() == "Save and Export":
             self.annots.save_and_export()
         else:
-            self.annots.write_image_csv(self.images.get_curr_img())
+            self.annots.write_image_csv(self.images.curr_img_dict())
             self.images.next_img()
-            self.annots.set_curr_img(self.images.get_curr_img())
-
+            self.annots.set_curr_img(self.images.curr_img_dict())

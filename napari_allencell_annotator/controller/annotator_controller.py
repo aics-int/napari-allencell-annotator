@@ -40,18 +40,18 @@ class AnnotatorController:
         # 4 annotations
         # path = str(Directories.get_assets_dir() / "sample.json")
         # 8 annotations
-        path : str = str(Directories.get_assets_dir() / "sample2.json")
-        self.annot_data : Dict[str, Dict[str,str]] = json.load(open(path))
+        path: str = str(Directories.get_assets_dir() / "sample2.json")
+        self.annot_data: Dict[str, Dict[str, str]] = json.load(open(path))
         # open in add mode
         # self.view = AnnotatorView(napari.Viewer(), data)
         # open in view mode
-        self.view : AnnotatorView= AnnotatorView(viewer, mode=AnnotatorViewMode.VIEW)
+        self.view: AnnotatorView = AnnotatorView(viewer, mode=AnnotatorViewMode.VIEW)
         self.view.render_annotations(self.annot_data)
         self.view.show()
-        self.curr_img : Dict[str, str] = None
+        self.curr_img: Dict[str, str] = None
         # TODO: write to file only once, store annotations in dict
         self.file = None
-        self.writer= None
+        self.writer = None
 
     def start_annotating(self, num_images: int):
         """
@@ -81,19 +81,18 @@ class AnnotatorController:
         """
         self.curr_img = curr_img
         self.view.set_curr_index(int(curr_img["Row"]))
-        if int(curr_img["Row"]) == self.view.num_images -1:
+        if int(curr_img["Row"]) == self.view.num_images - 1:
             self.view.next_btn.setText("Save and Export")
 
     def write_image_csv(self, prev_img: Dict[str, str]):
         # filename, filepath, fms, annots
-        line : List[str] = [prev_img["File Name"], prev_img["File Path"], prev_img["FMS"]]
+        line: List[str] = [prev_img["File Name"], prev_img["File Path"], prev_img["FMS"]]
         for value in self.view.get_curr_annots():
             line.append(value)
         self.writer.writerow(line)
 
-
     def write_header(self):
-        header : List[str] = ["File Name", "File Path", "FMS"]
+        header: List[str] = ["File Name", "File Path", "FMS"]
         for key in self.annot_data.keys():
             header.append(key)
         self.writer.writerow(header)

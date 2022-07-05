@@ -13,7 +13,7 @@ class TestListItem:
         widget_2 = ListItem(path, None)
         assert widget == widget_2
         assert widget == widget
-        widget_2.file_path = "path2.txt"
+        widget_2.file_path() = "path2.txt"
         assert widget != widget_2
 
 

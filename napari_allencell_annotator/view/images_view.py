@@ -107,7 +107,7 @@ class ImagesView(QWidget):
             msg_box = QMessageBox()
             msg: str = "Are you sure you want to delete these files?\n"
             for item in self.file_widget.checked:
-                msg = msg + "--- " + item.file_path + "\n"
+                msg = msg + "--- " + item.file_path() + "\n"
 
             msg_box.setText(msg)
             msg_box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
@@ -175,7 +175,7 @@ class ImagesView(QWidget):
             previous.unhighlight()
         if current is not None:
             try:
-                img = AICSImage(current.file_path)
+                img = AICSImage(current.file_path())
                 self.napari.add_image(img.data)
                 current.highlight()
             except exceptions.UnsupportedFileFormatError:

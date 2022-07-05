@@ -28,7 +28,7 @@ class ImagesController:
     start_annotating()
         Shuffles the images if they haven't been shuffled and sets current item.
 
-    get_curr_img() -> Dict[str,str]
+    curr_img_dict() -> Dict[str,str]
         Returns a dictionary with the current image attributes.
 
     next_img()
@@ -37,6 +37,7 @@ class ImagesController:
     get_num_files(self) -> int
         Returns the number of files.
     """
+
     def __init__(self, viewer: napari.Viewer):
         self.model: images_model = images_model
         self.view: ImagesView = ImagesView(viewer, self)
@@ -107,12 +108,12 @@ class ImagesController:
             The input list with dir[0] holding directory name.
         """
         if dir_list is not None and len(dir_list) > 0:
-            dir = dir_list[0]
-            if len(os.listdir(dir)) < 1:
+            d = dir_list[0]
+            if len(os.listdir(d)) < 1:
                 self.view.alert("Folder is empty")
             else:
-                for file in os.listdir(dir):
-                    file = dir + "/" + file
+                for file in os.listdir(d):
+                    file = d + "/" + file
                     if self.is_supported(file):
                         self.view.file_widget.add_new_item(file)
                     else:
@@ -143,11 +144,14 @@ class ImagesController:
         Shuffle images if they haven't been shuffled and set current item
         to the first item.
         """
-        if not self.view.file_widget.shuffled:
+        if not self.view.file_widget.shuffled():
             self._shuffle_clicked(True)
-        self.view.file_widget.setCurrentItem(self.view.file_widget.item(0))
+        if self.view.file_widget.count() > 0:
+            self.view.file_widget.setCurrentItem(self.view.file_widget.item(0))
+        else:
+            self.view.alert("No files to annotate")
 
-    def get_curr_img(self) -> Dict[str,str]:
+    def curr_img_dict(self) -> Dict[str, str]:
         """
          Return a dictionary with the current image File Path,
          File Name, FMS info, and row in the list.
@@ -157,9 +161,9 @@ class ImagesController:
         Dict[str,str]
             dictionary of attributes.
         """
-        item = self.view.file_widget.curr_item
-        info = {"File Name": item.get_name(), "File Path": item.file_path, "FMS": "",
-                "Row": str(self.view.file_widget.curr_row)}
+        item = self.view.file_widget.currentItem()
+        info = {"File Name": item.name(), "File Path": item.file_path(), "FMS": "",
+                "Row": str(self.view.file_widget.curr_row())}
         return info
 
     def next_img(self):
@@ -167,8 +171,8 @@ class ImagesController:
         Set the current image to the next in the list, stop incrementing
         at the last row.
         """
-        if self.view.file_widget.curr_row < self.view.file_widget.length - 1:
-            self.view.file_widget.setCurrentItem(self.view.file_widget.item(self.view.file_widget.curr_row + 1))
+        if self.view.file_widget.curr_row() < self.view.file_widget.count() - 1:
+            self.view.file_widget.setCurrentItem(self.view.file_widget.item(self.view.file_widget.curr_row() + 1))
 
     def get_num_files(self) -> int:
         """
@@ -177,4 +181,4 @@ class ImagesController:
         int
             number of files.
         """
-        return self.view.file_widget.length
+        return self.view.file_widget.count()

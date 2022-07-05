@@ -2,6 +2,7 @@ import os
 
 from PyQt5.QtWidgets import QListWidgetItem, QListWidget, QWidget, QHBoxLayout, QLabel, QCheckBox
 
+
 class ListItem(QListWidgetItem):
     """
     A class used to create custom QListWidgetItems.
@@ -12,10 +13,11 @@ class ListItem(QListWidgetItem):
         a path to the file.
     Methods
     -------
-    get_name() -> str
+    name() -> str
         returns the basename of the file.
     """
-    def __init__(self, file_path: str, parent:QListWidget, hidden: bool = False):
+
+    def __init__(self, file_path: str, parent: QListWidget, hidden: bool = False):
         QListWidgetItem.__init__(self, parent)
         self._file_path = file_path
         self.widget = QWidget()
@@ -23,17 +25,17 @@ class ListItem(QListWidgetItem):
         if hidden:
             self.label = QLabel("Image " + str(parent.row(self) + 1))
         else:
-            path : str = self.get_name()
-            if len(path) > 28 :
+            path: str = self.name()
+            if len(path) > 28:
                 path = path[0:27] + "..."
             self.label = QLabel(path)
-        self.layout.addWidget(self.label,stretch=19)
+        self.layout.addWidget(self.label, stretch=19)
         self.check = QCheckBox()
         self.check.setCheckState(False)
         self.check.setCheckable(not hidden)
-        self.layout.addWidget(self.check,stretch=1)
+        self.layout.addWidget(self.check, stretch=1)
         self.layout.addStretch()
-        self.layout.setContentsMargins(2,2,0,5)
+        self.layout.setContentsMargins(2, 2, 0, 5)
         self.label.setStyleSheet('''
                 QLabel{
                     border: 0px solid; 
@@ -43,8 +45,8 @@ class ListItem(QListWidgetItem):
         self.setSizeHint(self.widget.sizeHint())
         if parent is not None:
             parent.setItemWidget(self, self.widget)
-
-    def get_name(self):
+    @property
+    def name(self):
         """Return basename"""
         return os.path.basename(self._file_path)
 
@@ -68,11 +70,11 @@ class ListItem(QListWidgetItem):
                                 }
                         ''')
 
-    def __hash__(self) :
-        return hash(self.file_path)
+    def __hash__(self):
+        return hash(self.file_path())
 
     def __eq__(self, other):
         """ Compares two ListItems file_path attributes"""
-        if not isinstance(other, type(self)): return NotImplemented
-        return self.file_path == other.file_path
-
+        if not isinstance(other, type(self)):
+            return NotImplemented
+        return self.file_path() == other.file_path()

@@ -37,7 +37,7 @@ class TestImagesView:
         # check return value is ok, delete checked called once
         self._view.file_widget: MagicMock = create_autospec(ListWidget)
         item: MagicMock = create_autospec(ListItem)
-        item.file_path = "path"
+        item.file_path = MagicMock(return_value="path")
         self._view.file_widget.checked = {item}
         QMessageBox.exec = MagicMock(return_value=QMessageBox.Ok)
         self._view.alert = MagicMock()
@@ -45,16 +45,18 @@ class TestImagesView:
         self._view._delete_clicked()
         self._view.file_widget.delete_checked.assert_called_once()
         self._view.alert.assert_not_called()
+        item.file_path.assert_called_once()
         # check cancel value, delete checked not called
         self._view.file_widget: MagicMock = create_autospec(ListWidget)
         item: MagicMock = create_autospec(ListItem)
-        item.file_path = "path"
+        item.file_path = MagicMock(return_value="path")
         self._view.file_widget.checked = {item}
         QMessageBox.exec = MagicMock(return_value=QMessageBox.Cancel)
         self._view.alert = MagicMock()
         self._view.file_widget.delete_checked = MagicMock()
         self._view._delete_clicked()
         self._view.file_widget.delete_checked.assert_not_called()
+        item.file_path.assert_called_once()
         self._view.alert.assert_not_called()
         # check msg_box text
 
@@ -105,7 +107,7 @@ class TestImagesView:
         # self.napari add img called
         self._view.napari.layers.clear = MagicMock()
         item: MagicMock = create_autospec(ListItem)
-        item.file_path = "/path/to/image.tiff"
+        item.file_path = MagicMock(return_value="/path/to/image.tiff")
         self._view.file_widget.currentItem = MagicMock(return_value=item)
         mock_image = create_autospec(AICSImage)
         mock_image.data = "data"
@@ -114,6 +116,7 @@ class TestImagesView:
         self._view.napari.add_image = MagicMock()
         self._view._display_img()
         self._view.napari.layers.clear.assert_called_once_with()
+        item.file_path.assert_called_once()
         mock_aics_image.assert_called_with("/path/to/image.tiff")
         assert len(self._view.file_widget.currentItem.mock_calls) == 2
         self._view.napari.add_image.assert_called_once_with("data")
@@ -122,7 +125,7 @@ class TestImagesView:
         # unsupported file format
         self._view.napari.layers.clear = MagicMock()
         item: MagicMock = create_autospec(ListItem)
-        item.file_path = "/path/to/image.tiff"
+        item.file_path = MagicMock(return_value="/path/to/image.tiff")
         self._view.file_widget.currentItem = MagicMock(return_value=item)
         self._view.alert = MagicMock()
         self._view.napari.add_image = MagicMock()
@@ -134,6 +137,7 @@ class TestImagesView:
             #TODO: error here when error is made "TypeError: exceptions must derive from BaseException"
             self._view._display_img()
         self._view.napari.layers.clear.assert_called_once_with()
+        item.file_path.assert_called_once()
         # mock_aics_image.assert_called_with("/path/to/image.tiff")
         assert len(self._view.file_widget.currentItem.mock_calls) == 2
         self._view.napari.add_image.assert_not_called()

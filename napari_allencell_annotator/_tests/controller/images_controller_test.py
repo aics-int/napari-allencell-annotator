@@ -1,6 +1,8 @@
 from unittest import mock
 from unittest.mock import MagicMock, create_autospec
 
+from PyQt5.QtWidgets import QListWidget
+
 from napari_allencell_annotator.controller.images_controller import ImagesController
 from constants.constants import SUPPORTED_FILE_TYPES
 import napari
@@ -83,6 +85,7 @@ class TestImagesController:
     def test_dir_selected_evt_one_supp(self):
         # test for one file, is supported
         self._controller.view.alert = MagicMock()
+        d = ["/some/path"]
         self._controller.is_supported = MagicMock(return_value=True)
         self._controller.view.file_widget.add_new_item = MagicMock()
         os.listdir = MagicMock(return_value=["file_1.jpg"])
@@ -97,6 +100,7 @@ class TestImagesController:
         self._controller.is_supported = MagicMock(return_value=False)
         self._controller.view.file_widget.add_new_item = MagicMock()
         os.listdir = MagicMock(return_value=["file_1.jpg"])
+        d = ["/some/path"]
         self._controller._dir_selected_evt(d)
         self._controller.view.alert.assert_called_once_with("Unsupported file type:/some/path/file_1.jpg")
         self._controller.is_supported.assert_called_once_with("/some/path/file_1.jpg")
@@ -107,6 +111,7 @@ class TestImagesController:
         self._controller.view.alert = MagicMock()
         self._controller.is_supported = MagicMock(return_value=True)
         self._controller.view.file_widget.add_new_item = MagicMock()
+        d = ["/some/path"]
         os.listdir = MagicMock(return_value=["file_1.jpg", "file_2.png", "file_3.jpg"])
         self._controller._dir_selected_evt(d)
         self._controller.view.alert.assert_not_called()
@@ -116,3 +121,89 @@ class TestImagesController:
         self._controller.view.file_widget.add_new_item.assert_has_calls(
             [mock.call("/some/path/file_1.jpg"), mock.call("/some/path/file_2.png"),
              mock.call("/some/path/file_3.jpg")])
+
+    def test_file_selected_evt_none(self):
+        file_list = None
+        self._controller.view.alert = MagicMock()
+        self._controller._file_selected_evt(file_list)
+        self._controller.view.alert.assert_called_once_with("No selection provided")
+
+        file_list = []
+        self._controller.view.alert = MagicMock()
+        self._controller._file_selected_evt(file_list)
+        self._controller.view.alert.assert_called_once_with("No selection provided")
+
+    def test_file_selected_evt_supported(self):
+        file_list = ['file_1.png', 'file_2.png', 'file_3.png']
+        self._controller.view.alert = MagicMock()
+        self._controller.is_supported = MagicMock(return_value=True)
+        self._controller.view.file_widget.add_new_item = MagicMock()
+        self._controller._file_selected_evt(file_list)
+        self._controller.view.alert.assert_not_called()
+        self._controller.is_supported.assert_has_calls([mock.call("file_1.png"), mock.call("file_2.png"),
+                                                        mock.call("file_3.png")])
+        self._controller.view.file_widget.add_new_item.assert_has_calls([mock.call("file_1.png"), mock.call("file_2.png"),
+                                                        mock.call("file_3.png")])
+
+    def test_file_selected_evt_not_supported(self):
+        file_list = ['file_1.png', 'file_2.png', 'file_3.png']
+        self._controller.view.alert = MagicMock()
+        self._controller.is_supported = MagicMock(return_value=False)
+        self._controller.view.file_widget.add_new_item = MagicMock()
+        self._controller._file_selected_evt(file_list)
+        self._controller.view.alert.assert_has_calls([mock.call("Unsupported file type:file_1.png"), mock.call("Unsupported file type:file_2.png"),
+                                                        mock.call("Unsupported file type:file_3.png")])
+
+        self._controller.is_supported.assert_has_calls([mock.call("file_1.png"), mock.call("file_2.png"),
+                                                        mock.call("file_3.png")])
+        self._controller.view.file_widget.add_new_item.assert_not_called()
+
+    def test_start_annotating_not_shuffled(self):
+        self._controller.view.file_widget = MagicMock()
+        self._controller.view.file_widget.count = MagicMock(return_value=0)
+        self._controller.view.file_widget.shuffled = MagicMock(return_value=False)
+        self._controller._shuffle_clicked = MagicMock()
+        self._controller.view.file_widget.setCurrentItem = MagicMock()
+        self._controller.view.alert = MagicMock()
+        self._controller.start_annotating()
+        self._controller._shuffle_clicked.assert_called_once_with(True)
+        self._controller.view.file_widget.shuffled.assert_called_once()
+        self._controller.view.file_widget.setCurrentItem.assert_not_called()
+        self._controller.view.alert.assert_called_once_with("No files to annotate")
+
+    def test_start_annotating_shuffled(self):
+
+        self._controller.view.file_widget= MagicMock()
+        self._controller.view.file_widget.count = MagicMock(return_value=1)
+        self._controller.view.file_widget.shuffled = MagicMock(return_value=True)
+        self._controller._shuffle_clicked = MagicMock()
+        self._controller.view.file_widget.setCurrentItem = MagicMock()
+        self._controller.view.alert = MagicMock()
+        self._controller.view.file_widget.item = MagicMock(return_value= None)
+        self._controller.start_annotating()
+        self._controller._shuffle_clicked.assert_not_called()
+        self._controller.view.file_widget.setCurrentItem.assert_called_once_with(None)
+        self._controller.view.alert.assert_not_called()
+
+    def test_curr_img_dict(self):
+        self._controller.view.file_widget.currentItem = MagicMock()
+        self._controller.view.file_widget.currentItem().name = MagicMock(return_value='name')
+        self._controller.view.file_widget.currentItem().file_path = MagicMock(return_value='path')
+        self._controller.view.file_widget.curr_row = MagicMock(return_value=0)
+        d = {'File Name':'name', "File Path": 'path', "Row": "0"}
+        d_act = self._controller.curr_img_dict()
+        assert d == d_act
+        self._controller.view.file_widget.currentItem().name.assert_called_once()
+        self._controller.view.file_widget.currentItem().file_path.assert_called_once()
+        self._controller.view.file_widget.curr_row.assert_called_once()
+
+
+    def test_get_num_files(self):
+        self._controller.view.file_widget.count = MagicMock()
+        self._controller.view.file_widget.count.assert_called_once()
+
+
+
+
+
+

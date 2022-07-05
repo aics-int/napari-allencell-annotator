@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QListWidget, QAbstractItemView, QWidget
-from typing import Set, List, Tuple
+from PyQt5.QtWidgets import QListWidget, QAbstractItemView
+from typing import Set, List
 
 from qtpy.QtCore import Signal
 
@@ -42,19 +42,15 @@ class ListWidget(QListWidget):
         self.files: Set[str] = set()
         self.file_order: List[str] = []
         self.setCurrentItem(None)
-        self.shuffled: bool = False
+        self._shuffled: bool = False
 
     @property
-    def length(self) -> int:
-        return self.count()
-
-    @property
-    def curr_item(self) -> ListItem:
-        return self.currentItem()
+    def shuffled(self) -> bool:
+        return self._shuffled
 
     @property
     def curr_row(self) -> int:
-        return self.row(self.curr_item)
+        return self.row(self.currentItem())
 
     def clear_for_shuff(self) -> List[str]:
         """
@@ -67,7 +63,7 @@ class ListWidget(QListWidget):
         List[str]
             file_order.
         """
-        self.shuffled = not self.shuffled
+        self._shuffled = not self._shuffled
         self.setCurrentItem(None)
         self.checked = set()
         self.clear()
@@ -118,12 +114,12 @@ class ListWidget(QListWidget):
         item: ListItem
             an item to remove.
         """
-        if item.file_path in self.files:
+        if item.file_path() in self.files:
             if item == self.currentItem():
                 self.setCurrentItem(None)
             self.takeItem(self.row(item))
-            self.files.remove(item.file_path)
-            self.file_order.remove(item.file_path)
+            self.files.remove(item.file_path())
+            self.file_order.remove(item.file_path())
             if len(self.files) == 0:
                 self.files_added.emit(False)
 
