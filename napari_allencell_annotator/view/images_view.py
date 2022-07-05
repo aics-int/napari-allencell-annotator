@@ -86,7 +86,7 @@ class ImagesView(QWidget):
         self.file_widget.currentItemChanged.connect(self._display_img)
 
         self.ctrl = ctrl
-        self.napari = viewer
+        self.viewer = viewer
 
     def _update_shuff_text(self, checked: bool):
         """
@@ -170,13 +170,13 @@ class ImagesView(QWidget):
 
     def _display_img(self, current: ListItem, previous: ListItem):
         """Display the current image in napari."""
-        self.napari.layers.clear()
+        self.viewer.layers.clear()
         if previous is not None:
             previous.unhighlight()
         if current is not None:
             try:
                 img = AICSImage(current.file_path())
-                self.napari.add_image(img.data)
+                self.viewer.add_image(img.data)
                 current.highlight()
             except exceptions.UnsupportedFileFormatError:
                 self.alert("AICS Unsupported File Type")
