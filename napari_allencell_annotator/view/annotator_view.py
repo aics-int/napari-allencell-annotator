@@ -169,17 +169,17 @@ class AnnotatorView(QWidget):
 
     def _display_mode(self):
         """Render GUI buttons visible depending on the mode."""
-        if self.mode == AnnotatorViewMode.ADD:
+        if self._mode == AnnotatorViewMode.ADD:
             self.annot_list.clear()
             self.annot_widget.hide()
             self.view_widget.hide()
             self.add_widget.show()
-        elif self.mode == AnnotatorViewMode.VIEW:
+        elif self._mode == AnnotatorViewMode.VIEW:
             self.annot_widget.hide()
             self.view_widget.show()
             self.add_widget.hide()
 
-        elif self.mode == AnnotatorViewMode.ANNOTATE:
+        elif self._mode == AnnotatorViewMode.ANNOTATE:
             self.annot_widget.show()
             self.view_widget.hide()
             self.add_widget.hide()
