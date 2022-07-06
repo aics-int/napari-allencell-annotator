@@ -8,7 +8,7 @@ from napari_allencell_annotator.view.annotator_view import AnnotatorView, Annota
 from napari_allencell_annotator.view.annotator_view import QLineEdit
 
 
-class TestImagesView:
+class TestAnnotatorView:
     def setup_method(self):
         with mock.patch.object(AnnotatorView, "__init__", lambda x: None):
             self._view = AnnotatorView()

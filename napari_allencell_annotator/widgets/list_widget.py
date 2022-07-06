@@ -44,12 +44,12 @@ class ListWidget(QListWidget):
         self.setCurrentItem(None)
         self._shuffled: bool = False
 
+
     @property
     def shuffled(self) -> bool:
         return self._shuffled
 
-    @property
-    def curr_row(self) -> int:
+    def get_curr_row(self) -> int:
         if self.currentItem() is not None:
             return self.row(self.currentItem())
         else:
@@ -117,12 +117,12 @@ class ListWidget(QListWidget):
         item: ListItem
             an item to remove.
         """
-        if item.file_path() in self.files:
+        if item.file_path in self.files:
             if item == self.currentItem():
                 self.setCurrentItem(None)
             self.takeItem(self.row(item))
-            self.files.remove(item.file_path())
-            self.file_order.remove(item.file_path())
+            self.files.remove(item.file_path)
+            self.file_order.remove(item.file_path)
             if len(self.files) == 0:
                 self.files_added.emit(False)
 

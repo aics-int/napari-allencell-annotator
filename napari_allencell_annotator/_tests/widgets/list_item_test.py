@@ -19,7 +19,7 @@ class TestListItem:
     def test_name(self):
         expected_name = "basepath"
         os.path.basename = MagicMock(return_value="basepath")
-        assert self._widget.name == expected_name
+        assert self._widget.get_name() == expected_name
 
     def test_eq(self):
         path = "path"

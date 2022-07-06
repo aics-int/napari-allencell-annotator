@@ -25,7 +25,7 @@ class ListItem(QListWidgetItem):
         if hidden:
             self.label = QLabel("Image " + str(parent.row(self) + 1))
         else:
-            path: str = self.name()
+            path: str = self.get_name()
             if len(path) > 28:
                 path = path[0:27] + "..."
             self.label = QLabel(path)
@@ -45,8 +45,8 @@ class ListItem(QListWidgetItem):
         self.setSizeHint(self.widget.sizeHint())
         if parent is not None:
             parent.setItemWidget(self, self.widget)
-    @property
-    def name(self):
+
+    def get_name(self):
         """Return basename"""
         return os.path.basename(self._file_path)
 

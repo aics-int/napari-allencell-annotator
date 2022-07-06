@@ -38,9 +38,9 @@ class AnnotatorController:
         # 1 annotation
         # path = str(Directories.get_assets_dir() / "sample3.json")
         # 4 annotations
-        # path = str(Directories.get_assets_dir() / "sample.json")
+        path = str(Directories.get_assets_dir() / "sample.json")
         # 8 annotations
-        path: str = str(Directories.get_assets_dir() / "sample2.json")
+        #path: str = str(Directories.get_assets_dir() / "sample2.json")
         self.annot_data: Dict[str, Dict[str, str]] = json.load(open(path))
         # open in add mode
         # self.view = AnnotatorView(napari.Viewer(), data)

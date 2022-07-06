@@ -4,7 +4,7 @@ from typing import Dict, List
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QLineEdit, QSpinBox, QCheckBox, QComboBox, \
-    QGridLayout, QListWidget, QScrollArea, QListWidgetItem, QPushButton
+    QGridLayout, QListWidget, QScrollArea, QListWidgetItem, QPushButton, QAbstractScrollArea
 import napari
 
 
@@ -65,9 +65,20 @@ class AnnotatorView(QWidget):
         self.layout.addWidget(label, 0, 0, 1, 4)
 
         self.annot_list = QListWidget()
+
         self.scroll = QScrollArea()
         self.scroll.setWidget(self.annot_list)
         self.scroll.setWidgetResizable(True)
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.scroll.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.scroll.setStyleSheet('''QScrollBar:vertical {
+            width:10px;    
+            margin: 0px 0px 0px 0px;
+        }''')
+        style = '''QScrollBar::handle:vertical {border: 0px solid red; border-radius: 
+        2px;} '''
+        self.scroll.setStyleSheet(self.scroll.styleSheet() + style)
         self.layout.addWidget(self.scroll, 1, 0, 10, 4)
 
         self.num_images: int = None
@@ -194,6 +205,8 @@ class AnnotatorView(QWidget):
             The dictionary of annotation types.
         """
         self.annotation_item_widgets = []
+        if len(data) < 9:
+            self.annot_list.setMaximumHeight(45.5*len(data))
         for name in data.keys():
             self._create_annot(name, data[name])
 
@@ -232,9 +245,11 @@ class AnnotatorView(QWidget):
         layout.addWidget(item, stretch=2)
         item.setEnabled(False)
         self.annotation_item_widgets.append(item)
-        layout.addStretch()
-        layout.setSpacing(10)
+        # layout.addStretch()
+        layout.setContentsMargins(2,12,8,12)
+        layout.setSpacing(2)
         widget.setLayout(layout)
+        print(widget.minimumHeight())
         list_item = QListWidgetItem(self.annot_list)
-        list_item.setSizeHint(widget.sizeHint())
+        list_item.setSizeHint(widget.minimumSizeHint())
         self.annot_list.setItemWidget(list_item, widget)

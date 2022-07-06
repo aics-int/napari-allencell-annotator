@@ -144,7 +144,7 @@ class ImagesController:
         Shuffle images if they haven't been shuffled and set current item
         to the first item.
         """
-        if not self.view.file_widget.shuffled():
+        if not self.view.file_widget.shuffled:
             self._shuffle_clicked(True)
         if self.view.file_widget.count() > 0:
             self.view.file_widget.setCurrentItem(self.view.file_widget.item(0))
@@ -162,8 +162,8 @@ class ImagesController:
             dictionary of attributes.
         """
         item = self.view.file_widget.currentItem()
-        info = {"File Name": item.name(), "File Path": item.file_path(), "FMS": "",
-                "Row": str(self.view.file_widget.curr_row())}
+        info = {"File Name": item.get_name(), "File Path": item.file_path, "FMS": "",
+                "Row": str(self.view.file_widget.get_curr_row())}
         return info
 
     def next_img(self):
@@ -171,8 +171,8 @@ class ImagesController:
         Set the current image to the next in the list, stop incrementing
         at the last row.
         """
-        if self.view.file_widget.curr_row() < self.view.file_widget.count() - 1:
-            self.view.file_widget.setCurrentItem(self.view.file_widget.item(self.view.file_widget.curr_row() + 1))
+        if self.view.file_widget.get_curr_row() < self.view.file_widget.count() - 1:
+            self.view.file_widget.setCurrentItem(self.view.file_widget.item(self.view.file_widget.get_curr_row() + 1))
 
     def get_num_files(self) -> int:
         """

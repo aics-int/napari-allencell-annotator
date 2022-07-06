@@ -18,15 +18,15 @@ class TestListWidget:
         self._widget._shuffled = True
         assert self._widget.shuffled
 
-    def test_curr_row_none(self):
+    def test_get_curr_row_none(self):
         self._widget.currentItem = MagicMock(return_value=None)
-        assert self._widget.curr_row == -1
+        assert self._widget.get_curr_row() == -1
 
-    def test_curr_row(self):
+    def test_get_curr_row(self):
         item = create_autospec(ListItem)
         self._widget.row = MagicMock(return_value=0)
         self._widget.currentItem = MagicMock(return_value=item)
-        assert self._widget.curr_row == 0
+        assert self._widget.get_curr_row() == 0
 
     def test_clear_for_shuffle(self):
         self._widget._shuffled = False
@@ -102,9 +102,9 @@ class TestListWidget:
 
     def test_remove_item_curr_item(self):
         item = create_autospec(ListItem)
-        item.file_path = MagicMock(return_value='file')
+        item.file_path = 'file'
         item2 = create_autospec(ListItem)
-        item2.file_path = MagicMock(return_value='file2')
+        item2.file_path = 'file2'
         item3 = create_autospec(ListItem)
         item3.file_path = MagicMock(return_value='file3')
         self._widget.files = {'file', 'file2', 'file3'}
@@ -125,11 +125,11 @@ class TestListWidget:
 
     def test_remove_item(self):
         item = create_autospec(ListItem)
-        item.file_path = MagicMock(return_value='file')
+        item.file_path = 'file'
         item2 = create_autospec(ListItem)
-        item2.file_path = MagicMock(return_value='file2')
+        item2.file_path = 'file2'
         item3 = create_autospec(ListItem)
-        item3.file_path = MagicMock(return_value='file3')
+        item3.file_path = 'file3'
         self._widget.files = {'file', 'file2', 'file3'}
         self._widget.file_order = ['file', 'file2', 'file3']
         self._widget.currentItem = MagicMock(return_value=item)
@@ -148,7 +148,7 @@ class TestListWidget:
 
     def test_remove_item_last(self):
         item = create_autospec(ListItem)
-        item.file_path = MagicMock(return_value='file')
+        item.file_path = 'file'
         self._widget.files = {'file'}
         self._widget.file_order = ['file']
         self._widget.currentItem = MagicMock(return_value=None)

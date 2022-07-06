@@ -114,7 +114,6 @@ class TestImagesView:
             self._view._display_img(curr, prev)
 
             self._view.viewer.layers.clear.assert_called_once_with()
-            curr.file_path.assert_called_once_with()
             self._view.viewer.add_image.assert_called_once_with('data')
             curr.highlight.assert_called_once_with()
             prev.unhighlight.assert_called_once_with()

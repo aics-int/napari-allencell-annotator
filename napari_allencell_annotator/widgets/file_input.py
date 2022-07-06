@@ -22,7 +22,7 @@ class FileInput(QWidget):
     """
 
     file_selected = Signal(list)
-    _selected_file: List[str] = None
+    selected_file: List[str] = None
 
     def __init__(
             self,
@@ -45,9 +45,7 @@ class FileInput(QWidget):
     def mode(self) -> FileInputMode:
         return self._mode
 
-    @property
-    def selected_file(self) -> List[str]:
-        return self._selected_file
+
 
     def toggle(self, enabled: bool):
         self._input_btn.setEnabled(enabled)
@@ -74,5 +72,5 @@ class FileInput(QWidget):
                 file_path = None
 
         if file_path:
-            self._selected_file = file_path
+            self.selected_file = file_path
             self.file_selected.emit(file_path)
