@@ -7,6 +7,11 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QLineEdit, QSpinBox, Q
     QGridLayout, QListWidget, QScrollArea, QListWidgetItem, QPushButton, QAbstractScrollArea
 import napari
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from napari_allencell_annotator.controller.annotator_controller import AnnotatorController
+
 
 class AnnotatorViewMode(Enum):
     """
@@ -54,7 +59,7 @@ class AnnotatorView(QWidget):
         Renders GUI elements from the dictionary of annotations.
     """
 
-    def __init__(self, viewer: napari.Viewer,
+    def __init__(self, viewer: napari.Viewer, contr,
                  mode: AnnotatorViewMode = AnnotatorViewMode.ADD):
         super().__init__()
         self._mode = mode
@@ -83,6 +88,7 @@ class AnnotatorView(QWidget):
 
         self.num_images: int = None
         self.curr_index: int = None
+        self.contr = contr
 
         # Add widget visible in ADD mode
         self.add_widget = QWidget()
@@ -129,6 +135,8 @@ class AnnotatorView(QWidget):
 
         self._display_mode()
         self.annotation_item_widgets: List[QWidget] = []
+        self.annots_order : List[str] = []
+        self.default_vals : List[str] = []
 
         self.setLayout(self.layout)
         self.viewer: napari.Viewer = viewer
@@ -143,12 +151,29 @@ class AnnotatorView(QWidget):
 
     def set_num_images(self, num: int):
         """Set the total number of images to be annotated"""
-        self.num_images = num
+        self.num_images = int(num)
 
     def set_curr_index(self, num: int):
         """Set the index of the currently selected image and display it on progress bar."""
-        self.curr_index = num
+        self.curr_index = int(num)
         self.progress_bar.setText("{} of {} Images".format(self.curr_index + 1, self.num_images))
+
+    def render_default_values(self):
+        """"""
+        # for curr index if annots exist fill else fill with default
+        self.render_values(self.default_vals)
+
+    def render_values(self, vals: List):
+        """"""
+        for (widget, val) in zip(self.annotation_item_widgets, vals):
+            if isinstance(widget, QLineEdit):
+                widget.setText(val)
+            elif isinstance(widget, QSpinBox):
+                widget.setValue(val)
+            elif isinstance(widget, QCheckBox):
+                widget.setChecked(val)
+            elif isinstance(widget, QComboBox):
+                widget.setCurrentText(val)
 
     def get_curr_annots(self) -> List:
         """
@@ -167,9 +192,9 @@ class AnnotatorView(QWidget):
             elif isinstance(i, QSpinBox):
                 value = i.value()
             elif isinstance(i, QCheckBox):
-                value = i.checkState()
+                value = i.isChecked()
             elif isinstance(i, QComboBox):
-                value = i.currentData()
+                value = i.currentText()
             annots.append(value)
         return annots
 
@@ -206,7 +231,7 @@ class AnnotatorView(QWidget):
         """
         self.annotation_item_widgets = []
         if len(data) < 9:
-            self.annot_list.setMaximumHeight(45.5*len(data))
+            self.annot_list.setMaximumHeight(45.5 * len(data))
         for name in data.keys():
             self._create_annot(name, data[name])
 
@@ -224,6 +249,8 @@ class AnnotatorView(QWidget):
         widget = QWidget()
         layout = QHBoxLayout()
         label = QLabel(name)
+        self.annots_order.append(name)
+        self.default_vals.append(dictn['default'])
         layout.addWidget(label, stretch=1)
         annot_type: str = dictn['type']
         if annot_type == "string":
@@ -246,10 +273,9 @@ class AnnotatorView(QWidget):
         item.setEnabled(False)
         self.annotation_item_widgets.append(item)
         # layout.addStretch()
-        layout.setContentsMargins(2,12,8,12)
+        layout.setContentsMargins(2, 12, 8, 12)
         layout.setSpacing(2)
         widget.setLayout(layout)
-        print(widget.minimumHeight())
         list_item = QListWidgetItem(self.annot_list)
         list_item.setSizeHint(widget.minimumSizeHint())
         self.annot_list.setItemWidget(list_item, widget)

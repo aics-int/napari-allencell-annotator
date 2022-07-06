@@ -39,7 +39,11 @@ class TestAnnotatorView:
     def test_render_annotations(self):
         dic = {"name1": {}, "name2": {}}
         self._view._create_annot = MagicMock()
+        self._view.annot_list = MagicMock()
+        self._view.annot_list.setMaximumHeight = MagicMock()
         self._view.render_annotations(dic)
         assert self._view.annotation_item_widgets == []
+        self._view.annot_list.setMaximumHeight.assert_called_once_with(45.5*2)
         self._view._create_annot.assert_has_calls([mock.call("name1", {}), mock.call("name2", {})])
+
 

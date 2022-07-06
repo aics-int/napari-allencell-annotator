@@ -84,5 +84,5 @@ class TestAnnotatorController:
     def test_save_and_export(self):
         self._controller.file = MagicMock()
         self._controller.file.close = MagicMock()
-        self._controller.save_and_export()
+        self._controller.write_to_csv()
         self._controller.file.close.assert_called_once_with()
