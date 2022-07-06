@@ -81,8 +81,8 @@ class TestMainController:
     def test_next_image(self):
         self._controller.annots.view.next_btn.text = MagicMock(return_value= "Next")
         self._controller.annots.write_to_csv = MagicMock()
-        self._controller.annots.write_image_csv = MagicMock()
-        self._controller.images.curr_img_dict = MagicMock(return_value="return")
+        self._controller.annots.record_annotations = MagicMock()
+        self._controller.images.curr_img_dict = MagicMock(return_value={'File Path': "path"})
         self._controller.images.next_img = MagicMock()
         self._controller.annots.set_curr_img = MagicMock()
 
@@ -90,10 +90,10 @@ class TestMainController:
 
         self._controller.annots.view.next_btn.text.assert_called_once_with()
         self._controller.annots.write_to_csv.assert_not_called()
-        self._controller.annots.write_image_csv.assert_called_once_with('return')
+        self._controller.annots.record_annotations.assert_called_once_with('path')
         assert len(self._controller.images.curr_img_dict.mock_calls) == 2
         self._controller.images.next_img.assert_called_once_with()
-        self._controller.annots.set_curr_img.assert_called_once_with('return')
+        self._controller.annots.set_curr_img.assert_called_once_with({'File Path': "path"})
 
 
 

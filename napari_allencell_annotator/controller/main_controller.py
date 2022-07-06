@@ -58,7 +58,7 @@ class MainController(QWidget):
 
         If the last image is being annotated, creates the save and export button.
         """
-        self.annots.record_annotations(self.images.curr_img_dict())
+        self.annots.record_annotations(self.images.curr_img_dict()['File Path'])
         if self.annots.view.next_btn.text() == "Save and Export":
             self.annots.write_to_csv()
         else:

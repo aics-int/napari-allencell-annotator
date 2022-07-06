@@ -19,24 +19,23 @@ class AnnotatorController:
     Methods
     -------
     start_annotating(num_images : int)
-        Changes annotation view to annotating mode, opens a .csv file to write to.
+        Changes annotation view to annotating mode.
 
     set_curr_img(curr_img : Dict[str, str])
-        Sets the current image for view and changes next button if annotating the last image.
+        Sets the current image and adds the image to annotations_dict..
 
-    write_image_csv(prev_img: Dict[str, str])
-        Writes the outgoing images annotations and data to the csv.
-
+    record_annotations(prev_img: str)
+        Adds the outgoing image's annotation values to the annotation_dict.
 
     write_to_csv()
-        Closes the csv writer.
+        Writes header and annotations to the csv file.
     """
 
     def __init__(self, viewer: napari.Viewer):
         # 1 annotation
         path = str(Directories.get_assets_dir() / "sample3.json")
         # 4 annotations
-        #path = str(Directories.get_assets_dir() / "sample.json")
+        # path = str(Directories.get_assets_dir() / "sample.json")
         # 8 annotations
         # path: str = str(Directories.get_assets_dir() / "sample2.json")
         self.annot_data: Dict[str, Dict[str, str]] = json.load(open(path))
@@ -47,13 +46,13 @@ class AnnotatorController:
         self.view.render_annotations(self.annot_data)
         self.view.show()
         self.curr_img: Dict[str, str] = None
-        # TODO: write to file only once, store annotations in dict
+        self.csv_name: str = "test.csv"
 
         self.annotation_dict: Dict[str, (List[str], List[str])] = {}
 
     def start_annotating(self, num_images: int):
         """
-        Change annotation view to annotating mode and open a .csv file to write to.
+        Change annotation view to annotating mode.
 
         Parameters
         ----------
@@ -67,7 +66,9 @@ class AnnotatorController:
 
     def set_curr_img(self, curr_img: Dict[str, str]):
         """
-        Set the current image and changes next button if annotating the last image.
+        Set the current image and add the image to annotations_dict.
+
+        Changes next button if annotating the last image.
 
         Parameters
         ----------
@@ -75,7 +76,7 @@ class AnnotatorController:
             The current image file path, name, fms info, and row.
         """
         self.curr_img = curr_img
-        path = curr_img["File Path"]
+        path: str = curr_img["File Path"]
         if path not in self.annotation_dict.keys():
             self.annotation_dict.update(
                 {path: [curr_img["File Name"], curr_img["FMS"]]})
@@ -86,13 +87,21 @@ class AnnotatorController:
         if int(curr_img["Row"]) == self.view.num_images - 1:
             self.view.next_btn.setText("Save and Export")
 
-    def record_annotations(self, prev_img: Dict[str, str]):
-        # filename, filepath, fms, annots
-        lst = self.view.get_curr_annots()
-        self.annotation_dict[prev_img['File Path']].extend(lst)
+    def record_annotations(self, prev_img: str):
+        """
+        Add the outgoing image's annotation values to the annotation_dict.
+
+        Parameters
+        ----------
+        prev_img : str
+            The previous image file path.
+        """
+        lst: List = self.view.get_curr_annots()
+        self.annotation_dict[prev_img].extend(lst)
 
     def write_to_csv(self):
-        file = open('test.csv', 'w')
+        """Write header and annotations to the csv file. """
+        file = open(self.csv_name, 'w')
         writer = csv.writer(file)
         header: List[str] = ["File Name", "File Path", "FMS"]
         for name in self.view.annots_order:
