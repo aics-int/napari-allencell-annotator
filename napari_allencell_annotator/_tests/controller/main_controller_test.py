@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, create_autospec
 from napari_allencell_annotator.controller.main_controller import MainController
 from napari_allencell_annotator.controller.main_controller import ImagesController
 from napari_allencell_annotator.controller.main_controller import AnnotatorController
-from napari_allencell_annotator.controller.main_controller import QVBoxLayout
+from napari_allencell_annotator.controller.main_controller import QVBoxLayout, os
 
 
 class TestMainController:
@@ -18,52 +18,67 @@ class TestMainController:
             self._controller.annots = create_autospec(AnnotatorController)
             self._controller.annots.view = MagicMock()
 
+    def test_file_selected_evt_none(self):
+        self._controller._file_selected_evt(None)
+        self._controller.images.view.alert.assert_called_once_with("No selection provided")
+
+    def test_file_selected_evt_empty(self):
+        self._controller._file_selected_evt([])
+        self._controller.images.view.alert.assert_called_once_with("No selection provided")
+
+    def test_file_selected_evt_not_csv(self):
+        os.path.splitext = MagicMock(return_value=("path",""))
+        self._controller._setup_annotating = MagicMock()
+        self._controller._file_selected_evt(["path"])
+        self._controller.annots.set_csv_name.assert_called_once_with("path.csv")
+        self._controller._setup_annotating.assert_called_once_with()
+        self._controller.images.view.alert.assert_not_called()
+
+    def test_file_selected_evt_csv(self):
+        os.path.splitext = MagicMock(return_value=("path",".csv"))
+        self._controller._setup_annotating = MagicMock()
+        self._controller._file_selected_evt(["path.csv"])
+        self._controller.annots.set_csv_name.assert_called_once_with("path.csv")
+        self._controller._setup_annotating.assert_called_once_with()
+        self._controller.images.view.alert.assert_not_called()
+
     def test_start_annotating_none(self):
         self._controller.images.get_num_files = MagicMock(return_value=None)
-        self._controller.images.view.alert = MagicMock()
-        self._controller.layout.removeWidget = MagicMock()
-        self._controller.images.view.hide = MagicMock()
-        self._controller.images.start_annotating = MagicMock()
 
         self._controller.start_annotating()
         self._controller.images.get_num_files.assert_called_once()
         self._controller.images.view.alert.assert_called_once_with("Can't Annotate Without Adding Images")
-        self._controller.layout.removeWidget.assert_not_called()
 
     def test_start_annotating_zero(self):
         self._controller.images.get_num_files = MagicMock(return_value=0)
-        self._controller.images.view.alert = MagicMock()
-        self._controller.layout.removeWidget = MagicMock()
-        self._controller.images.view.hide = MagicMock()
-        self._controller.images.start_annotating = MagicMock()
 
         self._controller.start_annotating()
         assert len(self._controller.images.get_num_files.mock_calls) == 2
-
         self._controller.images.view.alert.assert_called_once_with("Can't Annotate Without Adding Images")
-        self._controller.layout.removeWidget.assert_not_called()
 
-    def test_start_annotating(self):
-        self._controller.images.view.alert = MagicMock()
-        self._controller.layout.removeWidget = MagicMock()
-        self._controller.images.view.hide = MagicMock()
-        self._controller.images.start_annotating = MagicMock()
-        self._controller.images.get_num_files = MagicMock(return_value=5)
-        self._controller.images.curr_img_dict = MagicMock(return_value='dict')
-        self._controller.annots.start_annotating = MagicMock()
-        self._controller.annots.set_curr_img = MagicMock()
-
+    def test_start_annotating_true(self):
+        self._controller.images.get_num_files = MagicMock(return_value=1)
+        self._controller.annots.view.popup.return_value = True
         self._controller.start_annotating()
-        assert len(self._controller.images.get_num_files.mock_calls) == 3
-
+        assert len(self._controller.images.get_num_files.mock_calls) == 2
         self._controller.images.view.alert.assert_not_called()
-        self._controller.layout.removeWidget.assert_called_once_with(self._controller.images.view)
+        self._controller.annots.view.file_input.simulate_click.assert_called_once_with()
 
-        self._controller.images.view.hide.assert_called_once_with()
-        self._controller.images.start_annotating.assert_called_once_with()
-        self._controller.images.curr_img_dict.assert_called_once_with()
-        self._controller.annots.start_annotating.assert_called_once_with(5)
-        self._controller.annots.set_curr_img.assert_called_once_with('dict')
+    def test_start_annotating_false(self):
+        self._controller.images.get_num_files.return_value = 1
+        self._controller.annots.view.popup.return_value = False
+        self._controller.start_annotating()
+        assert len(self._controller.images.get_num_files.mock_calls) == 2
+        self._controller.images.view.alert.assert_not_called()
+        self._controller.annots.view.file_input.simulate_click.assert_not_called()
+
+    def test_setup_annotating(self):
+        self._controller._setup_annotating()
+        self._controller.layout.removeWidget.assert_called_once_with(self._controller.images.view)
+        self._controller.images.view.hide.assert_called_once()
+        self._controller.images.start_annotating.assert_called_once()
+        self._controller.annots.start_annotating.assert_called_once_with(self._controller.images.get_num_files())
+        self._controller.annots.set_curr_img.assert_called_once_with(self._controller.images.curr_img_dict())
 
     def test_next_image_save(self):
         self._controller.annots.view.next_btn.text = MagicMock(return_value="Save and Export")

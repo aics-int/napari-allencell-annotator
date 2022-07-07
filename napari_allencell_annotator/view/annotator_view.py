@@ -114,7 +114,7 @@ class AnnotatorView(QWidget):
         self.cancel_btn.setEnabled(False)
         self.start_btn = QPushButton("Start Annotating")
         self.file_input = FileInput(mode=FileInputMode.CSV, placeholder_text="Start Annotating")
-        self.file_input._input_btn.setEnabled(False)
+        self.file_input.toggle(False)
         self.start_btn.setEnabled(True)
 
         view_layout.addWidget(self.cancel_btn, stretch=1)

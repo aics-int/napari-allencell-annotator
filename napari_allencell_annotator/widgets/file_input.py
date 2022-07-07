@@ -18,8 +18,7 @@ class FileInput(QWidget):
     A file input Widget that includes a file dialog for selecting a file / directory
     and a text box to display the selected file
     inputs:
-        mode (FileInputMode): files file dialog selection type to File or Directory
-        filter (str): standard QFileDialog file filter. Ex: "JSON Files (*.json)"
+        mode (FileInputMode): files file dialog selection type to File, Directory, or Csv.
         initial_text (str): text to display in the widget before a file has been selected
     """
 
@@ -48,9 +47,11 @@ class FileInput(QWidget):
         return self._mode
 
     def simulate_click(self):
+        """Simulate a click event to open the file dialog."""
         self._input_btn.clicked.emit()
 
     def toggle(self, enabled: bool):
+        """Enable user to click the add file button"""
         self._input_btn.setEnabled(enabled)
 
     def _select_file(self):  # pragma: no-cover
@@ -81,10 +82,6 @@ class FileInput(QWidget):
                 filter="CSV Files (*.csv)",
                 options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
             )
-            _, extension = os.path.splitext(file_path)
-            if extension != ".csv":
-                file_path = file_path + ".csv"
-
             file_path = [file_path]
 
         if file_path:

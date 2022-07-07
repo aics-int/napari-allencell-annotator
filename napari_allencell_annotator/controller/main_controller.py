@@ -1,3 +1,5 @@
+import os
+
 from PyQt5.QtWidgets import QWidget, QVBoxLayout
 
 from napari_allencell_annotator.controller.images_controller import ImagesController
@@ -6,6 +8,7 @@ from napari_allencell_annotator.controller.annotator_controller import Annotator
 import napari
 from typing import List
 
+
 class MainController(QWidget):
     """
         A class used to combine/communicate between AnnotatorController and ViewController.
@@ -13,7 +16,7 @@ class MainController(QWidget):
         Methods
         -------
         start_annotating()
-            Enters annotating mode if files have been added.
+            Verifies that images are added and user wants to proceed, then opens a .csv file dialog.
         next_image()
             Moves to the next image for annotating.
         prev_image()
@@ -42,45 +45,50 @@ class MainController(QWidget):
 
     def _file_selected_evt(self, file_list: List[str]):
         """
-        Adds all selected files to the GUI.
+        Set csv file name for writing to the selected file.
+
+        Ensure that all file names have .csv extension and that a
+        file name is selected.
 
         Parameters
         ----------
         file_list : List[str]
-            The list of files
+            The list containing one file name.
         """
-        if file_list is None :
+        if file_list is None or len(file_list) < 1:
             self.images.view.alert("No selection provided")
         else:
-            self.annots.set_csv_name(file_list[0])
+            file_path = file_list[0]
+            _, extension = os.path.splitext(file_path)
+            if extension != ".csv":
+                file_path = file_path + ".csv"
+            self.annots.set_csv_name(file_path)
             self._setup_annotating()
-
 
     def start_annotating(self):
         """
-        Enter annotating mode if files have been added.
+        Verify that images are added and user wants to proceed, then
+        open a .csv file dialog.
 
-        Alerts user if there are no files added. Hides the file
-        viewer and starts the annotating process.
+        Alert user if there are no files added.
         """
         if self.images.get_num_files() is None or self.images.get_num_files() < 1:
             self.images.view.alert("Can't Annotate Without Adding Images")
         else:
-            proceed: bool = self.annots.view.popup("Once annotating starts both the image set and annotations cannot be "
-                                                   "edited.\n Would "
-                                                   "you like to continue?")
+            proceed: bool = self.annots.view.popup(
+                "Once annotating starts both the image set and annotations cannot be "
+                "edited.\n Would "
+                "you like to continue?")
             if proceed:
                 self.annots.view.file_input.simulate_click()
 
-
     def _setup_annotating(self):
+        """Hide the file viewer and start the annotating process."""
         self.layout.removeWidget(self.images.view)
         self.images.view.hide()
         self.images.start_annotating()
         self.annots.start_annotating(self.images.get_num_files())
         self.annots.set_curr_img(self.images.curr_img_dict())
-
-
 
     def next_image(self):
         """
@@ -91,7 +99,7 @@ class MainController(QWidget):
         """
         self.annots.record_annotations(self.images.curr_img_dict()['File Path'])
         if self.annots.view.next_btn.text() == "Save and Export":
-            proceed : bool = self.annots.view.popup("Annotations Saved. Would you like to continue editing?")
+            proceed: bool = self.annots.view.popup("Annotations Saved. Would you like to continue editing?")
             if proceed:
                 self.annots.write_to_csv()
                 # reset to create mode

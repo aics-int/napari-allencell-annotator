@@ -18,6 +18,9 @@ class AnnotatorController:
 
     Methods
     -------
+    set_csv_name(name : str)
+        Sets csv file name for writing.
+
     start_annotating(num_images : int)
         Changes annotation view to annotating mode.
 
@@ -33,11 +36,11 @@ class AnnotatorController:
 
     def __init__(self, viewer: napari.Viewer):
         # 1 annotation
-        path = str(Directories.get_assets_dir() / "sample3.json")
+        # path = str(Directories.get_assets_dir() / "sample3.json")
         # 4 annotations
         # path = str(Directories.get_assets_dir() / "sample.json")
         # 8 annotations
-        # path: str = str(Directories.get_assets_dir() / "sample2.json")
+        path: str = str(Directories.get_assets_dir() / "sample2.json")
         self.annot_data: Dict[str, Dict[str, str]] = json.load(open(path))
         # open in add mode
         # self.view = AnnotatorView(napari.Viewer(), data)
@@ -51,6 +54,7 @@ class AnnotatorController:
         self.annotation_dict: Dict[str, (List[str], List[str])] = {}
 
     def set_csv_name(self, name : str):
+        """Set csv file name for writing."""
         self.csv_name = name
 
     def start_annotating(self, num_images: int):
