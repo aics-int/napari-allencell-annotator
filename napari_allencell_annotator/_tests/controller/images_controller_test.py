@@ -1,7 +1,6 @@
 from unittest import mock
 from unittest.mock import MagicMock, create_autospec
 
-
 from napari_allencell_annotator.controller.images_controller import ImagesController
 from napari_allencell_annotator.controller.images_controller import SUPPORTED_FILE_TYPES
 import napari
@@ -141,8 +140,9 @@ class TestImagesController:
         self._controller.view.alert.assert_not_called()
         self._controller.is_supported.assert_has_calls([mock.call("file_1.png"), mock.call("file_2.png"),
                                                         mock.call("file_3.png")])
-        self._controller.view.file_widget.add_new_item.assert_has_calls([mock.call("file_1.png"), mock.call("file_2.png"),
-                                                        mock.call("file_3.png")])
+        self._controller.view.file_widget.add_new_item.assert_has_calls(
+            [mock.call("file_1.png"), mock.call("file_2.png"),
+             mock.call("file_3.png")])
 
     def test_file_selected_evt_not_supported(self):
         file_list = ['file_1.png', 'file_2.png', 'file_3.png']
@@ -150,8 +150,9 @@ class TestImagesController:
         self._controller.is_supported = MagicMock(return_value=False)
         self._controller.view.file_widget.add_new_item = MagicMock()
         self._controller._file_selected_evt(file_list)
-        self._controller.view.alert.assert_has_calls([mock.call("Unsupported file type:file_1.png"), mock.call("Unsupported file type:file_2.png"),
-                                                        mock.call("Unsupported file type:file_3.png")])
+        self._controller.view.alert.assert_has_calls(
+            [mock.call("Unsupported file type:file_1.png"), mock.call("Unsupported file type:file_2.png"),
+             mock.call("Unsupported file type:file_3.png")])
 
         self._controller.is_supported.assert_has_calls([mock.call("file_1.png"), mock.call("file_2.png"),
                                                         mock.call("file_3.png")])
@@ -160,7 +161,6 @@ class TestImagesController:
     def test_start_annotating_not_shuffled(self):
         self._controller.view.file_widget = MagicMock()
         self._controller.view.file_widget.count = MagicMock(return_value=0)
-        self._controller.view.file_widget.shuffled = False
         self._controller._shuffle_clicked = MagicMock()
         self._controller.view.file_widget.setCurrentItem = MagicMock()
         self._controller.view.alert = MagicMock()
@@ -169,26 +169,12 @@ class TestImagesController:
         self._controller.view.file_widget.setCurrentItem.assert_not_called()
         self._controller.view.alert.assert_called_once_with("No files to annotate")
 
-    def test_start_annotating_shuffled(self):
-
-        self._controller.view.file_widget= MagicMock()
-        self._controller.view.file_widget.count = MagicMock(return_value=1)
-        self._controller.view.file_widget.shuffled = MagicMock(return_value=True)
-        self._controller._shuffle_clicked = MagicMock()
-        self._controller.view.file_widget.setCurrentItem = MagicMock()
-        self._controller.view.alert = MagicMock()
-        self._controller.view.file_widget.item = MagicMock(return_value= None)
-        self._controller.start_annotating()
-        self._controller._shuffle_clicked.assert_not_called()
-        self._controller.view.file_widget.setCurrentItem.assert_called_once_with(None)
-        self._controller.view.alert.assert_not_called()
-
     def test_curr_img_dict(self):
         self._controller.view.file_widget.currentItem = MagicMock()
         self._controller.view.file_widget.currentItem().get_name = MagicMock(return_value='name')
         self._controller.view.file_widget.currentItem().file_path = 'path'
         self._controller.view.file_widget.get_curr_row = MagicMock(return_value=0)
-        d = {'File Name':'name', "File Path": 'path', "FMS": "", "Row": "0"}
+        d = {'File Name': 'name', "File Path": 'path', "FMS": "", "Row": "0"}
         d_act = self._controller.curr_img_dict()
         assert d == d_act
         self._controller.view.file_widget.currentItem().get_name.assert_called_once()
@@ -198,7 +184,7 @@ class TestImagesController:
         self._controller.view.file_widget.get_curr_row = MagicMock(return_value=0)
         self._controller.view.file_widget.count = MagicMock(return_value=2)
         self._controller.view.file_widget.setCurrentItem = MagicMock()
-        self._controller.view.file_widget.item = MagicMock(return_value = None)
+        self._controller.view.file_widget.item = MagicMock(return_value=None)
 
         self._controller.next_img()
         assert len(self._controller.view.file_widget.get_curr_row.mock_calls) == 2
@@ -220,14 +206,30 @@ class TestImagesController:
         self._controller.view.file_widget.setCurrentItem.assert_not_called()
         self._controller.view.file_widget.item.assert_not_called()
 
+    def test_prev_img(self):
+        self._controller.view.file_widget.get_curr_row = MagicMock(return_value=1)
+        self._controller.view.file_widget.setCurrentItem = MagicMock()
+        self._controller.view.file_widget.item = MagicMock(return_value=None)
+
+        self._controller.prev_img()
+        assert len(self._controller.view.file_widget.get_curr_row.mock_calls) == 2
+
+        self._controller.view.file_widget.setCurrentItem.assert_called_once_with(None)
+        self._controller.view.file_widget.item.assert_called_once_with(0)
+
+    def test_prev_img_first_img(self):
+        self._controller.view.file_widget.get_curr_row = MagicMock(return_value=0)
+        self._controller.view.file_widget.setCurrentItem = MagicMock()
+        self._controller.view.file_widget.item = MagicMock(return_value=None)
+
+        self._controller.prev_img()
+        assert len(self._controller.view.file_widget.get_curr_row.mock_calls) == 1
+
+        self._controller.view.file_widget.setCurrentItem.assert_not_called()
+        self._controller.view.file_widget.item.assert_not_called()
+
     def test_get_num_files(self):
         self._controller.view.file_widget.count = MagicMock(return_value=1)
         num = self._controller.get_num_files()
         assert num == 1
         self._controller.view.file_widget.count.assert_called_once()
-
-
-
-
-
-

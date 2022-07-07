@@ -34,6 +34,9 @@ class ImagesController:
     next_img()
         Sets the current image to the next in the list.
 
+    prev_img()
+        Sets the current image to the previous one in the list.
+
     get_num_files(self) -> int
         Returns the number of files.
     """
@@ -144,14 +147,13 @@ class ImagesController:
         Shuffle images if they haven't been shuffled and set current item
         to the first item.
         """
-        if not self.view.file_widget.shuffled:
-            self._shuffle_clicked(True)
+        self._shuffle_clicked(True)
         if self.view.file_widget.count() > 0:
             self.view.file_widget.setCurrentItem(self.view.file_widget.item(0))
         else:
             self.view.alert("No files to annotate")
 
-    def curr_img_dict(self) -> Dict[str, str]:
+    def curr_img_dict(self) -> Dict[str,str]:
         """
          Return a dictionary with the current image File Path,
          File Name, FMS info, and row in the list.
@@ -173,6 +175,11 @@ class ImagesController:
         """
         if self.view.file_widget.get_curr_row() < self.view.file_widget.count() - 1:
             self.view.file_widget.setCurrentItem(self.view.file_widget.item(self.view.file_widget.get_curr_row() + 1))
+
+    def prev_img(self):
+        """Set the current image to the previous in the list, stop at first image."""
+        if self.view.file_widget.get_curr_row() > 0:
+            self.view.file_widget.setCurrentItem(self.view.file_widget.item(self.view.file_widget.get_curr_row() - 1))
 
     def get_num_files(self) -> int:
         """

@@ -97,7 +97,8 @@ class AnnotatorController:
             The previous image file path.
         """
         lst: List = self.view.get_curr_annots()
-        self.annotation_dict[prev_img].extend(lst)
+        self.annotation_dict[prev_img] = self.annotation_dict[prev_img][:2] + lst
+        print('hello')
 
     def write_to_csv(self):
         """Write header and annotations to the csv file. """

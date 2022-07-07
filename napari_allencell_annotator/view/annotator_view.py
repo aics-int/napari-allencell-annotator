@@ -121,13 +121,12 @@ class AnnotatorView(QWidget):
         # annot widget visible in ANNOTATE mode
         self.annot_widget = QWidget()
         annot_layout = QGridLayout()
-        self.back_btn = QPushButton("< Previous")
-        self.back_btn.setEnabled(False)
+        self.prev_btn = QPushButton("< Previous")
         self.next_btn = QPushButton("Next >")
         self.next_btn.setEnabled(True)
         self.progress_bar = QLabel()
         annot_layout.addWidget(self.progress_bar, 0, 1, 1, 2)
-        annot_layout.addWidget(self.back_btn, 1, 0, 1, 2)
+        annot_layout.addWidget(self.prev_btn, 1, 0, 1, 2)
         annot_layout.addWidget(self.next_btn, 1, 2, 1, 2)
         self.annot_widget.setLayout(annot_layout)
         self.layout.addWidget(self.annot_widget, 12, 0, 2, 4)
@@ -217,6 +216,7 @@ class AnnotatorView(QWidget):
 
         elif self._mode == AnnotatorViewMode.ANNOTATE:
             self.annot_widget.show()
+            self.prev_btn.setEnabled(False)
             self.view_widget.hide()
             self.add_widget.hide()
 

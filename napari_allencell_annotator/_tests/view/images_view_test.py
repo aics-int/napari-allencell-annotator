@@ -35,7 +35,6 @@ class TestImagesView:
         self._view._delete_clicked()
         self._view.alert.assert_called_once_with("No Images Selected")
 
-
     def test_toggle_add(self):
         # check enabled and un-enabled
         self._view.input_dir = MagicMock()
@@ -117,4 +116,3 @@ class TestImagesView:
             self._view.viewer.add_image.assert_called_once_with('data')
             curr.highlight.assert_called_once_with()
             prev.unhighlight.assert_called_once_with()
-
