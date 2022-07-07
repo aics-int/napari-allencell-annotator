@@ -60,14 +60,12 @@ class FileInput(QWidget):
             file_path, _ = QFileDialog.getOpenFileNames(
                 self,
                 "Select a file",
-                "c\\",
                 options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
             )
         elif self._mode == FileInputMode.DIRECTORY:
             file_path = QFileDialog.getExistingDirectory(
                 self,
                 "Select a directory",
-                "c\\",
                 options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
             )
             if len(file_path) > 0:
@@ -78,11 +76,13 @@ class FileInput(QWidget):
             file_path, _ = QFileDialog.getSaveFileName(
                 self,
                 "Select or create a csv file",
-                "c\\",
                 filter="CSV Files (*.csv)",
                 options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
             )
-            file_path = [file_path]
+            if file_path is None or file_path == '':
+                file_path = None
+            else:
+                file_path = [file_path]
 
         if file_path:
             self.selected_file = file_path
