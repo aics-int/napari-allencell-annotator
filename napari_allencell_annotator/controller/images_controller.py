@@ -26,7 +26,7 @@ class ImagesController:
         Returns True if a file is a supported file type.
 
     start_annotating()
-        Shuffles the images if they haven't been shuffled and sets current item.
+        Shuffles images and sets current item to the first item.
 
     curr_img_dict() -> Dict[str,str]
         Returns a dictionary with the current image attributes.
@@ -51,29 +51,19 @@ class ImagesController:
         """Connects signals to slots. """
         self.view.input_dir.file_selected.connect(self._dir_selected_evt)
         self.view.input_file.file_selected.connect(self._file_selected_evt)
-        self.view.shuffle.clicked.connect(self._shuffle_clicked)
 
-    def _shuffle_clicked(self, checked: bool):
+    def _shuffle(self):
         """
-        Shuffle file order and hide file names if checked.
-        Return files to original order and names if unchecked.
+        Shuffle file order and hide file names.
 
-        Parameters
-        ----------
-        checked : bool
-            Toggle state of the shuffle button.
+        Side effect : Change file order of file widget to shuffled order.
         """
-        files: List[str] = [i for i in self.view.file_widget.clear_for_shuff()]
-        if checked:
-            self.view.toggle_add(False)
-            random.shuffle(files)
-            for f in files:
-                self.view.file_widget.add_item(f, hidden=True)
+        files: List[str] = self.view.file_widget.clear_for_shuff()
 
-        else:
-            self.view.toggle_add(True)
-            for f in files:
-                self.view.file_widget.add_item(f, hidden=False)
+        self.view.toggle_add(False)
+        random.shuffle(files)
+        for f in files:
+            self.view.file_widget.add_item(f, hidden=False)
 
     @staticmethod
     def is_supported(file_name: str) -> bool:
@@ -143,11 +133,8 @@ class ImagesController:
                     self.view.alert("Unsupported file type:" + file)
 
     def start_annotating(self):
-        """
-        Shuffle images if they haven't been shuffled and set current item
-        to the first item.
-        """
-        self._shuffle_clicked(True)
+        """Shuffle images and set current item to the first item."""
+        self._shuffle()
         if self.view.file_widget.count() > 0:
             self.view.file_widget.setCurrentItem(self.view.file_widget.item(0))
         else:

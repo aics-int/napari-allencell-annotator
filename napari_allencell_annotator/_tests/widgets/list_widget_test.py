@@ -8,15 +8,9 @@ class TestListWidget:
     def setup_method(self):
         with mock.patch.object(ListWidget, "__init__", lambda x: None):
             self._widget = ListWidget()
-            self._widget._shuffled = False
             self._widget.files = set()
             self._widget.file_order = []
             self._widget.checked = set()
-
-    def test_shuffled(self):
-        assert not self._widget.shuffled
-        self._widget._shuffled = True
-        assert self._widget.shuffled
 
     def test_get_curr_row_none(self):
         self._widget.currentItem = MagicMock(return_value=None)
@@ -29,7 +23,6 @@ class TestListWidget:
         assert self._widget.get_curr_row() == 0
 
     def test_clear_all(self):
-        self._widget._shuffled = True
         self._widget.setCurrentItem = MagicMock()
         self._widget.clear = MagicMock()
         self._widget.checked= {"item"}
@@ -37,7 +30,6 @@ class TestListWidget:
         self._widget.file_order = ['item']
         self._widget.clear_all()
 
-        assert self._widget._shuffled == False
         assert self._widget.checked == set()
         assert self._widget.files == set()
         assert self._widget.file_order == []
@@ -45,7 +37,6 @@ class TestListWidget:
         self._widget.clear.assert_called_once_with()
 
     def test_clear_for_shuffle(self):
-        self._widget._shuffled = False
         self._widget.setCurrentItem = MagicMock()
         self._widget.clear = MagicMock()
         self._widget.checked = set('item')
@@ -54,7 +45,6 @@ class TestListWidget:
 
         ret = self._widget.clear_for_shuff()
 
-        assert self._widget._shuffled == True
         self._widget.setCurrentItem.assert_called_once_with(None)
         assert self._widget.checked == set()
         self._widget.clear.assert_called_once_with()

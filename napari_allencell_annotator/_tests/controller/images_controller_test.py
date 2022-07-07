@@ -13,40 +13,28 @@ class TestImagesController:
         with mock.patch("napari_allencell_annotator.controller.images_controller.ImagesView"):
             self._controller = ImagesController(self._mock_viewer)
 
-    def test_shuffle_clicked_none(self):
+    def test_shuffle_none(self):
         # test when list widget has no items
         self._controller.view.file_widget.clear_for_shuff = MagicMock()
         self._controller.view.toggle_add = MagicMock()
         self._controller.view.file_widget.add_item = MagicMock()
-        self._controller._shuffle_clicked(True)
+        self._controller._shuffle()
         self._controller.view.file_widget.clear_for_shuff.assert_called_once_with()
-        self._controller.view.toggle_add.assert_called_once_with(False)
+        self._controller.view.toggle_add.assert_called_once_with()
         self._controller.view.file_widget.add_item.assert_not_called()
 
-        self._controller.view.file_widget.clear_for_shuff = MagicMock()
-        self._controller.view.toggle_add = MagicMock()
-        self._controller.view.file_widget.add_item = MagicMock()
-        self._controller._shuffle_clicked(False)
-        self._controller.view.file_widget.clear_for_shuff.assert_called_once_with()
-        self._controller.view.toggle_add.assert_called_once_with(True)
-        self._controller.view.file_widget.add_item.assert_not_called()
-
-    def test_shuffle_clicked_one(self):
+    def test_shuffle_one(self):
         # test when list widget has one item
         self._controller.view.file_widget.add_item = MagicMock()
         self._controller.view.file_widget.clear_for_shuff.return_value = ["file_1.png"]
-        self._controller._shuffle_clicked(True)
+        self._controller._shuffle()
         self._controller.view.file_widget.add_item.assert_called_once_with("file_1.png", hidden=True)
 
-        self._controller.view.file_widget.add_item = MagicMock()
-        self._controller._shuffle_clicked(False)
-        self._controller.view.file_widget.add_item.assert_called_once_with("file_1.png", hidden=False)
-
-    def test_shuffle_clicked_mult(self):
+    def test_shuffle_mult(self):
         # test when list widget has multiple items
         self._controller.view.file_widget.add_item = MagicMock()
         self._controller.view.file_widget.clear_for_shuff.return_value = ["file_1.png", "file_2.png", "file_3.png"]
-        self._controller._shuffle_clicked(True)
+        self._controller._shuffle()
         assert len(self._controller.view.file_widget.add_item.mock_calls) == len(
             self._controller.view.file_widget.clear_for_shuff.return_value)
 
@@ -161,11 +149,11 @@ class TestImagesController:
     def test_start_annotating_not_shuffled(self):
         self._controller.view.file_widget = MagicMock()
         self._controller.view.file_widget.count = MagicMock(return_value=0)
-        self._controller._shuffle_clicked = MagicMock()
+        self._controller._shuffle = MagicMock()
         self._controller.view.file_widget.setCurrentItem = MagicMock()
         self._controller.view.alert = MagicMock()
         self._controller.start_annotating()
-        self._controller._shuffle_clicked.assert_called_once_with(True)
+        self._controller._shuffle.assert_called_once_with(True)
         self._controller.view.file_widget.setCurrentItem.assert_not_called()
         self._controller.view.alert.assert_called_once_with("No files to annotate")
 

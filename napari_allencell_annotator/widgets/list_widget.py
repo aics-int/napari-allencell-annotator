@@ -44,12 +44,6 @@ class ListWidget(QListWidget):
         self.files: Set[str] = set()
         self.file_order: List[str] = []
         self.setCurrentItem(None)
-        self._shuffled: bool = False
-
-
-    @property
-    def shuffled(self) -> bool:
-        return self._shuffled
 
     def get_curr_row(self) -> int:
         if self.currentItem() is not None:
@@ -59,7 +53,6 @@ class ListWidget(QListWidget):
 
     def clear_all(self):
         """Clear all image data."""
-        self._shuffled = False
         self.checked= set()
         self.files = set()
         self.file_order = []
@@ -77,7 +70,6 @@ class ListWidget(QListWidget):
         List[str]
             file_order.
         """
-        self._shuffled = not self._shuffled
         self.setCurrentItem(None)
         self.checked = set()
         self.clear()
