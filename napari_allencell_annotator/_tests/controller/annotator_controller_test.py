@@ -44,7 +44,7 @@ class TestAnnotatorController:
         assert self._controller.annotation_dict["path.png"] == ["path", ""]
         self._controller.view.render_values.assert_not_called()
         self._controller.view.set_curr_index.assert_called_once_with(1)
-        self._controller.view.next_btn.setText.assert_not_called()
+        self._controller.view.next_btn.setText.assert_called_once_with("Next")
 
     def test_set_curr_img_in_keys(self):  # TODO
         self._controller.annotation_dict["path.png"] = ["path", "", "text", 2]

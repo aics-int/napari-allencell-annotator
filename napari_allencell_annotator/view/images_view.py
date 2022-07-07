@@ -110,10 +110,10 @@ class ImagesView(QWidget):
                 msg = msg + "--- " + item.file_path + "\n"
 
             msg_box.setText(msg)
-            msg_box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+            msg_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
 
             return_value = msg_box.exec()
-            if return_value == QMessageBox.Ok:
+            if return_value == QMessageBox.Yes:
                 self.file_widget.delete_checked()
         else:
             self.alert("No Images Selected")

@@ -46,9 +46,12 @@ class AnnotatorController:
         self.view.render_annotations(self.annot_data)
         self.view.show()
         self.curr_img: Dict[str, str] = None
-        self.csv_name: str = "test.csv"
+        self.csv_name: str = None
 
         self.annotation_dict: Dict[str, (List[str], List[str])] = {}
+
+    def set_csv_name(self, name : str):
+        self.csv_name = name
 
     def start_annotating(self, num_images: int):
         """
@@ -86,6 +89,8 @@ class AnnotatorController:
         self.view.set_curr_index(curr_img["Row"])
         if int(curr_img["Row"]) == self.view.num_images - 1:
             self.view.next_btn.setText("Save and Export")
+        elif int(curr_img["Row"]) == self.view.num_images - 2:
+            self.view.next_btn.setText("Next")
 
     def record_annotations(self, prev_img: str):
         """
@@ -98,13 +103,18 @@ class AnnotatorController:
         """
         lst: List = self.view.get_curr_annots()
         self.annotation_dict[prev_img] = self.annotation_dict[prev_img][:2] + lst
-        print('hello')
 
     def write_to_csv(self):
         """Write header and annotations to the csv file. """
         file = open(self.csv_name, 'w')
         writer = csv.writer(file)
-        header: List[str] = ["File Name", "File Path", "FMS"]
+        header : List[str] = []
+        for key, dic in self.annot_data.items():
+            header.append(key)
+            header.append(str(dic))
+        writer.writerow(header)
+
+        header = ["File Name", "File Path", "FMS"]
         for name in self.view.annots_order:
             header.append(name)
         writer.writerow(header)

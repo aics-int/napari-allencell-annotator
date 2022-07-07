@@ -1,7 +1,8 @@
+annotation_name,"{'type': 'string', 'default': 'text'}"
 File Name,File Path,FMS,annotation_name
-/Users/beatrice.bridge/Desktop/Images/test_sample_xyz - Copy (2).tiff,test_sample_xyz - Copy (2).tiff,,text1
-/Users/beatrice.bridge/Desktop/Images/dog.jpg,dog.jpg,,text22222222222
-/Users/beatrice.bridge/Desktop/Images/mouse.jpg,mouse.jpg,,text3
-/Users/beatrice.bridge/Desktop/Images/3500004565_100X_ZSD1_20210615-Scene-26-P27-E03.czi,3500004565_100X_ZSD1_20210615-Scene-26-P27-E03.czi,,text
+/Users/beatrice.bridge/Desktop/Images/dog.jpg,dog.jpg,,text
+/Users/beatrice.bridge/Desktop/Images/cat.png,cat.png,,text
+/Users/beatrice.bridge/Desktop/Images/test_sample_xyz - Copy (2).tiff,test_sample_xyz - Copy (2).tiff,,text
 /Users/beatrice.bridge/Desktop/Images/test_sample_xyz - Copy (3).tiff,test_sample_xyz - Copy (3).tiff,,text
-/Users/beatrice.bridge/Desktop/Images/cat.png,cat.png,,text666
+/Users/beatrice.bridge/Desktop/Images/mouse.jpg,mouse.jpg,,text
+/Users/beatrice.bridge/Desktop/Images/3500004565_100X_ZSD1_20210615-Scene-26-P27-E03.czi,3500004565_100X_ZSD1_20210615-Scene-26-P27-E03.czi,,text

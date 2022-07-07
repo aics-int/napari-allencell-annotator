@@ -4,7 +4,7 @@ from napari_allencell_annotator.controller.images_controller import ImagesContro
 
 from napari_allencell_annotator.controller.annotator_controller import AnnotatorController
 import napari
-
+from typing import List
 
 class MainController(QWidget):
     """
@@ -38,6 +38,22 @@ class MainController(QWidget):
         self.annots.view.start_btn.clicked.connect(self.start_annotating)
         self.annots.view.next_btn.clicked.connect(self.next_image)
         self.annots.view.prev_btn.clicked.connect(self.prev_image)
+        self.annots.view.file_input.file_selected.connect(self._file_selected_evt)
+
+    def _file_selected_evt(self, file_list: List[str]):
+        """
+        Adds all selected files to the GUI.
+
+        Parameters
+        ----------
+        file_list : List[str]
+            The list of files
+        """
+        if file_list is None :
+            self.images.view.alert("No selection provided")
+        else:
+            self.annots.set_csv_name(file_list[0])
+            self._setup_annotating()
 
 
     def start_annotating(self):
@@ -50,11 +66,21 @@ class MainController(QWidget):
         if self.images.get_num_files() is None or self.images.get_num_files() < 1:
             self.images.view.alert("Can't Annotate Without Adding Images")
         else:
-            self.layout.removeWidget(self.images.view)
-            self.images.view.hide()
-            self.images.start_annotating()
-            self.annots.start_annotating(self.images.get_num_files())
-            self.annots.set_curr_img(self.images.curr_img_dict())
+            proceed: bool = self.annots.view.popup("Once annotating starts both the image set and annotations cannot be "
+                                                   "edited.\n Would "
+                                                   "you like to continue?")
+            if proceed:
+                self.annots.view.file_input.simulate_click()
+
+
+    def _setup_annotating(self):
+        self.layout.removeWidget(self.images.view)
+        self.images.view.hide()
+        self.images.start_annotating()
+        self.annots.start_annotating(self.images.get_num_files())
+        self.annots.set_curr_img(self.images.curr_img_dict())
+
+
 
     def next_image(self):
         """
@@ -65,7 +91,10 @@ class MainController(QWidget):
         """
         self.annots.record_annotations(self.images.curr_img_dict()['File Path'])
         if self.annots.view.next_btn.text() == "Save and Export":
-            self.annots.write_to_csv()
+            proceed : bool = self.annots.view.popup("Annotations Saved. Would you like to continue editing?")
+            if proceed:
+                self.annots.write_to_csv()
+                # reset to create mode
         else:
             self.images.next_img()
             self.annots.set_curr_img(self.images.curr_img_dict())

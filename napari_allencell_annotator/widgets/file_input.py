@@ -1,3 +1,4 @@
+import os
 from enum import Enum
 
 from PyQt5.QtWidgets import QPushButton
@@ -9,6 +10,7 @@ from typing import List
 class FileInputMode(Enum):
     DIRECTORY = "dir"
     FILE = "file"
+    CSV = "csv"
 
 
 class FileInput(QWidget):
@@ -45,7 +47,8 @@ class FileInput(QWidget):
     def mode(self) -> FileInputMode:
         return self._mode
 
-
+    def simulate_click(self):
+        self._input_btn.clicked.emit()
 
     def toggle(self, enabled: bool):
         self._input_btn.setEnabled(enabled)
@@ -59,7 +62,7 @@ class FileInput(QWidget):
                 "c\\",
                 options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
             )
-        else:
+        elif self._mode == FileInputMode.DIRECTORY:
             file_path = QFileDialog.getExistingDirectory(
                 self,
                 "Select a directory",
@@ -70,6 +73,19 @@ class FileInput(QWidget):
                 file_path = [file_path]
             else:
                 file_path = None
+        else:
+            file_path, _ = QFileDialog.getSaveFileName(
+                self,
+                "Select or create a csv file",
+                "c\\",
+                filter="CSV Files (*.csv)",
+                options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
+            )
+            _, extension = os.path.splitext(file_path)
+            if extension != ".csv":
+                file_path = file_path + ".csv"
+
+            file_path = [file_path]
 
         if file_path:
             self.selected_file = file_path

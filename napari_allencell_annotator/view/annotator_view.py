@@ -4,9 +4,9 @@ from typing import Dict, List
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QLineEdit, QSpinBox, QCheckBox, QComboBox, \
-    QGridLayout, QListWidget, QScrollArea, QListWidgetItem, QPushButton, QAbstractScrollArea
+    QGridLayout, QListWidget, QScrollArea, QListWidgetItem, QPushButton, QAbstractScrollArea, QMessageBox
 import napari
-
+from napari_allencell_annotator.widgets.file_input import FileInput, FileInputMode
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -57,6 +57,9 @@ class AnnotatorView(QWidget):
 
     render_annotations(data : Dict[str,Dict[str, str]]))
         Renders GUI elements from the dictionary of annotations.
+
+    popup(text:str) -> bool
+        Pop up dialog that asks the user a question. Returns True if 'Yes' False if 'No'.
     """
 
     def __init__(self, viewer: napari.Viewer, contr,
@@ -110,6 +113,8 @@ class AnnotatorView(QWidget):
         self.cancel_btn = QPushButton("Cancel")
         self.cancel_btn.setEnabled(False)
         self.start_btn = QPushButton("Start Annotating")
+        self.file_input = FileInput(mode=FileInputMode.CSV, placeholder_text="Start Annotating")
+        self.file_input._input_btn.setEnabled(False)
         self.start_btn.setEnabled(True)
 
         view_layout.addWidget(self.cancel_btn, stretch=1)
@@ -279,3 +284,27 @@ class AnnotatorView(QWidget):
         list_item = QListWidgetItem(self.annot_list)
         list_item.setSizeHint(widget.minimumSizeHint())
         self.annot_list.setItemWidget(list_item, widget)
+
+    def popup(self, text : str) -> bool:
+        """
+        Pop up dialog to ask the user yes or no.
+
+        Parameters
+        ----------
+        text : str
+            question for the message box.
+
+        Returns
+        ----------
+        bool
+            user input, true if 'Yes' false if 'No'
+
+        """
+        msg_box = QMessageBox()
+        msg_box.setText(text)
+        msg_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        return_value = msg_box.exec()
+        if return_value == QMessageBox.Yes:
+            return True
+        else:
+            return False
