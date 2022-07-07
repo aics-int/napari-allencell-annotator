@@ -59,6 +59,7 @@ class MainController(QWidget):
         """
         if file_list is None or len(file_list) < 1:
             self.images.view.alert("No selection provided")
+            # enable
         else:
             file_path = file_list[0]
             _, extension = os.path.splitext(file_path)
@@ -77,12 +78,14 @@ class MainController(QWidget):
         if self.images.get_num_files() is None or self.images.get_num_files() < 1:
             self.images.view.alert("Can't Annotate Without Adding Images")
         else:
+            # todo disable
             proceed: bool = self.annots.view.popup(
                 "Once annotating starts both the image set and annotations cannot be "
                 "edited.\n Would "
                 "you like to continue?")
             if proceed:
                 self.annots.view.file_input.simulate_click()
+            # todo else enable
 
     def stop_annotating(self):
         """

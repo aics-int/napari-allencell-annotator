@@ -20,7 +20,7 @@ class TestImagesController:
         self._controller.view.file_widget.add_item = MagicMock()
         self._controller._shuffle()
         self._controller.view.file_widget.clear_for_shuff.assert_called_once_with()
-        self._controller.view.toggle_add.assert_called_once_with()
+        self._controller.view.toggle_add.assert_called_once_with(False)
         self._controller.view.file_widget.add_item.assert_not_called()
 
     def test_shuffle_one(self):
@@ -153,7 +153,7 @@ class TestImagesController:
         self._controller.view.file_widget.setCurrentItem = MagicMock()
         self._controller.view.alert = MagicMock()
         self._controller.start_annotating()
-        self._controller._shuffle.assert_called_once_with(True)
+        self._controller._shuffle.assert_called_once_with()
         self._controller.view.file_widget.setCurrentItem.assert_not_called()
         self._controller.view.alert.assert_called_once_with("No files to annotate")
 

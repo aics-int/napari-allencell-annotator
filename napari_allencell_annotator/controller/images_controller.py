@@ -63,7 +63,7 @@ class ImagesController:
         self.view.toggle_add(False)
         random.shuffle(files)
         for f in files:
-            self.view.file_widget.add_item(f, hidden=False)
+            self.view.file_widget.add_item(f, hidden=True)
 
     @staticmethod
     def is_supported(file_name: str) -> bool:
@@ -134,7 +134,7 @@ class ImagesController:
 
     def start_annotating(self):
         """Shuffle images and set current item to the first item."""
-        self._shuffle()
+        self._shuffle() # todo
         if self.view.file_widget.count() > 0:
             self.view.file_widget.setCurrentItem(self.view.file_widget.item(0))
         else:

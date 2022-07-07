@@ -193,7 +193,7 @@ class TestListWidget:
         self._widget.delete_checked()
 
         assert self._widget.checked == set()
-        self._widget.remove_item.assert_has_calls([mock.call(item), mock.call(item2)])
+        self._widget.remove_item.assert_has_calls([mock.call(item), mock.call(item2)], any_order=True)
         self._widget.files_selected.emit.assert_called_once_with(False)
 
     def test_check_evt_checked(self):
