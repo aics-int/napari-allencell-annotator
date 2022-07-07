@@ -21,6 +21,8 @@ class ListWidget(QListWidget):
 
     Methods
     -------
+    clear_all()
+        Clears all image data.
     clear_for_shuff() -> List[str]
         Clears the list display and returns the file_order.
     add_new_item(file:str)
@@ -54,6 +56,15 @@ class ListWidget(QListWidget):
             return self.row(self.currentItem())
         else:
             return -1
+
+    def clear_all(self):
+        """Clear all image data."""
+        self._shuffled = False
+        self.checked= set()
+        self.files = set()
+        self.file_order = []
+        self.setCurrentItem(None)
+        self.clear()
 
     def clear_for_shuff(self) -> List[str]:
         """

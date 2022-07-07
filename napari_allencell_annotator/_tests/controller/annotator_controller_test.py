@@ -21,12 +21,29 @@ class TestAnnotatorController:
         self._controller.set_csv_name('name')
         assert self._controller.csv_name == 'name'
 
+    def test_stop_annotating(self):
+        self._controller.annotation_dict = {'test': ['test']}
+        self._controller.view.next_btn = MagicMock()
+
+        self._controller.set_curr_img = MagicMock()
+        self._controller.set_csv_name = MagicMock()
+        self._controller.stop_annotating()
+
+        self._controller.view.set_curr_index.assert_called_once_with(None)
+        assert self._controller.annotation_dict == {}
+        self._controller.view.set_num_images.assert_called_once_with(None)
+        self._controller.view.next_btn.setText.assert_called_once_with("Next")
+        self._controller.view.set_mode.assert_called_once_with(mode=AnnotatorViewMode.VIEW)
+        self._controller.view.render_default_values.assert_called_once_with()
+        self._controller.view.toggle_annots_editable.assert_called_once_with(False)
+        self._controller.set_curr_img.assert_called_once_with(None)
+        self._controller.set_csv_name.assert_called_once_with(None)
+
     def test_start_annotating(self):
         self._controller.start_annotating(4)
 
         self._controller.view.set_num_images.assert_called_once_with(4)
         self._controller.view.set_mode.assert_called_once_with(mode=AnnotatorViewMode.ANNOTATE)
-        self._controller.view.make_annots_editable.assert_called_once()
 
     def test_set_curr_img_not_in(self):
         self._controller.view.num_images = 3

@@ -153,6 +153,10 @@ class ImagesController:
         else:
             self.view.alert("No files to annotate")
 
+    def stop_annotating(self):
+        self.view.file_widget.clear_all()
+        self.view.reset_buttons()
+
     def curr_img_dict(self) -> Dict[str,str]:
         """
          Return a dictionary with the current image File Path,

@@ -1,7 +1,7 @@
 from unittest import mock
 from unittest.mock import MagicMock, create_autospec
 
-from napari_allencell_annotator.controller.images_controller import ImagesController
+from napari_allencell_annotator.controller.images_controller import ImagesController, ImagesView
 from napari_allencell_annotator.controller.images_controller import SUPPORTED_FILE_TYPES
 import napari
 import os
@@ -168,6 +168,12 @@ class TestImagesController:
         self._controller._shuffle_clicked.assert_called_once_with(True)
         self._controller.view.file_widget.setCurrentItem.assert_not_called()
         self._controller.view.alert.assert_called_once_with("No files to annotate")
+
+    def test_stop_annotating(self):
+        self._controller.view.file_widget = MagicMock()
+        self._controller.stop_annotating()
+        self._controller.view.file_widget.clear_all.assert_called_once_with()
+        self._controller.view.reset_buttons.assert_called_once_with()
 
     def test_curr_img_dict(self):
         self._controller.view.file_widget.currentItem = MagicMock()

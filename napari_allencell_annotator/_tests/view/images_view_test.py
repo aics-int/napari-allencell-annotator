@@ -15,6 +15,17 @@ class TestImagesView:
             self._view.viewer: MagicMock = create_autospec(napari.Viewer)
             self._view.AICSImage = create_autospec(AICSImage)
 
+    def test_reset_buttons(self):
+        self._view._toggle_delete = MagicMock()
+        self._view._toggle_shuffle = MagicMock()
+        self._view.toggle_add = MagicMock()
+        self._view.reset_buttons()
+        self._view._toggle_delete.assert_called_once_with(False)
+
+        self._view._toggle_shuffle.assert_called_once_with(False)
+
+        self._view.toggle_add.assert_called_once_with(True)
+
     def test_update_shuff_text(self):
         # checked
         self._view.shuffle = MagicMock()

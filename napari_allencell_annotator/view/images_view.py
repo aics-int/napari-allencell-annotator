@@ -88,6 +88,11 @@ class ImagesView(QWidget):
         self.ctrl = ctrl
         self.viewer = viewer
 
+    def reset_buttons(self):
+        self._toggle_delete(False)
+        self._toggle_shuffle(False)
+        self.toggle_add(True)
+
     def _update_shuff_text(self, checked: bool):
         """
         Update shuffle button text to reflect toggle state.
@@ -110,7 +115,7 @@ class ImagesView(QWidget):
                 msg = msg + "--- " + item.file_path + "\n"
 
             msg_box.setText(msg)
-            msg_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            msg_box.setStandardButtons(QMessageBox.No | QMessageBox.Yes)
 
             return_value = msg_box.exec()
             if return_value == QMessageBox.Yes:

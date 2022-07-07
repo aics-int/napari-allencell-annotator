@@ -21,6 +21,9 @@ class AnnotatorController:
     set_csv_name(name : str)
         Sets csv file name for writing.
 
+    stop_annotating()
+        Resets values from annotating and changes mode to VIEW
+
     start_annotating(num_images : int)
         Changes annotation view to annotating mode.
 
@@ -53,9 +56,21 @@ class AnnotatorController:
 
         self.annotation_dict: Dict[str, (List[str], List[str])] = {}
 
-    def set_csv_name(self, name : str):
+    def set_csv_name(self, name: str):
         """Set csv file name for writing."""
         self.csv_name = name
+
+    def stop_annotating(self):
+        """Reset values from annotating and change mode to VIEW."""
+        self.view.set_curr_index(None)
+        self.annotation_dict = {}
+        self.view.set_num_images(None)
+        self.view.next_btn.setText("Next")
+        self.view.set_mode(mode=AnnotatorViewMode.VIEW)
+        self.view.render_default_values()
+        self.view.toggle_annots_editable(False)
+        self.set_curr_img(None)
+        self.set_csv_name(None)
 
     def start_annotating(self, num_images: int):
         """
@@ -69,7 +84,6 @@ class AnnotatorController:
 
         self.view.set_num_images(num_images)
         self.view.set_mode(mode=AnnotatorViewMode.ANNOTATE)
-        self.view.make_annots_editable()
 
     def set_curr_img(self, curr_img: Dict[str, str]):
         """
@@ -83,18 +97,20 @@ class AnnotatorController:
             The current image file path, name, fms info, and row.
         """
         self.curr_img = curr_img
-        path: str = curr_img["File Path"]
-        if path not in self.annotation_dict.keys():
-            self.annotation_dict.update(
-                {path: [curr_img["File Name"], curr_img["FMS"]]})
-            self.view.render_default_values()
-        else:
-            self.view.render_values(self.annotation_dict[path][2::])
-        self.view.set_curr_index(curr_img["Row"])
-        if int(curr_img["Row"]) == self.view.num_images - 1:
-            self.view.next_btn.setText("Save and Export")
-        elif int(curr_img["Row"]) == self.view.num_images - 2:
-            self.view.next_btn.setText("Next")
+        if curr_img is not None:
+            self.curr_img = curr_img
+            path: str = curr_img["File Path"]
+            if path not in self.annotation_dict.keys():
+                self.annotation_dict.update(
+                    {path: [curr_img["File Name"], curr_img["FMS"]]})
+                self.view.render_default_values()
+            else:
+                self.view.render_values(self.annotation_dict[path][2::])
+            self.view.set_curr_index(curr_img["Row"])
+            if int(curr_img["Row"]) == self.view.num_images - 1:
+                self.view.next_btn.setText("Save and Export")
+            elif int(curr_img["Row"]) == self.view.num_images - 2:
+                self.view.next_btn.setText("Next")
 
     def record_annotations(self, prev_img: str):
         """
@@ -112,7 +128,7 @@ class AnnotatorController:
         """Write header and annotations to the csv file. """
         file = open(self.csv_name, 'w')
         writer = csv.writer(file)
-        header : List[str] = []
+        header: List[str] = []
         for key, dic in self.annot_data.items():
             header.append(key)
             header.append(str(dic))

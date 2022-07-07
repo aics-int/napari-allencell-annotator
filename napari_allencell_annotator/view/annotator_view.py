@@ -52,11 +52,14 @@ class AnnotatorView(QWidget):
     get_curr_annots() -> List
         Returns the current annotation values in a list form.
 
-    make_annots_editable()
+    toggle_annots_editable()
         Enables the annotations for editing.
 
     render_annotations(data : Dict[str,Dict[str, str]]))
         Renders GUI elements from the dictionary of annotations.
+
+    render_default_annotations()
+        Sets annotation widget values to default.
 
     popup(text:str) -> bool
         Pop up dialog that asks the user a question. Returns True if 'Yes' False if 'No'.
@@ -139,9 +142,8 @@ class AnnotatorView(QWidget):
 
         self._display_mode()
         self.annotation_item_widgets: List[QWidget] = []
-        self.annots_order : List[str] = []
-        self.default_vals : List[str] = []
-
+        self.annots_order: List[str] = []
+        self.default_vals: List[str] = []
         self.setLayout(self.layout)
         self.viewer: napari.Viewer = viewer
 
@@ -155,15 +157,19 @@ class AnnotatorView(QWidget):
 
     def set_num_images(self, num: int):
         """Set the total number of images to be annotated"""
-        self.num_images = int(num)
+        self.num_images = num
+        if num is not None:
+            self.num_images = int(num)
 
     def set_curr_index(self, num: int):
         """Set the index of the currently selected image and display it on progress bar."""
-        self.curr_index = int(num)
-        self.progress_bar.setText("{} of {} Images".format(self.curr_index + 1, self.num_images))
+        self.curr_index = num
+        if num is not None:
+            self.curr_index = int(num)
+            self.progress_bar.setText("{} of {} Images".format(self.curr_index + 1, self.num_images))
 
     def render_default_values(self):
-        """"""
+        """Set annotation widget values to default."""
         # for curr index if annots exist fill else fill with default
         self.render_values(self.default_vals)
 
@@ -202,10 +208,10 @@ class AnnotatorView(QWidget):
             annots.append(value)
         return annots
 
-    def make_annots_editable(self):
+    def toggle_annots_editable(self, editable: bool):
         """Enable the annotation widgets for editing. """
         for i in self.annotation_item_widgets:
-            i.setEnabled(True)
+            i.setEnabled(editable)
 
     def _display_mode(self):
         """Render GUI buttons visible depending on the mode."""
@@ -219,11 +225,13 @@ class AnnotatorView(QWidget):
             self.view_widget.show()
             self.add_widget.hide()
 
+
         elif self._mode == AnnotatorViewMode.ANNOTATE:
             self.annot_widget.show()
             self.prev_btn.setEnabled(False)
             self.view_widget.hide()
             self.add_widget.hide()
+            self.toggle_annots_editable(True)
 
     def render_annotations(self, data: Dict[str, Dict[str, str]]):
         """
@@ -275,8 +283,8 @@ class AnnotatorView(QWidget):
         else:
             return  # TODO
         layout.addWidget(item, stretch=2)
-        item.setEnabled(False)
         self.annotation_item_widgets.append(item)
+        item.setEnabled(False)
         # layout.addStretch()
         layout.setContentsMargins(2, 12, 8, 12)
         layout.setSpacing(2)
@@ -285,7 +293,7 @@ class AnnotatorView(QWidget):
         list_item.setSizeHint(widget.minimumSizeHint())
         self.annot_list.setItemWidget(list_item, widget)
 
-    def popup(self, text : str) -> bool:
+    def popup(self, text: str) -> bool:
         """
         Pop up dialog to ask the user yes or no.
 
@@ -302,7 +310,7 @@ class AnnotatorView(QWidget):
         """
         msg_box = QMessageBox()
         msg_box.setText(text)
-        msg_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        msg_box.setStandardButtons(QMessageBox.No | QMessageBox.Yes)
         return_value = msg_box.exec()
         if return_value == QMessageBox.Yes:
             return True

@@ -36,6 +36,12 @@ class TestAnnotatorView:
         self._view.progress_bar.setText.assert_called_once_with("3 of 4 Images")
         assert self._view.curr_index == 2
 
+    def test_render_default_values(self):
+        self._view.default_vals = []
+        self._view.render_values = MagicMock()
+        self._view.render_default_values()
+        self._view.render_values
+
     def test_render_annotations(self):
         dic = {"name1": {}, "name2": {}}
         self._view._create_annot = MagicMock()

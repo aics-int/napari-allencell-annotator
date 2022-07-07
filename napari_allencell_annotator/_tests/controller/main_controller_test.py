@@ -72,6 +72,13 @@ class TestMainController:
         self._controller.images.view.alert.assert_not_called()
         self._controller.annots.view.file_input.simulate_click.assert_not_called()
 
+    def test_stop_annotating(self):
+        self._controller.stop_annotating()
+        self._controller.layout.addWidget.assert_has_calls([mock.call(self._controller.images.view, stretch=1), mock.call(self._controller.annots.view, stretch=2)])
+        self._controller.images.view.show.assert_called_once_with()
+        self._controller.images.stop_annotating.assert_called_once_with()
+        self._controller.annots.stop_annotating.assert_called_once_with()
+
     def test_setup_annotating(self):
         self._controller._setup_annotating()
         self._controller.layout.removeWidget.assert_called_once_with(self._controller.images.view)

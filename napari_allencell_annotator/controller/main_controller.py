@@ -17,6 +17,8 @@ class MainController(QWidget):
         -------
         start_annotating()
             Verifies that images are added and user wants to proceed, then opens a .csv file dialog.
+        stop_annotating()
+             Stops annotating in images and annotations views.
         next_image()
             Moves to the next image for annotating.
         prev_image()
@@ -82,6 +84,19 @@ class MainController(QWidget):
             if proceed:
                 self.annots.view.file_input.simulate_click()
 
+    def stop_annotating(self):
+        """
+        Stop annotating in images and annotations views.
+
+        Display images and annots views.
+        """
+        self.layout.addWidget(self.images.view, stretch=1)
+        self.layout.addWidget(self.annots.view, stretch=2)
+        self.images.view.show()
+        self.images.stop_annotating()
+        self.annots.stop_annotating()
+
+
     def _setup_annotating(self):
         """Hide the file viewer and start the annotating process."""
         self.layout.removeWidget(self.images.view)
@@ -89,6 +104,7 @@ class MainController(QWidget):
         self.images.start_annotating()
         self.annots.start_annotating(self.images.get_num_files())
         self.annots.set_curr_img(self.images.curr_img_dict())
+        self.annots.record_annotations(self.images.curr_img_dict()['File Path'])
 
     def next_image(self):
         """
@@ -99,10 +115,12 @@ class MainController(QWidget):
         """
         self.annots.record_annotations(self.images.curr_img_dict()['File Path'])
         if self.annots.view.next_btn.text() == "Save and Export":
-            proceed: bool = self.annots.view.popup("Annotations Saved. Would you like to continue editing?")
-            if proceed:
-                self.annots.write_to_csv()
-                # reset to create mode
+            proceed: bool = self.annots.view.popup("Annotations Saved. Would you like to continue editing these "
+                                                   "annotations?")
+
+            self.annots.write_to_csv()
+            if not proceed:
+                self.stop_annotating()
         else:
             self.images.next_img()
             self.annots.set_curr_img(self.images.curr_img_dict())

@@ -28,9 +28,26 @@ class TestListWidget:
         self._widget.currentItem = MagicMock(return_value=item)
         assert self._widget.get_curr_row() == 0
 
+    def test_clear_all(self):
+        self._widget._shuffled = True
+        self._widget.setCurrentItem = MagicMock()
+        self._widget.clear = MagicMock()
+        self._widget.checked= {"item"}
+        self._widget.files = {'item'}
+        self._widget.file_order = ['item']
+        self._widget.clear_all()
+
+        assert self._widget._shuffled == False
+        assert self._widget.checked == set()
+        assert self._widget.files == set()
+        assert self._widget.file_order == []
+        self._widget.setCurrentItem.assert_called_once_with(None)
+        self._widget.clear.assert_called_once_with()
+
     def test_clear_for_shuffle(self):
         self._widget._shuffled = False
         self._widget.setCurrentItem = MagicMock()
+        self._widget.clear = MagicMock()
         self._widget.checked = set('item')
         self._widget.clear = MagicMock()
         self._widget.file_order = 'order'
