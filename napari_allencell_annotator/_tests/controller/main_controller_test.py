@@ -88,7 +88,7 @@ class TestMainController:
         self._controller.annots.set_curr_img.assert_called_once_with(self._controller.images.curr_img_dict())
 
     def test_next_image_save(self):
-        self._controller.annots.view.next_btn.text = MagicMock(return_value="Save and Export")
+        self._controller.annots.view.next_btn.text = MagicMock(return_value="Finish")
         self._controller.annots.write_to_csv = MagicMock()
         self._controller.annots.record_annotations = MagicMock()
         self._controller.images.curr_img_dict = MagicMock(return_value={'File Path': 'path'})

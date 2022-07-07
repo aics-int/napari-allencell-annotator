@@ -65,7 +65,7 @@ class AnnotatorController:
         self.view.set_curr_index(None)
         self.annotation_dict = {}
         self.view.set_num_images(None)
-        self.view.next_btn.setText("Next")
+        self.view.next_btn.setText("Next >")
         self.view.set_mode(mode=AnnotatorViewMode.VIEW)
         self.view.render_default_values()
         self.view.toggle_annots_editable(False)
@@ -108,9 +108,9 @@ class AnnotatorController:
                 self.view.render_values(self.annotation_dict[path][2::])
             self.view.set_curr_index(curr_img["Row"])
             if int(curr_img["Row"]) == self.view.num_images - 1:
-                self.view.next_btn.setText("Save and Export")
+                self.view.next_btn.setText("Finish")
             elif int(curr_img["Row"]) == self.view.num_images - 2:
-                self.view.next_btn.setText("Next")
+                self.view.next_btn.setText("Next >")
 
     def record_annotations(self, prev_img: str):
         """

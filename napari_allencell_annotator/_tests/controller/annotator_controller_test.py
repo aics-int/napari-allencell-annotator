@@ -71,7 +71,7 @@ class TestAnnotatorController:
         assert self._controller.annotation_dict["path.png"] == ["path", "", "text", 2]
         self._controller.view.render_values.assert_called_once_with(["text", 2])
         self._controller.view.set_curr_index.assert_called_once_with(1)
-        self._controller.view.next_btn.setText.assert_called_once_with("Save and Export")
+        self._controller.view.next_btn.setText.assert_called_once_with("Finish")
 
     def test_record_annotations(self):
         prev: str = "path"
