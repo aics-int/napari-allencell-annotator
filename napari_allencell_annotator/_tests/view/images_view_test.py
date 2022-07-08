@@ -1,6 +1,8 @@
 from unittest import mock
 from unittest.mock import MagicMock, create_autospec
-from napari_allencell_annotator.controller.images_controller import ImagesController
+from napari_allencell_annotator.controller.images_controller import (
+    ImagesController,
+)
 from napari_allencell_annotator.view.images_view import ImagesView, ListItem
 
 from napari_allencell_annotator.view.images_view import AICSImage
@@ -11,7 +13,9 @@ class TestImagesView:
     def setup_method(self):
         with mock.patch.object(ImagesView, "__init__", lambda x: None):
             self._view = ImagesView()
-            self._view.controller: MagicMock = create_autospec(ImagesController)
+            self._view.controller: MagicMock = create_autospec(
+                ImagesController
+            )
             self._view.viewer: MagicMock = create_autospec(napari.Viewer)
             self._view.AICSImage = create_autospec(AICSImage)
 
@@ -31,7 +35,9 @@ class TestImagesView:
         self._view.shuffle = MagicMock()
         self._view.shuffle.setText = MagicMock()
         self._view._update_shuff_text(True)
-        self._view.shuffle.setText.assert_called_once_with("Unshuffle and Unhide")
+        self._view.shuffle.setText.assert_called_once_with(
+            "Unshuffle and Unhide"
+        )
         # not checked
         self._view.shuffle.setText = MagicMock()
         self._view._update_shuff_text(False)
@@ -88,7 +94,7 @@ class TestImagesView:
         self._view.viewer.layers.clear = MagicMock()
         prev = None
         curr = None
-        self._view.AICSImage = MagicMock(return_value='data')
+        self._view.AICSImage = MagicMock(return_value="data")
         self._view._display_img(curr, prev)
         self._view.viewer.layers.clear.assert_called_once_with()
         self._view.AICSImage.assert_not_called()
@@ -100,7 +106,7 @@ class TestImagesView:
         prev = create_autospec(ListItem)
         prev.unhighlight = MagicMock()
         curr = None
-        self._view.AICSImage = MagicMock(return_value='data')
+        self._view.AICSImage = MagicMock(return_value="data")
         self._view._display_img(curr, prev)
 
         self._view.viewer.layers.clear.assert_called_once_with()
@@ -114,16 +120,16 @@ class TestImagesView:
         prev = create_autospec(ListItem)
         prev.unhighlight = MagicMock()
         curr = create_autospec(ListItem)
-        curr.file_path = MagicMock(return_value='path')
+        curr.file_path = MagicMock(return_value="path")
         curr.highlight = MagicMock()
 
         self._view.viewer.add_image = MagicMock()
 
         with mock.patch.object(AICSImage, "__init__", lambda x, y: None):
-            AICSImage.data = 'data'
+            AICSImage.data = "data"
             self._view._display_img(curr, prev)
 
             self._view.viewer.layers.clear.assert_called_once_with()
-            self._view.viewer.add_image.assert_called_once_with('data')
+            self._view.viewer.add_image.assert_called_once_with("data")
             curr.highlight.assert_called_once_with()
             prev.unhighlight.assert_called_once_with()

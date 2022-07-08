@@ -36,6 +36,7 @@ class ListWidget(QListWidget):
     delete_checked()
         Removes all items in checked.
     """
+
     files_selected = Signal(bool)
     files_added = Signal(bool)
 

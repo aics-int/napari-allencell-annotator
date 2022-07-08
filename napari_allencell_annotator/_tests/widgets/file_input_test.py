@@ -1,7 +1,10 @@
 from unittest import mock
 from unittest.mock import MagicMock
 
-from napari_allencell_annotator.widgets.file_input import FileInput, FileInputMode
+from napari_allencell_annotator.widgets.file_input import (
+    FileInput,
+    FileInputMode,
+)
 
 
 class TestFileInput:

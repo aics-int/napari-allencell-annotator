@@ -3,14 +3,33 @@ from typing import Dict, List
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QLineEdit, QSpinBox, QCheckBox, QComboBox, \
-    QGridLayout, QListWidget, QScrollArea, QListWidgetItem, QPushButton, QAbstractScrollArea, QMessageBox
+from PyQt5.QtWidgets import (
+    QWidget,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QSpinBox,
+    QCheckBox,
+    QComboBox,
+    QGridLayout,
+    QListWidget,
+    QScrollArea,
+    QListWidgetItem,
+    QPushButton,
+    QAbstractScrollArea,
+    QMessageBox,
+)
 import napari
-from napari_allencell_annotator.widgets.file_input import FileInput, FileInputMode
+from napari_allencell_annotator.widgets.file_input import (
+    FileInput,
+    FileInputMode,
+)
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from napari_allencell_annotator.controller.annotator_controller import AnnotatorController
+    from napari_allencell_annotator.controller.annotator_controller import (
+        AnnotatorController,
+    )
 
 
 class AnnotatorViewMode(Enum):
@@ -21,6 +40,7 @@ class AnnotatorViewMode(Enum):
     VIEW is used when an annotation set has been made/selected, but annotating has not started.
     ANNOTATE is used when the image set is finalized and annotating has started.
     """
+
     ADD = "add"
     VIEW = "view"
     ANNOTATE = "annotate"
@@ -65,8 +85,12 @@ class AnnotatorView(QWidget):
         Pop up dialog that asks the user a question. Returns True if 'Yes' False if 'No'.
     """
 
-    def __init__(self, viewer: napari.Viewer, contr,
-                 mode: AnnotatorViewMode = AnnotatorViewMode.ADD):
+    def __init__(
+        self,
+        viewer: napari.Viewer,
+        contr,
+        mode: AnnotatorViewMode = AnnotatorViewMode.ADD,
+    ):
         super().__init__()
         self._mode = mode
         label = QLabel("Annotations")
@@ -83,12 +107,14 @@ class AnnotatorView(QWidget):
         self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scroll.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.scroll.setStyleSheet('''QScrollBar:vertical {
+        self.scroll.setStyleSheet(
+            """QScrollBar:vertical {
             width:10px;    
             margin: 0px 0px 0px 0px;
-        }''')
-        style = '''QScrollBar::handle:vertical {border: 0px solid red; border-radius: 
-        2px;} '''
+        }"""
+        )
+        style = """QScrollBar::handle:vertical {border: 0px solid red; border-radius: 
+        2px;} """
         self.scroll.setStyleSheet(self.scroll.styleSheet() + style)
         self.layout.addWidget(self.scroll, 1, 0, 10, 4)
 
@@ -101,7 +127,9 @@ class AnnotatorView(QWidget):
         add_layout = QHBoxLayout()
         self.create_btn = QPushButton("Create New Annotations")
         self.create_btn.setEnabled(True)
-        self.import_btn = QPushButton("Import Existing Annotations (.csv or .json)")
+        self.import_btn = QPushButton(
+            "Import Existing Annotations (.csv or .json)"
+        )
         self.import_btn.setEnabled(True)
 
         add_layout.addWidget(self.create_btn, stretch=2)
@@ -116,7 +144,9 @@ class AnnotatorView(QWidget):
         self.cancel_btn = QPushButton("Cancel")
         self.cancel_btn.setEnabled(False)
         self.start_btn = QPushButton("Start Annotating")
-        self.file_input = FileInput(mode=FileInputMode.CSV, placeholder_text="Start Annotating")
+        self.file_input = FileInput(
+            mode=FileInputMode.CSV, placeholder_text="Start Annotating"
+        )
         self.file_input.toggle(False)
         self.start_btn.setEnabled(True)
 
@@ -166,7 +196,9 @@ class AnnotatorView(QWidget):
         self.curr_index = num
         if num is not None:
             self.curr_index = int(num)
-            self.progress_bar.setText("{} of {} Images".format(self.curr_index + 1, self.num_images))
+            self.progress_bar.setText(
+                "{} of {} Images".format(self.curr_index + 1, self.num_images)
+            )
 
     def render_default_values(self):
         """Set annotation widget values to default."""
@@ -209,7 +241,7 @@ class AnnotatorView(QWidget):
         return annots
 
     def toggle_annots_editable(self, editable: bool):
-        """Enable the annotation widgets for editing. """
+        """Enable the annotation widgets for editing."""
         for i in self.annotation_item_widgets:
             i.setEnabled(editable)
 
@@ -224,7 +256,6 @@ class AnnotatorView(QWidget):
             self.annot_widget.hide()
             self.view_widget.show()
             self.add_widget.hide()
-
 
         elif self._mode == AnnotatorViewMode.ANNOTATE:
             self.annot_widget.show()
@@ -263,23 +294,23 @@ class AnnotatorView(QWidget):
         layout = QHBoxLayout()
         label = QLabel(name)
         self.annots_order.append(name)
-        self.default_vals.append(dictn['default'])
+        self.default_vals.append(dictn["default"])
         layout.addWidget(label, stretch=1)
-        annot_type: str = dictn['type']
+        annot_type: str = dictn["type"]
         if annot_type == "string":
-            item = QLineEdit(dictn['default'])
+            item = QLineEdit(dictn["default"])
         elif annot_type == "number":
             item = QSpinBox()
-            item.setValue(dictn['default'])
+            item.setValue(dictn["default"])
         elif annot_type == "bool":
             item = QCheckBox()
-            if dictn['default'] == 'true' or dictn['default']:
+            if dictn["default"] == "true" or dictn["default"]:
                 item.setChecked(True)
         elif annot_type == "list":
             item = QComboBox()
-            for opt in dictn['options']:
+            for opt in dictn["options"]:
                 item.addItem(opt)
-            item.setCurrentText(dictn['default'])
+            item.setCurrentText(dictn["default"])
         else:
             return  # TODO
         layout.addWidget(item, stretch=2)

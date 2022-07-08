@@ -1,5 +1,8 @@
 import json
-from napari_allencell_annotator.view.annotator_view import AnnotatorView, AnnotatorViewMode
+from napari_allencell_annotator.view.annotator_view import (
+    AnnotatorView,
+    AnnotatorViewMode,
+)
 from napari_allencell_annotator.util.directories import Directories
 import napari
 
@@ -48,7 +51,9 @@ class AnnotatorController:
         # open in add mode
         # self.view = AnnotatorView(napari.Viewer(), data)
         # open in view mode
-        self.view: AnnotatorView = AnnotatorView(viewer, self, mode=AnnotatorViewMode.VIEW)
+        self.view: AnnotatorView = AnnotatorView(
+            viewer, self, mode=AnnotatorViewMode.VIEW
+        )
         self.view.render_annotations(self.annot_data)
         self.view.show()
         self.curr_img: Dict[str, str] = None
@@ -102,7 +107,8 @@ class AnnotatorController:
             path: str = curr_img["File Path"]
             if path not in self.annotation_dict.keys():
                 self.annotation_dict.update(
-                    {path: [curr_img["File Name"], curr_img["FMS"]]})
+                    {path: [curr_img["File Name"], curr_img["FMS"]]}
+                )
                 self.view.render_default_values()
             else:
                 self.view.render_values(self.annotation_dict[path][2::])
@@ -122,11 +128,13 @@ class AnnotatorController:
             The previous image file path.
         """
         lst: List = self.view.get_curr_annots()
-        self.annotation_dict[prev_img] = self.annotation_dict[prev_img][:2] + lst
+        self.annotation_dict[prev_img] = (
+            self.annotation_dict[prev_img][:2] + lst
+        )
 
     def write_to_csv(self):
-        """Write header and annotations to the csv file. """
-        file = open(self.csv_name, 'w')
+        """Write header and annotations to the csv file."""
+        file = open(self.csv_name, "w")
         writer = csv.writer(file)
         header: List[str] = []
         for key, dic in self.annot_data.items():

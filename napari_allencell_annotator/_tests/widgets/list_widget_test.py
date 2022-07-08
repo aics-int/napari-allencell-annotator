@@ -32,10 +32,10 @@ class TestListWidget:
         self._widget._shuffled = True
         self._widget.setCurrentItem = MagicMock()
         self._widget.clear = MagicMock()
-        self._widget.shuffle_order = ['item']
-        self._widget.checked= {"item"}
-        self._widget.files = {'item'}
-        self._widget.file_order = ['item']
+        self._widget.shuffle_order = ["item"]
+        self._widget.checked = {"item"}
+        self._widget.files = {"item"}
+        self._widget.file_order = ["item"]
         self._widget.clear_all()
 
         assert self._widget._shuffled == False
@@ -47,18 +47,18 @@ class TestListWidget:
         self._widget.clear.assert_called_once_with()
 
     def test_set_shuff_order(self):
-        self._widget.shuffle_order = ['item']
-        self._widget.set_shuff_order(['item2'])
-        assert self._widget.shuffle_order == ['item2']
+        self._widget.shuffle_order = ["item"]
+        self._widget.set_shuff_order(["item2"])
+        assert self._widget.shuffle_order == ["item2"]
 
     def test_clear_for_shuffle(self):
         self._widget._shuffled = False
-        self._widget.shuffle_order = ['item']
+        self._widget.shuffle_order = ["item"]
         self._widget.setCurrentItem = MagicMock()
         self._widget.clear = MagicMock()
-        self._widget.checked = set('item')
+        self._widget.checked = set("item")
         self._widget.clear = MagicMock()
-        self._widget.file_order = ['order']
+        self._widget.file_order = ["order"]
 
         ret = self._widget.clear_for_shuff()
 
@@ -67,7 +67,7 @@ class TestListWidget:
         self._widget.setCurrentItem.assert_called_once_with(None)
         assert self._widget.checked == set()
         self._widget.clear.assert_called_once_with()
-        assert ret == ['order']
+        assert ret == ["order"]
 
     def test_add_new_item_in_files(self):
         item = "item"
@@ -117,24 +117,24 @@ class TestListWidget:
             ListItem.check = MagicMock()
             self._widget.add_item("file")
 
-            assert self._widget.files == {'file'}
+            assert self._widget.files == {"file"}
 
     def test_remove_item_not_in_files(self):
         item = create_autospec(ListItem)
-        item.file_path = MagicMock(return_value='file')
+        item.file_path = MagicMock(return_value="file")
         self._widget.currentItem = MagicMock()
         self._widget.remove_item(item)
         self._widget.currentItem.assert_not_called()
 
     def test_remove_item_curr_item(self):
         item = create_autospec(ListItem)
-        item.file_path = 'file'
+        item.file_path = "file"
         item2 = create_autospec(ListItem)
-        item2.file_path = 'file2'
+        item2.file_path = "file2"
         item3 = create_autospec(ListItem)
-        item3.file_path = MagicMock(return_value='file3')
-        self._widget.files = {'file', 'file2', 'file3'}
-        self._widget.file_order = ['file', 'file2', 'file3']
+        item3.file_path = MagicMock(return_value="file3")
+        self._widget.files = {"file", "file2", "file3"}
+        self._widget.file_order = ["file", "file2", "file3"]
         self._widget.currentItem = MagicMock(return_value=item2)
         self._widget.row = MagicMock(return_value=1)
         self._widget.setCurrentItem = MagicMock()
@@ -145,19 +145,19 @@ class TestListWidget:
         self._widget.remove_item(item2)
         self._widget.setCurrentItem.assert_called_once_with(None)
         self._widget.takeItem.assert_called_once_with(1)
-        assert self._widget.files == {'file', 'file3'}
-        assert self._widget.file_order == ['file', 'file3']
+        assert self._widget.files == {"file", "file3"}
+        assert self._widget.file_order == ["file", "file3"]
         self._widget.files_added.emit.assert_not_called()
 
     def test_remove_item(self):
         item = create_autospec(ListItem)
-        item.file_path = 'file'
+        item.file_path = "file"
         item2 = create_autospec(ListItem)
-        item2.file_path = 'file2'
+        item2.file_path = "file2"
         item3 = create_autospec(ListItem)
-        item3.file_path = 'file3'
-        self._widget.files = {'file', 'file2', 'file3'}
-        self._widget.file_order = ['file', 'file2', 'file3']
+        item3.file_path = "file3"
+        self._widget.files = {"file", "file2", "file3"}
+        self._widget.file_order = ["file", "file2", "file3"]
         self._widget.currentItem = MagicMock(return_value=item)
         self._widget.row = MagicMock(return_value=2)
         self._widget.setCurrentItem = MagicMock()
@@ -168,15 +168,15 @@ class TestListWidget:
         self._widget.remove_item(item3)
         self._widget.setCurrentItem.assert_not_called()
         self._widget.takeItem.assert_called_once_with(2)
-        assert self._widget.files == {'file', 'file2'}
-        assert self._widget.file_order == ['file', 'file2']
+        assert self._widget.files == {"file", "file2"}
+        assert self._widget.file_order == ["file", "file2"]
         self._widget.files_added.emit.assert_not_called()
 
     def test_remove_item_last(self):
         item = create_autospec(ListItem)
-        item.file_path = 'file'
-        self._widget.files = {'file'}
-        self._widget.file_order = ['file']
+        item.file_path = "file"
+        self._widget.files = {"file"}
+        self._widget.file_order = ["file"]
         self._widget.currentItem = MagicMock(return_value=None)
         self._widget.row = MagicMock(return_value=0)
         self._widget.setCurrentItem = MagicMock()
@@ -212,7 +212,9 @@ class TestListWidget:
         self._widget.delete_checked()
 
         assert self._widget.checked == set()
-        self._widget.remove_item.assert_has_calls([mock.call(item), mock.call(item2)], any_order=True)
+        self._widget.remove_item.assert_has_calls(
+            [mock.call(item), mock.call(item2)], any_order=True
+        )
         self._widget.files_selected.emit.assert_called_once_with(False)
 
     def test_check_evt_checked(self):

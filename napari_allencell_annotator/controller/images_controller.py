@@ -48,7 +48,7 @@ class ImagesController:
         self._connect_slots()
 
     def _connect_slots(self):
-        """Connects signals to slots. """
+        """Connects signals to slots."""
         self.view.input_dir.file_selected.connect(self._dir_selected_evt)
         self.view.input_file.file_selected.connect(self._file_selected_evt)
         self.view.shuffle.clicked.connect(self._shuffle_clicked)
@@ -156,7 +156,7 @@ class ImagesController:
         self.view.file_widget.clear_all()
         self.view.reset_buttons()
 
-    def curr_img_dict(self) -> Dict[str,str]:
+    def curr_img_dict(self) -> Dict[str, str]:
         """
          Return a dictionary with the current image File Path,
          File Name, FMS info, and row in the list.
@@ -167,8 +167,12 @@ class ImagesController:
             dictionary of attributes.
         """
         item = self.view.file_widget.currentItem()
-        info = {"File Name": item.get_name(), "File Path": item.file_path, "FMS": "",
-                "Row": str(self.view.file_widget.get_curr_row())}
+        info = {
+            "File Name": item.get_name(),
+            "File Path": item.file_path,
+            "FMS": "",
+            "Row": str(self.view.file_widget.get_curr_row()),
+        }
         return info
 
     def next_img(self):
@@ -176,13 +180,24 @@ class ImagesController:
         Set the current image to the next in the list, stop incrementing
         at the last row.
         """
-        if self.view.file_widget.get_curr_row() < self.view.file_widget.count() - 1:
-            self.view.file_widget.setCurrentItem(self.view.file_widget.item(self.view.file_widget.get_curr_row() + 1))
+        if (
+            self.view.file_widget.get_curr_row()
+            < self.view.file_widget.count() - 1
+        ):
+            self.view.file_widget.setCurrentItem(
+                self.view.file_widget.item(
+                    self.view.file_widget.get_curr_row() + 1
+                )
+            )
 
     def prev_img(self):
         """Set the current image to the previous in the list, stop at first image."""
         if self.view.file_widget.get_curr_row() > 0:
-            self.view.file_widget.setCurrentItem(self.view.file_widget.item(self.view.file_widget.get_curr_row() - 1))
+            self.view.file_widget.setCurrentItem(
+                self.view.file_widget.item(
+                    self.view.file_widget.get_curr_row() - 1
+                )
+            )
 
     def get_num_files(self) -> int:
         """

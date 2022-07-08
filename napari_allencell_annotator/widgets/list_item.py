@@ -1,6 +1,13 @@
 import os
 
-from PyQt5.QtWidgets import QListWidgetItem, QListWidget, QWidget, QHBoxLayout, QLabel, QCheckBox
+from PyQt5.QtWidgets import (
+    QListWidgetItem,
+    QListWidget,
+    QWidget,
+    QHBoxLayout,
+    QLabel,
+    QCheckBox,
+)
 
 
 class ListItem(QListWidgetItem):
@@ -17,7 +24,9 @@ class ListItem(QListWidgetItem):
         returns the basename of the file.
     """
 
-    def __init__(self, file_path: str, parent: QListWidget, hidden: bool = False):
+    def __init__(
+        self, file_path: str, parent: QListWidget, hidden: bool = False
+    ):
         QListWidgetItem.__init__(self, parent)
         self._file_path = file_path
         self.widget = QWidget()
@@ -36,11 +45,13 @@ class ListItem(QListWidgetItem):
         self.layout.addWidget(self.check, stretch=1)
         self.layout.addStretch()
         self.layout.setContentsMargins(2, 2, 0, 5)
-        self.label.setStyleSheet('''
+        self.label.setStyleSheet(
+            """
                 QLabel{
                     border: 0px solid; 
                 }
-        ''')
+        """
+        )
         self.widget.setLayout(self.layout)
         self.setSizeHint(self.widget.sizeHint())
         if parent is not None:
@@ -56,25 +67,29 @@ class ListItem(QListWidgetItem):
 
     def highlight(self):
         """highlight item"""
-        self.label.setStyleSheet('''
+        self.label.setStyleSheet(
+            """
                         QLabel{
                             font-weight: bold;
                             text-decoration: underline;
                         }
-                ''')
+                """
+        )
 
     def unhighlight(self):
         """unhighlight item"""
-        self.label.setStyleSheet('''
+        self.label.setStyleSheet(
+            """
                                 QLabel{
                                 }
-                        ''')
+                        """
+        )
 
     def __hash__(self):
         return hash(self._file_path)
 
     def __eq__(self, other):
-        """ Compares two ListItems file_path attributes"""
+        """Compares two ListItems file_path attributes"""
         if not isinstance(other, type(self)):
             return NotImplemented
         return self._file_path == other._file_path
