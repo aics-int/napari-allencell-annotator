@@ -32,7 +32,7 @@ class TestAnnotatorController:
         self._controller.view.set_curr_index.assert_called_once_with(None)
         assert self._controller.annotation_dict == {}
         self._controller.view.set_num_images.assert_called_once_with(None)
-        self._controller.view.next_btn.setText.assert_called_once_with("Next")
+        self._controller.view.next_btn.setText.assert_called_once_with("Next >")
         self._controller.view.set_mode.assert_called_once_with(mode=AnnotatorViewMode.VIEW)
         self._controller.view.render_default_values.assert_called_once_with()
         self._controller.view.toggle_annots_editable.assert_called_once_with(False)
@@ -56,7 +56,7 @@ class TestAnnotatorController:
         assert self._controller.annotation_dict["path.png"] == ["path", ""]
         self._controller.view.render_values.assert_not_called()
         self._controller.view.set_curr_index.assert_called_once_with(1)
-        self._controller.view.next_btn.setText.assert_called_once_with("Next")
+        self._controller.view.next_btn.setText.assert_called_once_with("Next >")
 
     def test_set_curr_img_in_keys(self):
         self._controller.annotation_dict["path.png"] = ["path", "", "text", 2]
@@ -71,7 +71,7 @@ class TestAnnotatorController:
         assert self._controller.annotation_dict["path.png"] == ["path", "", "text", 2]
         self._controller.view.render_values.assert_called_once_with(["text", 2])
         self._controller.view.set_curr_index.assert_called_once_with(1)
-        self._controller.view.next_btn.setText.assert_called_once_with("Save and Export")
+        self._controller.view.next_btn.setText.assert_called_once_with("Finish")
 
     def test_record_annotations(self):
         prev: str = "path"

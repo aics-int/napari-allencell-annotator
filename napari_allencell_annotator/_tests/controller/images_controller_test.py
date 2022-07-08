@@ -158,16 +158,25 @@ class TestImagesController:
                                                         mock.call("file_3.png")])
         self._controller.view.file_widget.add_new_item.assert_not_called()
 
-    def test_start_annotating_not_shuffled(self):
+    def test_start_annotating_zero(self):
         self._controller.view.file_widget = MagicMock()
         self._controller.view.file_widget.count = MagicMock(return_value=0)
-        self._controller._shuffle_clicked = MagicMock()
         self._controller.view.file_widget.setCurrentItem = MagicMock()
         self._controller.view.alert = MagicMock()
         self._controller.start_annotating()
-        self._controller._shuffle_clicked.assert_called_once_with(True)
         self._controller.view.file_widget.setCurrentItem.assert_not_called()
         self._controller.view.alert.assert_called_once_with("No files to annotate")
+
+    def test_start_annotating_not_shuffled(self):
+        self._controller.view.file_widget = MagicMock()
+        self._controller.view.file_widget.count = MagicMock(return_value=3)
+        self._controller.view.file_widget.setCurrentItem = MagicMock()
+        self._controller.view.alert = MagicMock()
+
+        self._controller.start_annotating()
+        self._controller.view.file_widget.setCurrentItem.assert_called_once_with(self._controller.view.file_widget.item(0))
+        self._controller.view.alert.assert_not_called()
+
 
     def test_stop_annotating(self):
         self._controller.view.file_widget = MagicMock()

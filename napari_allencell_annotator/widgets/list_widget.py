@@ -25,6 +25,8 @@ class ListWidget(QListWidget):
         Clears all image data.
     clear_for_shuff() -> List[str]
         Clears the list display and returns the file_order.
+    set_shuff_order(lst : List[str]
+        Sets the shuffle order list.
     add_new_item(file:str)
         Adds a new file to the list and file_order.
     add_item(file: str, hidden: bool)
@@ -45,7 +47,7 @@ class ListWidget(QListWidget):
         self.file_order: List[str] = []
         self.setCurrentItem(None)
         self._shuffled: bool = False
-
+        self.shuffle_order: List[str] = []
 
     @property
     def shuffled(self) -> bool:
@@ -60,11 +62,16 @@ class ListWidget(QListWidget):
     def clear_all(self):
         """Clear all image data."""
         self._shuffled = False
-        self.checked= set()
+        self.checked = set()
         self.files = set()
         self.file_order = []
+        self.shuffle_order = []
         self.setCurrentItem(None)
         self.clear()
+
+    def set_shuff_order(self, lst: List[str]):
+        """Set shuffled order."""
+        self.shuffle_order = lst
 
     def clear_for_shuff(self) -> List[str]:
         """
@@ -78,6 +85,7 @@ class ListWidget(QListWidget):
             file_order.
         """
         self._shuffled = not self._shuffled
+        self.shuffle_order = []
         self.setCurrentItem(None)
         self.checked = set()
         self.clear()

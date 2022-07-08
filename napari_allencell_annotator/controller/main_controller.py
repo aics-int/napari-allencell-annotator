@@ -114,9 +114,8 @@ class MainController(QWidget):
         image is being annotated, enable previous button.
         """
         self.annots.record_annotations(self.images.curr_img_dict()['File Path'])
-        if self.annots.view.next_btn.text() == "Save and Export":
-            proceed: bool = self.annots.view.popup("Annotations Saved. Would you like to continue editing these "
-                                                   "annotations?")
+        if self.annots.view.next_btn.text() == "Finish":
+            proceed: bool = self.annots.view.popup("Annotations Saved. Would you like to close this session?")
 
             self.annots.write_to_csv()
             if not proceed:

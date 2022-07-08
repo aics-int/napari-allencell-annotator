@@ -99,9 +99,9 @@ class AnnotatorView(QWidget):
         # Add widget visible in ADD mode
         self.add_widget = QWidget()
         add_layout = QHBoxLayout()
-        self.create_btn = QPushButton("Create Annotations")
+        self.create_btn = QPushButton("Create New Annotations")
         self.create_btn.setEnabled(True)
-        self.import_btn = QPushButton("Import Existing Annotations")
+        self.import_btn = QPushButton("Import Existing Annotations (.csv or .json)")
         self.import_btn.setEnabled(True)
 
         add_layout.addWidget(self.create_btn, stretch=2)

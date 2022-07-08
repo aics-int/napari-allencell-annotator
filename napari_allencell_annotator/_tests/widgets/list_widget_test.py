@@ -32,6 +32,7 @@ class TestListWidget:
         self._widget._shuffled = True
         self._widget.setCurrentItem = MagicMock()
         self._widget.clear = MagicMock()
+        self._widget.shuffle_order = ['item']
         self._widget.checked= {"item"}
         self._widget.files = {'item'}
         self._widget.file_order = ['item']
@@ -41,24 +42,32 @@ class TestListWidget:
         assert self._widget.checked == set()
         assert self._widget.files == set()
         assert self._widget.file_order == []
+        assert self._widget.shuffle_order == []
         self._widget.setCurrentItem.assert_called_once_with(None)
         self._widget.clear.assert_called_once_with()
 
+    def test_set_shuff_order(self):
+        self._widget.shuffle_order = ['item']
+        self._widget.set_shuff_order(['item2'])
+        assert self._widget.shuffle_order == ['item2']
+
     def test_clear_for_shuffle(self):
         self._widget._shuffled = False
+        self._widget.shuffle_order = ['item']
         self._widget.setCurrentItem = MagicMock()
         self._widget.clear = MagicMock()
         self._widget.checked = set('item')
         self._widget.clear = MagicMock()
-        self._widget.file_order = 'order'
+        self._widget.file_order = ['order']
 
         ret = self._widget.clear_for_shuff()
 
+        assert self._widget.shuffle_order == []
         assert self._widget._shuffled == True
         self._widget.setCurrentItem.assert_called_once_with(None)
         assert self._widget.checked == set()
         self._widget.clear.assert_called_once_with()
-        assert ret == 'order'
+        assert ret == ['order']
 
     def test_add_new_item_in_files(self):
         item = "item"
@@ -203,7 +212,7 @@ class TestListWidget:
         self._widget.delete_checked()
 
         assert self._widget.checked == set()
-        self._widget.remove_item.assert_has_calls([mock.call(item), mock.call(item2)])
+        self._widget.remove_item.assert_has_calls([mock.call(item), mock.call(item2)], any_order=True)
         self._widget.files_selected.emit.assert_called_once_with(False)
 
     def test_check_evt_checked(self):

@@ -26,7 +26,7 @@ class ImagesController:
         Returns True if a file is a supported file type.
 
     start_annotating()
-        Shuffles the images if they haven't been shuffled and sets current item.
+        Sets the current item.
 
     curr_img_dict() -> Dict[str,str]
         Returns a dictionary with the current image attributes.
@@ -58,6 +58,8 @@ class ImagesController:
         Shuffle file order and hide file names if checked.
         Return files to original order and names if unchecked.
 
+        Side effect: set file_widget.shuffle_order to a new order or [] if list is unshuffled.
+
         Parameters
         ----------
         checked : bool
@@ -67,6 +69,7 @@ class ImagesController:
         if checked:
             self.view.toggle_add(False)
             random.shuffle(files)
+            self.view.file_widget.set_shuff_order(files)
             for f in files:
                 self.view.file_widget.add_item(f, hidden=True)
 
@@ -143,11 +146,7 @@ class ImagesController:
                     self.view.alert("Unsupported file type:" + file)
 
     def start_annotating(self):
-        """
-        Shuffle images if they haven't been shuffled and set current item
-        to the first item.
-        """
-        self._shuffle_clicked(True)
+        """Set current item to the first item."""
         if self.view.file_widget.count() > 0:
             self.view.file_widget.setCurrentItem(self.view.file_widget.item(0))
         else:
