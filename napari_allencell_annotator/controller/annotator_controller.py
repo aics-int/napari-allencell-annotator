@@ -6,7 +6,7 @@ from napari_allencell_annotator.view.annotator_view import (
 from napari_allencell_annotator.util.directories import Directories
 import napari
 
-from typing import Dict, List
+from typing import Dict, List, Optional
 import csv
 
 
@@ -58,24 +58,24 @@ class AnnotatorController:
         self.view.show()
         self.curr_img: Dict[str, str] = None
         self.csv_name: str = None
+        # annotation dictionary maps file paths -> [file name, FMS, annot1val, annot2val, ...]
+        self.annotation_dict: Dict[str, List[str]] = {}
 
-        self.annotation_dict: Dict[str, (List[str], List[str])] = {}
-
-    def set_csv_name(self, name: str):
+    def set_csv_name(self, name: Optional[str] = None):
         """Set csv file name for writing."""
         self.csv_name = name
 
     def stop_annotating(self):
         """Reset values from annotating and change mode to VIEW."""
-        self.view.set_curr_index(None)
+        self.view.set_curr_index()
         self.annotation_dict = {}
-        self.view.set_num_images(None)
+        self.view.set_num_images()
         self.view.next_btn.setText("Next >")
         self.view.set_mode(mode=AnnotatorViewMode.VIEW)
         self.view.render_default_values()
         self.view.toggle_annots_editable(False)
-        self.set_curr_img(None)
-        self.set_csv_name(None)
+        self.set_curr_img()
+        self.set_csv_name()
 
     def start_annotating(self, num_images: int):
         """
@@ -90,7 +90,7 @@ class AnnotatorController:
         self.view.set_num_images(num_images)
         self.view.set_mode(mode=AnnotatorViewMode.ANNOTATE)
 
-    def set_curr_img(self, curr_img: Dict[str, str]):
+    def set_curr_img(self, curr_img: Optional[Dict[str, str]] = None):
         """
         Set the current image and add the image to annotations_dict.
 

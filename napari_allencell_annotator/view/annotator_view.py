@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
@@ -19,7 +19,7 @@ from PyQt5.QtWidgets import (
     QAbstractScrollArea,
     QMessageBox,
 )
-import napari
+from napari import Viewer
 from napari_allencell_annotator.widgets.file_input import (
     FileInput,
     FileInputMode,
@@ -87,7 +87,7 @@ class AnnotatorView(QWidget):
 
     def __init__(
         self,
-        viewer: napari.Viewer,
+        viewer: Viewer,
         contr,
         mode: AnnotatorViewMode = AnnotatorViewMode.ADD,
     ):
@@ -175,7 +175,7 @@ class AnnotatorView(QWidget):
         self.annots_order: List[str] = []
         self.default_vals: List[str] = []
         self.setLayout(self.layout)
-        self.viewer: napari.Viewer = viewer
+        self.viewer: Viewer = viewer
 
     @property
     def mode(self) -> AnnotatorViewMode:
@@ -185,17 +185,14 @@ class AnnotatorView(QWidget):
         self._mode = mode
         self._display_mode()
 
-    def set_num_images(self, num: int):
+    def set_num_images(self, num: Optional[int] = None):
         """Set the total number of images to be annotated"""
         self.num_images = num
-        if num is not None:
-            self.num_images = int(num)
 
-    def set_curr_index(self, num: int):
+    def set_curr_index(self, num: Optional[int] = None):
         """Set the index of the currently selected image and display it on progress bar."""
-        self.curr_index = num
         if num is not None:
-            self.curr_index = int(num)
+            self.curr_index = num
             self.progress_bar.setText(
                 "{} of {} Images".format(self.curr_index + 1, self.num_images)
             )

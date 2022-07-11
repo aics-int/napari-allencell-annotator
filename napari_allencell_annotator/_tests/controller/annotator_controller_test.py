@@ -36,9 +36,9 @@ class TestAnnotatorController:
         self._controller.set_csv_name = MagicMock()
         self._controller.stop_annotating()
 
-        self._controller.view.set_curr_index.assert_called_once_with(None)
+        self._controller.view.set_curr_index.assert_called_once_with()
         assert self._controller.annotation_dict == {}
-        self._controller.view.set_num_images.assert_called_once_with(None)
+        self._controller.view.set_num_images.assert_called_once_with()
         self._controller.view.next_btn.setText.assert_called_once_with(
             "Next >"
         )
@@ -49,8 +49,8 @@ class TestAnnotatorController:
         self._controller.view.toggle_annots_editable.assert_called_once_with(
             False
         )
-        self._controller.set_curr_img.assert_called_once_with(None)
-        self._controller.set_csv_name.assert_called_once_with(None)
+        self._controller.set_curr_img.assert_called_once_with()
+        self._controller.set_csv_name.assert_called_once_with()
 
     def test_start_annotating(self):
         self._controller.start_annotating(4)

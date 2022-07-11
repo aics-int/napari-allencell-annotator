@@ -1,4 +1,3 @@
-import os
 from enum import Enum
 
 from PyQt5.QtWidgets import QPushButton
