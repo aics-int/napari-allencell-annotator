@@ -22,42 +22,40 @@ class TestImagesController:
 
     def test_shuffle_clicked_none(self):
         # test when list widget has no items
-        self._controller.view.file_widget.clear_for_shuff = MagicMock()
-        self._controller.view.toggle_add = MagicMock()
-        self._controller.view.file_widget.add_item = MagicMock()
+        self._controller.view.file_widget.clear_for_shuff = MagicMock(return_value=[])
         self._controller._shuffle_clicked(True)
         self._controller.view.file_widget.clear_for_shuff.assert_called_once_with()
-        self._controller.view.toggle_add.assert_called_once_with(False)
-        self._controller.view.file_widget.add_item.assert_not_called()
-
-        self._controller.view.file_widget.clear_for_shuff = MagicMock()
-        self._controller.view.toggle_add = MagicMock()
-        self._controller.view.file_widget.add_item = MagicMock()
-        self._controller._shuffle_clicked(False)
-        self._controller.view.file_widget.clear_for_shuff.assert_called_once_with()
-        self._controller.view.toggle_add.assert_called_once_with(True)
+        self._controller.view.file_widget.set_shuff_order.assert_not_called()
+        self._controller.view.toggle_add.assert_not_called()
         self._controller.view.file_widget.add_item.assert_not_called()
 
     def test_shuffle_clicked_one(self):
         # test when list widget has one item
-        self._controller.view.file_widget.add_item = MagicMock()
+        self._controller.view.file_widget = MagicMock()
         self._controller.view.file_widget.clear_for_shuff.return_value = [
             "file_1.png"
         ]
+
         self._controller._shuffle_clicked(True)
         self._controller.view.file_widget.add_item.assert_called_once_with(
             "file_1.png", hidden=True
         )
+        self._controller.view.file_widget.set_shuff_order.assert_called_once()
 
-        self._controller.view.file_widget.add_item = MagicMock()
+    def test_shuffle_clicked_one_false(self):
+        self._controller.view.file_widget = MagicMock()
+        self._controller.view.file_widget.clear_for_shuff.return_value = [
+            "file_1.png"
+        ]
         self._controller._shuffle_clicked(False)
         self._controller.view.file_widget.add_item.assert_called_once_with(
             "file_1.png", hidden=False
         )
+        self._controller.view.file_widget.set_shuff_order.assert_called_once_with()
 
     def test_shuffle_clicked_mult(self):
         # test when list widget has multiple items
-        self._controller.view.file_widget.add_item = MagicMock()
+        self._controller.view.file_widget = MagicMock()
         self._controller.view.file_widget.clear_for_shuff.return_value = [
             "file_1.png",
             "file_2.png",
@@ -69,6 +67,7 @@ class TestImagesController:
         ) == len(
             self._controller.view.file_widget.clear_for_shuff.return_value
         )
+        self._controller.view.file_widget.set_shuff_order.assert_called_once()
 
     def test_is_supported(self):
         for file_type in SUPPORTED_FILE_TYPES:

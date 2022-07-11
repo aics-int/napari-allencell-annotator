@@ -65,18 +65,21 @@ class ImagesController:
         checked : bool
             Toggle state of the shuffle button.
         """
-        files: List[str] = [i for i in self.view.file_widget.clear_for_shuff()]
-        if checked:
-            self.view.toggle_add(False)
-            random.shuffle(files)
-            self.view.file_widget.set_shuff_order(files)
-            for f in files:
-                self.view.file_widget.add_item(f, hidden=True)
 
-        else:
-            self.view.toggle_add(True)
-            for f in files:
-                self.view.file_widget.add_item(f, hidden=False)
+        files: List[str] = [i for i in self.view.file_widget.clear_for_shuff()]
+        if len(files) > 0:
+            if checked:
+                self.view.toggle_add(False)
+                random.shuffle(files)
+                self.view.file_widget.set_shuff_order(files)
+                for f in files:
+                    self.view.file_widget.add_item(f, hidden=True)
+
+            else:
+                self.view.toggle_add(True)
+                self.view.file_widget.set_shuff_order()
+                for f in files:
+                    self.view.file_widget.add_item(f, hidden=False)
 
     @staticmethod
     def is_supported(file_name: str) -> bool:
