@@ -1,9 +1,12 @@
 import json
-from napari_allencell_annotator.view.annotator_view import AnnotatorView, AnnotatorViewMode
+from napari_allencell_annotator.view.annotator_view import (
+    AnnotatorView,
+    AnnotatorViewMode,
+)
 from napari_allencell_annotator.util.directories import Directories
 import napari
 
-from typing import Dict, List
+from typing import Dict, List, Optional
 import csv
 
 
@@ -48,29 +51,31 @@ class AnnotatorController:
         # open in add mode
         # self.view = AnnotatorView(napari.Viewer(), data)
         # open in view mode
-        self.view: AnnotatorView = AnnotatorView(viewer, self, mode=AnnotatorViewMode.VIEW)
+        self.view: AnnotatorView = AnnotatorView(
+            viewer, self, mode=AnnotatorViewMode.VIEW
+        )
         self.view.render_annotations(self.annot_data)
         self.view.show()
         self.curr_img: Dict[str, str] = None
         self.csv_name: str = None
+        # annotation dictionary maps file paths -> [file name, FMS, annot1val, annot2val, ...]
+        self.annotation_dict: Dict[str, List[str]] = {}
 
-        self.annotation_dict: Dict[str, (List[str], List[str])] = {}
-
-    def set_csv_name(self, name: str):
+    def set_csv_name(self, name: Optional[str] = None):
         """Set csv file name for writing."""
         self.csv_name = name
 
     def stop_annotating(self):
         """Reset values from annotating and change mode to VIEW."""
-        self.view.set_curr_index(None)
+        self.view.set_curr_index()
         self.annotation_dict = {}
-        self.view.set_num_images(None)
+        self.view.set_num_images()
         self.view.next_btn.setText("Next >")
         self.view.set_mode(mode=AnnotatorViewMode.VIEW)
         self.view.render_default_values()
         self.view.toggle_annots_editable(False)
-        self.set_curr_img(None)
-        self.set_csv_name(None)
+        self.set_curr_img()
+        self.set_csv_name()
 
     def start_annotating(self, num_images: int):
         """
@@ -85,7 +90,7 @@ class AnnotatorController:
         self.view.set_num_images(num_images)
         self.view.set_mode(mode=AnnotatorViewMode.ANNOTATE)
 
-    def set_curr_img(self, curr_img: Dict[str, str]):
+    def set_curr_img(self, curr_img: Optional[Dict[str, str]] = None):
         """
         Set the current image and add the image to annotations_dict.
 
@@ -102,7 +107,8 @@ class AnnotatorController:
             path: str = curr_img["File Path"]
             if path not in self.annotation_dict.keys():
                 self.annotation_dict.update(
-                    {path: [curr_img["File Name"], curr_img["FMS"]]})
+                    {path: [curr_img["File Name"], curr_img["FMS"]]}
+                )
                 self.view.render_default_values()
             else:
                 self.view.render_values(self.annotation_dict[path][2::])
@@ -122,11 +128,13 @@ class AnnotatorController:
             The previous image file path.
         """
         lst: List = self.view.get_curr_annots()
-        self.annotation_dict[prev_img] = self.annotation_dict[prev_img][:2] + lst
+        self.annotation_dict[prev_img] = (
+            self.annotation_dict[prev_img][:2] + lst
+        )
 
     def write_to_csv(self):
-        """Write header and annotations to the csv file. """
-        file = open(self.csv_name, 'w')
+        """Write header and annotations to the csv file."""
+        file = open(self.csv_name, "w")
         writer = csv.writer(file)
         header: List[str] = []
         for key, dic in self.annot_data.items():

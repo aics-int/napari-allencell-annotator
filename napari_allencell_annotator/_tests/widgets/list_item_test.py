@@ -10,7 +10,7 @@ class TestListItem:
     def setup_method(self):
         with mock.patch.object(ListItem, "__init__", lambda x: None):
             self._widget = ListItem()
-            self._widget._file_path = 'path'
+            self._widget._file_path = "path"
 
     def test_file_path(self):
         expected_path = "path"
