@@ -112,7 +112,7 @@ class AnnotatorController:
                 self.view.render_default_values()
             else:
                 self.view.render_values(self.annotation_dict[path][2::])
-            self.view.set_curr_index(curr_img["Row"])
+            self.view.set_curr_index(int(curr_img["Row"]))
             if int(curr_img["Row"]) == self.view.num_images - 1:
                 self.view.next_btn.setText("Finish")
             elif int(curr_img["Row"]) == self.view.num_images - 2:

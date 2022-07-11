@@ -71,17 +71,25 @@ class ImagesView(QWidget):
 
         self.file_widget = ListWidget()
         self.file_widget.files_selected.connect(self._toggle_delete)
+        self.file_widget.files_added.connect(self._toggle_shuffle)
 
         self.scroll = QScrollArea()
         self.scroll.setWidget(self.file_widget)
         self.scroll.setWidgetResizable(True)
         self.layout.addWidget(self.scroll, 2, 0, 10, 4)
 
+        self.shuffle = QPushButton("Shuffle and Hide")
+        self.shuffle.setCheckable(True)
+        self.shuffle.toggled.connect(self._update_shuff_text)
+
+        self.shuffle.setEnabled(False)
+
         self.delete = QPushButton("Delete Selected")
         self.delete.setEnabled(False)
 
         self.delete.clicked.connect(self._delete_clicked)
 
+        self.layout.addWidget(self.shuffle, 13, 0, 1, 3)
         self.layout.addWidget(self.delete, 13, 3, 1, 1)
 
         self.setLayout(self.layout)
@@ -91,8 +99,23 @@ class ImagesView(QWidget):
         self.ctrl = ctrl
         self.viewer = viewer
 
+    def _update_shuff_text(self, checked: bool):
+        """
+        Update shuffle button text to reflect toggle state.
+
+        Parameters
+        ----------
+        checked : bool
+            Toggle state of shuffle button.
+        """
+        if checked:
+            self.shuffle.setText("Unshuffle and Unhide")
+        else:
+            self.shuffle.setText("Shuffle and Hide")
+
     def reset_buttons(self):
         self._toggle_delete(False)
+        self._toggle_shuffle(False)
         self.toggle_add(True)
 
     def _delete_clicked(self):
@@ -147,6 +170,19 @@ class ImagesView(QWidget):
             self.delete.setEnabled(True)
         elif not checked:
             self.delete.setEnabled(False)
+
+    def _toggle_shuffle(self, files_added: bool):
+        """
+        Enable shuffle button when files are added.
+
+        Parameters
+        ----------
+        files_added : bool
+        """
+        if files_added:
+            self.shuffle.setEnabled(True)
+        elif not files_added:
+            self.shuffle.setEnabled(False)
 
     def _display_img(self, current: ListItem, previous: ListItem):
         """Display the current image in napari."""

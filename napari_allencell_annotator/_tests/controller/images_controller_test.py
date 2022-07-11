@@ -16,7 +16,7 @@ class TestImagesController:
     def setup_method(self):
         self._mock_viewer: MagicMock = create_autospec(napari.Viewer)
         with mock.patch(
-            "napari_allencell_annotator.controller.images_controller.ImagesView"
+                "napari_allencell_annotator.controller.images_controller.ImagesView"
         ):
             self._controller = ImagesController(self._mock_viewer)
 
@@ -32,9 +32,9 @@ class TestImagesController:
     def test_shuffle_clicked_one(self):
         # test when list widget has one item
         self._controller.view.file_widget = MagicMock()
-        self._controller.view.file_widget.clear_for_shuff.return_value = [
-            "file_1.png"
-        ]
+        self._controller.view.file_widget.clear_for_shuff.return_value = {
+            "file_1.png": {"File Name": 'name', "FMS": ""}
+        }
 
         self._controller._shuffle_clicked(True)
         self._controller.view.file_widget.add_item.assert_called_once_with(
@@ -44,9 +44,9 @@ class TestImagesController:
 
     def test_shuffle_clicked_one_false(self):
         self._controller.view.file_widget = MagicMock()
-        self._controller.view.file_widget.clear_for_shuff.return_value = [
-            "file_1.png"
-        ]
+        self._controller.view.file_widget.clear_for_shuff.return_value = {
+            "file_1.png": {"File Name": 'name', "FMS": ""}
+        }
         self._controller._shuffle_clicked(False)
         self._controller.view.file_widget.add_item.assert_called_once_with(
             "file_1.png", hidden=False
@@ -56,11 +56,12 @@ class TestImagesController:
     def test_shuffle_clicked_mult(self):
         # test when list widget has multiple items
         self._controller.view.file_widget = MagicMock()
-        self._controller.view.file_widget.clear_for_shuff.return_value = [
-            "file_1.png",
-            "file_2.png",
-            "file_3.png",
-        ]
+        self._controller.view.file_widget.file_dict = {"file_1.png": {"File Name": 'name', "FMS": ""},
+                                                       "file_2.png": {"File Name": 'name', "FMS": ""},
+                                                       "file_3.png": {"File Name": 'name', "FMS": ""},
+                                                       "file_4.png": {"File Name": 'name', "FMS": ""}}
+
+        self._controller.view.file_widget.clear_for_shuff.return_value = self._controller.view.file_widget.file_dict
         self._controller._shuffle_clicked(True)
         assert len(
             self._controller.view.file_widget.add_item.mock_calls
@@ -275,7 +276,7 @@ class TestImagesController:
 
         self._controller.next_img()
         assert (
-            len(self._controller.view.file_widget.get_curr_row.mock_calls) == 2
+                len(self._controller.view.file_widget.get_curr_row.mock_calls) == 2
         )
 
         self._controller.view.file_widget.count.assert_called_once()
@@ -294,7 +295,7 @@ class TestImagesController:
 
         self._controller.next_img()
         assert (
-            len(self._controller.view.file_widget.get_curr_row.mock_calls) == 1
+                len(self._controller.view.file_widget.get_curr_row.mock_calls) == 1
         )
 
         self._controller.view.file_widget.count.assert_called_once()
@@ -310,7 +311,7 @@ class TestImagesController:
 
         self._controller.prev_img()
         assert (
-            len(self._controller.view.file_widget.get_curr_row.mock_calls) == 2
+                len(self._controller.view.file_widget.get_curr_row.mock_calls) == 2
         )
 
         self._controller.view.file_widget.setCurrentItem.assert_called_once_with(
@@ -327,7 +328,7 @@ class TestImagesController:
 
         self._controller.prev_img()
         assert (
-            len(self._controller.view.file_widget.get_curr_row.mock_calls) == 1
+                len(self._controller.view.file_widget.get_curr_row.mock_calls) == 1
         )
 
         self._controller.view.file_widget.setCurrentItem.assert_not_called()

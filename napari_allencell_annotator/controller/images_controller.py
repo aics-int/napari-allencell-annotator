@@ -25,6 +25,9 @@ class ImagesController:
     is_supported(file_name:str)->bool
         Returns True if a file is a supported file type.
 
+    get_files_dict(self) -> Dict[str,Dict[str,str]]
+        Returns the file dictionary that has the current file order.
+
     start_annotating()
         Sets the current item.
 
@@ -53,12 +56,26 @@ class ImagesController:
         self.view.input_file.file_selected.connect(self._file_selected_evt)
         self.view.shuffle.clicked.connect(self._shuffle_clicked)
 
+    def get_files_dict(self) -> Dict[str,Dict[str,str]]:
+        """
+        Return the file dictionary that has the current file order.
+
+        Returns
+        ----------
+        Dict[str,Dict[str,str]]
+            dictionary of file info. keys in order.
+         """
+        if self.view.file_widget.shuffled:
+            return self.view.file_widget.shuffle_order
+        else:
+            return self.view.file_widget.file_dict
+
     def _shuffle_clicked(self, checked: bool):
         """
         Shuffle file order and hide file names if checked.
         Return files to original order and names if unchecked.
 
-        Side effect: set file_widget.shuffle_order to a new order or [] if list is unshuffled.
+        Side effect: set file_widget.shuffle_order to a new order dict or {} if list is unshuffled.
 
         Parameters
         ----------
@@ -66,19 +83,22 @@ class ImagesController:
             Toggle state of the shuffle button.
         """
 
-        files: List[str] = [i for i in self.view.file_widget.clear_for_shuff()]
+        files: Dict[str, Dict[str,str]] = self.view.file_widget.clear_for_shuff()
         if len(files) > 0:
             if checked:
                 self.view.toggle_add(False)
-                random.shuffle(files)
-                self.view.file_widget.set_shuff_order(files)
-                for f in files:
-                    self.view.file_widget.add_item(f, hidden=True)
+                keys = list(files.keys())
+                random.shuffle(keys)
+                shuff_dict = {}
+                for k in keys:
+                    shuff_dict[k] = files[k]
+                    self.view.file_widget.add_item(k, hidden=True)
+                self.view.file_widget.set_shuff_order(shuff_dict)
 
             else:
                 self.view.toggle_add(True)
                 self.view.file_widget.set_shuff_order()
-                for f in files:
+                for f in files.keys():
                     self.view.file_widget.add_item(f, hidden=False)
 
     @staticmethod

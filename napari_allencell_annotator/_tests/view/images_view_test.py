@@ -22,6 +22,7 @@ class TestImagesView:
     def test_reset_buttons(self):
         self._view._toggle_delete = MagicMock()
         self._view._toggle_shuffle = MagicMock()
+        self._view._toggle_shuffle = MagicMock()
         self._view.toggle_add = MagicMock()
         self._view.reset_buttons()
         self._view._toggle_delete.assert_called_once_with(False)
