@@ -1,39 +1,40 @@
 {
-  "annotation_name": {
+  "comments": {
     "type": "string",
-    "default": "text"
+    "default": "n/a"
   },
-  "annotation_name_2": {
+  "number of cells": {
     "type": "number",
-    "default": 2
+    "default": 1
   },
-  "annotation_name_3": {
+  "live cell": {
     "type": "bool",
     "default": true
   },
-  "annotation_name_4": {
+  "Phase of mitosis": {
     "type": "list",
-    "default": "a",
+    "default": "prophase",
     "options": [
-      "a",
-      "b",
-      "c",
-      "d"
+      "prophase",
+      "metaphase",
+      "anaphase",
+      "telophase",
+      "cytokinesis"
     ]
   },
-    "annotation_name_5": {
+    "notes": {
     "type": "string",
-    "default": "text"
+    "default": "n/a"
   },
-  "annotation_name_6": {
+  "id number": {
     "type": "number",
     "default": 2
   },
-  "annotation_name_7": {
+  "has movement": {
     "type": "bool",
     "default": true
   },
-  "annotation_name_8": {
+  "cell batch": {
     "type": "list",
     "default": "a",
     "options": [

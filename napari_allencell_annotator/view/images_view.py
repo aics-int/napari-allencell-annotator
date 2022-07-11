@@ -4,14 +4,20 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QWidget,
     QLabel,
-    QScrollArea, QGridLayout, QPushButton, QMessageBox,
+    QScrollArea,
+    QGridLayout,
+    QPushButton,
+    QMessageBox,
 )
 import napari
 from aicsimageio import AICSImage, exceptions
 from napari.utils.notifications import show_info
 
-from napari_allencell_annotator.widgets.file_input import FileInput, FileInputMode
-from napari_allencell_annotator.widgets.list_widget import ListWidget
+from napari_allencell_annotator.widgets.file_input import (
+    FileInput,
+    FileInputMode,
+)
+from napari_allencell_annotator.widgets.list_widget import ListWidget, ListItem
 
 
 class ImagesView(QWidget):
@@ -53,9 +59,13 @@ class ImagesView(QWidget):
         self.input_dir: FileInput
         self.input_file: FileInput
 
-        self.input_dir = FileInput(mode=FileInputMode.DIRECTORY, placeholder_text="Add a folder...")
+        self.input_dir = FileInput(
+            mode=FileInputMode.DIRECTORY, placeholder_text="Add a folder..."
+        )
 
-        self.input_file = FileInput(mode=FileInputMode.FILE, placeholder_text="Add files...")
+        self.input_file = FileInput(
+            mode=FileInputMode.FILE, placeholder_text="Add files..."
+        )
         self.layout.addWidget(self.input_dir, 1, 0, 1, 2)
         self.layout.addWidget(self.input_file, 1, 2, 1, 2)
 
@@ -86,9 +96,12 @@ class ImagesView(QWidget):
         self.file_widget.currentItemChanged.connect(self._display_img)
 
         self.ctrl = ctrl
-        self.napari = viewer
+        self.viewer = viewer
 
-        self.show()
+    def reset_buttons(self):
+        self._toggle_delete(False)
+        self._toggle_shuffle(False)
+        self.toggle_add(True)
 
     def _update_shuff_text(self, checked: bool):
         """
@@ -112,10 +125,10 @@ class ImagesView(QWidget):
                 msg = msg + "--- " + item.file_path + "\n"
 
             msg_box.setText(msg)
-            msg_box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+            msg_box.setStandardButtons(QMessageBox.No | QMessageBox.Yes)
 
             return_value = msg_box.exec()
-            if return_value == QMessageBox.Ok:
+            if return_value == QMessageBox.Yes:
                 self.file_widget.delete_checked()
         else:
             self.alert("No Images Selected")
@@ -129,7 +142,7 @@ class ImagesView(QWidget):
         alert_msg : str
             The message to be displayed
         """
-        #TODO: move to main view
+        # TODO: move to main view
         show_info(alert_msg)
 
     def toggle_add(self, enable: bool):
@@ -170,14 +183,18 @@ class ImagesView(QWidget):
         elif not files_added:
             self.shuffle.setEnabled(False)
 
-    def _display_img(self):
+    def _display_img(self, current: ListItem, previous: ListItem):
         """Display the current image in napari."""
-        self.napari.layers.clear()
-        if self.file_widget.currentItem() is not None:
+        self.viewer.layers.clear()
+        if previous is not None:
+            previous.unhighlight()
+        if current is not None:
             try:
-                self.napari.add_image(AICSImage(self.file_widget.currentItem().file_path).data)
+                img = AICSImage(current.file_path)
+                self.viewer.add_image(img.data)
+                current.highlight()
             except exceptions.UnsupportedFileFormatError:
                 self.alert("AICS Unsupported File Type")
             except FileNotFoundError:
                 self.alert("File no longer exists")
-                self.file_widget.remove_item(self.file_widget.currentItem())
+                self.file_widget.remove_item(current)

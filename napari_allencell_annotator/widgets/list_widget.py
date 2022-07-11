@@ -1,9 +1,10 @@
-from PyQt5.QtWidgets import QListWidget, QAbstractItemView, QWidget
+from PyQt5.QtWidgets import QListWidget, QAbstractItemView
 from typing import Set, List
 
 from qtpy.QtCore import Signal
 
 from napari_allencell_annotator.widgets.list_item import ListItem
+
 
 class ListWidget(QListWidget):
     """
@@ -20,8 +21,12 @@ class ListWidget(QListWidget):
 
     Methods
     -------
+    clear_all()
+        Clears all image data.
     clear_for_shuff() -> List[str]
         Clears the list display and returns the file_order.
+    set_shuff_order(lst : List[str]
+        Sets the shuffle order list.
     add_new_item(file:str)
         Adds a new file to the list and file_order.
     add_item(file: str, hidden: bool)
@@ -31,6 +36,7 @@ class ListWidget(QListWidget):
     delete_checked()
         Removes all items in checked.
     """
+
     files_selected = Signal(bool)
     files_added = Signal(bool)
 
@@ -38,12 +44,37 @@ class ListWidget(QListWidget):
         QListWidget.__init__(self)
         self.checked: Set[ListItem] = set()
         self.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.files : Set[str] = set()
-        self.file_order : List[str] = []
+        self.files: Set[str] = set()
+        self.file_order: List[str] = []
         self.setCurrentItem(None)
-        self.curr_item = self.currentItem()
+        self._shuffled: bool = False
+        self.shuffle_order: List[str] = []
 
-    def clear_for_shuff(self)->List[str]:
+    @property
+    def shuffled(self) -> bool:
+        return self._shuffled
+
+    def get_curr_row(self) -> int:
+        if self.currentItem() is not None:
+            return self.row(self.currentItem())
+        else:
+            return -1
+
+    def clear_all(self):
+        """Clear all image data."""
+        self._shuffled = False
+        self.checked = set()
+        self.files = set()
+        self.file_order = []
+        self.shuffle_order = []
+        self.setCurrentItem(None)
+        self.clear()
+
+    def set_shuff_order(self, lst: List[str]):
+        """Set shuffled order."""
+        self.shuffle_order = lst
+
+    def clear_for_shuff(self) -> List[str]:
         """
         Clear the list display and return the file_order.
 
@@ -54,11 +85,12 @@ class ListWidget(QListWidget):
         List[str]
             file_order.
         """
+        self._shuffled = not self._shuffled
+        self.shuffle_order = []
         self.setCurrentItem(None)
         self.checked = set()
         self.clear()
         return self.file_order
-
 
     def add_new_item(self, file: str):
         """
@@ -77,8 +109,7 @@ class ListWidget(QListWidget):
                 self.files_added.emit(True)
             self.add_item(file)
 
-
-    def add_item(self, file: str, hidden:bool = False):
+    def add_item(self, file: str, hidden: bool = False):
         """
         Add a file to the list, but not to the file_order.
 
@@ -115,8 +146,6 @@ class ListWidget(QListWidget):
             if len(self.files) == 0:
                 self.files_added.emit(False)
 
-
-
     def delete_checked(self):
         """
         Delete the checked items.
@@ -145,5 +174,3 @@ class ListWidget(QListWidget):
             self.checked.remove(item)
             if len(self.checked) == 0:
                 self.files_selected.emit(False)
-
-
