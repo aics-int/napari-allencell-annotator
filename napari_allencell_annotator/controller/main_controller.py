@@ -50,6 +50,7 @@ class MainController(QWidget):
         self.annots.view.file_input.file_selected.connect(
             self._file_selected_evt
         )
+        self.annots.view.save_exit_btn.clicked.connect(self.save_and_exit)
 
     def _file_selected_evt(self, file_list: List[str]):
         """
@@ -103,19 +104,18 @@ class MainController(QWidget):
         self.layout.addWidget(self.images.view, stretch=1)
         self.layout.addWidget(self.annots.view, stretch=2)
         self.images.view.show()
-        self.images.stop_annotating()
         self.annots.stop_annotating()
+        self.images.stop_annotating()
+
 
     def _setup_annotating(self):
         """Hide the file viewer and start the annotating process."""
         self.layout.removeWidget(self.images.view)
         self.images.view.hide()
         self.images.start_annotating()
-        self.annots.start_annotating(self.images.get_num_files())
+        self.annots.start_annotating(self.images.get_num_files(), self.images.get_files_dict())
         self.annots.set_curr_img(self.images.curr_img_dict())
-        self.annots.record_annotations(
-            self.images.curr_img_dict()["File Path"]
-        )
+
 
     def next_image(self):
         """
@@ -127,19 +127,19 @@ class MainController(QWidget):
         self.annots.record_annotations(
             self.images.curr_img_dict()["File Path"]
         )
-        if self.annots.view.next_btn.text() == "Finish":
-            proceed: bool = self.annots.view.popup(
-                "Annotations Saved. Would you like to close this session?"
-            )
 
-            self.annots.write_to_csv()
-            if not proceed:
-                self.stop_annotating()
-        else:
-            self.images.next_img()
-            self.annots.set_curr_img(self.images.curr_img_dict())
-            if self.images.curr_img_dict()["Row"] == "1":
-                self.annots.view.prev_btn.setEnabled(True)
+        self.images.next_img()
+        self.annots.set_curr_img(self.images.curr_img_dict())
+        if self.images.curr_img_dict()["Row"] == "1":
+            self.annots.view.prev_btn.setEnabled(True)
+
+    def save_and_exit(self):
+        proceed: bool = self.annots.view.popup(
+            "Close this session?"
+        )
+
+        if proceed:
+            self.stop_annotating()
 
     def prev_image(self):
         """

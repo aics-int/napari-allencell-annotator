@@ -10,7 +10,7 @@ from napari_allencell_annotator.controller.annotator_controller import (
     AnnotatorView,
 )
 
-from napari_allencell_annotator.controller.annotator_controller import napari
+from napari_allencell_annotator.controller.annotator_controller import napari, csv
 
 
 class TestAnnotatorController:
@@ -29,19 +29,22 @@ class TestAnnotatorController:
         assert self._controller.csv_name == "name"
 
     def test_stop_annotating(self):
+        self._controller.file = MagicMock()
         self._controller.annotation_dict = {"test": ["test"]}
-        self._controller.view.next_btn = MagicMock()
-
+        self._controller.write_csv = MagicMock()
+        self._controller.curr_img = {}
+        self._controller.record_annotations = MagicMock()
+        self._controller.curr_img['File Path'] = 'path'
         self._controller.set_curr_img = MagicMock()
         self._controller.set_csv_name = MagicMock()
         self._controller.stop_annotating()
-
+        self._controller.write_csv.assert_called_once_with()
+        self._controller.record_annotations.assert_called_once_with('path')
         self._controller.view.set_curr_index.assert_called_once_with()
         assert self._controller.annotation_dict == {}
         self._controller.view.set_num_images.assert_called_once_with()
-        self._controller.view.next_btn.setText.assert_called_once_with(
-            "Next >"
-        )
+
+
         self._controller.view.set_mode.assert_called_once_with(
             mode=AnnotatorViewMode.VIEW
         )
@@ -52,9 +55,19 @@ class TestAnnotatorController:
         self._controller.set_curr_img.assert_called_once_with()
         self._controller.set_csv_name.assert_called_once_with()
 
-    def test_start_annotating(self):
-        self._controller.start_annotating(4)
+    def test_start_annotating_empty(self):
+        self._controller.start_annotating(4, {})
 
+        assert self._controller.annotation_dict == {}
+        self._controller.view.set_num_images.assert_called_once_with(4)
+        self._controller.view.set_mode.assert_called_once_with(
+            mode=AnnotatorViewMode.ANNOTATE
+        )
+
+    def test_start_annotating(self):
+        self._controller.start_annotating(4, {'path' : ['lst']})
+
+        assert self._controller.annotation_dict == {'path' : ['lst']}
         self._controller.view.set_num_images.assert_called_once_with(4)
         self._controller.view.set_mode.assert_called_once_with(
             mode=AnnotatorViewMode.ANNOTATE
@@ -63,6 +76,7 @@ class TestAnnotatorController:
     def test_set_curr_img_not_in(self):
         self._controller.view.num_images = 3
         self._controller.view.next_btn = MagicMock()
+        self._controller.annotation_dict['path.png'] = ['path', '']
         dic = {
             "File Path": "path.png",
             "File Name": "path",
@@ -78,6 +92,9 @@ class TestAnnotatorController:
         self._controller.view.set_curr_index.assert_called_once_with(1)
         self._controller.view.next_btn.setText.assert_called_once_with(
             "Next >"
+        )
+        self._controller.view.next_btn.setEnabled.assert_called_once_with(
+            True
         )
 
     def test_set_curr_img_in_keys(self):
@@ -105,39 +122,38 @@ class TestAnnotatorController:
             ["text", 2]
         )
         self._controller.view.set_curr_index.assert_called_once_with(1)
-        self._controller.view.next_btn.setText.assert_called_once_with(
-            "Finish"
+        self._controller.view.next_btn.setEnabled.assert_called_once_with(
+            False
         )
 
     def test_record_annotations(self):
         prev: str = "path"
-        self._controller.annotation_dict = {"path": []}
+        self._controller.annotation_dict = {"path": ['name', 'fms']}
         self._controller.view.get_curr_annots = MagicMock(
             return_value=[1, 2, 3]
         )
         self._controller.record_annotations(prev)
-        assert self._controller.annotation_dict[prev] == [1, 2, 3]
+        assert self._controller.annotation_dict[prev] == ['name', 'fms',1, 2, 3]
         self._controller.view.get_curr_annots.assert_called_once_with()
 
+
     @patch("builtins.open", new_callable=mock_open, read_data="data")
-    def test_write_to_csv(self, mock_file):  # TODO
+    def test_start_csv(self, mock_file):
+        self._controller.annot_data = {"name" : {}, 'name2': {}, 'name3': {}}
         self._controller.csv_name = "test.csv"
         self._controller.view.annots_order = ["ann1", "ann2", "ann3"]
         self._controller.annotation_dict = {
             "path1.png": ["path1", "", "text", 1, True],
             "path2.png": ["path2", "", "text2", 2, True],
         }
-        with patch(
-            "napari_allencell_annotator.controller.annotator_controller.csv.writer"
-        ) as patched:
-            mock_write = MagicMock()
-            mock_write.writerow = MagicMock()
-            patched.return_value = mock_write
+        self._controller.writer = create_autospec(csv.writer)
+        self._controller.writer.writerow = MagicMock()
 
-            # csv.writer.writerow = MagicMock()
+        self._controller.write_csv()
 
-            self._controller.write_to_csv()
-            mock_file.assert_called_once_with("test.csv", "w")
-            patched.writerow.assert_any_call(
-                mock.call(["path1.png", "path1", "", "text", 1, True])
-            )
+        mock_file.assert_called_once_with("test.csv", "w")
+        # self._controller.writer.writerow.assert_has_calls([mock.call(["Annotations", 'name', '{}', 'name2', '{}', 'name3', '{}']),mock.call(["File Name", "File Path", "FMS", 'name',  'name2', 'name3'])])
+
+
+
+

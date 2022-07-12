@@ -20,6 +20,18 @@ class TestImagesController:
         ):
             self._controller = ImagesController(self._mock_viewer)
 
+    def test_get_files_dict(self):
+        self._controller.view.file_widget.shuffled = False
+        self._controller.view.file_widget.shuffle_order = "shuffle"
+        self._controller.view.file_widget.file_dict ='file'
+        assert self._controller.get_files_dict() == 'file'
+
+    def test_get_files_dict_shuffled(self):
+        self._controller.view.file_widget.shuffled = True
+        self._controller.view.file_widget.shuffle_order = "shuffle"
+        self._controller.view.file_widget.file_dict ='file'
+        assert self._controller.get_files_dict() == 'shuffle'
+
     def test_shuffle_clicked_none(self):
         # test when list widget has no items
         self._controller.view.file_widget.clear_for_shuff = MagicMock(return_value=[])
@@ -56,10 +68,10 @@ class TestImagesController:
     def test_shuffle_clicked_mult(self):
         # test when list widget has multiple items
         self._controller.view.file_widget = MagicMock()
-        self._controller.view.file_widget.file_dict = {"file_1.png": {"File Name": 'name', "FMS": ""},
-                                                       "file_2.png": {"File Name": 'name', "FMS": ""},
-                                                       "file_3.png": {"File Name": 'name', "FMS": ""},
-                                                       "file_4.png": {"File Name": 'name', "FMS": ""}}
+        self._controller.view.file_widget.file_dict = {"file_1.png": ['name', ""],
+                                                       "file_2.png": ['name', ""],
+                                                       "file_3.png": ['name', ""],
+                                                       "file_4.png": ['name', ""]}
 
         self._controller.view.file_widget.clear_for_shuff.return_value = self._controller.view.file_widget.file_dict
         self._controller._shuffle_clicked(True)

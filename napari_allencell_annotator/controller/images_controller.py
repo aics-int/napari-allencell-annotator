@@ -25,7 +25,7 @@ class ImagesController:
     is_supported(file_name:str)->bool
         Returns True if a file is a supported file type.
 
-    get_files_dict(self) -> Dict[str,Dict[str,str]]
+    get_files_dict(self) -> Dict[str,List[str]]
         Returns the file dictionary that has the current file order.
 
     start_annotating()
@@ -56,7 +56,7 @@ class ImagesController:
         self.view.input_file.file_selected.connect(self._file_selected_evt)
         self.view.shuffle.clicked.connect(self._shuffle_clicked)
 
-    def get_files_dict(self) -> Dict[str,Dict[str,str]]:
+    def get_files_dict(self) -> Dict[str,List[str]]:
         """
         Return the file dictionary that has the current file order.
 

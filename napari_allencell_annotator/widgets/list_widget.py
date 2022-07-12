@@ -42,7 +42,7 @@ class ListWidget(QListWidget):
         QListWidget.__init__(self)
         self.checked: Set[ListItem] = set()
         self.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.file_dict: Dict[str, Dict[str, str]] = {}
+        self.file_dict: Dict[str, List[str]] = {}
         self.setCurrentItem(None)
         self._shuffled: bool = False
         self.shuffle_order: Dict[str, Dict[str, str]] = {}
@@ -102,7 +102,7 @@ class ListWidget(QListWidget):
         if file not in self.file_dict.keys():
             item = ListItem(file, self, False)
             item.check.stateChanged.connect(lambda: self._check_evt(item))
-            self.file_dict[file] = {"File Name": item.get_name(), "FMS": ""}
+            self.file_dict[file] = [item.get_name(), ""]
             if len(self.file_dict) == 1:
                 self.files_added.emit(True)
 

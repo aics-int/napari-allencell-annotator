@@ -79,6 +79,7 @@ class TestMainController:
 
     def test_start_annotating_true(self):
         self._controller.images.get_num_files = MagicMock(return_value=1)
+
         self._controller.annots.view.popup.return_value = True
         self._controller.start_annotating()
         assert len(self._controller.images.get_num_files.mock_calls) == 2
@@ -106,6 +107,7 @@ class TestMainController:
         self._controller.annots.stop_annotating.assert_called_once_with()
 
     def test_setup_annotating(self):
+
         self._controller._setup_annotating()
         self._controller.layout.removeWidget.assert_called_once_with(
             self._controller.images.view
@@ -113,7 +115,7 @@ class TestMainController:
         self._controller.images.view.hide.assert_called_once()
         self._controller.images.start_annotating.assert_called_once()
         self._controller.annots.start_annotating.assert_called_once_with(
-            self._controller.images.get_num_files()
+            self._controller.images.get_num_files(), self._controller.images.get_files_dict()
         )
         self._controller.annots.set_curr_img.assert_called_once_with(
             self._controller.images.curr_img_dict()
@@ -123,7 +125,6 @@ class TestMainController:
         self._controller.annots.view.next_btn.text = MagicMock(
             return_value="Finish"
         )
-        self._controller.annots.write_to_csv = MagicMock()
         self._controller.annots.record_annotations = MagicMock()
         self._controller.images.curr_img_dict = MagicMock(
             return_value={"File Path": "path", "Row": "2"}
@@ -132,8 +133,6 @@ class TestMainController:
 
         self._controller.next_image()
 
-        self._controller.annots.view.next_btn.text.assert_called_once_with()
-        self._controller.annots.write_to_csv.assert_called_once_with()
         self._controller.annots.record_annotations.assert_called_once_with(
             "path"
         )
@@ -155,7 +154,6 @@ class TestMainController:
 
         self._controller.next_image()
 
-        self._controller.annots.view.next_btn.text.assert_called_once_with()
         self._controller.annots.write_to_csv.assert_not_called()
         self._controller.annots.record_annotations.assert_called_once_with(
             "path"
