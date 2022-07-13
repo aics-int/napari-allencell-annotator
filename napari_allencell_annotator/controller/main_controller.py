@@ -64,11 +64,12 @@ class MainController(QWidget):
     def create_clicked(self):
         dlg = CreateDialog(self)
         if dlg.exec() == QDialog.Accepted:
-            self.annots.set_annot_data(dlg.get_data())
+            self.annots.set_annot_data(dlg.data)
             self.annots.start_viewing()
-
         else:
             print("Cancel!")
+# todo highlight red on more than just name, fix sizing issue, testing, new PR
+
 
     def _csv_file_selected_evt(self, file_list: List[str]):
         """
@@ -85,7 +86,7 @@ class MainController(QWidget):
         else:
             # TODO save csv, ask if image set will be used, render annotations/images if relevant, alter state so that a new csv is not selected if a csv is uploaded?
             file_path = file_list[0]
-            #switch to view mode after creating/passing the json
+            # switch to view mode after creating/passing the json
 
     def import_annots(self):
         self.annots.view.annot_input.simulate_click()
@@ -120,8 +121,8 @@ class MainController(QWidget):
         Alert user if there are no files added.
         """
         if (
-            self.images.get_num_files() is None
-            or self.images.get_num_files() < 1
+                self.images.get_num_files() is None
+                or self.images.get_num_files() < 1
         ):
             self.images.view.alert("Can't Annotate Without Adding Images")
         else:
@@ -145,7 +146,6 @@ class MainController(QWidget):
         self.annots.stop_annotating()
         self.images.stop_annotating()
 
-
     def _setup_annotating(self):
         """Hide the file viewer and start the annotating process."""
         self.layout.removeWidget(self.images.view)
@@ -153,7 +153,6 @@ class MainController(QWidget):
         self.images.start_annotating()
         self.annots.start_annotating(self.images.get_num_files(), self.images.get_files_dict())
         self.annots.set_curr_img(self.images.curr_img_dict())
-
 
     def next_image(self):
         """

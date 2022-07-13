@@ -3,6 +3,7 @@ from typing import Tuple, Dict
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QListWidgetItem, QListWidget, QWidget, QHBoxLayout, QLineEdit, QComboBox, QLabel, QSpinBox, \
     QSizePolicy, QGridLayout, QStyle, QPushButton, QCheckBox
+from psygnal._signal import Signal
 
 
 class AnnotationItem(QListWidgetItem):
@@ -12,6 +13,7 @@ class AnnotationItem(QListWidgetItem):
     Attributes
     ----------
     """
+
 
     def __init__(
         self, parent: QListWidget
@@ -98,7 +100,7 @@ class AnnotationItem(QListWidgetItem):
             self.default_options_label.show()
             self.layout.addWidget(self.default_text, 0,7,1,2)
 
-    def get_data(self) -> Tuple[str, Dict]:
+    def get_data(self) -> Tuple[bool, str, Dict]:
         valid = True
         name : str = self.name.text()
         if name is None or name.isspace() or len(name) == 0:
@@ -106,8 +108,7 @@ class AnnotationItem(QListWidgetItem):
             self.name.setStyleSheet(
             """
                         QLineEdit{
-                            border-color: red;
-                            text-decoration: underline;
+                            border: 1px solid red
                         }
                 """
         )
@@ -130,8 +131,6 @@ class AnnotationItem(QListWidgetItem):
             dct['type'] = 'list'
             dct['default'] = self.default_text.text()
             dct['options'] = self.default_options.text().split(',')
-        if valid:
-            return name, dct
-        #else:
+        return valid, name, dct
 
 
