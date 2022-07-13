@@ -132,6 +132,10 @@ class AnnotatorView(QWidget):
             "Import Existing Annotations (.csv or .json)"
         )
         self.import_btn.setEnabled(True)
+        self.annot_input = FileInput(
+            mode=FileInputMode.JSONCSV, placeholder_text="Start Annotating"
+        )
+        self.annot_input.toggle(False)
 
         add_layout.addWidget(self.create_btn, stretch=2)
         add_layout.addWidget(self.import_btn, stretch=2)
@@ -275,10 +279,11 @@ class AnnotatorView(QWidget):
             The dictionary of annotation types.
         """
         self.annotation_item_widgets = []
-        if len(data) < 9:
-            self.annot_list.setMaximumHeight(45.5 * len(data))
+
         for name in data.keys():
             self._create_annot(name, data[name])
+        if len(data) < 9:
+            self.annot_list.setMaximumHeight(self.annot_list.item(0).sizeHint().height() * len(data))
 
     def _create_annot(self, name: str, dictn: Dict[str, str]):
         """

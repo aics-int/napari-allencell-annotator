@@ -9,6 +9,9 @@ from napari_allencell_annotator.controller.images_controller import (
 from napari_allencell_annotator.controller.annotator_controller import (
     AnnotatorController,
 )
+from napari_allencell_annotator.widgets.create_dialog import (
+    CreateDialog,
+)
 import napari
 from typing import List
 
@@ -40,6 +43,7 @@ class MainController(QWidget):
         self.setLayout(self.layout)
         self.show()
         self.napari.window.add_dock_widget(self, area="right")
+        dlg = CreateDialog()
         self._connect_slots()
 
     def _connect_slots(self):
@@ -51,6 +55,29 @@ class MainController(QWidget):
             self._file_selected_evt
         )
         self.annots.view.save_exit_btn.clicked.connect(self.save_and_exit)
+        self.annots.view.import_btn.clicked.connect(self.import_annots)
+        self.annots.view.annot_input.file_selected.connect(
+            self._csv_file_selected_evt
+        )
+
+    def _csv_file_selected_evt(self, file_list: List[str]):
+        """
+        Set csv file name for importing annotations.
+
+        Parameters
+        ----------
+        file_list : List[str]
+            The list containing one file name.
+        """
+
+        if file_list is None or len(file_list) < 1:
+            self.images.view.alert("No selection provided")
+        else:
+            # TODO save csv, ask if image set will be used, render annotations/images if relevant, alter state so that a new csv is not selected if a csv is uploaded?
+            file_path = file_list[0]
+
+    def import_annots(self):
+        self.view.annot_input.simulate_click()
 
     def _file_selected_evt(self, file_list: List[str]):
         """
@@ -81,6 +108,11 @@ class MainController(QWidget):
 
         Alert user if there are no files added.
         """
+        dlg = CreateDialog(self)
+        if dlg.exec():
+            print("Success!")
+        else:
+            print("Cancel!")
         if (
             self.images.get_num_files() is None
             or self.images.get_num_files() < 1

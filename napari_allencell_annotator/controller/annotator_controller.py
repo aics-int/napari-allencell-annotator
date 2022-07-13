@@ -63,6 +63,7 @@ class AnnotatorController:
         # annotation dictionary maps file paths -> [file name, FMS, annot1val, annot2val, ...]
         self.annotation_dict: Dict[str, List[str]] = {}
 
+
     def set_csv_name(self, name: Optional[str] = None):
         """Set csv file name for writing."""
         self.csv_name = name

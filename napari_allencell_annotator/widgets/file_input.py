@@ -10,6 +10,7 @@ class FileInputMode(Enum):
     DIRECTORY = "dir"
     FILE = "file"
     CSV = "csv"
+    JSONCSV = "jsoncsv"
 
 
 class FileInput(QWidget):
@@ -73,13 +74,25 @@ class FileInput(QWidget):
                 file_path = [file_path]
             else:
                 file_path = None
-        else:
+        elif self._mode == FileInputMode.CSV:
             file_path, _ = QFileDialog.getSaveFileName(
                 self,
                 "Select or create a csv file",
                 filter="CSV Files (*.csv)",
                 options=QFileDialog.Option.DontUseNativeDialog
                 | QFileDialog.Option.DontUseCustomDirectoryIcons,
+            )
+            if file_path is None or file_path == "":
+                file_path = None
+            else:
+                file_path = [file_path]
+        else:
+            file_path, _ = QFileDialog.getOpenFileName(
+                self,
+                "Select a .csv or .json file with annotations",
+                filter="CSV Files (*.csv)",
+                options=QFileDialog.Option.DontUseNativeDialog
+                        | QFileDialog.Option.DontUseCustomDirectoryIcons,
             )
             if file_path is None or file_path == "":
                 file_path = None

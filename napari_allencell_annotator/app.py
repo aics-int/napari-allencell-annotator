@@ -18,6 +18,7 @@ class App(QApplication):
         MainController()
 
 
+
 if __name__ == "__main__":
     app = App(sys.argv)
 
