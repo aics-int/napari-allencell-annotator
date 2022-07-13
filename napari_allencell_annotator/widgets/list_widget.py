@@ -47,6 +47,7 @@ class ListWidget(QListWidget):
         self._shuffled: bool = False
         self.shuffle_order: Dict[str, Dict[str, str]] = {}
 
+
     @property
     def shuffled(self) -> bool:
         return self._shuffled

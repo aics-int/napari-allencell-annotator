@@ -1,3 +1,5 @@
+from typing import Tuple, Dict
+
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QListWidgetItem, QListWidget, QWidget, QHBoxLayout, QLineEdit, QComboBox, QLabel, QSpinBox, \
     QSizePolicy, QGridLayout, QStyle, QPushButton, QCheckBox
@@ -20,6 +22,7 @@ class AnnotationItem(QListWidgetItem):
         name_label = QLabel('Name:')
         self.name = QLineEdit()
         self.name.setPlaceholderText("Enter name")
+
         type_label = QLabel('Type:')
         self.type = QComboBox()
         self.type.addItems(['text', 'number', 'checkbox', 'dropdown'])
@@ -72,9 +75,9 @@ class AnnotationItem(QListWidgetItem):
         self.type.currentTextChanged.connect(self.type_changed)
 
     def type_changed(self, text : str):
-        lastWidget = self.layout.itemAtPosition(0,7).widget()
-        lastWidget.setParent(None)
-        self.layout.removeWidget(lastWidget)
+        default_widget = self.layout.itemAtPosition(0,7).widget()
+        default_widget.setParent(None)
+        self.layout.removeWidget(default_widget)
 
         if text == 'text':
             self.default_options.hide()
@@ -94,5 +97,41 @@ class AnnotationItem(QListWidgetItem):
             self.default_options.show()
             self.default_options_label.show()
             self.layout.addWidget(self.default_text, 0,7,1,2)
+
+    def get_data(self) -> Tuple[str, Dict]:
+        valid = True
+        name : str = self.name.text()
+        if name is None or name.isspace() or len(name) == 0:
+            valid = False
+            self.name.setStyleSheet(
+            """
+                        QLineEdit{
+                            border-color: red;
+                            text-decoration: underline;
+                        }
+                """
+        )
+        type : str = self.type.currentText()
+        dct : Dict = {}
+
+        if type == 'text':
+            dct['type'] = 'string'
+            dct['default'] = self.default_text.text()
+        elif type == 'number':
+            dct['type'] = 'number'
+            dct['default'] = self.default_num.value()
+        elif type == 'checkbox':
+            dct['type'] = 'bool'
+            if self.default_check.currentText() == 'checked':
+                dct['default'] = 'true'
+            else:
+                dct['default'] = 'false'
+        else:
+            dct['type'] = 'list'
+            dct['default'] = self.default_text.text()
+            dct['options'] = self.default_options.text().split(',')
+        if valid:
+            return name, dct
+        #else:
 
 

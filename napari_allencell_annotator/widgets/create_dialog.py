@@ -1,3 +1,5 @@
+from typing import Dict
+
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
@@ -58,10 +60,20 @@ class CreateDialog(QDialog):
         self.layout.addWidget(self.btns)
         self.setLayout(self.layout)
         self.add.clicked.connect(self.add_clicked)
+        self.cancel.clicked.connect(self.reject)
+        self.apply.clicked.connect(self.accept)
 
     def add_clicked(self):
         self.list.add_new_item()
         if self.list.count() > 9:
             self.add.hide()
+
+    def get_data(self) -> Dict[str, Dict]:
+        dct : Dict[str,Dict] = {}
+        items = [self.list.item(x) for x in range(self.list.count())]
+        for i in items:
+           name, sub_dct = i.get_data()
+           dct[name] = sub_dct
+        return dct
 
 

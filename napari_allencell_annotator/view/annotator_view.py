@@ -99,7 +99,6 @@ class AnnotatorView(QWidget):
         self.layout = QGridLayout()
         self.layout.addWidget(label, 0, 0, 1, 4)
 
-
         self.annot_list = QListWidget()
 
         self.scroll = QScrollArea()
@@ -118,7 +117,6 @@ class AnnotatorView(QWidget):
         2px;} """
         self.scroll.setStyleSheet(self.scroll.styleSheet() + style)
         self.layout.addWidget(self.scroll, 1, 0, 10, 4)
-
         self.num_images: int = None
         self.curr_index: int = None
         self.contr = contr
@@ -147,7 +145,6 @@ class AnnotatorView(QWidget):
         self.view_widget = QWidget()
         view_layout = QHBoxLayout()
         self.cancel_btn = QPushButton("Cancel")
-        self.cancel_btn.setEnabled(False)
         self.start_btn = QPushButton("Start Annotating")
         self.file_input = FileInput(
             mode=FileInputMode.CSV, placeholder_text="Start Annotating"
@@ -204,6 +201,13 @@ class AnnotatorView(QWidget):
             self.progress_bar.setText(
                 "{} of {} Images".format(self.curr_index + 1, self.num_images)
             )
+
+    def reset_list(self):
+        self.annot_list.clear()
+        self.annot_list.setFixedHeight(480)
+        self.annotation_item_widgets: List[QWidget] = []
+        self.annots_order: List[str] = []
+        self.default_vals: List[str] = []
 
     def render_default_values(self):
         """Set annotation widget values to default."""
@@ -283,7 +287,8 @@ class AnnotatorView(QWidget):
         for name in data.keys():
             self._create_annot(name, data[name])
         if len(data) < 9:
-            self.annot_list.setMaximumHeight(self.annot_list.item(0).sizeHint().height() * len(data))
+            self.annot_list.setMaximumHeight(45.75 * len(data))
+
 
     def _create_annot(self, name: str, dictn: Dict[str, str]):
         """

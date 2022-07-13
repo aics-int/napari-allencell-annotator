@@ -1,6 +1,6 @@
 import os
 
-from PyQt5.QtWidgets import QWidget, QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QDialog
 
 from napari_allencell_annotator.controller.images_controller import (
     ImagesController,
@@ -43,12 +43,12 @@ class MainController(QWidget):
         self.setLayout(self.layout)
         self.show()
         self.napari.window.add_dock_widget(self, area="right")
-        dlg = CreateDialog()
         self._connect_slots()
 
     def _connect_slots(self):
         """Connects annotator view buttons start, next, and prev to slots"""
         self.annots.view.start_btn.clicked.connect(self.start_annotating)
+
         self.annots.view.next_btn.clicked.connect(self.next_image)
         self.annots.view.prev_btn.clicked.connect(self.prev_image)
         self.annots.view.file_input.file_selected.connect(
@@ -59,6 +59,16 @@ class MainController(QWidget):
         self.annots.view.annot_input.file_selected.connect(
             self._csv_file_selected_evt
         )
+        self.annots.view.create_btn.clicked.connect(self.create_clicked)
+
+    def create_clicked(self):
+        dlg = CreateDialog(self)
+        if dlg.exec() == QDialog.Accepted:
+            self.annots.set_annot_data(dlg.get_data())
+            self.annots.start_viewing()
+
+        else:
+            print("Cancel!")
 
     def _csv_file_selected_evt(self, file_list: List[str]):
         """
@@ -75,9 +85,10 @@ class MainController(QWidget):
         else:
             # TODO save csv, ask if image set will be used, render annotations/images if relevant, alter state so that a new csv is not selected if a csv is uploaded?
             file_path = file_list[0]
+            #switch to view mode after creating/passing the json
 
     def import_annots(self):
-        self.view.annot_input.simulate_click()
+        self.annots.view.annot_input.simulate_click()
 
     def _file_selected_evt(self, file_list: List[str]):
         """
@@ -108,11 +119,6 @@ class MainController(QWidget):
 
         Alert user if there are no files added.
         """
-        dlg = CreateDialog(self)
-        if dlg.exec():
-            print("Success!")
-        else:
-            print("Cancel!")
         if (
             self.images.get_num_files() is None
             or self.images.get_num_files() < 1

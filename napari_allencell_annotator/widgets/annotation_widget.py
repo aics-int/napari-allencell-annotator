@@ -6,6 +6,8 @@ from qtpy.QtCore import Signal
 from napari_allencell_annotator.widgets.list_item import ListItem
 
 from napari_allencell_annotator.widgets.annotation_item import AnnotationItem
+
+
 class AnnotationWidget(QListWidget):
     """
     A class used to create a QListWidget for annotations.
@@ -17,7 +19,6 @@ class AnnotationWidget(QListWidget):
     -------
 
     """
-
 
     def __init__(self):
         QListWidget.__init__(self)
@@ -46,7 +47,6 @@ class AnnotationWidget(QListWidget):
             if self.count() < 5:
                 self.setMaximumHeight(h * self.count())
 
-
     def remove_item(self, item: ListItem):
         """
         Remove the item from all attributes.
@@ -59,4 +59,6 @@ class AnnotationWidget(QListWidget):
             an item to remove.
         """
         self.takeItem(self.row(item))
+
+
 
