@@ -51,14 +51,10 @@ class MainController(QWidget):
         self.annots.view.start_btn.clicked.connect(self.start_annotating)
         self.annots.view.next_btn.clicked.connect(self.next_image)
         self.annots.view.prev_btn.clicked.connect(self.prev_image)
-        self.annots.view.file_input.file_selected.connect(
-            self._file_selected_evt
-        )
+        self.annots.view.file_input.file_selected.connect(self._file_selected_evt)
         self.annots.view.save_exit_btn.clicked.connect(self.save_and_exit)
         self.annots.view.import_btn.clicked.connect(self.import_annots)
-        self.annots.view.annot_input.file_selected.connect(
-            self._csv_file_selected_evt
-        )
+        self.annots.view.annot_input.file_selected.connect(self._csv_file_selected_evt)
 
     def _csv_file_selected_evt(self, file_list: List[str]):
         """
@@ -113,10 +109,7 @@ class MainController(QWidget):
             print("Success!")
         else:
             print("Cancel!")
-        if (
-            self.images.get_num_files() is None
-            or self.images.get_num_files() < 1
-        ):
+        if self.images.get_num_files() is None or self.images.get_num_files() < 1:
             self.images.view.alert("Can't Annotate Without Adding Images")
         else:
             proceed: bool = self.annots.view.popup(
@@ -139,7 +132,6 @@ class MainController(QWidget):
         self.annots.stop_annotating()
         self.images.stop_annotating()
 
-
     def _setup_annotating(self):
         """Hide the file viewer and start the annotating process."""
         self.layout.removeWidget(self.images.view)
@@ -148,7 +140,6 @@ class MainController(QWidget):
         self.annots.start_annotating(self.images.get_num_files(), self.images.get_files_dict())
         self.annots.set_curr_img(self.images.curr_img_dict())
 
-
     def next_image(self):
         """
         Move to the next image for annotating.
@@ -156,9 +147,7 @@ class MainController(QWidget):
         If the last image is being annotated, write to csv. If the second
         image is being annotated, enable previous button.
         """
-        self.annots.record_annotations(
-            self.images.curr_img_dict()["File Path"]
-        )
+        self.annots.record_annotations(self.images.curr_img_dict()["File Path"])
 
         self.images.next_img()
         self.annots.set_curr_img(self.images.curr_img_dict())
@@ -166,9 +155,7 @@ class MainController(QWidget):
             self.annots.view.prev_btn.setEnabled(True)
 
     def save_and_exit(self):
-        proceed: bool = self.annots.view.popup(
-            "Close this session?"
-        )
+        proceed: bool = self.annots.view.popup("Close this session?")
 
         if proceed:
             self.stop_annotating()
@@ -179,9 +166,7 @@ class MainController(QWidget):
 
         If the first image is being annotated, disable button.
         """
-        self.annots.record_annotations(
-            self.images.curr_img_dict()["File Path"]
-        )
+        self.annots.record_annotations(self.images.curr_img_dict()["File Path"])
         self.images.prev_img()
         self.annots.set_curr_img(self.images.curr_img_dict())
         if self.images.curr_img_dict()["Row"] == "0":

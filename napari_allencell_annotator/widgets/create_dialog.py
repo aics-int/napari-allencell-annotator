@@ -1,11 +1,23 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QMainWindow, QListWidget, QWidget, QLabel, QGridLayout, QPushButton, QDialog, \
-    QDialogButtonBox, QVBoxLayout, QScrollArea, QHBoxLayout
+from PyQt5.QtWidgets import (
+    QMainWindow,
+    QListWidget,
+    QWidget,
+    QLabel,
+    QGridLayout,
+    QPushButton,
+    QDialog,
+    QDialogButtonBox,
+    QVBoxLayout,
+    QScrollArea,
+    QHBoxLayout,
+)
 
 from napari_allencell_annotator.widgets.annotation_item import AnnotationItem
 from napari_allencell_annotator.widgets.annotation_widget import AnnotationWidget
+
 
 class CreateDialog(QDialog):
     """
@@ -16,11 +28,12 @@ class CreateDialog(QDialog):
     Methods
     -------
     """
+
     def __init__(self, parent=None):
         super().__init__(parent)
 
         self.setWindowTitle("Create Annotations")
-        self.setMinimumSize(700,500)
+        self.setMinimumSize(700, 500)
 
         # self.buttonBox.accepted.connect(self.accept)
         # self.buttonBox.rejected.connect(self.reject)
@@ -41,8 +54,8 @@ class CreateDialog(QDialog):
 
         self.add = QPushButton("Add +")
         self.delete = QPushButton("Delete Selected")
-        self.cancel = QPushButton('Cancel')
-        self.apply = QPushButton('Apply')
+        self.cancel = QPushButton("Cancel")
+        self.apply = QPushButton("Apply")
         self.btns = QWidget()
         layout = QHBoxLayout()
         layout.addWidget(self.add)
@@ -63,5 +76,3 @@ class CreateDialog(QDialog):
         self.list.add_new_item()
         if self.list.count() > 9:
             self.add.hide()
-
-

@@ -24,9 +24,7 @@ class ListItem(QListWidgetItem):
         returns the basename of the file.
     """
 
-    def __init__(
-        self, file_path: str, parent: QListWidget, hidden: bool = False
-    ):
+    def __init__(self, file_path: str, parent: QListWidget, hidden: bool = False):
         QListWidgetItem.__init__(self, parent)
         self._file_path = file_path
         self.widget = QWidget()

@@ -60,15 +60,13 @@ class FileInput(QWidget):
             file_path, _ = QFileDialog.getOpenFileNames(
                 self,
                 "Select a file",
-                options=QFileDialog.Option.DontUseNativeDialog
-                | QFileDialog.Option.DontUseCustomDirectoryIcons,
+                options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
             )
         elif self._mode == FileInputMode.DIRECTORY:
             file_path = QFileDialog.getExistingDirectory(
                 self,
                 "Select a directory",
-                options=QFileDialog.Option.DontUseNativeDialog
-                | QFileDialog.Option.DontUseCustomDirectoryIcons,
+                options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
             )
             if len(file_path) > 0:
                 file_path = [file_path]
@@ -79,8 +77,7 @@ class FileInput(QWidget):
                 self,
                 "Select or create a csv file",
                 filter="CSV Files (*.csv)",
-                options=QFileDialog.Option.DontUseNativeDialog
-                | QFileDialog.Option.DontUseCustomDirectoryIcons,
+                options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
             )
             if file_path is None or file_path == "":
                 file_path = None
@@ -91,8 +88,7 @@ class FileInput(QWidget):
                 self,
                 "Select a .csv or .json file with annotations",
                 filter="CSV Files (*.csv)",
-                options=QFileDialog.Option.DontUseNativeDialog
-                        | QFileDialog.Option.DontUseCustomDirectoryIcons,
+                options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
             )
             if file_path is None or file_path == "":
                 file_path = None

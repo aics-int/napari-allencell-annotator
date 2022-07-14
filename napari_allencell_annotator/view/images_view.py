@@ -59,13 +59,9 @@ class ImagesView(QWidget):
         self.input_dir: FileInput
         self.input_file: FileInput
 
-        self.input_dir = FileInput(
-            mode=FileInputMode.DIRECTORY, placeholder_text="Add a folder..."
-        )
+        self.input_dir = FileInput(mode=FileInputMode.DIRECTORY, placeholder_text="Add a folder...")
 
-        self.input_file = FileInput(
-            mode=FileInputMode.FILE, placeholder_text="Add files..."
-        )
+        self.input_file = FileInput(mode=FileInputMode.FILE, placeholder_text="Add files...")
         self.layout.addWidget(self.input_dir, 1, 0, 1, 2)
         self.layout.addWidget(self.input_file, 1, 2, 1, 2)
 

@@ -51,9 +51,7 @@ class AnnotatorController:
         # open in add mode
         # self.view = AnnotatorView(napari.Viewer(), data)
         # open in view mode
-        self.view: AnnotatorView = AnnotatorView(
-            viewer, self, mode=AnnotatorViewMode.VIEW
-        )
+        self.view: AnnotatorView = AnnotatorView(viewer, self, mode=AnnotatorViewMode.VIEW)
         self.view.render_annotations(self.annot_data)
         self.view.show()
         self.curr_img: Dict[str, str] = None
@@ -63,14 +61,13 @@ class AnnotatorController:
         # annotation dictionary maps file paths -> [file name, FMS, annot1val, annot2val, ...]
         self.annotation_dict: Dict[str, List[str]] = {}
 
-
     def set_csv_name(self, name: Optional[str] = None):
         """Set csv file name for writing."""
         self.csv_name = name
 
     def stop_annotating(self):
         """Reset values from annotating and change mode to VIEW."""
-        self.record_annotations(self.curr_img['File Path'])
+        self.record_annotations(self.curr_img["File Path"])
         self.write_csv()
         self.view.set_curr_index()
         self.annotation_dict = {}
@@ -81,7 +78,7 @@ class AnnotatorController:
         self.set_curr_img()
         self.set_csv_name()
 
-    def start_annotating(self, num_images: int, dct : Dict[str,List[str]]):
+    def start_annotating(self, num_images: int, dct: Dict[str, List[str]]):
         """
         Change annotation view to annotating mode.
 
@@ -90,8 +87,7 @@ class AnnotatorController:
         num_images : int
             The total number of images to be annotated.
         """
-        for path, lst in dct.items():
-            self.annotation_dict[path] = lst
+        self.annotation_dict = dct
         self.view.set_num_images(num_images)
         self.view.set_mode(mode=AnnotatorViewMode.ANNOTATE)
 
@@ -106,21 +102,28 @@ class AnnotatorController:
         curr_img : Dict[str, str]
             The current image file path, name, fms info, and row.
         """
+        # curr_img = {'File Path' : 'path', 'Row' : str(rownum)}
         self.curr_img = curr_img
         if curr_img is not None:
-            self.curr_img = curr_img
             path: str = curr_img["File Path"]
+            # annotation_dict values are lists File Path ->[File Name, FMS, annot1val, annot2val ...]
+            # if the file has not been annotated the list is just length 2 [File Name, FMS]
             if len(self.annotation_dict[path]) < 3:
+                # if the image is un-annotated render the default values
 
                 self.view.render_default_values()
             else:
+                # if the image has been annotated render the values that were entered
+                # dictionary list [2::] is [annot1val, annot2val, ...]
                 self.view.render_values(self.annotation_dict[path][2::])
+            # convert row to int
             self.view.set_curr_index(int(curr_img["Row"]))
+            # if at the end disable next
             if int(curr_img["Row"]) == self.view.num_images - 1:
                 self.view.next_btn.setEnabled(False)
+            # in case we were just on the last image and then went to the previous, re-enable next
             elif int(curr_img["Row"]) == self.view.num_images - 2:
                 self.view.next_btn.setEnabled(True)
-                self.view.next_btn.setText("Next >")
 
     def record_annotations(self, prev_img: str):
         """
@@ -132,9 +135,7 @@ class AnnotatorController:
             The previous image file path.
         """
         lst: List = self.view.get_curr_annots()
-        self.annotation_dict[prev_img] = (
-            self.annotation_dict[prev_img][:2:] + lst
-        )
+        self.annotation_dict[prev_img] = self.annotation_dict[prev_img][:2:] + lst
 
     def write_csv(self):
         """write headers and file info"""
@@ -150,8 +151,6 @@ class AnnotatorController:
         for name in self.view.annots_order:
             header.append(name)
         writer.writerow(header)
-        for name,lst in self.annotation_dict.items():
+        for name, lst in self.annotation_dict.items():
             writer.writerow([name] + lst)
         file.close()
-
-
