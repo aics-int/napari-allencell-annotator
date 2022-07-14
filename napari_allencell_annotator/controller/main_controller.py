@@ -54,23 +54,21 @@ class MainController(QWidget):
         self.annots.view.file_input.file_selected.connect(self._file_selected_evt)
         self.annots.view.save_exit_btn.clicked.connect(self.save_and_exit)
         self.annots.view.import_btn.clicked.connect(self.import_annots)
-        self.annots.view.annot_input.file_selected.connect(
-            self._csv_file_selected_evt
-        )
+        self.annots.view.annot_input.file_selected.connect(self._csv_file_selected_evt)
         self.annots.view.create_btn.clicked.connect(self.create_clicked)
 
     def create_clicked(self):
         dlg = CreateDialog(self)
         if dlg.exec() == QDialog.Accepted:
-            self.annots.set_annot_data(dlg.data)
+            self.annots.set_annot_json_data(dlg.new_annot_dict)
             self.annots.start_viewing()
         else:
             print("Cancel!")
-# todo enforce unique names, enforce option is in the options, write what warning is, fix sizing issue/styling q for brian
+
+    # todo enforce unique names, enforce option is in the options, write what warning is, fix sizing issue/styling q for brian
     #  , testing, new PR,
     # todo PR: then do writing to json bit
     # todotest/bug fix
-
 
     def _csv_file_selected_evt(self, file_list: List[str]):
         """
@@ -121,10 +119,7 @@ class MainController(QWidget):
 
         Alert user if there are no files added.
         """
-        if (
-                self.images.get_num_files() is None
-                or self.images.get_num_files() < 1
-        ):
+        if self.images.get_num_files() is None or self.images.get_num_files() < 1:
             self.images.view.alert("Can't Annotate Without Adding Images")
         else:
             proceed: bool = self.annots.view.popup(

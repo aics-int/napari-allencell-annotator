@@ -88,8 +88,7 @@ class FileInput(QWidget):
                 self,
                 "Select a .csv or .json file with annotations",
                 filter="CSV Files (*.csv) ;; JSON (*.json)",
-                options=QFileDialog.Option.DontUseNativeDialog
-                        | QFileDialog.Option.DontUseCustomDirectoryIcons,
+                options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
             )
             if file_path is None or file_path == "":
                 file_path = None

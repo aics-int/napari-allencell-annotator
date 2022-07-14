@@ -62,7 +62,7 @@ class ImagesController:
 
         Returns
         ----------
-        Dict[str,Dict[str,str]]
+        Dict[str,Dict[str,List[str]]
             dictionary of file info. keys in order.
         """
         if self.view.file_widget.shuffled:
@@ -83,7 +83,7 @@ class ImagesController:
             Toggle state of the shuffle button.
         """
 
-        files: Dict[str, Dict[str, str]] = self.view.file_widget.clear_for_shuff()
+        files: Dict[str, List[str]] = self.view.file_widget.clear_for_shuff()
         if len(files) > 0:
             if checked:
                 self.view.toggle_add(False)
@@ -187,7 +187,7 @@ class ImagesController:
         Returns
         ----------
         Dict[str,str]
-            dictionary of attributes.
+            dictionary of file name and row attributes.
         """
         item = self.view.file_widget.currentItem()
         info = {

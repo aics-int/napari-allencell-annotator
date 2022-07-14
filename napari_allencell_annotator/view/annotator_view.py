@@ -76,7 +76,7 @@ class AnnotatorView(QWidget):
     toggle_annots_editable()
         Enables the annotations for editing.
 
-    render_annotations(data : Dict[str,Dict[str, str]]))
+    render_annotations(data : Dict[str,Dict]))
         Renders GUI elements from the dictionary of annotations.
 
     render_default_annotations()
@@ -193,9 +193,9 @@ class AnnotatorView(QWidget):
             self.curr_index = num
             self.progress_bar.setText("{} of {} Images".format(self.curr_index + 1, self.num_images))
 
-    def reset_list(self):
+    def reset_annotations(self):
         self.annot_list.clear()
-        self.annot_list.setFixedHeight(480)
+        # todo reset size?
         self.annotation_item_widgets: List[QWidget] = []
         self.annots_order: List[str] = []
         self.default_vals: List[str] = []
@@ -258,14 +258,14 @@ class AnnotatorView(QWidget):
             self.prev_btn.setEnabled(False)
             self.toggle_annots_editable(True)
 
-    def render_annotations(self, data: Dict[str, Dict[str, str]]):
+    def render_annotations(self, data: Dict[str, Dict]):
         """
         Read annotation dictionary into individual annotations.
 
         Parameters
         ----------
-        data : Dict[str, Dict[str, str]]
-            The dictionary of annotation types.
+        data : Dict[str, Dict]
+            The dictionary of annotation names -> a dictionary of types, defaults, and options.
         """
         self.annotation_item_widgets = []
 
@@ -273,7 +273,7 @@ class AnnotatorView(QWidget):
             self._create_annot(name, data[name])
         self.annot_list.setMaximumHeight(self.annot_list.item(0).sizeHint().height() * len(data))
 
-    def _create_annot(self, name: str, dictn: Dict[str, str]):
+    def _create_annot(self, name: str, dictn: Dict):
         """
         Create annotation widgets from dictionary entries.
 
@@ -281,7 +281,7 @@ class AnnotatorView(QWidget):
         ----------
         name : str
             annotation name.
-        dictn : Dict[str]
+        dictn : Dict[str, (list,str,int,or bool)]
             annotation types and data.
         """
         widget = QWidget()

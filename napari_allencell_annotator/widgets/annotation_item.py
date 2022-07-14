@@ -1,8 +1,21 @@
 from typing import Tuple, Dict
 
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QListWidgetItem, QListWidget, QWidget, QHBoxLayout, QLineEdit, QComboBox, QLabel, QSpinBox, \
-    QSizePolicy, QGridLayout, QStyle, QPushButton, QCheckBox
+from PyQt5.QtWidgets import (
+    QListWidgetItem,
+    QListWidget,
+    QWidget,
+    QHBoxLayout,
+    QLineEdit,
+    QComboBox,
+    QLabel,
+    QSpinBox,
+    QSizePolicy,
+    QGridLayout,
+    QStyle,
+    QPushButton,
+    QCheckBox,
+)
 from psygnal._signal import Signal
 
 
@@ -22,7 +35,7 @@ class AnnotationItem(QListWidgetItem):
         self.name = QLineEdit()
         self.name.setPlaceholderText("Enter name")
 
-        type_label = QLabel('Type:')
+        type_label = QLabel("Type:")
         self.type = QComboBox()
         self.type.addItems(["text", "number", "checkbox", "dropdown"])
         self.name.setWhatsThis("name")
@@ -72,8 +85,8 @@ class AnnotationItem(QListWidgetItem):
 
         self.type.currentTextChanged.connect(self.type_changed)
 
-    def type_changed(self, text : str):
-        default_widget = self.layout.itemAtPosition(0,7).widget()
+    def type_changed(self, text: str):
+        default_widget = self.layout.itemAtPosition(0, 7).widget()
         default_widget.setParent(None)
         self.layout.removeWidget(default_widget)
 
@@ -94,11 +107,11 @@ class AnnotationItem(QListWidgetItem):
         else:
             self.default_options.show()
             self.default_options_label.show()
-            self.layout.addWidget(self.default_text, 0,7,1,2)
+            self.layout.addWidget(self.default_text, 0, 7, 1, 2)
 
     def get_data(self) -> Tuple[bool, str, Dict]:
         valid = True
-        name : str = self.name.text()
+        name: str = self.name.text()
         if name is None or name.isspace() or len(name) == 0:
             valid = False
             self.name.setStyleSheet(
@@ -115,11 +128,11 @@ class AnnotationItem(QListWidgetItem):
                         }
                 """
             )
-        type : str = self.type.currentText()
-        dct : Dict = {}
+        type: str = self.type.currentText()
+        dct: Dict = {}
 
-        if type == 'text':
-            dct['type'] = 'string'
+        if type == "text":
+            dct["type"] = "string"
             txt = self.default_text.text()
             if txt is None or txt.isspace() or len(txt) == 0:
                 valid = False
@@ -137,18 +150,18 @@ class AnnotationItem(QListWidgetItem):
                             }
                     """
                 )
-            dct['default'] = txt
-        elif type == 'number':
-            dct['type'] = 'number'
-            dct['default'] = self.default_num.value()
-        elif type == 'checkbox':
-            dct['type'] = 'bool'
-            if self.default_check.currentText() == 'checked':
-                dct['default'] = 'true'
+            dct["default"] = txt
+        elif type == "number":
+            dct["type"] = "number"
+            dct["default"] = self.default_num.value()
+        elif type == "checkbox":
+            dct["type"] = "bool"
+            if self.default_check.currentText() == "checked":
+                dct["default"] = "true"
             else:
-                dct['default'] = 'false'
+                dct["default"] = "false"
         else:
-            dct['type'] = 'list'
+            dct["type"] = "list"
             txt = self.default_text.text()
             if txt is None or txt.isspace() or len(txt) == 0:
                 valid = False
@@ -166,8 +179,8 @@ class AnnotationItem(QListWidgetItem):
                             }
                     """
                 )
-            dct['default'] = txt
-            txt2 = self.default_options.text().split(',')
+            dct["default"] = txt
+            txt2 = self.default_options.text().split(",")
             if txt2 is None or len(txt2) < 2:
                 valid = False
                 self.default_options.setStyleSheet(
@@ -180,7 +193,7 @@ class AnnotationItem(QListWidgetItem):
             else:
                 for i in txt2:
                     if i.isspace() or len(i) == 0:
-                        valid=False
+                        valid = False
                         self.default_options.setStyleSheet(
                             """
                                      QLineEdit{
@@ -195,8 +208,6 @@ class AnnotationItem(QListWidgetItem):
                                 }
                         """
                     )
-            dct['default'] = txt
-            dct['options'] = txt2
+            dct["default"] = txt
+            dct["options"] = txt2
         return valid, name, dct
-
-

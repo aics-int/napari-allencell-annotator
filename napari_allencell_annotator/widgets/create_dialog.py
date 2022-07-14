@@ -3,8 +3,19 @@ from typing import Dict
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QMainWindow, QListWidget, QWidget, QLabel, QGridLayout, QPushButton, QDialog, \
-    QDialogButtonBox, QVBoxLayout, QScrollArea, QHBoxLayout
+from PyQt5.QtWidgets import (
+    QMainWindow,
+    QListWidget,
+    QWidget,
+    QLabel,
+    QGridLayout,
+    QPushButton,
+    QDialog,
+    QDialogButtonBox,
+    QVBoxLayout,
+    QScrollArea,
+    QHBoxLayout,
+)
 from psygnal._signal import Signal
 
 from napari_allencell_annotator.widgets.annotation_item import AnnotationItem
@@ -20,6 +31,7 @@ class CreateDialog(QDialog):
     Methods
     -------
     """
+
     valid_annots_made = Signal()
 
     def __init__(self, parent=None):
@@ -50,7 +62,7 @@ class CreateDialog(QDialog):
         self.cancel = QPushButton("Cancel")
         self.apply = QPushButton("Apply")
         self.btns = QWidget()
-        self.data = None
+        self.new_annot_dict: Dict[str, Dict] = None
         layout = QHBoxLayout()
         layout.addWidget(self.add)
         layout.addWidget(self.delete)
@@ -66,7 +78,7 @@ class CreateDialog(QDialog):
         self.setLayout(self.layout)
         self.add.clicked.connect(self.add_clicked)
         self.cancel.clicked.connect(self.reject)
-        self.apply.clicked.connect(self.get_data)
+        self.apply.clicked.connect(self.get_annots)
         self.valid_annots_made.connect(self.accept)
 
     def add_clicked(self):
@@ -74,7 +86,7 @@ class CreateDialog(QDialog):
         if self.list.count() > 9:
             self.add.hide()
 
-    def get_data(self):
+    def get_annots(self):
         dct: Dict[str, Dict] = {}
         valid = True
         items = [self.list.item(x) for x in range(self.list.count())]
@@ -84,7 +96,7 @@ class CreateDialog(QDialog):
             if not valid:
                 valid = False
         if valid:
-            self.data = dct
+            self.new_annot_dict = dct
             self.valid_annots_made.emit()
         else:
-            self.data = None
+            self.new_annot_dict = None
