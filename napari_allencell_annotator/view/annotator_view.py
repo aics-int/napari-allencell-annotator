@@ -18,6 +18,7 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QAbstractScrollArea,
     QMessageBox,
+    QVBoxLayout,
 )
 from napari import Viewer
 from napari_allencell_annotator.widgets.file_input import (
@@ -96,8 +97,8 @@ class AnnotatorView(QWidget):
         label = QLabel("Annotations")
         label.setAlignment(Qt.AlignCenter)
         label.setFont(QFont("Arial", 15))
-        self.layout = QGridLayout()
-        self.layout.addWidget(label, 0, 0, 1, 4)
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(label)
 
         self.annot_list = QListWidget()
 
@@ -116,7 +117,7 @@ class AnnotatorView(QWidget):
         style = """QScrollBar::handle:vertical {border: 0px solid red; border-radius: 
         2px;} """
         self.scroll.setStyleSheet(self.scroll.styleSheet() + style)
-        self.layout.addWidget(self.scroll, 1, 0, 10, 4)
+        self.layout.addWidget(self.scroll)
 
         self.num_images: int = None
         self.curr_index: int = None
@@ -127,16 +128,15 @@ class AnnotatorView(QWidget):
         add_layout = QHBoxLayout()
         self.create_btn = QPushButton("Create New Annotations")
         self.create_btn.setEnabled(True)
-        self.import_btn = QPushButton(
-            "Import Existing Annotations (.csv or .json)"
-        )
+        self.import_btn = QPushButton("Import Existing Annotations (.csv or .json)")
         self.import_btn.setEnabled(True)
+        self.annot_input = FileInput(mode=FileInputMode.JSONCSV, placeholder_text="Start Annotating")
+        self.annot_input.toggle(False)
 
         add_layout.addWidget(self.create_btn, stretch=2)
         add_layout.addWidget(self.import_btn, stretch=2)
         self.add_widget.setLayout(add_layout)
-        self.layout.addWidget(self.add_widget, 12, 0, 1, 4)
-        self.add_widget.hide()
+        self.layout.addWidget(self.add_widget)
 
         # view widget visible in VIEW mode
         self.view_widget = QWidget()
@@ -144,31 +144,30 @@ class AnnotatorView(QWidget):
         self.cancel_btn = QPushButton("Cancel")
         self.cancel_btn.setEnabled(False)
         self.start_btn = QPushButton("Start Annotating")
-        self.file_input = FileInput(
-            mode=FileInputMode.CSV, placeholder_text="Start Annotating"
-        )
+        self.file_input = FileInput(mode=FileInputMode.CSV, placeholder_text="Start Annotating")
         self.file_input.toggle(False)
         self.start_btn.setEnabled(True)
 
         view_layout.addWidget(self.cancel_btn, stretch=1)
         view_layout.addWidget(self.start_btn, stretch=3)
         self.view_widget.setLayout(view_layout)
-        self.layout.addWidget(self.view_widget, 12, 0, 1, 4)
-        self.view_widget.hide()
+        # self.layout.addWidget(self.view_widget, 12, 0, 1, 4)
 
         # annot widget visible in ANNOTATE mode
         self.annot_widget = QWidget()
         annot_layout = QGridLayout()
+        self.save_exit_btn = QPushButton("Save + Exit")
+
         self.prev_btn = QPushButton("< Previous")
         self.next_btn = QPushButton("Next >")
         self.next_btn.setEnabled(True)
         self.progress_bar = QLabel()
         annot_layout.addWidget(self.progress_bar, 0, 1, 1, 2)
-        annot_layout.addWidget(self.prev_btn, 1, 0, 1, 2)
-        annot_layout.addWidget(self.next_btn, 1, 2, 1, 2)
+        annot_layout.addWidget(self.save_exit_btn, 1, 0, 1, 2)
+        annot_layout.addWidget(self.prev_btn, 1, 2, 1, 1)
+        annot_layout.addWidget(self.next_btn, 1, 3, 1, 1)
         self.annot_widget.setLayout(annot_layout)
-        self.layout.addWidget(self.annot_widget, 12, 0, 2, 4)
-        self.view_widget.hide()
+        # self.layout.addWidget(self.annot_widget, 12, 0, 2, 4)
 
         self._display_mode()
         self.annotation_item_widgets: List[QWidget] = []
@@ -193,9 +192,7 @@ class AnnotatorView(QWidget):
         """Set the index of the currently selected image and display it on progress bar."""
         if num is not None:
             self.curr_index = num
-            self.progress_bar.setText(
-                "{} of {} Images".format(self.curr_index + 1, self.num_images)
-            )
+            self.progress_bar.setText("{} of {} Images".format(self.curr_index + 1, self.num_images))
 
     def render_default_values(self):
         """Set annotation widget values to default."""
@@ -244,21 +241,15 @@ class AnnotatorView(QWidget):
 
     def _display_mode(self):
         """Render GUI buttons visible depending on the mode."""
+        self.layout.takeAt(self.layout.count() - 1)
         if self._mode == AnnotatorViewMode.ADD:
             self.annot_list.clear()
-            self.annot_widget.hide()
-            self.view_widget.hide()
-            self.add_widget.show()
+            self.layout.addWidget(self.add_widget)
         elif self._mode == AnnotatorViewMode.VIEW:
-            self.annot_widget.hide()
-            self.view_widget.show()
-            self.add_widget.hide()
-
+            self.layout.addWidget(self.view_widget)
         elif self._mode == AnnotatorViewMode.ANNOTATE:
-            self.annot_widget.show()
+            self.layout.addWidget(self.annot_widget)
             self.prev_btn.setEnabled(False)
-            self.view_widget.hide()
-            self.add_widget.hide()
             self.toggle_annots_editable(True)
 
     def render_annotations(self, data: Dict[str, Dict[str, str]]):
@@ -271,10 +262,10 @@ class AnnotatorView(QWidget):
             The dictionary of annotation types.
         """
         self.annotation_item_widgets = []
-        if len(data) < 9:
-            self.annot_list.setMaximumHeight(45.5 * len(data))
+
         for name in data.keys():
             self._create_annot(name, data[name])
+        self.annot_list.setMaximumHeight(self.annot_list.item(0).sizeHint().height() * len(data))
 
     def _create_annot(self, name: str, dictn: Dict[str, str]):
         """

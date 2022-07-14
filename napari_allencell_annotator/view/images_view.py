@@ -59,13 +59,9 @@ class ImagesView(QWidget):
         self.input_dir: FileInput
         self.input_file: FileInput
 
-        self.input_dir = FileInput(
-            mode=FileInputMode.DIRECTORY, placeholder_text="Add a folder..."
-        )
+        self.input_dir = FileInput(mode=FileInputMode.DIRECTORY, placeholder_text="Add a folder...")
 
-        self.input_file = FileInput(
-            mode=FileInputMode.FILE, placeholder_text="Add files..."
-        )
+        self.input_file = FileInput(mode=FileInputMode.FILE, placeholder_text="Add files...")
         self.layout.addWidget(self.input_dir, 1, 0, 1, 2)
         self.layout.addWidget(self.input_file, 1, 2, 1, 2)
 
@@ -83,6 +79,7 @@ class ImagesView(QWidget):
         self.shuffle.toggled.connect(self._update_shuff_text)
 
         self.shuffle.setEnabled(False)
+
         self.delete = QPushButton("Delete Selected")
         self.delete.setEnabled(False)
 
@@ -98,11 +95,6 @@ class ImagesView(QWidget):
         self.ctrl = ctrl
         self.viewer = viewer
 
-    def reset_buttons(self):
-        self._toggle_delete(False)
-        self._toggle_shuffle(False)
-        self.toggle_add(True)
-
     def _update_shuff_text(self, checked: bool):
         """
         Update shuffle button text to reflect toggle state.
@@ -116,6 +108,11 @@ class ImagesView(QWidget):
             self.shuffle.setText("Unshuffle and Unhide")
         else:
             self.shuffle.setText("Shuffle and Hide")
+
+    def reset_buttons(self):
+        self._toggle_delete(False)
+        self._toggle_shuffle(False)
+        self.toggle_add(True)
 
     def _delete_clicked(self):
         if len(self.file_widget.checked) > 0:
