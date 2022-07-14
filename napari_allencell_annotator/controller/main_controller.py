@@ -68,7 +68,10 @@ class MainController(QWidget):
             self.annots.start_viewing()
         else:
             print("Cancel!")
-# todo highlight red on more than just name, fix sizing issue, testing, new PR
+# todo enforce unique names, enforce option is in the options, write what warning is, fix sizing issue/styling q for brian
+    #  , testing, new PR,
+    # todo PR: then do writing to json bit
+    # todotest/bug fix
 
 
     def _csv_file_selected_evt(self, file_list: List[str]):

@@ -10,6 +10,7 @@ from psygnal._signal import Signal
 from napari_allencell_annotator.widgets.annotation_item import AnnotationItem
 from napari_allencell_annotator.widgets.annotation_widget import AnnotationWidget
 
+
 class CreateDialog(QDialog):
     """
     A class that creates up to 10 annotations in a popup dialog.
@@ -25,7 +26,7 @@ class CreateDialog(QDialog):
         super().__init__(parent)
 
         self.setWindowTitle("Create Annotations")
-        self.setMinimumSize(700,500)
+        self.setMinimumSize(700, 500)
 
         # self.buttonBox.accepted.connect(self.accept)
         # self.buttonBox.rejected.connect(self.reject)
@@ -74,20 +75,16 @@ class CreateDialog(QDialog):
             self.add.hide()
 
     def get_data(self):
-        dct : Dict[str,Dict] = {}
+        dct: Dict[str, Dict] = {}
         valid = True
         items = [self.list.item(x) for x in range(self.list.count())]
         for i in items:
-           valid, name, sub_dct = i.get_data()
-           dct[name] = sub_dct
-           if not valid:
+            valid, name, sub_dct = i.get_data()
+            dct[name] = sub_dct
+            if not valid:
                 valid = False
         if valid:
             self.data = dct
             self.valid_annots_made.emit()
         else:
             self.data = None
-
-
-
-

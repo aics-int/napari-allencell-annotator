@@ -106,18 +106,42 @@ class AnnotationItem(QListWidgetItem):
         if name is None or name.isspace() or len(name) == 0:
             valid = False
             self.name.setStyleSheet(
-            """
+                """
                         QLineEdit{
                             border: 1px solid red
                         }
                 """
-        )
+            )
+        else:
+            self.name.setStyleSheet(
+                """
+                        QLineEdit{
+                        }
+                """
+            )
         type : str = self.type.currentText()
         dct : Dict = {}
 
         if type == 'text':
             dct['type'] = 'string'
-            dct['default'] = self.default_text.text()
+            txt = self.default_text.text()
+            if txt is None or txt.isspace() or len(txt) == 0:
+                valid = False
+                self.default_text.setStyleSheet(
+                    """
+                                QLineEdit{
+                                    border: 1px solid red
+                                }
+                        """
+                )
+            else:
+                self.default_text.setStyleSheet(
+                    """
+                            QLineEdit{
+                            }
+                    """
+                )
+            dct['default'] = txt
         elif type == 'number':
             dct['type'] = 'number'
             dct['default'] = self.default_num.value()
@@ -129,8 +153,54 @@ class AnnotationItem(QListWidgetItem):
                 dct['default'] = 'false'
         else:
             dct['type'] = 'list'
-            dct['default'] = self.default_text.text()
-            dct['options'] = self.default_options.text().split(',')
+            txt = self.default_text.text()
+            if txt is None or txt.isspace() or len(txt) == 0:
+                valid = False
+                self.default_text.setStyleSheet(
+                    """
+                                QLineEdit{
+                                    border: 1px solid red
+                                }
+                        """
+                )
+            else:
+                self.default_text.setStyleSheet(
+                    """
+                            QLineEdit{
+                            }
+                    """
+                )
+            dct['default'] = txt
+            txt2 = self.default_options.text().split(',')
+            if txt2 is None or len(txt2) < 2:
+                valid = False
+                self.default_options.setStyleSheet(
+                    """
+                                QLineEdit{
+                                    border: 1px solid red
+                                }
+                        """
+                )
+            else:
+                for i in txt2:
+                    if i.isspace() or len(i) == 0:
+                        valid=False
+                        self.default_options.setStyleSheet(
+                            """
+                                     QLineEdit{
+                                           border: 1px solid red
+                                     }
+                             """
+                        )
+                        break
+                    self.default_options.setStyleSheet(
+                        """
+                                QLineEdit{
+                                }
+                        """
+                    )
+            dct['default'] = txt
+            dct['options'] = txt2
         return valid, name, dct
 
 

@@ -287,7 +287,7 @@ class AnnotatorView(QWidget):
         for name in data.keys():
             self._create_annot(name, data[name])
         if len(data) < 9:
-            self.annot_list.setMaximumHeight(45.75 * len(data))
+            self.annot_list.setFixedHeight(45.5 * len(data))
 
 
     def _create_annot(self, name: str, dictn: Dict[str, str]):
