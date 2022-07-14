@@ -5,9 +5,11 @@ import os
 import codecs
 from setuptools import setup, find_packages
 
+
 def read(fname):
     file_path = os.path.join(os.path.dirname(__file__), fname)
     return codecs.open(file_path, encoding="utf-8").read()
+
 
 requirements = [
     "napari>=0.4.9",
@@ -101,5 +103,5 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Operating System :: OS Independent",
         "License :: OSI Approved :: BSD License",
-    ]
+    ],
 )

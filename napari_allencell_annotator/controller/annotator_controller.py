@@ -80,7 +80,7 @@ class AnnotatorController:
 
     def stop_annotating(self):
         """Reset values from annotating and change mode to VIEW."""
-        self.record_annotations(self.curr_img['File Path'])
+        self.record_annotations(self.curr_img["File Path"])
         self.write_csv()
         self.view.set_curr_index()
         self.annotation_dict = {}
@@ -100,8 +100,7 @@ class AnnotatorController:
         num_images : int
             The total number of images to be annotated.
         """
-        for path, lst in dct.items():
-            self.annotation_dict[path] = lst
+        self.annotation_dict = dct
         self.view.set_num_images(num_images)
         self.view.set_mode(mode=AnnotatorViewMode.ANNOTATE)
 
@@ -116,21 +115,28 @@ class AnnotatorController:
         curr_img : Dict[str, str]
             The current image file path, name, fms info, and row.
         """
+        # curr_img = {'File Path' : 'path', 'Row' : str(rownum)}
         self.curr_img = curr_img
         if curr_img is not None:
-            self.curr_img = curr_img
             path: str = curr_img["File Path"]
+            # annotation_dict values are lists File Path ->[File Name, FMS, annot1val, annot2val ...]
+            # if the file has not been annotated the list is just length 2 [File Name, FMS]
             if len(self.annotation_dict[path]) < 3:
+                # if the image is un-annotated render the default values
 
                 self.view.render_default_values()
             else:
+                # if the image has been annotated render the values that were entered
+                # dictionary list [2::] is [annot1val, annot2val, ...]
                 self.view.render_values(self.annotation_dict[path][2::])
+            # convert row to int
             self.view.set_curr_index(int(curr_img["Row"]))
+            # if at the end disable next
             if int(curr_img["Row"]) == self.view.num_images - 1:
                 self.view.next_btn.setEnabled(False)
+            # in case we were just on the last image and then went to the previous, re-enable next
             elif int(curr_img["Row"]) == self.view.num_images - 2:
                 self.view.next_btn.setEnabled(True)
-                self.view.next_btn.setText("Next >")
 
     def record_annotations(self, prev_img: str):
         """

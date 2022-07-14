@@ -47,8 +47,8 @@ class CreateDialog(QDialog):
 
         self.add = QPushButton("Add +")
         self.delete = QPushButton("Delete Selected")
-        self.cancel = QPushButton('Cancel')
-        self.apply = QPushButton('Apply')
+        self.cancel = QPushButton("Cancel")
+        self.apply = QPushButton("Apply")
         self.btns = QWidget()
         self.data = None
         layout = QHBoxLayout()

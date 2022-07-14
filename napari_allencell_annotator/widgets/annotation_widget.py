@@ -59,6 +59,3 @@ class AnnotationWidget(QListWidget):
             an item to remove.
         """
         self.takeItem(self.row(item))
-
-
-

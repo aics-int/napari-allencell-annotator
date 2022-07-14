@@ -13,9 +13,7 @@ class TestImagesView:
     def setup_method(self):
         with mock.patch.object(ImagesView, "__init__", lambda x: None):
             self._view = ImagesView()
-            self._view.controller: MagicMock = create_autospec(
-                ImagesController
-            )
+            self._view.controller: MagicMock = create_autospec(ImagesController)
             self._view.viewer: MagicMock = create_autospec(napari.Viewer)
             self._view.AICSImage = create_autospec(AICSImage)
 
@@ -36,9 +34,7 @@ class TestImagesView:
         self._view.shuffle = MagicMock()
         self._view.shuffle.setText = MagicMock()
         self._view._update_shuff_text(True)
-        self._view.shuffle.setText.assert_called_once_with(
-            "Unshuffle and Unhide"
-        )
+        self._view.shuffle.setText.assert_called_once_with("Unshuffle and Unhide")
         # not checked
         self._view.shuffle.setText = MagicMock()
         self._view._update_shuff_text(False)

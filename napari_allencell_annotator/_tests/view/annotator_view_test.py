@@ -36,9 +36,7 @@ class TestAnnotatorView:
         self._view.progress_bar = MagicMock()
         self._view.progress_bar.setText = MagicMock()
         self._view.set_curr_index(2)
-        self._view.progress_bar.setText.assert_called_once_with(
-            "3 of 4 Images"
-        )
+        self._view.progress_bar.setText.assert_called_once_with("3 of 4 Images")
         assert self._view.curr_index == 2
 
     def test_render_default_values(self):
@@ -54,9 +52,5 @@ class TestAnnotatorView:
         self._view.annot_list.setMaximumHeight = MagicMock()
         self._view.render_annotations(dic)
         assert self._view.annotation_item_widgets == []
-        self._view.annot_list.setMaximumHeight.assert_called_once_with(
-            45.5 * 2
-        )
-        self._view._create_annot.assert_has_calls(
-            [mock.call("name1", {}), mock.call("name2", {})]
-        )
+        self._view.annot_list.setMaximumHeight.assert_called_once_with(45.5 * 2)
+        self._view._create_annot.assert_has_calls([mock.call("name1", {}), mock.call("name2", {})])

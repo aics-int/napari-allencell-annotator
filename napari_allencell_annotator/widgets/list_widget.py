@@ -42,9 +42,15 @@ class ListWidget(QListWidget):
         QListWidget.__init__(self)
         self.checked: Set[ListItem] = set()
         self.setSelectionMode(QAbstractItemView.SingleSelection)
+        # file_dict holds all image info file path -> [file name, FMS]
+        # also holds the original insertion order in .keys()
         self.file_dict: Dict[str, List[str]] = {}
         self.setCurrentItem(None)
         self._shuffled: bool = False
+        # shuffle order holds the same file path -> [file name, FMS] as file_dict
+        # only filled when the images have been shuffled
+        # holds a new shuffled order in .keys()
+        # when annotation starts if images are shuffled this order is given to annotation view
         self.shuffle_order: Dict[str, Dict[str, str]] = {}
 
 
@@ -67,11 +73,11 @@ class ListWidget(QListWidget):
         self.setCurrentItem(None)
         self.clear()
 
-    def set_shuff_order(self, dct: Optional[Dict[str, Dict[str,str]]] = {}):
+    def set_shuff_order(self, dct: Optional[Dict[str, Dict[str, str]]] = {}):
         """Set shuffled order."""
         self.shuffle_order = dct
 
-    def clear_for_shuff(self) -> Dict[str, Dict[str,str]]:
+    def clear_for_shuff(self) -> Dict[str, Dict[str, str]]:
         """
         Clear the list display and return the file_dict.
 
