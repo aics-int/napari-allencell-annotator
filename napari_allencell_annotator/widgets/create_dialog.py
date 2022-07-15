@@ -80,21 +80,48 @@ class CreateDialog(QDialog):
         self.cancel.clicked.connect(self.reject)
         self.apply.clicked.connect(self.get_annots)
         self.valid_annots_made.connect(self.accept)
+        self.delete.clicked.connect(self._delete_clicked)
+        self.list.annots_selected.connect(self._show_delete)
+
+    def _show_delete(self, checked: bool):
+        """Display the delete button"""
+        if checked:
+            self.delete.show()
+        else:
+            self.delete.hide()
+
+    def _delete_clicked(self):
+        """Call list's delete checked"""
+        if self.list.num_checked > 0:
+            self.list.delete_checked()
 
     def add_clicked(self):
+        """Add a new item if there are less than 9. Hide add button otherwise"""
         self.list.add_new_item()
         if self.list.count() > 9:
             self.add.hide()
 
     def get_annots(self):
+        """
+        Set annotation dictionary to annotation data in list
+        and emit valid_annots_made signal if all annotations are valid.
+
+        """
         dct: Dict[str, Dict] = {}
         valid = True
+        # grab all items from list of annotations
         items = [self.list.item(x) for x in range(self.list.count())]
+        # if all items have been deleted annotations are invalid
+        if len(items) < 1:
+            valid = False
         for i in items:
             valid, name, sub_dct = i.get_data()
+            # sub_dct is annotation data (type,default, options)
             dct[name] = sub_dct
             if not valid:
                 valid = False
+                break
+        # if all values were valid emit signal and set new_annot_dict
         if valid:
             self.new_annot_dict = dct
             self.valid_annots_made.emit()

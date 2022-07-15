@@ -18,5 +18,12 @@ class TestAnnotationWidget:
     def test_remove_item(self):
         self._widget.takeItem = MagicMock()
         self._widget.row = MagicMock(return_value=5)
-        self._widget.remove_item("item")
-        self._widget.takeItem.assert_called_once_with(5)
+        self._widget.setMaximumHeight = MagicMock()
+        self._widget.count = MagicMock(return_value=1)
+        with mock.patch.object(AnnotationItem, "__init__", lambda x: None):
+            item = create_autospec(AnnotationItem)
+            item.sizeHint().height = MagicMock(return_value=4)
+
+            self._widget.remove_item(item)
+            self._widget.takeItem.assert_called_once_with(5)
+            self._widget.setMaximumHeight.assert_called_once_with(4)
