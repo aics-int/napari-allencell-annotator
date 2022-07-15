@@ -1,9 +1,8 @@
-import json
+
 from napari_allencell_annotator.view.annotator_view import (
     AnnotatorView,
     AnnotatorViewMode,
 )
-from napari_allencell_annotator.util.directories import Directories
 import napari
 
 from typing import Dict, List, Optional

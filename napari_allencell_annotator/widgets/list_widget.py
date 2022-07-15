@@ -14,7 +14,7 @@ class ListWidget(QListWidget):
     ----------
     checked : Set[ListItem]
         a set of items that are currently checked
-    file_dict : Dict[str , List[str]]
+    files_dict : Dict[str , List[str]]
         a dictionary of file path -> [File Name, FMS]
 
     Methods
@@ -42,16 +42,16 @@ class ListWidget(QListWidget):
         QListWidget.__init__(self)
         self.checked: Set[ListItem] = set()
         self.setSelectionMode(QAbstractItemView.SingleSelection)
-        # file_dict holds all image info file path -> [file name, FMS]
+        # files_dict holds all image info file path -> [file name, FMS]
         # also holds the original insertion order in .keys()
-        self.file_dict: Dict[str, List[str]] = {}
+        self.files_dict: Dict[str, List[str]] = {}
         self.setCurrentItem(None)
         self._shuffled: bool = False
-        # shuffle order holds the same file path -> [file name, FMS] as file_dict
+        # shuffle order holds the same file path -> [file name, FMS] as files_dict
         # only filled when the images have been shuffled
         # holds a new shuffled order in .keys()
         # when annotation starts if images are shuffled this order is given to annotation view
-        self.shuffle_order: Dict[str, List[str]] = {}
+        self.shuffled_files_dict: Dict[str, List[str]] = {}
 
     @property
     def shuffled(self) -> bool:
@@ -67,20 +67,20 @@ class ListWidget(QListWidget):
         """Clear all image data."""
         self._shuffled = False
         self.checked = set()
-        self.file_dict = {}
-        self.shuffle_order = {}
+        self.files_dict = {}
+        self.shuffled_files_dict = {}
         self.setCurrentItem(None)
         self.clear()
 
     def set_shuff_order(self, dct: Optional[Dict[str, List[str]]] = {}):
         """Set shuffled order."""
-        self.shuffle_order = dct
+        self.shuffled_files_dict = dct
 
     def clear_for_shuff(self) -> Dict[str, List[str]]:
         """
-        Clear the list display and return the file_dict.
+        Clear the list display and return the files_dict.
 
-        This function clears all displayed, checked, and current items, but keeps the file_dict.
+        This function clears all displayed, checked, and current items, but keeps the files_dict.
 
         Returns
         -------
@@ -88,15 +88,15 @@ class ListWidget(QListWidget):
             file_order.
         """
         self._shuffled = not self._shuffled
-        self.shuffle_order = {}
+        self.shuffled_files_dict = {}
         self.setCurrentItem(None)
         self.checked = set()
         self.clear()
-        return self.file_dict
+        return self.files_dict
 
     def add_new_item(self, file: str):
         """
-        Adds a new file to the list and file_dict.
+        Adds a new file to the list and files_dict.
 
         This function emits a files_added signal when this is the first file added.
 
@@ -105,16 +105,16 @@ class ListWidget(QListWidget):
         file: str
             a file path.
         """
-        if file not in self.file_dict.keys():
+        if file not in self.files_dict.keys():
             item = ListItem(file, self, False)
             item.check.stateChanged.connect(lambda: self._check_evt(item))
-            self.file_dict[file] = [item.get_name(), ""]
-            if len(self.file_dict) == 1:
+            self.files_dict[file] = [item.get_name(), ""]
+            if len(self.files_dict) == 1:
                 self.files_added.emit(True)
 
     def add_item(self, file: str, hidden: bool = False):
         """
-        Add a file to the list, but not to the file_dict.
+        Add a file to the list, but not to the files_dict.
 
         Optional hidden parameter toggles file name visibility.
 
@@ -139,12 +139,12 @@ class ListWidget(QListWidget):
         item: ListItem
             an item to remove.
         """
-        if item.file_path in self.file_dict.keys():
+        if item.file_path in self.files_dict.keys():
             if item == self.currentItem():
                 self.setCurrentItem(None)
             self.takeItem(self.row(item))
-            del self.file_dict[item.file_path]
-            if len(self.file_dict) == 0:
+            del self.files_dict[item.file_path]
+            if len(self.files_dict) == 0:
                 self.files_added.emit(False)
 
     def delete_checked(self):

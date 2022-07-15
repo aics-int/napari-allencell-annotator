@@ -15,21 +15,22 @@ class ImagesController:
 
     Attributes
     ----------
-    model
-        the model functions
     view
         the GUI and napari viewer
 
     Methods
     -------
+    get_files_dict() -> Dict[str,List[str]]
+        Returns the file dictionary that has the current file order.
+
     is_supported(file_name:str)->bool
         Returns True if a file is a supported file type.
 
-    get_files_dict(self) -> Dict[str,List[str]]
-        Returns the file dictionary that has the current file order.
-
     start_annotating()
         Sets the current item.
+
+    stop_annotating()
+        Clears file widget and reset buttons.
 
     curr_img_dict() -> Dict[str,str]
         Returns a dictionary with the current image attributes.
@@ -62,20 +63,20 @@ class ImagesController:
 
         Returns
         ----------
-        Dict[str,Dict[str,List[str]]
+        Dict[str,List[str]]
             dictionary of file info. keys in order.
         """
         if self.view.file_widget.shuffled:
-            return self.view.file_widget.shuffle_order
+            return self.view.file_widget.shuffled_files_dict
         else:
-            return self.view.file_widget.file_dict
+            return self.view.file_widget.files_dict
 
     def _shuffle_clicked(self, checked: bool):
         """
         Shuffle file order and hide file names if checked.
         Return files to original order and names if unchecked.
 
-        Side effect: set file_widget.shuffle_order to a new order dict or {} if list is unshuffled.
+        Side effect: set file_widget.shuffled_files_dict to a new order dict or {} if list is unshuffled.
 
         Parameters
         ----------
@@ -176,6 +177,7 @@ class ImagesController:
             self.view.alert("No files to annotate")
 
     def stop_annotating(self):
+        """Clear file widget and reset buttons."""
         self.view.file_widget.clear_all()
         self.view.reset_buttons()
 

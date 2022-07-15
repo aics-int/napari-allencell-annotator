@@ -22,13 +22,13 @@ class MainController(QWidget):
 
     Methods
     -------
-    start_annotating()
+    _start_annotating_clicked()
         Verifies that images are added and user wants to proceed, then opens a .csv file dialog.
     stop_annotating()
          Stops annotating in images and annotations views.
-    next_image()
+    _next_image_clicked()
         Moves to the next image for annotating.
-    prev_image()
+    _prev_image_clicked()
         Moves to the previous image for annotating.
     """
 
@@ -47,30 +47,24 @@ class MainController(QWidget):
 
     def _connect_slots(self):
         """Connects annotator view buttons start, next, and prev to slots"""
-        self.annots.view.start_btn.clicked.connect(self.start_annotating)
+        self.annots.view.start_btn.clicked.connect(self._start_annotating_clicked)
 
-        self.annots.view.next_btn.clicked.connect(self.next_image)
-        self.annots.view.prev_btn.clicked.connect(self.prev_image)
-        self.annots.view.file_input.file_selected.connect(self._file_selected_evt)
-        self.annots.view.save_exit_btn.clicked.connect(self.save_and_exit)
-        self.annots.view.import_btn.clicked.connect(self.import_annots)
-        self.annots.view.annot_input.file_selected.connect(self._csv_file_selected_evt)
-        self.annots.view.create_btn.clicked.connect(self.create_clicked)
+        self.annots.view.next_btn.clicked.connect(self._next_image_clicked)
+        self.annots.view.prev_btn.clicked.connect(self._prev_image_clicked)
+        self.annots.view.file_input.file_selected.connect(self._csv_write_selected_evt)
+        self.annots.view.save_exit_btn.clicked.connect(self._save_and_exit_clicked)
+        self.annots.view.import_btn.clicked.connect(self._import_annots_clicked)
+        self.annots.view.annot_input.file_selected.connect(self._csv_import_selected_evt)
+        self.annots.view.create_btn.clicked.connect(self._create_clicked)
 
-    def create_clicked(self):
+    def _create_clicked(self):
+        """Create dialog window and start viewing on accept."""
         dlg = CreateDialog(self)
         if dlg.exec() == QDialog.Accepted:
             self.annots.set_annot_json_data(dlg.new_annot_dict)
             self.annots.start_viewing()
-        else:
-            print("Cancel!")
 
-    # todo enforce unique names, enforce option is in the options, write what warning is, fix sizing issue/styling q for brian
-    #  , testing, new PR,
-    # todo PR: then do writing to json bit
-    # todotest/bug fix
-
-    def _csv_file_selected_evt(self, file_list: List[str]):
+    def _csv_import_selected_evt(self, file_list: List[str]):
         """
         Set csv file name for importing annotations.
 
@@ -83,14 +77,14 @@ class MainController(QWidget):
         if file_list is None or len(file_list) < 1:
             self.images.view.alert("No selection provided")
         else:
-            # TODO save csv, ask if image set will be used, render annotations/images if relevant, alter state so that a new csv is not selected if a csv is uploaded?
+            # TODO
             file_path = file_list[0]
-            # switch to view mode after creating/passing the json
 
-    def import_annots(self):
+    def _import_annots_clicked(self):
+        """Open file widget for importing csv/json."""
         self.annots.view.annot_input.simulate_click()
 
-    def _file_selected_evt(self, file_list: List[str]):
+    def _csv_write_selected_evt(self, file_list: List[str]):
         """
         Set csv file name for writing to the selected file.
 
@@ -112,7 +106,7 @@ class MainController(QWidget):
             self.annots.set_csv_name(file_path)
             self._setup_annotating()
 
-    def start_annotating(self):
+    def _start_annotating_clicked(self):
         """
         Verify that images are added and user wants to proceed, then
         open a .csv file dialog.
@@ -130,7 +124,7 @@ class MainController(QWidget):
             if proceed:
                 self.annots.view.file_input.simulate_click()
 
-    def stop_annotating(self):
+    def _stop_annotating(self):
         """
         Stop annotating in images and annotations views.
 
@@ -150,7 +144,7 @@ class MainController(QWidget):
         self.annots.start_annotating(self.images.get_num_files(), self.images.get_files_dict())
         self.annots.set_curr_img(self.images.curr_img_dict())
 
-    def next_image(self):
+    def _next_image_clicked(self):
         """
         Move to the next image for annotating.
 
@@ -164,13 +158,7 @@ class MainController(QWidget):
         if self.images.curr_img_dict()["Row"] == "1":
             self.annots.view.prev_btn.setEnabled(True)
 
-    def save_and_exit(self):
-        proceed: bool = self.annots.view.popup("Close this session?")
-
-        if proceed:
-            self.stop_annotating()
-
-    def prev_image(self):
+    def _prev_image_clicked(self):
         """
         Move to the previous image for annotating.
 
@@ -181,3 +169,10 @@ class MainController(QWidget):
         self.annots.set_curr_img(self.images.curr_img_dict())
         if self.images.curr_img_dict()["Row"] == "0":
             self.annots.view.prev_btn.setEnabled(False)
+
+    def _save_and_exit_clicked(self):
+        """Stop annotation if user confirms choice in popup."""
+        proceed: bool = self.annots.view.popup("Close this session?")
+
+        if proceed:
+            self._stop_annotating()

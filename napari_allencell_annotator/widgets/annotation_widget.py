@@ -32,7 +32,7 @@ class AnnotationWidget(QListWidget):
 
     def add_new_item(self):
         """
-        Adds a new file to the list and file_dict.
+        Adds a new file to the list and files_dict.
 
         This function emits a files_added signal when this is the first file added.
 
