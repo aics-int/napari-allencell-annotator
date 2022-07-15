@@ -2,8 +2,13 @@ from unittest import mock
 from unittest.mock import MagicMock, create_autospec
 
 from napari_allencell_annotator.controller.main_controller import (
-    MainController, ImagesController, AnnotatorController, QVBoxLayout,
-    os, CreateDialog, QDialog
+    MainController,
+    ImagesController,
+    AnnotatorController,
+    QVBoxLayout,
+    os,
+    CreateDialog,
+    QDialog,
 )
 
 

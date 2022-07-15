@@ -32,13 +32,13 @@ class TestAnnotatorController:
         assert self._controller.csv_name == "name"
 
     def test_start_viewing(self):
-        self._controller.annot_json_data = 'data'
+        self._controller.annot_json_data = "data"
         self._controller.start_viewing()
         self._controller.view.set_mode.assert_called_once_with(mode=AnnotatorViewMode.VIEW)
-        self._controller.view.render_annotations.assert_called_once_with('data')
+        self._controller.view.render_annotations.assert_called_once_with("data")
 
     def test_stop_viewing(self):
-        self._controller.annot_json_data = 'data'
+        self._controller.annot_json_data = "data"
         self._controller.stop_viewing()
         self._controller.view.set_mode.assert_called_once_with(mode=AnnotatorViewMode.ADD)
         self._controller.view.reset_annotations.assert_called_once_with()

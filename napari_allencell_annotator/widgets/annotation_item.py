@@ -10,21 +10,14 @@ from PyQt5.QtWidgets import (
     QComboBox,
     QLabel,
     QSpinBox,
-    QSizePolicy,
     QGridLayout,
-    QStyle,
-    QPushButton,
     QCheckBox,
 )
-from psygnal._signal import Signal
 
 
 class AnnotationItem(QListWidgetItem):
     """
     A class used to create custom annotation QListWidgetItems.
-
-    Attributes
-    ----------
     """
 
     def __init__(self, parent: QListWidget):
@@ -86,6 +79,7 @@ class AnnotationItem(QListWidgetItem):
         self.type.currentTextChanged.connect(self.type_changed)
 
     def type_changed(self, text: str):
+        """Render the widgets which correspond to the new type"""
         default_widget = self.layout.itemAtPosition(0, 7).widget()
         default_widget.setParent(None)
         self.layout.removeWidget(default_widget)
@@ -110,104 +104,81 @@ class AnnotationItem(QListWidgetItem):
             self.layout.addWidget(self.default_text, 0, 7, 1, 2)
 
     def get_data(self) -> Tuple[bool, str, Dict]:
-        valid = True
+        """
+        Highlight any invalid entries and return the data.
+
+        Return True if all data is valid along with str name and a dictionary
+        of annotation data.
+        Return False if data is invalid, highlight the incorrect entries, and return
+        an incomplete dictionary.
+
+        Returns
+        ------
+        Tuple[bool, str, Dict]
+            bool : True if entries are valid.
+            str: name of annotation item
+            Dict: annotation item data (type, default, options)
+        """
+        # bool valid if all annotation values are in the correct format
+        valid: bool = True
+        # test if annotation name is valid
         name: str = self.name.text()
+        self._unhighlight(self.name)
         if name is None or name.isspace() or len(name) == 0:
             valid = False
-            self.name.setStyleSheet(
-                """
-                        QLineEdit{
-                            border: 1px solid red
-                        }
-                """
-            )
-        else:
-            self.name.setStyleSheet(
-                """
-                        QLineEdit{
-                        }
-                """
-            )
+            self._highlight(self.name)
+
         type: str = self.type.currentText()
+        # dictionary of annotation type, default, options
         dct: Dict = {}
 
-        if type == "text":
-            dct["type"] = "string"
+        if type == "text" or type == "dropdown":
+            # grab default text entry
             txt = self.default_text.text()
             if txt is None or txt.isspace() or len(txt) == 0:
                 valid = False
-                self.default_text.setStyleSheet(
-                    """
-                                QLineEdit{
-                                    border: 1px solid red
-                                }
-                        """
-                )
+                self._highlight(self.default_text)
             else:
-                self.default_text.setStyleSheet(
-                    """
-                            QLineEdit{
-                            }
-                    """
-                )
-            dct["default"] = txt
+                # default text is valid
+                self._unhighlight(self.default_text)
+                dct["default"] = txt
+                if type == "text":
+                    dct["type"] = "string"
+                else:
+                    # type is options
+                    # comma separate list of options
+                    txt2 = self.default_options.text().split(",")
+                    # unhighlight by default
+                    self._unhighlight(self.default_options)
+                    # if there is less than two options provided
+                    if txt2 is None or len(txt2) < 2:
+                        valid = False
+                        self._highlight(self.default_options)
+                    else:
+                        for item in txt2:
+                            # check each item in options
+                            if item.isspace() or len(item) == 0:
+                                valid = False
+                                self._highlight(self.default_options)
+                                break
+
+                        dct["options"] = txt2
+                        dct["type"] = "list"
         elif type == "number":
+            # number defaults are required by spinbox, always valid
             dct["type"] = "number"
             dct["default"] = self.default_num.value()
-        elif type == "checkbox":
+        else:
+            # checkbox type default required by the drop down, always valid
             dct["type"] = "bool"
             if self.default_check.currentText() == "checked":
-                dct["default"] = "true"
+                dct["default"] = True
             else:
-                dct["default"] = "false"
-        else:
-            dct["type"] = "list"
-            txt = self.default_text.text()
-            if txt is None or txt.isspace() or len(txt) == 0:
-                valid = False
-                self.default_text.setStyleSheet(
-                    """
-                                QLineEdit{
-                                    border: 1px solid red
-                                }
-                        """
-                )
-            else:
-                self.default_text.setStyleSheet(
-                    """
-                            QLineEdit{
-                            }
-                    """
-                )
-            dct["default"] = txt
-            txt2 = self.default_options.text().split(",")
-            if txt2 is None or len(txt2) < 2:
-                valid = False
-                self.default_options.setStyleSheet(
-                    """
-                                QLineEdit{
-                                    border: 1px solid red
-                                }
-                        """
-                )
-            else:
-                for i in txt2:
-                    if i.isspace() or len(i) == 0:
-                        valid = False
-                        self.default_options.setStyleSheet(
-                            """
-                                     QLineEdit{
-                                           border: 1px solid red
-                                     }
-                             """
-                        )
-                        break
-                    self.default_options.setStyleSheet(
-                        """
-                                QLineEdit{
-                                }
-                        """
-                    )
-            dct["default"] = txt
-            dct["options"] = txt2
+                dct["default"] = False
         return valid, name, dct
+
+    def _highlight(self, objct: QWidget):
+        objct.setStyleSheet("""QLineEdit{border: 1px solid red}""")
+
+    def _unhighlight(self, objct: QWidget):
+        objct.setStyleSheet("""QLineEdit{}""")

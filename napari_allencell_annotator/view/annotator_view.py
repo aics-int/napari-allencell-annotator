@@ -25,12 +25,6 @@ from napari_allencell_annotator.widgets.file_input import (
     FileInput,
     FileInputMode,
 )
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from napari_allencell_annotator.controller.annotator_controller import (
-        AnnotatorController,
-    )
 
 
 class AnnotatorViewMode(Enum):
@@ -70,6 +64,15 @@ class AnnotatorView(QWidget):
     set_curr_index(num: int)
         Sets the index of the currently selected image.
 
+    reset_annotations()
+        Resets annotation data to empty.
+
+    render_default_values()
+        Sets annotation widget values to default.
+
+    render_values(vals: List):
+        Sets the values of the annotation widgets to vals.
+
     get_curr_annots() -> List
         Returns the current annotation values in a list form.
 
@@ -79,9 +82,6 @@ class AnnotatorView(QWidget):
     render_annotations(data : Dict[str,Dict]))
         Renders GUI elements from the dictionary of annotations.
 
-    render_default_annotations()
-        Sets annotation widget values to default.
-
     popup(text:str) -> bool
         Pop up dialog that asks the user a question. Returns True if 'Yes' False if 'No'.
     """
@@ -89,7 +89,6 @@ class AnnotatorView(QWidget):
     def __init__(
         self,
         viewer: Viewer,
-        contr,
         mode: AnnotatorViewMode = AnnotatorViewMode.ADD,
     ):
         super().__init__()
@@ -121,7 +120,6 @@ class AnnotatorView(QWidget):
 
         self.num_images: int = None
         self.curr_index: int = None
-        self.contr = contr
 
         # Add widget visible in ADD mode
         self.add_widget = QWidget()
@@ -150,7 +148,6 @@ class AnnotatorView(QWidget):
         view_layout.addWidget(self.cancel_btn, stretch=1)
         view_layout.addWidget(self.start_btn, stretch=3)
         self.view_widget.setLayout(view_layout)
-        # self.layout.addWidget(self.view_widget, 12, 0, 1, 4)
 
         # annot widget visible in ANNOTATE mode
         self.annot_widget = QWidget()
@@ -166,7 +163,6 @@ class AnnotatorView(QWidget):
         annot_layout.addWidget(self.prev_btn, 1, 2, 1, 1)
         annot_layout.addWidget(self.next_btn, 1, 3, 1, 1)
         self.annot_widget.setLayout(annot_layout)
-        # self.layout.addWidget(self.annot_widget, 12, 0, 2, 4)
 
         self._display_mode()
         self.annotation_item_widgets: List[QWidget] = []
@@ -193,9 +189,11 @@ class AnnotatorView(QWidget):
             self.curr_index = num
             self.progress_bar.setText("{} of {} Images".format(self.curr_index + 1, self.num_images))
 
-    def reset_annotations(self):
+    def _reset_annotations(self):
+        """Reset annotation data to empty."""
         self.annot_list.clear()
         # todo reset size?
+        self.annot_list.setMaximumHeight(600)
         self.annotation_item_widgets: List[QWidget] = []
         self.annots_order: List[str] = []
         self.default_vals: List[str] = []
@@ -206,7 +204,14 @@ class AnnotatorView(QWidget):
         self.render_values(self.default_vals)
 
     def render_values(self, vals: List):
-        """"""
+        """
+        Set the values of the annotation widgets.
+
+        Parameters
+        ----------
+        vals:List
+            the values for the annotations.
+        """
         for (widget, val) in zip(self.annotation_item_widgets, vals):
             if isinstance(widget, QLineEdit):
                 widget.setText(val)
@@ -247,13 +252,18 @@ class AnnotatorView(QWidget):
 
     def _display_mode(self):
         """Render GUI buttons visible depending on the mode."""
-        self.layout.takeAt(self.layout.count() - 1)
+        item = self.layout.itemAt(self.layout.count() - 1)
+        item.widget().hide()
+        self.layout.removeItem(item)
         if self._mode == AnnotatorViewMode.ADD:
-            self.annot_list.clear()
+            self.add_widget.show()
+            self._reset_annotations()
             self.layout.addWidget(self.add_widget)
         elif self._mode == AnnotatorViewMode.VIEW:
+            self.view_widget.show()
             self.layout.addWidget(self.view_widget)
         elif self._mode == AnnotatorViewMode.ANNOTATE:
+            self.annot_widget.show()
             self.layout.addWidget(self.annot_widget)
             self.prev_btn.setEnabled(False)
             self.toggle_annots_editable(True)
@@ -289,7 +299,7 @@ class AnnotatorView(QWidget):
         label = QLabel(name)
         self.annots_order.append(name)
         self.default_vals.append(dictn["default"])
-        layout.addWidget(label, stretch=1)
+        layout.addWidget(label)
         annot_type: str = dictn["type"]
         if annot_type == "string":
             item = QLineEdit(dictn["default"])
@@ -305,9 +315,7 @@ class AnnotatorView(QWidget):
             for opt in dictn["options"]:
                 item.addItem(opt)
             item.setCurrentText(dictn["default"])
-        else:
-            return  # TODO
-        layout.addWidget(item, stretch=2)
+        layout.addWidget(item)
         self.annotation_item_widgets.append(item)
         item.setEnabled(False)
         # layout.addStretch()

@@ -1,14 +1,10 @@
 from unittest import mock
-from unittest.mock import MagicMock, create_autospec
-
-import napari_allencell_annotator.view.annotator_view
+from unittest.mock import MagicMock
 
 from napari_allencell_annotator.view.annotator_view import (
     AnnotatorView,
     AnnotatorViewMode,
 )
-
-from napari_allencell_annotator.view.annotator_view import QLineEdit
 
 
 class TestAnnotatorView:
@@ -39,18 +35,20 @@ class TestAnnotatorView:
         self._view.progress_bar.setText.assert_called_once_with("3 of 4 Images")
         assert self._view.curr_index == 2
 
+    def test_reset_annotations(self):
+        self._view.annot_list = MagicMock()
+        self._view.annotation_item_widgets = ["item"]
+        self._view.annots_order = ["item"]
+        self._view.default_vals = ["item"]
+        self._view.reset_annotations()
+
+        self._view.annot_list.clear.assert_called_once_with()
+        assert self._view.annotation_item_widgets == []
+        assert self._view.annots_order == []
+        assert self._view.default_vals == []
+
     def test_render_default_values(self):
         self._view.default_vals = []
         self._view.render_values = MagicMock()
         self._view.render_default_values()
-        self._view.render_values
-
-    def test_render_annotations(self):
-        dic = {"name1": {}, "name2": {}}
-        self._view._create_annot = MagicMock()
-        self._view.annot_list = MagicMock()
-        self._view.annot_list.setMaximumHeight = MagicMock()
-        self._view.render_annotations(dic)
-        assert self._view.annotation_item_widgets == []
-        self._view.annot_list.setMaximumHeight.assert_called_once_with(45.5 * 2)
-        self._view._create_annot.assert_has_calls([mock.call("name1", {}), mock.call("name2", {})])
+        self._view.render_values.assert_called_once_with([])

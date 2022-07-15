@@ -193,7 +193,7 @@ class ImagesController:
         """
         item = self.view.file_widget.currentItem()
         info = {
-            "File Name": item.get_name(),
+            "File Path": item.file_path,
             "Row": str(self.view.file_widget.get_curr_row()),
         }
         return info

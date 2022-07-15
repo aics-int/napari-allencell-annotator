@@ -1,4 +1,3 @@
-
 from napari_allencell_annotator.view.annotator_view import (
     AnnotatorView,
     AnnotatorViewMode,
@@ -60,11 +59,11 @@ class AnnotatorController:
         # dictionary of json info:
         self.annot_json_data: Dict[str, Dict] = None
         # open in view mode
-        self.view: AnnotatorView = AnnotatorView(viewer, self)
+        self.view: AnnotatorView = AnnotatorView(viewer)
 
         self.view.show()
         # {'File Path' : path, 'Row' : str(row)}
-        self.curr_img_dict : Dict[str, str] = None
+        self.curr_img_dict: Dict[str, str] = None
         self.csv_name: str = None
         # annotation dictionary maps file paths -> [file name, FMS, annot1val, annot2val, ...]
         self.files_and_annots: Dict[str, List[str]] = {}
@@ -87,7 +86,6 @@ class AnnotatorController:
     def stop_viewing(self):
         """Change view to ADD mode, reset annotations, and clear annotation json data."""
         self.view.set_mode(mode=AnnotatorViewMode.ADD)
-        self.view.reset_annotations()
         self.annot_json_data = None
 
     def start_annotating(self, num_images: int, dct: Dict[str, List[str]]):

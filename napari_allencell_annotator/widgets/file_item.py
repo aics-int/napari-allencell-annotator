@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (
 )
 
 
-class ListItem(QListWidgetItem):
+class FileItem(QListWidgetItem):
     """
     A class used to create custom QListWidgetItems.
 
@@ -66,22 +66,15 @@ class ListItem(QListWidgetItem):
     def highlight(self):
         """highlight item"""
         self.label.setStyleSheet(
-            """
-                        QLabel{
+            """QLabel{
                             font-weight: bold;
                             text-decoration: underline;
-                        }
-                """
+                        }"""
         )
 
     def unhighlight(self):
         """unhighlight item"""
-        self.label.setStyleSheet(
-            """
-                                QLabel{
-                                }
-                        """
-        )
+        self.label.setStyleSheet("""QLabel{}""")
 
     def __hash__(self):
         return hash(self._file_path)

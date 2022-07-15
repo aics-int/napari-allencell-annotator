@@ -3,16 +3,16 @@ from typing import Set, List, Optional, Dict
 
 from qtpy.QtCore import Signal
 
-from napari_allencell_annotator.widgets.list_item import ListItem
+from napari_allencell_annotator.widgets.file_item import FileItem
 
 
-class ListWidget(QListWidget):
+class FilesWidget(QListWidget):
     """
     A class used to create a QListWidget for files.
 
     Attributes
     ----------
-    checked : Set[ListItem]
+    checked : Set[FileItem]
         a set of items that are currently checked
     files_dict : Dict[str , List[str]]
         a dictionary of file path -> [File Name, FMS]
@@ -40,7 +40,7 @@ class ListWidget(QListWidget):
 
     def __init__(self):
         QListWidget.__init__(self)
-        self.checked: Set[ListItem] = set()
+        self.checked: Set[FileItem] = set()
         self.setSelectionMode(QAbstractItemView.SingleSelection)
         # files_dict holds all image info file path -> [file name, FMS]
         # also holds the original insertion order in .keys()
@@ -106,7 +106,7 @@ class ListWidget(QListWidget):
             a file path.
         """
         if file not in self.files_dict.keys():
-            item = ListItem(file, self, False)
+            item = FileItem(file, self, False)
             item.check.stateChanged.connect(lambda: self._check_evt(item))
             self.files_dict[file] = [item.get_name(), ""]
             if len(self.files_dict) == 1:
@@ -125,10 +125,10 @@ class ListWidget(QListWidget):
         hidden: bool
             file name visibility.
         """
-        item = ListItem(file, self, hidden)
+        item = FileItem(file, self, hidden)
         item.check.stateChanged.connect(lambda: self._check_evt(item))
 
-    def remove_item(self, item: ListItem):
+    def remove_item(self, item: FileItem):
         """
         Remove the item from all attributes.
 
@@ -136,7 +136,7 @@ class ListWidget(QListWidget):
 
         Params
         -------
-        item: ListItem
+        item: FileItem
             an item to remove.
         """
         if item.file_path in self.files_dict.keys():
@@ -158,13 +158,13 @@ class ListWidget(QListWidget):
         self.checked.clear()
         self.files_selected.emit(False)
 
-    def _check_evt(self, item: ListItem):
+    def _check_evt(self, item: FileItem):
         """
         Update checked set and emit files_selected signal.
 
         Params
         -------
-        item: ListItem
+        item: FileItem
             the item that has been checked or unchecked.
         """
         if item.check.isChecked() and item not in self.checked:
