@@ -1,3 +1,5 @@
+import json
+
 from napari_allencell_annotator.view.annotator_view import (
     AnnotatorView,
     AnnotatorViewMode,
@@ -161,14 +163,29 @@ class AnnotatorController:
         lst: List = self.view.get_curr_annots()
         self.files_and_annots[prev_img] = self.files_and_annots[prev_img][:2:] + lst
 
+    def read_json(self, file_path: str):
+        self.annot_json_data: Dict[str, Dict] = json.load(open(file_path))
+
+    def read_csv(self, file_path: str):
+        dct : Dict[str, Dict] = {}
+        file = open(file_path)
+        reader = csv.reader(file)
+        annts = next(reader)
+        file.close()
+        if not annts[0] == "Annotations:":
+            # todo throw error
+            print('error')
+        self.annot_json_data = json.loads(annts[1])
+
     def write_csv(self):
         """write headers and file info"""
         file = open(self.csv_name, "w")
         writer = csv.writer(file)
         header: List[str] = ["Annotations:"]
-        for key, dic in self.annot_json_data.items():
-            header.append(key)
-            header.append(str(dic))
+        #for key, dic in self.annot_json_data.items():
+            #header.append(key)
+            #header.append(str(dic))
+        header.append(json.dumps(self.annot_json_data))
         writer.writerow(header)
 
         header = ["File Name", "File Path", "FMS"]

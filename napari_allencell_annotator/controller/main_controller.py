@@ -77,8 +77,14 @@ class MainController(QWidget):
         if file_list is None or len(file_list) < 1:
             self.images.view.alert("No selection provided")
         else:
-            # TODO
             file_path = file_list[0]
+            if os.path.splitext(file_path)[1] == ".json":
+                self.annots.read_json(file_path)
+
+            else:
+                self.annots.read_csv(file_path)
+            self.annots.start_viewing()
+
 
     def _import_annots_clicked(self):
         """Open file widget for importing csv/json."""
