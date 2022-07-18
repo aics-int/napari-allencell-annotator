@@ -1,15 +1,15 @@
 from unittest import mock
 from unittest.mock import MagicMock
 
-from napari_allencell_annotator.widgets.list_item import ListItem
+from napari_allencell_annotator.widgets.file_item import FileItem
 
-from napari_allencell_annotator.widgets.list_item import os
+from napari_allencell_annotator.widgets.file_item import os
 
 
-class TestListItem:
+class TestFileItem:
     def setup_method(self):
-        with mock.patch.object(ListItem, "__init__", lambda x: None):
-            self._widget = ListItem()
+        with mock.patch.object(FileItem, "__init__", lambda x: None):
+            self._widget = FileItem()
             self._widget._file_path = "path"
 
     def test_file_path(self):
@@ -23,24 +23,24 @@ class TestListItem:
 
     def test_eq(self):
         path = "path"
-        with mock.patch.object(ListItem, "__init__", lambda x: None):
-            widget_2 = ListItem()
+        with mock.patch.object(FileItem, "__init__", lambda x: None):
+            widget_2 = FileItem()
             widget_2._file_path = path
         assert self._widget == widget_2
         assert self._widget == self._widget
 
     def test_not_eq(self):
         path = "path2"
-        with mock.patch.object(ListItem, "__init__", lambda x: None):
-            widget_2 = ListItem()
+        with mock.patch.object(FileItem, "__init__", lambda x: None):
+            widget_2 = FileItem()
             widget_2._file_path = path
         assert self._widget != widget_2
         assert self._widget == self._widget
 
     def test_hash(self):
         path = "path"
-        with mock.patch.object(ListItem, "__init__", lambda x: None):
-            widget_2 = ListItem()
+        with mock.patch.object(FileItem, "__init__", lambda x: None):
+            widget_2 = FileItem()
             widget_2._file_path = path
         wid_set = set()
         wid_set.add(self._widget)
@@ -48,8 +48,8 @@ class TestListItem:
         assert len(wid_set) == 1
 
         path = "path2"
-        with mock.patch.object(ListItem, "__init__", lambda x: None):
-            widget_2 = ListItem()
+        with mock.patch.object(FileItem, "__init__", lambda x: None):
+            widget_2 = FileItem()
             widget_2._file_path = path
         wid_set = set()
         wid_set.add(self._widget)

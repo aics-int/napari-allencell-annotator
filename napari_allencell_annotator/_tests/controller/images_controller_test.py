@@ -20,14 +20,14 @@ class TestImagesController:
 
     def test_get_files_dict(self):
         self._controller.view.file_widget.shuffled = False
-        self._controller.view.file_widget.shuffle_order = "shuffle"
-        self._controller.view.file_widget.file_dict = "file"
+        self._controller.view.file_widget.shuffled_files_dict = "shuffle"
+        self._controller.view.file_widget.files_dict = "file"
         assert self._controller.get_files_dict() == "file"
 
     def test_get_files_dict_shuffled(self):
         self._controller.view.file_widget.shuffled = True
-        self._controller.view.file_widget.shuffle_order = "shuffle"
-        self._controller.view.file_widget.file_dict = "file"
+        self._controller.view.file_widget.shuffled_files_dict = "shuffle"
+        self._controller.view.file_widget.files_dict = "file"
         assert self._controller.get_files_dict() == "shuffle"
 
     def test_shuffle_clicked_none(self):

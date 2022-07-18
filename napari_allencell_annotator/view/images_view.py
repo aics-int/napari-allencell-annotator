@@ -17,7 +17,7 @@ from napari_allencell_annotator.widgets.file_input import (
     FileInput,
     FileInputMode,
 )
-from napari_allencell_annotator.widgets.list_widget import ListWidget, ListItem
+from napari_allencell_annotator.widgets.files_widget import FilesWidget, FileItem
 
 
 class ImagesView(QWidget):
@@ -65,7 +65,7 @@ class ImagesView(QWidget):
         self.layout.addWidget(self.input_dir, 1, 0, 1, 2)
         self.layout.addWidget(self.input_file, 1, 2, 1, 2)
 
-        self.file_widget = ListWidget()
+        self.file_widget = FilesWidget()
         self.file_widget.files_selected.connect(self._toggle_delete)
         self.file_widget.files_added.connect(self._toggle_shuffle)
 
@@ -112,6 +112,7 @@ class ImagesView(QWidget):
     def reset_buttons(self):
         self._toggle_delete(False)
         self._toggle_shuffle(False)
+        self._update_shuff_text(False)
         self.toggle_add(True)
 
     def _delete_clicked(self):
@@ -180,7 +181,7 @@ class ImagesView(QWidget):
         elif not files_added:
             self.shuffle.setEnabled(False)
 
-    def _display_img(self, current: ListItem, previous: ListItem):
+    def _display_img(self, current: FileItem, previous: FileItem):
         """Display the current image in napari."""
         self.viewer.layers.clear()
         if previous is not None:

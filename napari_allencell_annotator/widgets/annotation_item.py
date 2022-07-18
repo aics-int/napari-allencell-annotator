@@ -1,3 +1,5 @@
+from typing import Tuple, Dict
+
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import (
     QListWidgetItem,
@@ -8,10 +10,7 @@ from PyQt5.QtWidgets import (
     QComboBox,
     QLabel,
     QSpinBox,
-    QSizePolicy,
     QGridLayout,
-    QStyle,
-    QPushButton,
     QCheckBox,
 )
 
@@ -19,9 +18,6 @@ from PyQt5.QtWidgets import (
 class AnnotationItem(QListWidgetItem):
     """
     A class used to create custom annotation QListWidgetItems.
-
-    Attributes
-    ----------
     """
 
     def __init__(self, parent: QListWidget):
@@ -31,6 +27,7 @@ class AnnotationItem(QListWidgetItem):
         name_label = QLabel("Name:")
         self.name = QLineEdit()
         self.name.setPlaceholderText("Enter name")
+
         type_label = QLabel("Type:")
         self.type = QComboBox()
         self.type.addItems(["text", "number", "checkbox", "dropdown"])
@@ -82,9 +79,10 @@ class AnnotationItem(QListWidgetItem):
         self.type.currentTextChanged.connect(self.type_changed)
 
     def type_changed(self, text: str):
-        lastWidget = self.layout.itemAtPosition(0, 7).widget()
-        lastWidget.setParent(None)
-        self.layout.removeWidget(lastWidget)
+        """Render the widgets which correspond to the new type"""
+        default_widget = self.layout.itemAtPosition(0, 7).widget()
+        default_widget.setParent(None)
+        self.layout.removeWidget(default_widget)
 
         if text == "text":
             self.default_options.hide()
@@ -104,3 +102,93 @@ class AnnotationItem(QListWidgetItem):
             self.default_options.show()
             self.default_options_label.show()
             self.layout.addWidget(self.default_text, 0, 7, 1, 2)
+
+    def get_data(self) -> Tuple[bool, str, Dict, str]:
+        """
+        Highlight any invalid entries and return the data.
+
+        Return True if all data is valid along with str name and a dictionary
+        of annotation data.
+        Return False if data is invalid, highlight the incorrect entries, and return
+        an incomplete dictionary.
+
+        Returns
+        ------
+        Tuple[bool, str, Dict]
+            bool : True if entries are valid.
+            str: name of annotation item
+            Dict: annotation item data (type, default, options)
+            str: error msg if applicable
+        """
+        # bool valid if all annotation values are in the correct format
+        error = ""
+        valid: bool = True
+        # test if annotation name is valid
+        name: str = self.name.text()
+        self._unhighlight(self.name)
+        if name is None or name.isspace() or len(name) == 0:
+            valid = False
+            self.highlight(self.name)
+            error = " Invalid Name. "
+
+        type: str = self.type.currentText()
+        # dictionary of annotation type, default, options
+        dct: Dict = {}
+
+        if type == "text" or type == "dropdown":
+            # grab default text entry
+            default = self.default_text.text()
+            if default is None or default.isspace() or len(default) == 0:
+                dct["default"] = ""
+            else:
+                # default text exists
+                dct["default"] = default
+            if type == "text":
+                dct["type"] = "string"
+            else:
+                # type is options
+                # comma separate list of options
+                txt2 = self.default_options.text().split(",")
+                # unhighlight by default
+                self._unhighlight(self.default_options)
+                # if there is less than two options provided
+                if txt2 is None or len(txt2) < 2:
+                    valid = False
+                    self.highlight(self.default_options)
+                    error = error + " Must provide two dropdown options. "
+                else:
+                    contained: bool = False
+                    if dct["default"] == "":
+                        contained = True
+                    for item in txt2:
+                        # check each item in options
+                        if item.isspace() or len(item) == 0:
+                            valid = False
+                            self.highlight(self.default_options)
+                            error = error + " Invalid options for dropdown. "
+                            break
+                        else:
+                            if not contained and item == dct["default"]:
+                                contained = True
+                    if not contained:
+                        txt2.append(default)
+                    dct["options"] = txt2
+                    dct["type"] = "list"
+        elif type == "number":
+            # number defaults are required by spinbox, always valid
+            dct["type"] = "number"
+            dct["default"] = self.default_num.value()
+        else:
+            # checkbox type default required by the drop down, always valid
+            dct["type"] = "bool"
+            if self.default_check.currentText() == "checked":
+                dct["default"] = True
+            else:
+                dct["default"] = False
+        return valid, name, dct, error
+
+    def highlight(self, objct: QWidget):
+        objct.setStyleSheet("""QLineEdit{border: 1px solid red}""")
+
+    def _unhighlight(self, objct: QWidget):
+        objct.setStyleSheet("""QLineEdit{}""")

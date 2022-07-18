@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, create_autospec
 from napari_allencell_annotator.controller.images_controller import (
     ImagesController,
 )
-from napari_allencell_annotator.view.images_view import ImagesView, ListItem
+from napari_allencell_annotator.view.images_view import ImagesView, FileItem
 
 from napari_allencell_annotator.view.images_view import AICSImage
 from napari_allencell_annotator.view.images_view import napari
@@ -100,7 +100,7 @@ class TestImagesView:
         # current item none
         self._view.viewer.layers = MagicMock()
         self._view.viewer.layers.clear = MagicMock()
-        prev = create_autospec(ListItem)
+        prev = create_autospec(FileItem)
         prev.unhighlight = MagicMock()
         curr = None
         self._view.AICSImage = MagicMock(return_value="data")
@@ -114,9 +114,9 @@ class TestImagesView:
         # current item none
         self._view.viewer.layers = MagicMock()
         self._view.viewer.layers.clear = MagicMock()
-        prev = create_autospec(ListItem)
+        prev = create_autospec(FileItem)
         prev.unhighlight = MagicMock()
-        curr = create_autospec(ListItem)
+        curr = create_autospec(FileItem)
         curr.file_path = MagicMock(return_value="path")
         curr.highlight = MagicMock()
 
