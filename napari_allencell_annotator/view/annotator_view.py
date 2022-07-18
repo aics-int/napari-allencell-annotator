@@ -100,6 +100,7 @@ class AnnotatorView(QWidget):
         self.layout.addWidget(label)
 
         self.annot_list = QListWidget()
+        self.annot_list.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
 
         self.scroll = QScrollArea()
         self.scroll.setWidget(self.annot_list)
@@ -192,7 +193,7 @@ class AnnotatorView(QWidget):
     def _reset_annotations(self):
         """Reset annotation data to empty."""
         self.annot_list.clear()
-        # todo reset size?
+        #todo
         self.annot_list.setMaximumHeight(600)
         self.annotation_item_widgets: List[QWidget] = []
         self.annots_order: List[str] = []
@@ -318,7 +319,6 @@ class AnnotatorView(QWidget):
         layout.addWidget(item)
         self.annotation_item_widgets.append(item)
         item.setEnabled(False)
-        # layout.addStretch()
         layout.setContentsMargins(2, 12, 8, 12)
         layout.setSpacing(2)
         widget.setLayout(layout)

@@ -134,36 +134,41 @@ class AnnotationItem(QListWidgetItem):
 
         if type == "text" or type == "dropdown":
             # grab default text entry
-            txt = self.default_text.text()
-            if txt is None or txt.isspace() or len(txt) == 0:
-                valid = False
-                self._highlight(self.default_text)
+            default = self.default_text.text()
+            if default is None or default.isspace() or len(default) == 0:
+                dct['default'] = ''
             else:
-                # default text is valid
-                self._unhighlight(self.default_text)
-                dct["default"] = txt
-                if type == "text":
-                    dct["type"] = "string"
+                # default text exists
+                dct["default"] = default
+            if type == "text":
+                dct["type"] = "string"
+            else:
+                # type is options
+                # comma separate list of options
+                txt2 = self.default_options.text().split(",")
+                # unhighlight by default
+                self._unhighlight(self.default_options)
+                # if there is less than two options provided
+                if txt2 is None or len(txt2) < 2:
+                    valid = False
+                    self._highlight(self.default_options)
                 else:
-                    # type is options
-                    # comma separate list of options
-                    txt2 = self.default_options.text().split(",")
-                    # unhighlight by default
-                    self._unhighlight(self.default_options)
-                    # if there is less than two options provided
-                    if txt2 is None or len(txt2) < 2:
-                        valid = False
-                        self._highlight(self.default_options)
-                    else:
-                        for item in txt2:
-                            # check each item in options
-                            if item.isspace() or len(item) == 0:
-                                valid = False
-                                self._highlight(self.default_options)
-                                break
-
-                        dct["options"] = txt2
-                        dct["type"] = "list"
+                    contained: bool = False
+                    if dct["default"] == "":
+                        contained = True
+                    for item in txt2:
+                        # check each item in options
+                        if item.isspace() or len(item) == 0:
+                            valid = False
+                            self._highlight(self.default_options)
+                            break
+                        else:
+                            if not contained and item == dct['default']:
+                                contained = True
+                    if not contained:
+                        txt2.append(default)
+                    dct["options"] = txt2
+                    dct["type"] = "list"
         elif type == "number":
             # number defaults are required by spinbox, always valid
             dct["type"] = "number"

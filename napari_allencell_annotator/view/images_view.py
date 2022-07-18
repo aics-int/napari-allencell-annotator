@@ -112,6 +112,7 @@ class ImagesView(QWidget):
     def reset_buttons(self):
         self._toggle_delete(False)
         self._toggle_shuffle(False)
+        self._update_shuff_text(False)
         self.toggle_add(True)
 
     def _delete_clicked(self):
