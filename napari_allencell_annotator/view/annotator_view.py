@@ -193,7 +193,7 @@ class AnnotatorView(QWidget):
     def _reset_annotations(self):
         """Reset annotation data to empty."""
         self.annot_list.clear()
-        #todo
+        # todo
         self.annot_list.setMaximumHeight(600)
         self.annotation_item_widgets: List[QWidget] = []
         self.annots_order: List[str] = []

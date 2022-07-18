@@ -139,7 +139,7 @@ class AnnotationItem(QListWidgetItem):
             # grab default text entry
             default = self.default_text.text()
             if default is None or default.isspace() or len(default) == 0:
-                dct['default'] = ''
+                dct["default"] = ""
             else:
                 # default text exists
                 dct["default"] = default
@@ -168,7 +168,7 @@ class AnnotationItem(QListWidgetItem):
                             error = error + " Invalid options for dropdown. "
                             break
                         else:
-                            if not contained and item == dct['default']:
+                            if not contained and item == dct["default"]:
                                 contained = True
                     if not contained:
                         txt2.append(default)
