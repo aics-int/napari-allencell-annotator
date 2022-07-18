@@ -103,7 +103,7 @@ class AnnotationItem(QListWidgetItem):
             self.default_options_label.show()
             self.layout.addWidget(self.default_text, 0, 7, 1, 2)
 
-    def get_data(self) -> Tuple[bool, str, Dict]:
+    def get_data(self) -> Tuple[bool, str, Dict, str]:
         """
         Highlight any invalid entries and return the data.
 
@@ -118,15 +118,18 @@ class AnnotationItem(QListWidgetItem):
             bool : True if entries are valid.
             str: name of annotation item
             Dict: annotation item data (type, default, options)
+            str: error msg if applicable
         """
         # bool valid if all annotation values are in the correct format
+        error = ""
         valid: bool = True
         # test if annotation name is valid
         name: str = self.name.text()
         self._unhighlight(self.name)
         if name is None or name.isspace() or len(name) == 0:
             valid = False
-            self._highlight(self.name)
+            self.highlight(self.name)
+            error = " Invalid Name. "
 
         type: str = self.type.currentText()
         # dictionary of annotation type, default, options
@@ -151,7 +154,8 @@ class AnnotationItem(QListWidgetItem):
                 # if there is less than two options provided
                 if txt2 is None or len(txt2) < 2:
                     valid = False
-                    self._highlight(self.default_options)
+                    self.highlight(self.default_options)
+                    error = error + " Must provide two dropdown options. "
                 else:
                     contained: bool = False
                     if dct["default"] == "":
@@ -160,7 +164,8 @@ class AnnotationItem(QListWidgetItem):
                         # check each item in options
                         if item.isspace() or len(item) == 0:
                             valid = False
-                            self._highlight(self.default_options)
+                            self.highlight(self.default_options)
+                            error = error + " Invalid options for dropdown. "
                             break
                         else:
                             if not contained and item == dct['default']:
@@ -180,9 +185,9 @@ class AnnotationItem(QListWidgetItem):
                 dct["default"] = True
             else:
                 dct["default"] = False
-        return valid, name, dct
+        return valid, name, dct, error
 
-    def _highlight(self, objct: QWidget):
+    def highlight(self, objct: QWidget):
         objct.setStyleSheet("""QLineEdit{border: 1px solid red}""")
 
     def _unhighlight(self, objct: QWidget):
