@@ -1,5 +1,5 @@
 import os
-from typing import List, Dict
+from typing import List, Dict, Optional
 import random
 
 import napari
@@ -20,6 +20,9 @@ class ImagesController:
 
     Methods
     -------
+    load_from_csv(files : List[str], shuffled: bool)
+        Adds files to file list from a csv list of file paths.
+
     get_files_dict() -> Dict[str,List[str]]
         Returns the file dictionary that has the current file order.
 
@@ -57,19 +60,38 @@ class ImagesController:
         self.view.input_file.file_selected.connect(self._file_selected_evt)
         self.view.shuffle.clicked.connect(self._shuffle_clicked)
 
-    def get_files_dict(self) -> Dict[str, List[str]]:
+    def load_from_csv(self, files: List[str], shuffled: bool):
+        """
+        Add files to file list from a csv list of file paths.
+
+        If the csv files are shuffled, set shuffle order and hide file names.
+
+        Parameters
+        __________
+        dct : List[str]
+            a list of file paths.
+        shuffled: bool
+            true if files are shuffled.
+        """
+        for name in files:
+            self.view.file_widget.add_new_item(name, shuffled)
+        self.view.disable_csv_image_edits()
+        if shuffled:
+            self.view.file_widget.set_shuff_order(self.view.file_widget.files_dict)
+
+    def get_files_dict(self) -> (Dict[str, List[str]], bool):
         """
         Return the file dictionary that has the current file order.
 
         Returns
         ----------
-        Dict[str,List[str]]
-            dictionary of file info. keys in order.
+        Dict[str,List[str]], bool
+            dictionary of file info. keys in order. a boolean shuffled.
         """
         if self.view.file_widget.shuffled:
-            return self.view.file_widget.shuffled_files_dict
+            return self.view.file_widget.shuffled_files_dict, True
         else:
-            return self.view.file_widget.files_dict
+            return self.view.file_widget.files_dict, False
 
     def _shuffle_clicked(self, checked: bool):
         """
@@ -169,10 +191,11 @@ class ImagesController:
                 else:
                     self.view.alert("Unsupported file type:" + file)
 
-    def start_annotating(self):
+    def start_annotating(self, row: Optional[int] = 0):
         """Set current item to the first item."""
         if self.view.file_widget.count() > 0:
-            self.view.file_widget.setCurrentItem(self.view.file_widget.item(0))
+            self.view.file_widget.setCurrentItem(self.view.file_widget.item(row))
+
         else:
             self.view.alert("No files to annotate")
 

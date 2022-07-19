@@ -18,17 +18,37 @@ class TestImagesController:
         with mock.patch("napari_allencell_annotator.controller.images_controller.ImagesView"):
             self._controller = ImagesController(self._mock_viewer)
 
+    def test_load_from_csv_one(self):
+        self._controller.view = create_autospec(ImagesView)
+        self._controller.view.file_widget = MagicMock()
+        self._controller.view.file_widget.files_dict = {}
+
+        self._controller.load_from_csv(['name'], True)
+        self._controller.view.file_widget.add_new_item.assert_called_once_with('name', True)
+        self._controller.view.disable_csv_image_edits.assert_called_once_with()
+        self._controller.view.file_widget.set_shuff_order.assert_called_once_with({})
+
+    def test_load_from_csv_two(self):
+        self._controller.view = create_autospec(ImagesView)
+        self._controller.view.file_widget = MagicMock()
+        self._controller.view.file_widget.files_dict = {}
+
+        self._controller.load_from_csv(['name', 'name2'], False)
+        self._controller.view.file_widget.add_new_item.assert_has_calls([mock.call('name', False), mock.call('name2', False)], any_order=True)
+        self._controller.view.disable_csv_image_edits.assert_called_once_with()
+        self._controller.view.file_widget.set_shuff_order.assert_not_called()
+
     def test_get_files_dict(self):
         self._controller.view.file_widget.shuffled = False
         self._controller.view.file_widget.shuffled_files_dict = "shuffle"
         self._controller.view.file_widget.files_dict = "file"
-        assert self._controller.get_files_dict() == "file"
+        assert self._controller.get_files_dict() == ("file", False)
 
     def test_get_files_dict_shuffled(self):
         self._controller.view.file_widget.shuffled = True
         self._controller.view.file_widget.shuffled_files_dict = "shuffle"
         self._controller.view.file_widget.files_dict = "file"
-        assert self._controller.get_files_dict() == "shuffle"
+        assert self._controller.get_files_dict() == ("shuffle", True)
 
     def test_shuffle_clicked_none(self):
         # test when list widget has no items
@@ -239,13 +259,11 @@ class TestImagesController:
 
     def test_curr_img_dict(self):
         self._controller.view.file_widget.currentItem = MagicMock()
-        self._controller.view.file_widget.currentItem().get_name = MagicMock(return_value="name")
         self._controller.view.file_widget.currentItem().file_path = "path"
         self._controller.view.file_widget.get_curr_row = MagicMock(return_value=0)
-        d = {"File Name": "name", "Row": "0"}
+        d = {"File Path": "path", "Row": "0"}
         d_act = self._controller.curr_img_dict()
         assert d == d_act
-        self._controller.view.file_widget.currentItem().get_name.assert_called_once()
         self._controller.view.file_widget.get_curr_row.assert_called_once()
 
     def test_next_img(self):

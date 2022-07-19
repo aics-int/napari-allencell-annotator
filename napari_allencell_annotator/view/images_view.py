@@ -110,6 +110,7 @@ class ImagesView(QWidget):
             self.shuffle.setText("Shuffle and Hide")
 
     def reset_buttons(self):
+        self.enable_image_edits()
         self._toggle_delete(False)
         self._toggle_shuffle(False)
         self._update_shuff_text(False)
@@ -180,6 +181,14 @@ class ImagesView(QWidget):
             self.shuffle.setEnabled(True)
         elif not files_added:
             self.shuffle.setEnabled(False)
+
+    def enable_image_edits(self):
+        self.shuffle.show()
+        self.delete.show()
+
+    def disable_csv_image_edits(self):
+        self.shuffle.hide()
+        self.delete.hide()
 
     def _display_img(self, current: FileItem, previous: FileItem):
         """Display the current image in napari."""

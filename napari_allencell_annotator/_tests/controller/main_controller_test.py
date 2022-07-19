@@ -1,5 +1,6 @@
+import builtins
 from unittest import mock
-from unittest.mock import MagicMock, create_autospec
+from unittest.mock import MagicMock, create_autospec, mock_open, patch
 
 from napari_allencell_annotator.controller.main_controller import (
     MainController,
@@ -38,6 +39,22 @@ class TestMainController:
     def test_csv_import_selected_evt_empty(self):
         self._controller._csv_import_selected_evt([])
         self._controller.images.view.alert.assert_called_once_with("No selection provided")
+
+    def test_csv_imported_selected_evt_json(self):
+        self._controller._csv_import_selected_evt(['path.json'])
+
+        self._controller.annots.read_json.assert_called_once_with('path.json')
+
+    @patch("builtins.open", new_callable=mock_open, read_data="data")
+    # todo
+    def test_csv_imported_selected_evt_csv(self, mock_file):
+        self._controller._csv_import_selected_evt(['path.csv'])
+        self._controller.annots.view.popup = MagicMock(return_value=False)
+        mock_file.assert_called_once_with('path.csv')
+
+        self._controller.annots.read_json.assert_not_called()
+
+
 
     def test_import_annots_clicked(self):
         self._controller._import_annots_clicked()
@@ -111,6 +128,7 @@ class TestMainController:
         self._controller.annots.stop_annotating.assert_called_once_with()
 
     def test_setup_annotating(self):
+        # todo
         self._controller._setup_annotating()
         self._controller.layout.removeWidget.assert_called_once_with(self._controller.images.view)
         self._controller.images.view.hide.assert_called_once()
@@ -121,6 +139,7 @@ class TestMainController:
         self._controller.annots.set_curr_img.assert_called_once_with(self._controller.images.curr_img_dict())
 
     def test_next_image_clicked_save(self):
+        # todo
         self._controller.annots.view.next_btn.text = MagicMock(return_value="Finish")
         self._controller.annots.record_annotations = MagicMock()
         self._controller.images.curr_img_dict = MagicMock(return_value={"File Path": "path", "Row": "2"})
@@ -132,6 +151,7 @@ class TestMainController:
         self._controller.annots.view.prev_btn.setEnabled.assert_not_called()
 
     def test_next_image_clicked(self):
+        #todo
         self._controller.annots.view.next_btn.text = MagicMock(return_value="Next")
         self._controller.annots.write_to_csv = MagicMock()
         self._controller.annots.record_annotations = MagicMock()
@@ -151,6 +171,7 @@ class TestMainController:
         self._controller.annots.set_curr_img.assert_called_once_with({"File Path": "path", "Row": "1"})
 
     def test_prev_image_clicked(self):
+        # todo
         self._controller.annots.record_annotations = MagicMock()
         self._controller.images.curr_img_dict = MagicMock(return_value={"File Path": "path", "Row": "1"})
         self._controller.images.prev_img = MagicMock()
@@ -167,6 +188,7 @@ class TestMainController:
         self._controller.annots.view.prev_btn.setEnabled.assert_not_called()
 
     def test_prev_image_clicked_zero(self):
+        # todo
         self._controller.annots.record_annotations = MagicMock()
 
         self._controller.images.curr_img_dict = MagicMock(return_value={"File Path": "path", "Row": "0"})

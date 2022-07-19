@@ -84,6 +84,7 @@ class FileInput(QWidget):
             else:
                 file_path = [file_path]
         else:
+            # JSONCSV
             file_path, _ = QFileDialog.getOpenFileName(
                 self,
                 "Select a .csv or .json file with annotations",

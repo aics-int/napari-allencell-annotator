@@ -1,3 +1,4 @@
+import csv
 import os
 
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QDialog
@@ -13,7 +14,7 @@ from napari_allencell_annotator.widgets.create_dialog import (
     CreateDialog,
 )
 import napari
-from typing import List
+from typing import List, Dict
 
 
 class MainController(QWidget):
@@ -44,6 +45,8 @@ class MainController(QWidget):
         self.show()
         self.napari.window.add_dock_widget(self, area="right")
         self._connect_slots()
+        self.already_annotated : Dict[str, List]  = None
+        self.starting_row : int = -1
 
     def _connect_slots(self):
         """Connects annotator view buttons start, next, and prev to slots"""
@@ -61,6 +64,7 @@ class MainController(QWidget):
         """Create dialog window and start viewing on accept."""
         dlg = CreateDialog(self)
         if dlg.exec() == QDialog.Accepted:
+            self.already_annotated = None
             self.annots.set_annot_json_data(dlg.new_annot_dict)
             self.annots.start_viewing()
 
@@ -73,7 +77,7 @@ class MainController(QWidget):
         file_list : List[str]
             The list containing one file name.
         """
-
+        self.already_annotated = None
         if file_list is None or len(file_list) < 1:
             self.images.view.alert("No selection provided")
         else:
@@ -82,9 +86,61 @@ class MainController(QWidget):
                 self.annots.read_json(file_path)
 
             else:
-                self.annots.read_csv(file_path)
+                proceed: bool = self.annots.view.popup(
+                    "Would you like to use the images in this csv?"
+                )
+                file = open(file_path)
+
+                reader = csv.reader(file)
+                shuffled = next(reader)[1]
+                shuffled = self.str2bool(shuffled)
+                # annotation data header
+                annts = next(reader)[1]
+                # skip actual header
+                next(reader)
+                if proceed:
+                    self.already_annotated = {}
+                    self.starting_row = None
+                    row_num : int = 0
+                    for i in reader:
+
+                        self.already_annotated[i[0]] = i[1::]
+                        if self.starting_row is None:
+                            for j in i[3::]:
+                                if j is None or j == "":
+                                    # if there is a none value for an annotation
+                                    self.starting_row = row_num
+                                    break
+                            row_num = row_num + 1
+
+                if self.starting_row is None:
+                    self.starting_row = 0
+                file.close()
+                self.annots.get_annotations_csv(annts)
+                self.images.load_from_csv(self.already_annotated.keys(), shuffled)
             self.annots.start_viewing()
 
+    def str2bool(self, string):
+        """
+        Convert a string to a bool.
+
+        Parameters
+        ----------
+        string_ : str
+        default : {'raise', False}
+            Default behaviour if none of the "true" strings is detected.
+
+        Returns
+        -------
+        boolean : bool
+        """
+        if string.lower() == 'true':
+            return True
+        elif string.lower() == 'false':
+            return False
+        else:
+            raise ValueError('The value \'{}\' cannot be mapped to boolean.'
+                             .format(string))
 
     def _import_annots_clicked(self):
         """Open file widget for importing csv/json."""
@@ -130,12 +186,15 @@ class MainController(QWidget):
             if proceed:
                 self.annots.view.file_input.simulate_click()
 
+
     def _stop_annotating(self):
         """
         Stop annotating in images and annotations views.
 
         Display images and annots views.
         """
+        if not self.images.view.file_widget.shuffled:
+            self.images.view.file_widget.currentItemChanged.disconnect(self.image_selected)
         self.layout.addWidget(self.images.view, stretch=1)
         self.layout.addWidget(self.annots.view, stretch=2)
         self.images.view.show()
@@ -144,11 +203,21 @@ class MainController(QWidget):
 
     def _setup_annotating(self):
         """Hide the file viewer and start the annotating process."""
+
         self.layout.removeWidget(self.images.view)
         self.images.view.hide()
-        self.images.start_annotating()
-        self.annots.start_annotating(self.images.get_num_files(), self.images.get_files_dict())
+
+        dct, shuffled = self.images.get_files_dict()
+        if self.already_annotated is not None and len(self.already_annotated) > 0:
+
+            self.images.start_annotating(self.starting_row)
+            self.annots.start_annotating(self.images.get_num_files(), self.already_annotated, shuffled)
+        else:
+            self.images.start_annotating()
+            self.annots.start_annotating(self.images.get_num_files(), dct, shuffled)
         self.annots.set_curr_img(self.images.curr_img_dict())
+        if not self.images.view.file_widget.shuffled:
+            self.images.view.file_widget.currentItemChanged.connect(self.image_selected)
 
     def _next_image_clicked(self):
         """
@@ -161,8 +230,11 @@ class MainController(QWidget):
 
         self.images.next_img()
         self.annots.set_curr_img(self.images.curr_img_dict())
-        if self.images.curr_img_dict()["Row"] == "1":
-            self.annots.view.prev_btn.setEnabled(True)
+
+    def image_selected(self, current, previous):
+        if previous:
+            self.annots.record_annotations(previous.file_path)
+        self.annots.set_curr_img(self.images.curr_img_dict())
 
     def _prev_image_clicked(self):
         """
@@ -173,8 +245,6 @@ class MainController(QWidget):
         self.annots.record_annotations(self.images.curr_img_dict()["File Path"])
         self.images.prev_img()
         self.annots.set_curr_img(self.images.curr_img_dict())
-        if self.images.curr_img_dict()["Row"] == "0":
-            self.annots.view.prev_btn.setEnabled(False)
 
     def _save_and_exit_clicked(self):
         """Stop annotation if user confirms choice in popup."""

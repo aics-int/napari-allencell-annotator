@@ -213,12 +213,19 @@ class AnnotatorView(QWidget):
         vals:List
             the values for the annotations.
         """
-        for (widget, val) in zip(self.annotation_item_widgets, vals):
+        for (widget, val, default) in zip(self.annotation_item_widgets, vals, self.default_vals):
+            if val is None or val == '':
+                val = default
+                print('default')
             if isinstance(widget, QLineEdit):
                 widget.setText(val)
             elif isinstance(widget, QSpinBox):
-                widget.setValue(val)
+                widget.setValue(int(val))
             elif isinstance(widget, QCheckBox):
+                if val == "True":
+                    val = True
+                else:
+                    val = False
                 widget.setChecked(val)
             elif isinstance(widget, QComboBox):
                 widget.setCurrentText(val)
@@ -299,7 +306,7 @@ class AnnotatorView(QWidget):
         layout = QHBoxLayout()
         label = QLabel(name)
         self.annots_order.append(name)
-        self.default_vals.append(dictn["default"])
+
         layout.addWidget(label)
         annot_type: str = dictn["type"]
         if annot_type == "string":
@@ -309,7 +316,9 @@ class AnnotatorView(QWidget):
             item.setValue(dictn["default"])
         elif annot_type == "bool":
             item = QCheckBox()
-            if dictn["default"] == "true" or dictn["default"]:
+            if dictn["default"] == "true" :
+               dictn["default"] = True
+            if dictn["default"]:
                 item.setChecked(True)
         elif annot_type == "list":
             item = QComboBox()
@@ -317,6 +326,7 @@ class AnnotatorView(QWidget):
                 item.addItem(opt)
             item.setCurrentText(dictn["default"])
         layout.addWidget(item)
+        self.default_vals.append(dictn["default"])
         self.annotation_item_widgets.append(item)
         item.setEnabled(False)
         layout.setContentsMargins(2, 12, 8, 12)

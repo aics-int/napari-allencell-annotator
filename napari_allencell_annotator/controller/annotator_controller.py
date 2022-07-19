@@ -45,18 +45,17 @@ class AnnotatorController:
     record_annotations(prev_img: str)
         Adds the outgoing image's annotation values to the files_and_annots.
 
+    read_json(file_path : str)
+        Reads a json file into a dictionary and sets annot_json_data.
+
+    read_csv(file_path : str)
+        Reads the first line of a csv file into a dictionary and sets annot_json_data.
+
     write_to_csv()
         Writes header and annotations to the csv file.
     """
 
     def __init__(self, viewer: napari.Viewer):
-        # 1 annotation
-        # path = str(Directories.get_assets_dir() / "sample3.json")
-        # 4 annotations
-        # path = str(Directories.get_assets_dir() / "sample.json")
-        # 8 annotations
-        # path: str = str(Directories.get_assets_dir() / "sample2.json")
-        # self.annot_json_data: Dict[str, Dict] = json.load(open(path))
 
         # dictionary of json info:
         self.annot_json_data: Dict[str, Dict] = None
@@ -71,6 +70,7 @@ class AnnotatorController:
         self.files_and_annots: Dict[str, List[str]] = {}
 
         self.view.cancel_btn.clicked.connect(self.stop_viewing)
+        self.shuffled = None
 
     def set_annot_json_data(self, dct: Dict[str, Dict]):
         """Set annotation data dictionary."""
@@ -90,7 +90,7 @@ class AnnotatorController:
         self.view.set_mode(mode=AnnotatorViewMode.ADD)
         self.annot_json_data = None
 
-    def start_annotating(self, num_images: int, dct: Dict[str, List[str]]):
+    def start_annotating(self, num_images: int, dct: Dict[str, List[str]], shuffled: bool):
         """
         Change annotation view to annotating mode and create files_and_annots with files.
 
@@ -104,6 +104,7 @@ class AnnotatorController:
         self.files_and_annots = dct
         self.view.set_num_images(num_images)
         self.view.set_mode(mode=AnnotatorViewMode.ANNOTATE)
+        self.shuffled = shuffled
 
     def stop_annotating(self):
         """Reset values from annotating and change mode to ADD."""
@@ -147,9 +148,12 @@ class AnnotatorController:
             # if at the end disable next
             if int(curr_img["Row"]) == self.view.num_images - 1:
                 self.view.next_btn.setEnabled(False)
-            # in case we were just on the last image and then went to the previous, re-enable next
-            elif int(curr_img["Row"]) == self.view.num_images - 2:
+            else:
                 self.view.next_btn.setEnabled(True)
+            if int(curr_img["Row"]) == 0:
+                self.view.prev_btn.setEnabled(False)
+            else:
+                self.view.prev_btn.setEnabled(True)
 
     def record_annotations(self, prev_img: str):
         """
@@ -164,28 +168,20 @@ class AnnotatorController:
         self.files_and_annots[prev_img] = self.files_and_annots[prev_img][:2:] + lst
 
     def read_json(self, file_path: str):
+        """Read a json file into a dictionary and set annot_json_data."""
         self.annot_json_data: Dict[str, Dict] = json.load(open(file_path))
 
-    def read_csv(self, file_path: str):
-        dct : Dict[str, Dict] = {}
-        file = open(file_path)
-        reader = csv.reader(file)
-        annts = next(reader)
-        file.close()
-        if not annts[0] == "Annotations:":
-            # todo throw error
-            print('error')
-        self.annot_json_data = json.loads(annts[1])
+    def get_annotations_csv(self, annotations: str):
+        """Read the first line of a csv file into a dictionary and set annot_json_data."""
+
+        self.annot_json_data = json.loads(annotations)
 
     def write_csv(self):
         """write headers and file info"""
         file = open(self.csv_name, "w")
         writer = csv.writer(file)
-        header: List[str] = ["Annotations:"]
-        #for key, dic in self.annot_json_data.items():
-            #header.append(key)
-            #header.append(str(dic))
-        header.append(json.dumps(self.annot_json_data))
+        writer.writerow(["Shuffled:", self.shuffled])
+        header: List[str] = ["Annotations:", json.dumps(self.annot_json_data)]
         writer.writerow(header)
 
         header = ["File Name", "File Path", "FMS"]
@@ -193,5 +189,8 @@ class AnnotatorController:
             header.append(name)
         writer.writerow(header)
         for name, lst in self.files_and_annots.items():
+            for i in lst:
+                print(i)
+                print(type(i))
             writer.writerow([name] + lst)
         file.close()
