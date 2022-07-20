@@ -78,7 +78,6 @@ class TestAnnotatorController:
 
         self._controller.view.set_mode.assert_called_once_with(mode=AnnotatorViewMode.ADD)
         self._controller.view.render_default_values.assert_called_once_with()
-        self._controller.view.toggle_annots_editable.assert_called_once_with(False)
         self._controller.set_curr_img.assert_called_once_with()
         self._controller.set_csv_name.assert_called_once_with()
 

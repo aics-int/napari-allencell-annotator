@@ -40,9 +40,6 @@ class CreateDialog(QDialog):
         self.setWindowTitle("Create Annotations")
         self.setMinimumSize(700, 500)
 
-        # self.buttonBox.accepted.connect(self.accept)
-        # self.buttonBox.rejected.connect(self.reject)
-
         self.list = AnnotationWidget()
         self.list.add_new_item()
 

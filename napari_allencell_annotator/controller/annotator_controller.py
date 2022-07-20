@@ -115,7 +115,6 @@ class AnnotatorController:
         self.view.set_num_images()
         self.view.set_mode(mode=AnnotatorViewMode.ADD)
         self.view.render_default_values()
-        self.view.toggle_annots_editable(False)
         self.set_curr_img()
         self.set_csv_name()
 

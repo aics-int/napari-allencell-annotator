@@ -36,6 +36,8 @@ class MainController(QWidget):
     def __init__(self):
         super().__init__()
         self.napari = napari.Viewer()
+        self.napari.window.qt_viewer.dockLayerList.setVisible(False)
+        self.napari.window.qt_viewer.dockLayerControls.setVisible(False)
         self.layout = QVBoxLayout()
         self.images = ImagesController(self.napari)
         self.annots = AnnotatorController(self.napari)

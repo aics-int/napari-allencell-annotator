@@ -18,7 +18,7 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QAbstractScrollArea,
     QMessageBox,
-    QVBoxLayout,
+    QVBoxLayout, QSizePolicy,
 )
 from napari import Viewer
 from napari_allencell_annotator.widgets.file_input import (
@@ -101,6 +101,7 @@ class AnnotatorView(QWidget):
 
         self.annot_list = QListWidget()
         self.annot_list.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.annot_list.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self.scroll = QScrollArea()
         self.scroll.setWidget(self.annot_list)
@@ -193,9 +194,9 @@ class AnnotatorView(QWidget):
     def _reset_annotations(self):
         """Reset annotation data to empty."""
         self.annot_list.clear()
-        # todo
-        self.annot_list.setMaximumHeight(600)
-        self.annotation_item_widgets: List[QWidget] = []
+        #todo: make size policy, remove this line
+        #self.annot_list.setMaximumHeight(600)
+        self.annotation_item_widgets = []
         self.annots_order: List[str] = []
         self.default_vals: List[str] = []
 
@@ -274,7 +275,6 @@ class AnnotatorView(QWidget):
             self.annot_widget.show()
             self.layout.addWidget(self.annot_widget)
             self.prev_btn.setEnabled(False)
-            self.toggle_annots_editable(True)
 
     def render_annotations(self, data: Dict[str, Dict]):
         """
@@ -289,7 +289,8 @@ class AnnotatorView(QWidget):
 
         for name in data.keys():
             self._create_annot(name, data[name])
-        self.annot_list.setMaximumHeight(self.annot_list.item(0).sizeHint().height() * len(data))
+            #todo fix: doesnt work if certain widgets are first leaves blank spot on bottom
+        self.annot_list.setMaximumHeight(self.annot_list.item(0).sizeHint().height() * len(data))\
 
     def _create_annot(self, name: str, dictn: Dict):
         """
@@ -328,7 +329,7 @@ class AnnotatorView(QWidget):
         layout.addWidget(item)
         self.default_vals.append(dictn["default"])
         self.annotation_item_widgets.append(item)
-        item.setEnabled(False)
+        item.setEnabled(True)
         layout.setContentsMargins(2, 12, 8, 12)
         layout.setSpacing(2)
         widget.setLayout(layout)
