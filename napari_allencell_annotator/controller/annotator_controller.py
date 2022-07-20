@@ -70,6 +70,7 @@ class AnnotatorController:
         self.files_and_annots: Dict[str, List[str]] = {}
 
         self.view.cancel_btn.clicked.connect(self.stop_viewing)
+
         self.shuffled = None
 
     def set_annot_json_data(self, dct: Dict[str, Dict]):
@@ -79,6 +80,11 @@ class AnnotatorController:
     def set_csv_name(self, name: Optional[str] = None):
         """Set csv file name for writing."""
         self.csv_name = name
+
+    def write_json(self, file_path: str):
+        """Write annotation dictionary to a file."""
+        if self.annot_json_data is not None:
+            json.dump(self.annot_json_data, open(file_path, "w"), indent=4)
 
     def start_viewing(self):
         """Change view to VIEW mode and render annotations."""
@@ -188,8 +194,5 @@ class AnnotatorController:
             header.append(name)
         writer.writerow(header)
         for name, lst in self.files_and_annots.items():
-            for i in lst:
-                print(i)
-                print(type(i))
             writer.writerow([name] + lst)
         file.close()

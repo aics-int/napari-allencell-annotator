@@ -56,11 +56,13 @@ class MainController(QWidget):
 
         self.annots.view.next_btn.clicked.connect(self._next_image_clicked)
         self.annots.view.prev_btn.clicked.connect(self._prev_image_clicked)
-        self.annots.view.file_input.file_selected.connect(self._csv_write_selected_evt)
+        self.annots.view.csv_input.file_selected.connect(self._csv_write_selected_evt)
         self.annots.view.save_exit_btn.clicked.connect(self._save_and_exit_clicked)
         self.annots.view.import_btn.clicked.connect(self._import_annots_clicked)
         self.annots.view.annot_input.file_selected.connect(self._csv_import_selected_evt)
         self.annots.view.create_btn.clicked.connect(self._create_clicked)
+        self.annots.view.save_json_btn.file_selected.connect(self._json_write_selected_evt)
+
 
     def _create_clicked(self):
         """Create dialog window and start viewing on accept."""
@@ -69,6 +71,29 @@ class MainController(QWidget):
             self.already_annotated = None
             self.annots.set_annot_json_data(dlg.new_annot_dict)
             self.annots.start_viewing()
+
+    def _json_write_selected_evt(self, file_list: List[str]):
+        """
+        Set json file name for writing annotations and write the annotations.
+
+        Ensure that all file names have .json extension and that a
+        file name is selected.
+
+        Parameters
+        ----------
+        file_list : List[str]
+            The list containing one file name.
+        """
+
+        if file_list is None or len(file_list) < 1:
+            self.images.view.alert("No selection provided")
+        else:
+            file_path = file_list[0]
+            _, extension = os.path.splitext(file_path)
+            if extension != ".json":
+                file_path = file_path + ".json"
+            self.annots.view.save_json_btn.setEnabled(False)
+            self.annots.write_json(file_path)
 
     def _csv_import_selected_evt(self, file_list: List[str]):
         """
@@ -152,7 +177,7 @@ class MainController(QWidget):
 
     def _csv_write_selected_evt(self, file_list: List[str]):
         """
-        Set csv file name for writing to the selected file.
+        Set csv file name for writing annotations.
 
         Ensure that all file names have .csv extension and that a
         file name is selected.
@@ -188,7 +213,7 @@ class MainController(QWidget):
                 "you like to continue?"
             )
             if proceed:
-                self.annots.view.file_input.simulate_click()
+                self.annots.view.csv_input.simulate_click()
 
 
     def _stop_annotating(self):

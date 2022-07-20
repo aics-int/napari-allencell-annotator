@@ -11,6 +11,7 @@ from napari_allencell_annotator.controller.main_controller import (
     CreateDialog,
     QDialog,
 )
+from napari_allencell_annotator.util.directories import Directories
 
 
 class TestMainController:
@@ -44,6 +45,28 @@ class TestMainController:
                 assert self._controller.already_annotated is None
                 self._controller.annots.set_annot_json_data.assert_called_once_with(CreateDialog.new_annot_dict)
 
+    def test_json_write_selected_evt_none(self):
+        self._controller._json_write_selected_evt(None)
+        self._controller.images.view.alert.assert_called_once_with("No selection provided")
+
+    def test_json_write_selected_evt_empty(self):
+        self._controller._json_write_selected_evt([])
+        self._controller.images.view.alert.assert_called_once_with("No selection provided")
+
+    def test_json_write_selected_evt_not_json(self):
+        os.path.splitext = MagicMock(return_value=("path", ""))
+        self._controller._setup_annotating = MagicMock()
+        self._controller._json_write_selected_evt(["path"])
+        self._controller.annots.view.save_json_btn.setEnabled.assert_called_once_with(False)
+        self._controller.annots.write_json.assert_called_once_with('path.json')
+
+    def test_json_write_selected_evt_json(self):
+        os.path.splitext = MagicMock(return_value=("path", ".json"))
+        self._controller._setup_annotating = MagicMock()
+        self._controller._json_write_selected_evt(["path.json"])
+        self._controller.annots.view.save_json_btn.setEnabled.assert_called_once_with(False)
+        self._controller.annots.write_json.assert_called_once_with('path.json')
+
     def test_csv_import_selected_none(self):
         self._controller._csv_import_selected_evt(None)
         self._controller.images.view.alert.assert_called_once_with("No selection provided")
@@ -65,7 +88,8 @@ class TestMainController:
         self._controller.already_annotated = {}
 
         self._controller.annots.view.popup = MagicMock(return_value=False)
-        self._controller._csv_import_selected_evt(['test.csv'])
+        path: str = str(Directories.get_assets_dir() / "test.csv")
+        self._controller._csv_import_selected_evt([path])
 
         assert self._controller.already_annotated is None
         assert self._controller.starting_row == 0
@@ -80,7 +104,8 @@ class TestMainController:
         self._controller.already_annotated = {}
 
         self._controller.annots.view.popup = MagicMock(return_value=True)
-        self._controller._csv_import_selected_evt(['test2.csv'])
+        path: str = str(Directories.get_assets_dir() / "test2.csv")
+        self._controller._csv_import_selected_evt([path])
 
         assert self._controller.already_annotated == {'file.png': ['file', '', 'text', 'text', 'text'],
                                                       'file2.png': ['file2', '', 'text', 'text', 'text'],
@@ -153,7 +178,7 @@ class TestMainController:
         self._controller._start_annotating_clicked()
         assert len(self._controller.images.get_num_files.mock_calls) == 2
         self._controller.images.view.alert.assert_not_called()
-        self._controller.annots.view.file_input.simulate_click.assert_called_once_with()
+        self._controller.annots.view.csv_input.simulate_click.assert_called_once_with()
 
     def test_start_annotating_clicked_false(self):
         self._controller.images.get_num_files.return_value = 1
@@ -161,7 +186,7 @@ class TestMainController:
         self._controller._start_annotating_clicked()
         assert len(self._controller.images.get_num_files.mock_calls) == 2
         self._controller.images.view.alert.assert_not_called()
-        self._controller.annots.view.file_input.simulate_click.assert_not_called()
+        self._controller.annots.view.csv_input.simulate_click.assert_not_called()
 
     def test_stop_annotating_shuffled(self):
         self._controller.images.view.file_widget.shuffled = True

@@ -1,5 +1,5 @@
 from unittest import mock
-from unittest.mock import MagicMock, create_autospec
+from unittest.mock import MagicMock
 
 from napari_allencell_annotator.view.annotator_view import (
     AnnotatorView,

@@ -143,12 +143,15 @@ class AnnotatorView(QWidget):
         view_layout = QHBoxLayout()
         self.cancel_btn = QPushButton("Cancel")
         self.start_btn = QPushButton("Start Annotating")
-        self.file_input = FileInput(mode=FileInputMode.CSV, placeholder_text="Start Annotating")
-        self.file_input.toggle(False)
+        self.csv_input = FileInput(mode=FileInputMode.CSV)
+        self.csv_input.toggle(False)
+        self.save_json_btn = FileInput(mode=FileInputMode.JSON, placeholder_text="Save to JSON")
+        self.save_json_btn.toggle(True)
         self.start_btn.setEnabled(True)
 
         view_layout.addWidget(self.cancel_btn, stretch=1)
-        view_layout.addWidget(self.start_btn, stretch=3)
+        view_layout.addWidget(self.save_json_btn, stretch=1)
+        view_layout.addWidget(self.start_btn, stretch=1)
         self.view_widget.setLayout(view_layout)
 
         # annot widget visible in ANNOTATE mode
@@ -195,7 +198,7 @@ class AnnotatorView(QWidget):
         """Reset annotation data to empty."""
         self.annot_list.clear()
         #todo: make size policy, remove this line
-        #self.annot_list.setMaximumHeight(600)
+        self.annot_list.setMaximumHeight(600)
         self.annotation_item_widgets = []
         self.annots_order: List[str] = []
         self.default_vals: List[str] = []
@@ -269,6 +272,7 @@ class AnnotatorView(QWidget):
             self._reset_annotations()
             self.layout.addWidget(self.add_widget)
         elif self._mode == AnnotatorViewMode.VIEW:
+            self.save_json_btn.setEnabled(True)
             self.view_widget.show()
             self.layout.addWidget(self.view_widget)
         elif self._mode == AnnotatorViewMode.ANNOTATE:
