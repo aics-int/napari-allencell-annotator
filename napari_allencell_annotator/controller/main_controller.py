@@ -93,7 +93,7 @@ class MainController(QWidget):
 
                 reader = csv.reader(file)
                 shuffled = next(reader)[1]
-                shuffled = self.str2bool(shuffled)
+                shuffled = self.str_to_bool(shuffled)
                 # annotation data header
                 annts = next(reader)[1]
                 # skip actual header
@@ -113,14 +113,16 @@ class MainController(QWidget):
                                     break
                             row_num = row_num + 1
 
+                    self.images.load_from_csv(self.already_annotated.keys(), shuffled)
+
                 if self.starting_row is None:
                     self.starting_row = 0
                 file.close()
                 self.annots.get_annotations_csv(annts)
-                self.images.load_from_csv(self.already_annotated.keys(), shuffled)
+
             self.annots.start_viewing()
 
-    def str2bool(self, string):
+    def str_to_bool(self, string):
         """
         Convert a string to a bool.
 
@@ -216,7 +218,7 @@ class MainController(QWidget):
             self.images.start_annotating()
             self.annots.start_annotating(self.images.get_num_files(), dct, shuffled)
         self.annots.set_curr_img(self.images.curr_img_dict())
-        if not self.images.view.file_widget.shuffled:
+        if not shuffled:
             self.images.view.file_widget.currentItemChanged.connect(self.image_selected)
 
     def _next_image_clicked(self):
