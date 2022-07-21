@@ -110,9 +110,11 @@ class MainController(QWidget):
         else:
             file_path = file_list[0]
             if os.path.splitext(file_path)[1] == ".json":
+                # get dictionary of annotations
                 self.annots.read_json(file_path)
 
             else:
+                # csv was uploaded
                 proceed: bool = self.annots.view.popup(
                     "Use the images in this csv? \n Note: any currently listed images will be cleared. "
                 )
@@ -127,11 +129,14 @@ class MainController(QWidget):
                 next(reader)
                 self.starting_row = None
                 if proceed:
+                    # get image/annotation data
+                    # dictionary File Path -> [file name, fms, annt1, annt2...]
                     self.already_annotated = {}
 
                     row_num : int = 0
                     for row in reader:
-
+                        # for each line, add data to already annotated and check if there are null values
+                        # if null, starting row for annotations is set
                         self.already_annotated[row[0]] = row[1::]
                         if self.starting_row is None:
                             for j in row[3::]:
@@ -140,13 +145,17 @@ class MainController(QWidget):
                                     self.starting_row = row_num
                                     break
                             row_num = row_num + 1
-
+                    if row_num == len(self.already_annotated):
+                        # all images have all annotations filled in, start annotating at last image
+                        self.starting_row = row_num - 1
                     self.images.load_from_csv(self.already_annotated.keys(), shuffled)
+                # start at row 0 if annotation data was not used from csv
                 if self.starting_row is None:
                     self.starting_row = 0
                 file.close()
+                # set the json dictionary of annotations
                 self.annots.get_annotations_csv(annts)
-
+            # move to view mode
             self.annots.start_viewing()
 
     def str_to_bool(self, string):
@@ -241,18 +250,26 @@ class MainController(QWidget):
             self.layout.removeWidget(self.images.view)
             self.images.view.hide()
         if self.already_annotated is not None and len(self.already_annotated) > 0:
-            self.images.start_annotating(self.starting_row)
+            # if we are using csv annotation data
+
             # find any different keys in case images have been added or deleted and need to be added/removed from annotations
             # todo is this too slow?
+            #walk through already anotated and dct if not shuffled look for not annotated bool in list
+            # if dct .keys is not equal (minus order ) to aa.keys. and NOT SHUFFLED
+            # then correct differences and look for first False val in list zip all three
+            # if dct .keys is not equal (minus order ) to aa.keys. and SHUFFLED
+            # walk through dct and aa keys reorder aa add new ones which count as false and delete and find first False for row
+            # if dct.keys == aakeys and NOT SHUFFLED then just give aa
+            # if dct.keys == aakeys and SHUFFLED walk through dct and keys and reorder aa and find new row
+            self.images.start_annotating(self.starting_row)
             symmetric_difference_keys = dct.keys() ^ self.already_annotated.keys()
             for key in symmetric_difference_keys:
                 if key not in dct:
                     # key was deleted from images
                     del self.already_annotated[key]
                 elif key not in self.already_annotated:
-                    # key was added
+                    # key was added to images
                     self.already_annotated[key] = dct[key]
-            # todo find new starting index
             self.annots.start_annotating(self.images.get_num_files(), self.already_annotated, shuffled)
 
         else:
