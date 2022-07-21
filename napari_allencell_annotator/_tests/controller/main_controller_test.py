@@ -231,20 +231,24 @@ class TestMainController:
             self._controller.images.get_num_files(), self._controller.already_annotated,True)
         self._controller.annots.set_curr_img.assert_called_once_with(self._controller.images.curr_img_dict())
         self._controller.images.view.file_widget.currentItemChanged.connect.assert_not_called()
+        self._controller.images.view.input_dir.hide.assert_not_called()
+        self._controller.images.view.input_file.hide.assert_not_called()
 
     def test_setup_annotating_not_already_annotated(self):
         self._controller.starting_row = None
         self._controller.images.get_files_dict = MagicMock(return_value=({"filepath.png": ['filepath', '']}, False))
         self._controller.already_annotated = None
         self._controller._setup_annotating()
-        self._controller.layout.removeWidget.assert_called_once_with(self._controller.images.view)
-        self._controller.images.view.hide.assert_called_once()
+        self._controller.layout.removeWidget.assert_not_called()
+        self._controller.images.view.hide.assert_not_called()
         self._controller.images.start_annotating.assert_called_once_with()
 
         self._controller.annots.start_annotating.assert_called_once_with(
             self._controller.images.get_num_files(), {"filepath.png": ['filepath', '']}, False)
         self._controller.annots.set_curr_img.assert_called_once_with(self._controller.images.curr_img_dict())
         self._controller.images.view.file_widget.currentItemChanged.connect.assert_called_once()
+        self._controller.images.view.input_dir.hide.assert_called_once_with()
+        self._controller.images.view.input_file.hide.assert_called_once_with()
 
     def test_next_image_clicked_save(self):
         self._controller._next_image_clicked()

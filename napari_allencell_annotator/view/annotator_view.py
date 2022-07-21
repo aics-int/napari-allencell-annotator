@@ -220,7 +220,6 @@ class AnnotatorView(QWidget):
         for (widget, val, default) in zip(self.annotation_item_widgets, vals, self.default_vals):
             if val is None or val == '':
                 val = default
-                print('default')
             if isinstance(widget, QLineEdit):
                 widget.setText(val)
             elif isinstance(widget, QSpinBox):

@@ -125,15 +125,16 @@ class MainController(QWidget):
                 annts = next(reader)[1]
                 # skip actual header
                 next(reader)
+                self.starting_row = None
                 if proceed:
                     self.already_annotated = {}
-                    self.starting_row = None
-                    row_num : int = 0
-                    for i in reader:
 
-                        self.already_annotated[i[0]] = i[1::]
+                    row_num : int = 0
+                    for row in reader:
+
+                        self.already_annotated[row[0]] = row[1::]
                         if self.starting_row is None:
-                            for j in i[3::]:
+                            for j in row[3::]:
                                 if j is None or j == "":
                                     # if there is a none value for an annotation
                                     self.starting_row = row_num
@@ -141,7 +142,6 @@ class MainController(QWidget):
                             row_num = row_num + 1
 
                     self.images.load_from_csv(self.already_annotated.keys(), shuffled)
-
                 if self.starting_row is None:
                     self.starting_row = 0
                 file.close()
@@ -229,14 +229,16 @@ class MainController(QWidget):
         self.images.view.show()
         self.annots.stop_annotating()
         self.images.stop_annotating()
+        self.images.view.input_file.show()
+        self.images.view.input_dir.show()
 
     def _setup_annotating(self):
         """Hide the file viewer and start the annotating process."""
-
-        self.layout.removeWidget(self.images.view)
-        self.images.view.hide()
-
         dct, shuffled = self.images.get_files_dict()
+        if shuffled:
+            self.layout.removeWidget(self.images.view)
+
+            self.images.view.hide()
         if self.already_annotated is not None and len(self.already_annotated) > 0:
 
             self.images.start_annotating(self.starting_row)
@@ -247,6 +249,8 @@ class MainController(QWidget):
         self.annots.set_curr_img(self.images.curr_img_dict())
         if not shuffled:
             self.images.view.file_widget.currentItemChanged.connect(self.image_selected)
+            self.images.view.input_dir.hide()
+            self.images.view.input_file.hide()
 
     def _next_image_clicked(self):
         """
