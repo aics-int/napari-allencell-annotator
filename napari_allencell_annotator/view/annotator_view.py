@@ -226,11 +226,12 @@ class AnnotatorView(QWidget):
             elif isinstance(widget, QSpinBox):
                 widget.setValue(int(val))
             elif isinstance(widget, QCheckBox):
-                if val == "True":
-                    val = True
+                if isinstance(val,str):
+                    # val is a str from previous annotaiton
+                    widget.setChecked(eval(val))
                 else:
-                    val = False
-                widget.setChecked(val)
+                    # val is bool from default vals
+                    widget.setChecked(val)
             elif isinstance(widget, QComboBox):
                 widget.setCurrentText(val)
 
@@ -321,8 +322,6 @@ class AnnotatorView(QWidget):
             item.setValue(dictn["default"])
         elif annot_type == "bool":
             item = QCheckBox()
-            if dictn["default"] == "true":
-                dictn["default"] = True
             if dictn["default"]:
                 item.setChecked(True)
         elif annot_type == "list":
