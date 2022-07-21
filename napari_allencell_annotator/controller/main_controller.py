@@ -114,7 +114,7 @@ class MainController(QWidget):
 
             else:
                 proceed: bool = self.annots.view.popup(
-                    "Would you like to use the images in this csv?"
+                    "Use the images in this csv? \n Note: any currently listed images will be cleared. "
                 )
                 file = open(file_path)
 
@@ -231,18 +231,30 @@ class MainController(QWidget):
         self.images.stop_annotating()
         self.images.view.input_file.show()
         self.images.view.input_dir.show()
+        self.images.view.shuffle.show()
+        self.images.view.delete.show()
 
     def _setup_annotating(self):
         """Hide the file viewer and start the annotating process."""
         dct, shuffled = self.images.get_files_dict()
         if shuffled:
             self.layout.removeWidget(self.images.view)
-
             self.images.view.hide()
         if self.already_annotated is not None and len(self.already_annotated) > 0:
-
             self.images.start_annotating(self.starting_row)
+            # find any different keys in case images have been added or deleted and need to be added/removed from annotations
+            # todo is this too slow?
+            symmetric_difference_keys = dct.keys() ^ self.already_annotated.keys()
+            for key in symmetric_difference_keys:
+                if key not in dct:
+                    # key was deleted from images
+                    del self.already_annotated[key]
+                elif key not in self.already_annotated:
+                    # key was added
+                    self.already_annotated[key] = dct[key]
+            # todo find new starting index
             self.annots.start_annotating(self.images.get_num_files(), self.already_annotated, shuffled)
+
         else:
             self.images.start_annotating()
             self.annots.start_annotating(self.images.get_num_files(), dct, shuffled)
@@ -251,6 +263,8 @@ class MainController(QWidget):
             self.images.view.file_widget.currentItemChanged.connect(self.image_selected)
             self.images.view.input_dir.hide()
             self.images.view.input_file.hide()
+            self.images.view.shuffle.hide()
+            self.images.view.delete.hide()
 
     def _next_image_clicked(self):
         """

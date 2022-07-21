@@ -32,10 +32,7 @@ class FileItem(QListWidgetItem):
         if hidden:
             self.label = QLabel("Image " + str(parent.row(self) + 1))
         else:
-            path: str = self.get_name()
-            if len(path) > 28:
-                path = path[0:27] + "..."
-            self.label = QLabel(path)
+            self.label = QLabel(self.make_display_name())
         self.layout.addWidget(self.label, stretch=19)
         self.check = QCheckBox()
         self.check.setCheckState(False)
@@ -62,6 +59,17 @@ class FileItem(QListWidgetItem):
     @property
     def file_path(self) -> str:
         return self._file_path
+
+    def unhide(self):
+        self.label.setText(self.make_display_name())
+        self.check.setCheckable(True)
+
+    def make_display_name(self) -> str:
+        # todo change
+        path: str = self.get_name()
+        if len(path) > 28:
+            path = path[0:27] + "..."
+        return path
 
     def highlight(self):
         """highlight item"""

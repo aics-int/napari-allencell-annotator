@@ -47,15 +47,17 @@ class FilesWidget(QListWidget):
         self.files_dict: Dict[str, List[str]] = {}
         self.setCurrentItem(None)
         self._shuffled: bool = False
-        # shuffle order holds the same file path -> [file name, FMS] as files_dict
-        # only filled when the images have been shuffled
-        # holds a new shuffled order in .keys()
-        # when annotation starts if images are shuffled this order is given to annotation view
-        self.shuffled_files_dict: Dict[str, List[str]] = {}
 
     @property
     def shuffled(self) -> bool:
         return self._shuffled
+
+    def set_shuffled(self, shuffled: bool):
+        self._shuffled = shuffled
+
+    def unhide_all(self):
+        for i in range(self.count()):
+            self.item(i).unhide()
 
     def get_curr_row(self) -> int:
         if self.currentItem() is not None:
@@ -68,15 +70,10 @@ class FilesWidget(QListWidget):
         self._shuffled = False
         self.checked = set()
         self.files_dict = {}
-        self.shuffled_files_dict = {}
+
         self.setCurrentItem(None)
         self.clear()
 
-    def set_shuff_order(self, dct: Optional[Dict[str, List[str]]] = {}):
-        """Set shuffled order."""
-        if len(dct) > 0:
-            self._shuffled = True
-        self.shuffled_files_dict = dct
 
     def clear_for_shuff(self) -> Dict[str, List[str]]:
         """
@@ -90,13 +87,12 @@ class FilesWidget(QListWidget):
             file_order.
         """
         self._shuffled = not self._shuffled
-        self.shuffled_files_dict = {}
         self.setCurrentItem(None)
         self.checked = set()
         self.clear()
         return self.files_dict
 
-    def add_new_item(self, file: str, shuffle : Optional[bool] = False):
+    def add_new_item(self, file: str, hidden : Optional[bool] = False):
         """
         Adds a new file to the list and files_dict.
 
@@ -108,7 +104,7 @@ class FilesWidget(QListWidget):
             a file path.
         """
         if file not in self.files_dict.keys():
-            item = FileItem(file, self, shuffle)
+            item = FileItem(file, self, hidden)
             item.check.stateChanged.connect(lambda: self._check_evt(item))
             self.files_dict[file] = [item.get_name(), ""]
             if len(self.files_dict) == 1:

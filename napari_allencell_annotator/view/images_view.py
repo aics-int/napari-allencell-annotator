@@ -110,12 +110,14 @@ class ImagesView(QWidget):
             Toggle state of shuffle button.
         """
         if checked:
-            self.shuffle.setText("Unshuffle and Unhide")
+            self.shuffle.setText("Unhide")
         else:
             self.shuffle.setText("Shuffle and Hide")
 
+
+
     def reset_buttons(self):
-        self.enable_image_edits()
+        #self.enable_image_edits()
         self._toggle_delete(False)
         self._toggle_shuffle(False)
         self._update_shuff_text(False)
@@ -183,15 +185,15 @@ class ImagesView(QWidget):
         elif not files_added:
             self.shuffle.setEnabled(False)
 
-    def enable_image_edits(self):
-        """Show shuffle and delete buttons"""
-        self.shuffle.show()
-        self.delete.show()
-
-    def disable_csv_image_edits(self):
-        """Hide shuffle and delete buttons"""
-        self.shuffle.hide()
-        self.delete.hide()
+    # def enable_image_edits(self):
+    #     """Show shuffle and delete buttons"""
+    #     self.shuffle.show()
+    #     self.delete.show()
+    #
+    # def disable_csv_image_edits(self):
+    #     """Hide shuffle and delete buttons"""
+    #     self.shuffle.hide()
+    #     self.delete.hide()
 
     def _display_img(self, current: FileItem, previous: FileItem):
         """Display the current image in napari."""

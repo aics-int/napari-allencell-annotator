@@ -62,9 +62,12 @@ class ImagesController:
 
     def load_from_csv(self, files: List[str], shuffled: bool):
         """
-        Add files to file list from a csv list of file paths.
+        Clear file list and add files to file list from a csv list of file paths.
+        todo: is clearing the list good? users can add additional images after loading these in
+        but i don't want them to have images that are un-shuffled and then load in a blind annotation set ?
+        later can make this an option/warning
 
-        If the csv files are shuffled, set shuffle order and hide file names.
+        If the csv files are shuffled, set shuffled propertyand hide file names.
 
         Parameters
         __________
@@ -73,11 +76,16 @@ class ImagesController:
         shuffled: bool
             true if files are shuffled.
         """
+        self.view.file_widget.clear_all() # sets shuffle to false
         for name in files:
             self.view.file_widget.add_new_item(name, shuffled)
-        self.view.disable_csv_image_edits()
         if shuffled:
-            self.view.file_widget.set_shuff_order(self.view.file_widget.files_dict)
+            self.view.file_widget.set_shuffled(shuffled)
+            self.view.toggle_add(False)
+            self.view.shuffle.toggled.emit(True)
+        else:
+            self.view.shuffle.toggled.emit(False)
+
 
     def get_files_dict(self) -> (Dict[str, List[str]], bool):
         """
@@ -88,10 +96,7 @@ class ImagesController:
         Dict[str,List[str]], bool
             dictionary of file info. keys in order. a boolean shuffled.
         """
-        if self.view.file_widget.shuffled:
-            return self.view.file_widget.shuffled_files_dict, True
-        else:
-            return self.view.file_widget.files_dict, False
+        return self.view.file_widget.files_dict, self.view.file_widget.shuffled
 
     def _shuffle_clicked(self, checked: bool):
         """
@@ -105,24 +110,20 @@ class ImagesController:
         checked : bool
             Toggle state of the shuffle button.
         """
+        if checked:
+            files: Dict[str, List[str]] = self.view.file_widget.clear_for_shuff()
+            self.view.toggle_add(False)
+            keys = list(files.keys())
+            self.view.file_widget.files_dict = {}
+            random.shuffle(keys)
+            for k in keys:
+                # add new item will recreate files_dict in new order
+                self.view.file_widget.add_new_item(k, hidden=True)
 
-        files: Dict[str, List[str]] = self.view.file_widget.clear_for_shuff()
-        if len(files) > 0:
-            if checked:
-                self.view.toggle_add(False)
-                keys = list(files.keys())
-                random.shuffle(keys)
-                shuff_dict = {}
-                for k in keys:
-                    shuff_dict[k] = files[k]
-                    self.view.file_widget.add_item(k, hidden=True)
-                self.view.file_widget.set_shuff_order(shuff_dict)
+        else:
+            self.view.toggle_add(True)
+            self.view.file_widget.unhide_all()
 
-            else:
-                self.view.toggle_add(True)
-                self.view.file_widget.set_shuff_order()
-                for f in files.keys():
-                    self.view.file_widget.add_item(f, hidden=False)
 
     @staticmethod
     def is_supported(file_name: str) -> bool:
