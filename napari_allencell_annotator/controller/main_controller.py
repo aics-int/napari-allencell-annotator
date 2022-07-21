@@ -1,5 +1,6 @@
 import csv
 import os
+from pathlib import Path
 
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QDialog
 
@@ -88,7 +89,7 @@ class MainController(QWidget):
             self.images.view.alert("No selection provided")
         else:
             file_path = file_list[0]
-            _, extension = os.path.splitext(file_path)
+            extension = Path(file_path).suffix
             if extension != ".json":
                 file_path = file_path + ".json"
             self.annots.view.save_json_btn.setEnabled(False)
@@ -108,10 +109,10 @@ class MainController(QWidget):
             self.images.view.alert("No selection provided")
         else:
             file_path = file_list[0]
-            if os.path.splitext(file_path)[1] == ".json":
+            if Path(file_path).suffix == ".json":
                 self.annots.read_json(file_path)
 
-            else:
+            elif Path(file_path).suffix == ".csv":
                 proceed: bool = self.annots.view.popup("Would you like to use the images in this csv?")
                 file = open(file_path)
 
@@ -187,7 +188,7 @@ class MainController(QWidget):
             self.images.view.alert("No selection provided")
         else:
             file_path = file_list[0]
-            _, extension = os.path.splitext(file_path)
+            extension = Path(file_path).suffix
             if extension != ".csv":
                 file_path = file_path + ".csv"
             self.annots.set_csv_name(file_path)

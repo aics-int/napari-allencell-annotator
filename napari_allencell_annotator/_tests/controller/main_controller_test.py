@@ -53,14 +53,13 @@ class TestMainController:
         self._controller.images.view.alert.assert_called_once_with("No selection provided")
 
     def test_json_write_selected_evt_not_json(self):
-        os.path.splitext = MagicMock(return_value=("path", ""))
+
         self._controller._setup_annotating = MagicMock()
         self._controller._json_write_selected_evt(["path"])
         self._controller.annots.view.save_json_btn.setEnabled.assert_called_once_with(False)
         self._controller.annots.write_json.assert_called_once_with("path.json")
 
     def test_json_write_selected_evt_json(self):
-        os.path.splitext = MagicMock(return_value=("path", ".json"))
         self._controller._setup_annotating = MagicMock()
         self._controller._json_write_selected_evt(["path.json"])
         self._controller.annots.view.save_json_btn.setEnabled.assert_called_once_with(False)
@@ -143,7 +142,6 @@ class TestMainController:
         self._controller.images.view.alert.assert_called_once_with("No selection provided")
 
     def test_csv_write_selected_evt_not_csv(self):
-        os.path.splitext = MagicMock(return_value=("path", ""))
         self._controller._setup_annotating = MagicMock()
         self._controller._csv_write_selected_evt(["path"])
         self._controller.annots.set_csv_name.assert_called_once_with("path.csv")
@@ -151,7 +149,6 @@ class TestMainController:
         self._controller.images.view.alert.assert_not_called()
 
     def test_csv_write_selected_evt_csv(self):
-        os.path.splitext = MagicMock(return_value=("path", ".csv"))
         self._controller._setup_annotating = MagicMock()
         self._controller._csv_write_selected_evt(["path.csv"])
         self._controller.annots.set_csv_name.assert_called_once_with("path.csv")
