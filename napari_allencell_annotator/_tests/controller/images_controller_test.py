@@ -23,8 +23,8 @@ class TestImagesController:
         self._controller.view.file_widget = MagicMock()
         self._controller.view.file_widget.files_dict = {}
 
-        self._controller.load_from_csv(['name'], True)
-        self._controller.view.file_widget.add_new_item.assert_called_once_with('name', True)
+        self._controller.load_from_csv(["name"], True)
+        self._controller.view.file_widget.add_new_item.assert_called_once_with("name", True)
         self._controller.view.disable_csv_image_edits.assert_called_once_with()
         self._controller.view.file_widget.set_shuff_order.assert_called_once_with({})
 
@@ -33,8 +33,10 @@ class TestImagesController:
         self._controller.view.file_widget = MagicMock()
         self._controller.view.file_widget.files_dict = {}
 
-        self._controller.load_from_csv(['name', 'name2'], False)
-        self._controller.view.file_widget.add_new_item.assert_has_calls([mock.call('name', False), mock.call('name2', False)], any_order=True)
+        self._controller.load_from_csv(["name", "name2"], False)
+        self._controller.view.file_widget.add_new_item.assert_has_calls(
+            [mock.call("name", False), mock.call("name2", False)], any_order=True
+        )
         self._controller.view.disable_csv_image_edits.assert_called_once_with()
         self._controller.view.file_widget.set_shuff_order.assert_not_called()
 

@@ -9,7 +9,8 @@ from PyQt5.QtWidgets import (
     QScrollArea,
     QGridLayout,
     QPushButton,
-    QMessageBox, QDialog,
+    QMessageBox,
+    QDialog,
 )
 import napari
 from aicsimageio import AICSImage, exceptions
@@ -19,9 +20,7 @@ from napari_allencell_annotator.widgets.file_input import (
     FileInput,
     FileInputMode,
 )
-from napari_allencell_annotator.widgets.scrollable_popup import (
-    ScrollablePopup
-)
+from napari_allencell_annotator.widgets.scrollable_popup import ScrollablePopup
 from napari_allencell_annotator.widgets.files_widget import FilesWidget, FileItem
 
 
@@ -124,10 +123,10 @@ class ImagesView(QWidget):
     def _delete_clicked(self):
         if len(self.file_widget.checked) > 0:
             msg: str = "Delete these files?"
-            lst : List[str] = []
+            lst: List[str] = []
             for item in self.file_widget.checked:
                 lst.append("--- " + item.file_path)
-            msg_box = ScrollablePopup(msg,lst)
+            msg_box = ScrollablePopup(msg, lst)
             if msg_box.exec() == QDialog.Accepted:
                 self.file_widget.delete_checked()
         else:

@@ -18,7 +18,8 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QAbstractScrollArea,
     QMessageBox,
-    QVBoxLayout, QSizePolicy,
+    QVBoxLayout,
+    QSizePolicy,
 )
 from napari import Viewer
 from napari_allencell_annotator.widgets.file_input import (
@@ -197,7 +198,7 @@ class AnnotatorView(QWidget):
     def _reset_annotations(self):
         """Reset annotation data to empty."""
         self.annot_list.clear()
-        #todo: make size policy, remove this line
+        # todo: make size policy, remove this line
         self.annot_list.setMaximumHeight(600)
         self.annotation_item_widgets = []
         self.annots_order: List[str] = []
@@ -218,7 +219,7 @@ class AnnotatorView(QWidget):
             the values for the annotations.
         """
         for (widget, val, default) in zip(self.annotation_item_widgets, vals, self.default_vals):
-            if val is None or val == '':
+            if val is None or val == "":
                 val = default
             if isinstance(widget, QLineEdit):
                 widget.setText(val)
@@ -292,8 +293,8 @@ class AnnotatorView(QWidget):
 
         for name in data.keys():
             self._create_annot(name, data[name])
-            #todo fix: doesnt work if certain widgets are first leaves blank spot on bottom
-        self.annot_list.setMaximumHeight(self.annot_list.item(0).sizeHint().height() * len(data))\
+            # todo fix: doesnt work if certain widgets are first leaves blank spot on bottom
+        self.annot_list.setMaximumHeight(self.annot_list.item(0).sizeHint().height() * len(data))
 
     def _create_annot(self, name: str, dictn: Dict):
         """
@@ -320,8 +321,8 @@ class AnnotatorView(QWidget):
             item.setValue(dictn["default"])
         elif annot_type == "bool":
             item = QCheckBox()
-            if dictn["default"] == "true" :
-               dictn["default"] = True
+            if dictn["default"] == "true":
+                dictn["default"] = True
             if dictn["default"]:
                 item.setChecked(True)
         elif annot_type == "list":

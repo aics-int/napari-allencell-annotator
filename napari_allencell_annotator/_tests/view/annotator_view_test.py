@@ -1,11 +1,7 @@
 from unittest import mock
 from unittest.mock import MagicMock
 
-from napari_allencell_annotator.view.annotator_view import (
-    AnnotatorView,
-    AnnotatorViewMode,
-    QListWidget
-)
+from napari_allencell_annotator.view.annotator_view import AnnotatorView, AnnotatorViewMode, QListWidget
 
 
 class TestAnnotatorView:

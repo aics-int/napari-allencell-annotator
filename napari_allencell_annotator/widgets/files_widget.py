@@ -96,7 +96,7 @@ class FilesWidget(QListWidget):
         self.clear()
         return self.files_dict
 
-    def add_new_item(self, file: str, shuffle : Optional[bool] = False):
+    def add_new_item(self, file: str, shuffle: Optional[bool] = False):
         """
         Adds a new file to the list and files_dict.
 

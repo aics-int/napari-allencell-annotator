@@ -61,7 +61,7 @@ class TestAnnotatorController:
         assert self._controller.shuffled == False
 
     def test_stop_annotating(self):
-        self._controller.files_and_annots = {"item": 'item'}
+        self._controller.files_and_annots = {"item": "item"}
         self._controller.write_csv = MagicMock()
         self._controller.curr_img_dict = {"File Path": "path"}
         self._controller.record_annotations = MagicMock()
@@ -102,17 +102,14 @@ class TestAnnotatorController:
         assert self._controller.curr_img_dict == dic
         self._controller.view.render_default_values.assert_called_once_with()
         assert len(self._controller.files_and_annots) == 1
-        assert self._controller.files_and_annots["path.png"] == [
-            "path",
-            ""
-        ]
+        assert self._controller.files_and_annots["path.png"] == ["path", ""]
         self._controller.view.render_values.assert_not_called()
         self._controller.view.set_curr_index.assert_called_once_with(4)
         self._controller.view.next_btn.setEnabled.assert_called_once_with(False)
         self._controller.view.prev_btn.setEnabled.assert_called_once_with(True)
 
     def test_set_curr_img_more_than_3(self):
-        self._controller.files_and_annots["path.png"] = ["path", "", "True", 'hello']
+        self._controller.files_and_annots["path.png"] = ["path", "", "True", "hello"]
         self._controller.view.prev_btn = MagicMock()
         self._controller.view.next_btn = MagicMock()
         self._controller.view.num_images = 5
@@ -125,17 +122,14 @@ class TestAnnotatorController:
         assert self._controller.curr_img_dict == dic
         self._controller.view.render_default_values.assert_not_called()
         assert len(self._controller.files_and_annots) == 1
-        assert self._controller.files_and_annots["path.png"] == [
-            "path",
-            "", "True", 'hello'
-        ]
-        self._controller.view.render_values.assert_called_once_with(['True', 'hello'])
+        assert self._controller.files_and_annots["path.png"] == ["path", "", "True", "hello"]
+        self._controller.view.render_values.assert_called_once_with(["True", "hello"])
         self._controller.view.set_curr_index.assert_called_once_with(0)
         self._controller.view.next_btn.setEnabled.assert_called_once_with(True)
         self._controller.view.prev_btn.setEnabled.assert_called_once_with(False)
 
     def test_set_curr_img_empty_strings(self):
-        self._controller.files_and_annots["path.png"] = ["path", "", "True", '', '']
+        self._controller.files_and_annots["path.png"] = ["path", "", "True", "", ""]
         self._controller.view.prev_btn = MagicMock()
         self._controller.view.next_btn = MagicMock()
         self._controller.view.num_images = 5
@@ -148,11 +142,8 @@ class TestAnnotatorController:
         assert self._controller.curr_img_dict == dic
         self._controller.view.render_default_values.assert_not_called()
         assert len(self._controller.files_and_annots) == 1
-        assert self._controller.files_and_annots["path.png"] == [
-            "path",
-            "", "True", '', ''
-        ]
-        self._controller.view.render_values.assert_called_once_with(['True', '', ''])
+        assert self._controller.files_and_annots["path.png"] == ["path", "", "True", "", ""]
+        self._controller.view.render_values.assert_called_once_with(["True", "", ""])
         self._controller.view.set_curr_index.assert_called_once_with(3)
         self._controller.view.next_btn.setEnabled.assert_called_once_with(True)
         self._controller.view.prev_btn.setEnabled.assert_called_once_with(True)

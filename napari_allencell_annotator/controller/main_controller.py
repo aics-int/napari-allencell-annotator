@@ -47,8 +47,8 @@ class MainController(QWidget):
         self.show()
         self.napari.window.add_dock_widget(self, area="right")
         self._connect_slots()
-        self.already_annotated : Dict[str, List]  = None
-        self.starting_row : int = -1
+        self.already_annotated: Dict[str, List] = None
+        self.starting_row: int = -1
 
     def _connect_slots(self):
         """Connects annotator view buttons start, next, and prev to slots"""
@@ -62,7 +62,6 @@ class MainController(QWidget):
         self.annots.view.annot_input.file_selected.connect(self._csv_import_selected_evt)
         self.annots.view.create_btn.clicked.connect(self._create_clicked)
         self.annots.view.save_json_btn.file_selected.connect(self._json_write_selected_evt)
-
 
     def _create_clicked(self):
         """Create dialog window and start viewing on accept."""
@@ -113,9 +112,7 @@ class MainController(QWidget):
                 self.annots.read_json(file_path)
 
             else:
-                proceed: bool = self.annots.view.popup(
-                    "Would you like to use the images in this csv?"
-                )
+                proceed: bool = self.annots.view.popup("Would you like to use the images in this csv?")
                 file = open(file_path)
 
                 reader = csv.reader(file)
@@ -129,7 +126,7 @@ class MainController(QWidget):
                 if proceed:
                     self.already_annotated = {}
 
-                    row_num : int = 0
+                    row_num: int = 0
                     for row in reader:
 
                         self.already_annotated[row[0]] = row[1::]
@@ -163,13 +160,12 @@ class MainController(QWidget):
         -------
         boolean : bool
         """
-        if string.lower() == 'true':
+        if string.lower() == "true":
             return True
-        elif string.lower() == 'false':
+        elif string.lower() == "false":
             return False
         else:
-            raise ValueError('The value \'{}\' cannot be mapped to boolean.'
-                             .format(string))
+            raise ValueError("The value '{}' cannot be mapped to boolean.".format(string))
 
     def _import_annots_clicked(self):
         """Open file widget for importing csv/json."""
@@ -214,7 +210,6 @@ class MainController(QWidget):
             )
             if proceed:
                 self.annots.view.csv_input.simulate_click()
-
 
     def _stop_annotating(self):
         """
