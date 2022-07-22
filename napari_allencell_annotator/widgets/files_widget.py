@@ -23,8 +23,6 @@ class FilesWidget(QListWidget):
         Clears all image data.
     clear_for_shuff() -> List[str]
         Clears the list display and returns the file_order.
-    set_shuff_order(lst : List[str]
-        Sets the shuffle order list.
     add_new_item(file:str)
         Adds a new file to the list and file_order.
     add_item(file: str, hidden: bool)

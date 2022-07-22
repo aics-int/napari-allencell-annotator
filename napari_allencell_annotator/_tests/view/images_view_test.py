@@ -20,13 +20,12 @@ class TestImagesView:
     def test_reset_buttons(self):
         self._view._toggle_delete = MagicMock()
         self._view._toggle_shuffle = MagicMock()
-        self._view.enable_image_edits = MagicMock()
-        self._view._update_shuff_text = MagicMock()
+        self._view.shuffle = MagicMock()
         self._view.toggle_add = MagicMock()
+
         self._view.reset_buttons()
         self._view._toggle_delete.assert_called_once_with(False)
-        self._view.enable_image_edits.assert_called_once_with()
-        self._view._update_shuff_text.assert_called_once_with(False)
+        self._view.shuffle.setChecked.assert_called_once_with(False)
         self._view._toggle_shuffle.assert_called_once_with(False)
 
         self._view.toggle_add.assert_called_once_with(True)
@@ -36,7 +35,7 @@ class TestImagesView:
         self._view.shuffle = MagicMock()
         self._view.shuffle.setText = MagicMock()
         self._view._update_shuff_text(True)
-        self._view.shuffle.setText.assert_called_once_with("Unshuffle and Unhide")
+        self._view.shuffle.setText.assert_called_once_with("Unhide")
         # not checked
         self._view.shuffle.setText = MagicMock()
         self._view._update_shuff_text(False)

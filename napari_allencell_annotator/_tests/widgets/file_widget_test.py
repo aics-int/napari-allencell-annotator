@@ -31,7 +31,6 @@ class TestFileWidget:
         self._widget._shuffled = True
         self._widget.setCurrentItem = MagicMock()
         self._widget.clear = MagicMock()
-        self._widget.shuffled_files_dict = {"item": []}
         self._widget.checked = {"item"}
         self._widget.files_dict = {"item": []}
         self._widget.clear_all()
@@ -39,23 +38,11 @@ class TestFileWidget:
         assert self._widget._shuffled == False
         assert self._widget.checked == set()
         assert self._widget.files_dict == {}
-        assert self._widget.shuffled_files_dict == {}
         self._widget.setCurrentItem.assert_called_once_with(None)
         self._widget.clear.assert_called_once_with()
 
-    def test_set_shuff_order(self):
-        self._widget.shuffled_files_dict = {"item": {}}
-        self._widget.set_shuff_order({"item2": {}})
-        assert self._widget.shuffled_files_dict == {"item2": {}}
-
-    def test_set_shuff_order_none(self):
-        self._widget.shuffled_files_dict = {"item": {}}
-        self._widget.set_shuff_order()
-        assert self._widget.shuffled_files_dict == {}
-
     def test_clear_for_shuffle(self):
         self._widget._shuffled = False
-        self._widget.shuffled_files_dict = {"item": {}}
         self._widget.setCurrentItem = MagicMock()
         self._widget.clear = MagicMock()
         self._widget.checked = set("item")
@@ -64,7 +51,6 @@ class TestFileWidget:
 
         ret = self._widget.clear_for_shuff()
 
-        assert self._widget.shuffled_files_dict == {}
         assert self._widget._shuffled == True
         self._widget.setCurrentItem.assert_called_once_with(None)
         assert self._widget.checked == set()

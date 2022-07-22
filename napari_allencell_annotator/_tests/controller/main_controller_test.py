@@ -190,6 +190,7 @@ class TestMainController:
 
     def test_stop_annotating_shuffled(self):
         self._controller.images.view.file_widget.shuffled = True
+        self._controller.has_new_shuffled_order = None
         self._controller._stop_annotating()
         self._controller.images.view.file_widget.currentItemChanged.disconnect.assert_not_called()
 
@@ -203,7 +204,42 @@ class TestMainController:
         self._controller.images.stop_annotating.assert_called_once_with()
         self._controller.annots.stop_annotating.assert_called_once_with()
 
+    def test_stop_annotating_shuffled_new_shuff_order_true(self):
+        self._controller.images.view.file_widget.shuffled = True
+        self._controller.has_new_shuffled_order = True
+        self._controller._stop_annotating()
+        self._controller.images.view.file_widget.currentItemChanged.disconnect.assert_not_called()
+
+        self._controller.layout.addWidget.assert_has_calls(
+            [
+                mock.call(self._controller.images.view, stretch=1),
+                mock.call(self._controller.annots.view, stretch=2),
+            ]
+        )
+        self._controller.images.view.show.assert_called_once_with()
+        self._controller.images.stop_annotating.assert_called_once_with()
+        self._controller.annots.stop_annotating.assert_called_once_with()
+
+    def test_stop_annotating_shuffled_new_shuff_order_false(self):
+        self._controller.images.view.file_widget.shuffled = True
+        self._controller.has_new_shuffled_order = False
+        self._controller.images.view.shuffle = MagicMock()
+        self._controller._stop_annotating()
+        self._controller.images.view.file_widget.currentItemChanged.disconnect.assert_not_called()
+        self._controller.images.view.shuffle.toggled.disconnect.assert_called_once_with(self._controller._shuffle_toggled)
+        assert self._controller.has_new_shuffled_order is None
+        self._controller.layout.addWidget.assert_has_calls(
+            [
+                mock.call(self._controller.images.view, stretch=1),
+                mock.call(self._controller.annots.view, stretch=2),
+            ]
+        )
+        self._controller.images.view.show.assert_called_once_with()
+        self._controller.images.stop_annotating.assert_called_once_with()
+        self._controller.annots.stop_annotating.assert_called_once_with()
+
     def test_stop_annotating_not_shuffled(self):
+        self._controller.has_new_shuffled_order = None
         self._controller.images.view.file_widget.shuffled = False
         self._controller._stop_annotating()
         self._controller.images.view.file_widget.currentItemChanged.disconnect.assert_called_once()
@@ -218,15 +254,53 @@ class TestMainController:
         self._controller.images.stop_annotating.assert_called_once_with()
         self._controller.annots.stop_annotating.assert_called_once_with()
 
+    def test_stop_annotating_not_shuffled_new_shuff_order_true(self):
+        self._controller.has_new_shuffled_order = True
+        self._controller.images.view.file_widget.shuffled = False
+        self._controller._stop_annotating()
+        self._controller.images.view.file_widget.currentItemChanged.disconnect.assert_called_once()
+
+        self._controller.layout.addWidget.assert_has_calls(
+            [
+                mock.call(self._controller.images.view, stretch=1),
+                mock.call(self._controller.annots.view, stretch=2),
+            ]
+        )
+        self._controller.images.view.show.assert_called_once_with()
+        self._controller.images.stop_annotating.assert_called_once_with()
+        self._controller.annots.stop_annotating.assert_called_once_with()
+
+    def test_stop_annotating_not_shuffled_new_shuff_order_false(self):
+        self._controller.has_new_shuffled_order = False
+        self._controller.images.view.shuffle = MagicMock()
+        self._controller.images.view.file_widget.shuffled = False
+        self._controller._stop_annotating()
+        self._controller.images.view.file_widget.currentItemChanged.disconnect.assert_called_once()
+        self._controller.images.view.shuffle.toggled.disconnect.assert_called_once_with(
+            self._controller._shuffle_toggled)
+        assert self._controller.has_new_shuffled_order is None
+        self._controller.layout.addWidget.assert_has_calls(
+            [
+                mock.call(self._controller.images.view, stretch=1),
+                mock.call(self._controller.annots.view, stretch=2),
+            ]
+        )
+        self._controller.images.view.show.assert_called_once_with()
+        self._controller.images.stop_annotating.assert_called_once_with()
+        self._controller.annots.stop_annotating.assert_called_once_with()
+
     def test_setup_annotating_already_annotated(self):
-        self._controller.starting_row = 0
         self._controller.images.get_files_dict = MagicMock(return_value=({"filepath.png": ['filepath', '']}, True))
+        self._controller.starting_row = 0
         self._controller.already_annotated = {"filepath.png": ['filepath', '', 'text']}
+        self._controller.fix_already_annotated= MagicMock()
+
         self._controller._setup_annotating()
+
         self._controller.layout.removeWidget.assert_called_once_with(self._controller.images.view)
         self._controller.images.view.hide.assert_called_once()
+        self._controller.fix_already_annotated.assert_called_once_with({"filepath.png": ['filepath', '']})
         self._controller.images.start_annotating.assert_called_once_with(0)
-
         self._controller.annots.start_annotating.assert_called_once_with(
             self._controller.images.get_num_files(), self._controller.already_annotated,True)
         self._controller.annots.set_curr_img.assert_called_once_with(self._controller.images.curr_img_dict())
@@ -238,6 +312,7 @@ class TestMainController:
         self._controller.starting_row = None
         self._controller.images.get_files_dict = MagicMock(return_value=({"filepath.png": ['filepath', '']}, False))
         self._controller.already_annotated = None
+
         self._controller._setup_annotating()
         self._controller.layout.removeWidget.assert_not_called()
         self._controller.images.view.hide.assert_not_called()
