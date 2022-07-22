@@ -86,7 +86,7 @@ class FilesWidget(QListWidget):
         List[str]
             file_order.
         """
-        self._shuffled = not self._shuffled
+        self._shuffled = True
         self.setCurrentItem(None)
         self.checked = set()
         self.clear()

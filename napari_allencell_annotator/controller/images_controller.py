@@ -82,9 +82,9 @@ class ImagesController:
         if shuffled:
             self.view.file_widget.set_shuffled(shuffled)
             self.view.toggle_add(False)
-            self.view.shuffle.toggled.emit(True)
+            self.view.shuffle.setChecked(True)
         else:
-            self.view.shuffle.toggled.emit(False)
+            self.view.shuffle.setChecked(False)
 
 
     def get_files_dict(self) -> (Dict[str, List[str]], bool):
@@ -122,6 +122,7 @@ class ImagesController:
 
         else:
             self.view.toggle_add(True)
+            self.view.file_widget.set_shuffled(False)
             self.view.file_widget.unhide_all()
 
 
