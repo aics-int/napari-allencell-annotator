@@ -226,7 +226,7 @@ class AnnotatorView(QWidget):
             elif isinstance(widget, QSpinBox):
                 widget.setValue(int(val))
             elif isinstance(widget, QCheckBox):
-                if isinstance(val,str):
+                if isinstance(val, str):
                     # val is a str from previous annotaiton
                     widget.setChecked(eval(val))
                 else:
