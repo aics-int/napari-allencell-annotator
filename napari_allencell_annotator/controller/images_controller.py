@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import List, Dict, Optional
 import random
 
@@ -127,7 +128,7 @@ class ImagesController:
 
 
     @staticmethod
-    def is_supported(file_name: str) -> bool:
+    def is_supported(file_path: str) -> bool:
         """
         Check if the provided file name is a supported file.
 
@@ -144,9 +145,9 @@ class ImagesController:
         bool
             True if the file is supported.
         """
-        if file_name is None:
+        if file_path is None:
             return False
-        _, extension = os.path.splitext(file_name)
+        extension = Path(file_path).suffix
         if extension in SUPPORTED_FILE_TYPES:
             return True
         else:

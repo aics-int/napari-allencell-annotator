@@ -18,23 +18,25 @@ class TestImagesController:
         with mock.patch("napari_allencell_annotator.controller.images_controller.ImagesView"):
             self._controller = ImagesController(self._mock_viewer)
 
-    def test_load_from_csv_one(self):
+    def test_load_from_csv_one_item(self):
         self._controller.view = create_autospec(ImagesView)
         self._controller.view.file_widget = MagicMock()
         self._controller.view.file_widget.files_dict = {}
 
-        self._controller.load_from_csv(['name'], True)
-        self._controller.view.file_widget.add_new_item.assert_called_once_with('name', True)
+        self._controller.load_from_csv(["name"], True)
+        self._controller.view.file_widget.add_new_item.assert_called_once_with("name", True)
         self._controller.view.disable_csv_image_edits.assert_called_once_with()
         self._controller.view.file_widget.set_shuff_order.assert_called_once_with({})
 
-    def test_load_from_csv_two(self):
+    def test_load_from_csv_two_items(self):
         self._controller.view = create_autospec(ImagesView)
         self._controller.view.file_widget = MagicMock()
         self._controller.view.file_widget.files_dict = {}
 
-        self._controller.load_from_csv(['name', 'name2'], False)
-        self._controller.view.file_widget.add_new_item.assert_has_calls([mock.call('name', False), mock.call('name2', False)], any_order=True)
+        self._controller.load_from_csv(["name", "name2"], False)
+        self._controller.view.file_widget.add_new_item.assert_has_calls(
+            [mock.call("name", False), mock.call("name2", False)], any_order=True
+        )
         self._controller.view.disable_csv_image_edits.assert_called_once_with()
         self._controller.view.file_widget.set_shuff_order.assert_not_called()
 
@@ -59,7 +61,7 @@ class TestImagesController:
         self._controller.view.toggle_add.assert_not_called()
         self._controller.view.file_widget.add_item.assert_not_called()
 
-    def test_shuffle_clicked_one(self):
+    def test_shuffle_clicked_one_file_hidden_true(self):
         # test when list widget has one item
         self._controller.view.file_widget = MagicMock()
         self._controller.view.file_widget.clear_for_shuff.return_value = {
@@ -70,7 +72,7 @@ class TestImagesController:
         self._controller.view.file_widget.add_item.assert_called_once_with("file_1.png", hidden=True)
         self._controller.view.file_widget.set_shuff_order.assert_called_once()
 
-    def test_shuffle_clicked_one_false(self):
+    def test_shuffle_clicked_one_file_hidden_false(self):
         self._controller.view.file_widget = MagicMock()
         self._controller.view.file_widget.clear_for_shuff.return_value = {
             "file_1.png": {"File Name": "name", "FMS": ""}
@@ -126,7 +128,7 @@ class TestImagesController:
         self._controller._dir_selected_evt(d)
         self._controller.view.alert.assert_called_once_with("Folder is empty")
 
-    def test_dir_selected_evt_one_supp(self):
+    def test_dir_selected_evt_one_path_is_supp(self):
         # test for one file, is supported
         self._controller.view.alert = MagicMock()
         d = ["/some/path"]
@@ -138,7 +140,7 @@ class TestImagesController:
         self._controller.is_supported.assert_called_once_with("/some/path/file_1.jpg")
         self._controller.view.file_widget.add_new_item.assert_called_once_with("/some/path/file_1.jpg")
 
-    def test_dir_selected_evt_one_not_supp(self):
+    def test_dir_selected_evt_one_path_not_supp(self):
         # test for one file, is not supported
         self._controller.view.alert = MagicMock()
         self._controller.is_supported = MagicMock(return_value=False)
@@ -150,7 +152,7 @@ class TestImagesController:
         self._controller.is_supported.assert_called_once_with("/some/path/file_1.jpg")
         self._controller.view.file_widget.add_new_item.assert_not_called()
 
-    def test_dir_selected_evt_mult(self):
+    def test_dir_selected_evt_mult_paths(self):
         # test for one multiple files
         self._controller.view.alert = MagicMock()
         self._controller.is_supported = MagicMock(return_value=True)

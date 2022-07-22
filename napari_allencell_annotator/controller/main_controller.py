@@ -1,6 +1,7 @@
 import csv
 import itertools
 import os
+from pathlib import Path
 
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QDialog
 
@@ -90,7 +91,7 @@ class MainController(QWidget):
             self.images.view.alert("No selection provided")
         else:
             file_path = file_list[0]
-            _, extension = os.path.splitext(file_path)
+            extension = Path(file_path).suffix
             if extension != ".json":
                 file_path = file_path + ".json"
             self.annots.view.save_json_btn.setEnabled(False)
@@ -111,15 +112,11 @@ class MainController(QWidget):
             self.images.view.alert("No selection provided")
         else:
             file_path = file_list[0]
-            if os.path.splitext(file_path)[1] == ".json":
-                # get dictionary of annotations
+            if Path(file_path).suffix == ".json":
                 self.annots.read_json(file_path)
 
-            else:
-                # csv was uploaded
-                proceed: bool = self.annots.view.popup(
-                    "Use the images in this csv? \n Note: any currently listed images will be cleared. "
-                )
+            elif Path(file_path).suffix == ".csv":
+                proceed: bool = self.annots.view.popup("Would you like to use the images in this csv?\n Note: any currently listed images will be cleared.")
                 file = open(file_path)
 
                 reader = csv.reader(file)
@@ -184,13 +181,12 @@ class MainController(QWidget):
         -------
         boolean : bool
         """
-        if string.lower() == 'true':
+        if string.lower() == "true":
             return True
-        elif string.lower() == 'false':
+        elif string.lower() == "false":
             return False
         else:
-            raise ValueError('The value \'{}\' cannot be mapped to boolean.'
-                             .format(string))
+            raise ValueError("The value '{}' cannot be mapped to boolean.".format(string))
 
     def _import_annots_clicked(self):
         """Open file widget for importing csv/json."""
@@ -212,7 +208,7 @@ class MainController(QWidget):
             self.images.view.alert("No selection provided")
         else:
             file_path = file_list[0]
-            _, extension = os.path.splitext(file_path)
+            extension = Path(file_path).suffix
             if extension != ".csv":
                 file_path = file_path + ".csv"
             self.annots.set_csv_name(file_path)

@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from PyQt5.QtWidgets import (
     QListWidgetItem,
@@ -54,7 +55,7 @@ class FileItem(QListWidgetItem):
 
     def get_name(self):
         """Return basename"""
-        return os.path.basename(self._file_path)
+        return Path(self._file_path).stem
 
     @property
     def file_path(self) -> str:

@@ -11,7 +11,7 @@ class FileInputMode(Enum):
     FILE = "file"
     CSV = "csv"
     JSONCSV = "jsoncsv"
-    JSON = 'json'
+    JSON = "json"
 
 
 class FileInput(QWidget):

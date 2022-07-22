@@ -2,8 +2,7 @@ from typing import List
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import  QScrollArea,  QLabel, QListWidget, QListWidgetItem, QDialog, \
-    QDialogButtonBox
+from PyQt5.QtWidgets import QScrollArea, QLabel, QListWidget, QListWidgetItem, QDialog, QDialogButtonBox
 
 
 class ScrollablePopup(QDialog):
@@ -22,9 +21,7 @@ class ScrollablePopup(QDialog):
             item = QListWidgetItem(self.content)
             item.setSizeHint(widget.minimumSizeHint())
             self.content.setItemWidget(item, widget)
-        self.buttons = QDialogButtonBox(
-            QDialogButtonBox.Ok | QDialogButtonBox.Cancel,
-            Qt.Horizontal, self)
+        self.buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal, self)
         self.buttons.accepted.connect(self.accept)
         self.buttons.rejected.connect(self.reject)
         self.layout = QtWidgets.QVBoxLayout()
@@ -34,5 +31,3 @@ class ScrollablePopup(QDialog):
         self.layout.addWidget(self.buttons)
 
         self.setLayout(self.layout)
-
-

@@ -174,12 +174,15 @@ class AnnotatorController:
 
     def read_json(self, file_path: str):
         """Read a json file into a dictionary and set annot_json_data."""
-        self.annot_json_data: Dict[str, Dict] = json.load(open(file_path))
+        with open(file_path, "r") as f:
+            self.annot_json_data: Dict[str, Dict] = json.loads(f.read())
+            print("booleans are True")
 
     def get_annotations_csv(self, annotations: str):
         """Read the first line of a csv file into a dictionary and set annot_json_data."""
 
         self.annot_json_data = json.loads(annotations)
+        print("hello")
 
     def write_csv(self):
         """write headers and file info"""
