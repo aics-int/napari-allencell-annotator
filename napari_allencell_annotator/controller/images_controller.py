@@ -1,5 +1,6 @@
 import os
-from typing import List, Dict
+from pathlib import Path
+from typing import List, Dict, Optional
 import random
 
 import napari
@@ -20,6 +21,9 @@ class ImagesController:
 
     Methods
     -------
+    load_from_csv(files : List[str], shuffled: bool)
+        Adds files to file list from a csv list of file paths.
+
     get_files_dict() -> Dict[str,List[str]]
         Returns the file dictionary that has the current file order.
 
@@ -57,19 +61,43 @@ class ImagesController:
         self.view.input_file.file_selected.connect(self._file_selected_evt)
         self.view.shuffle.clicked.connect(self._shuffle_clicked)
 
-    def get_files_dict(self) -> Dict[str, List[str]]:
+    def load_from_csv(self, files: List[str], shuffled: bool):
+        """
+        Clear file list and add files to file list from a csv list of file paths.
+        todo: is clearing the list good? users can add additional images after loading these in
+        but i don't want them to have images that are un-shuffled and then load in a blind annotation set ?
+        later can make this an option/warning
+
+        If the csv files are shuffled, set shuffled propertyand hide file names.
+
+        Parameters
+        __________
+        dct : List[str]
+            a list of file paths.
+        shuffled: bool
+            true if files are shuffled.
+        """
+        self.view.file_widget.clear_all() # sets shuffle to false
+        for name in files:
+            self.view.file_widget.add_new_item(name, shuffled)
+        if shuffled:
+            self.view.file_widget.set_shuffled(shuffled)
+            self.view.toggle_add(False)
+            self.view.shuffle.setChecked(True)
+        else:
+            self.view.shuffle.setChecked(False)
+
+
+    def get_files_dict(self) -> (Dict[str, List[str]], bool):
         """
         Return the file dictionary that has the current file order.
 
         Returns
         ----------
-        Dict[str,List[str]]
-            dictionary of file info. keys in order.
+        Dict[str,List[str]], bool
+            dictionary of file info. keys in order. a boolean shuffled.
         """
-        if self.view.file_widget.shuffled:
-            return self.view.file_widget.shuffled_files_dict
-        else:
-            return self.view.file_widget.files_dict
+        return self.view.file_widget.files_dict, self.view.file_widget.shuffled
 
     def _shuffle_clicked(self, checked: bool):
         """
@@ -83,27 +111,24 @@ class ImagesController:
         checked : bool
             Toggle state of the shuffle button.
         """
+        if checked:
+            files: Dict[str, List[str]] = self.view.file_widget.clear_for_shuff()
+            self.view.toggle_add(False)
+            keys = list(files.keys())
+            self.view.file_widget.files_dict = {}
+            random.shuffle(keys)
+            for k in keys:
+                # add new item will recreate files_dict in new order
+                self.view.file_widget.add_new_item(k, hidden=True)
 
-        files: Dict[str, List[str]] = self.view.file_widget.clear_for_shuff()
-        if len(files) > 0:
-            if checked:
-                self.view.toggle_add(False)
-                keys = list(files.keys())
-                random.shuffle(keys)
-                shuff_dict = {}
-                for k in keys:
-                    shuff_dict[k] = files[k]
-                    self.view.file_widget.add_item(k, hidden=True)
-                self.view.file_widget.set_shuff_order(shuff_dict)
+        else:
+            self.view.toggle_add(True)
+            self.view.file_widget.set_shuffled(False)
+            self.view.file_widget.unhide_all()
 
-            else:
-                self.view.toggle_add(True)
-                self.view.file_widget.set_shuff_order()
-                for f in files.keys():
-                    self.view.file_widget.add_item(f, hidden=False)
 
     @staticmethod
-    def is_supported(file_name: str) -> bool:
+    def is_supported(file_path: str) -> bool:
         """
         Check if the provided file name is a supported file.
 
@@ -120,9 +145,9 @@ class ImagesController:
         bool
             True if the file is supported.
         """
-        if file_name is None:
+        if file_path is None:
             return False
-        _, extension = os.path.splitext(file_name)
+        extension = Path(file_path).suffix
         if extension in SUPPORTED_FILE_TYPES:
             return True
         else:
@@ -169,10 +194,11 @@ class ImagesController:
                 else:
                     self.view.alert("Unsupported file type:" + file)
 
-    def start_annotating(self):
+    def start_annotating(self, row: Optional[int] = 0):
         """Set current item to the first item."""
         if self.view.file_widget.count() > 0:
-            self.view.file_widget.setCurrentItem(self.view.file_widget.item(0))
+            self.view.file_widget.setCurrentItem(self.view.file_widget.item(row))
+
         else:
             self.view.alert("No files to annotate")
 

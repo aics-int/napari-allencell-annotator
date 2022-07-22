@@ -1,9 +1,7 @@
 from unittest import mock
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, create_autospec
 
 from napari_allencell_annotator.widgets.file_item import FileItem
-
-from napari_allencell_annotator.widgets.file_item import os
 
 
 class TestFileItem:
@@ -17,9 +15,8 @@ class TestFileItem:
         assert self._widget.file_path == expected_path
 
     def test_name(self):
-        expected_name = "basepath"
-        os.path.basename = MagicMock(return_value="basepath")
-        assert self._widget.get_name() == expected_name
+        self._widget._file_path = "dir/path.png"
+        assert self._widget.get_name() == "path"
 
     def test_eq(self):
         path = "path"

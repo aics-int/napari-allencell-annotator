@@ -1,4 +1,7 @@
+import csv
+import itertools
 import os
+from pathlib import Path
 
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QDialog
 
@@ -13,7 +16,7 @@ from napari_allencell_annotator.widgets.create_dialog import (
     CreateDialog,
 )
 import napari
-from typing import List
+from typing import List, Dict
 
 
 class MainController(QWidget):
@@ -35,6 +38,8 @@ class MainController(QWidget):
     def __init__(self):
         super().__init__()
         self.napari = napari.Viewer()
+        self.napari.window.qt_viewer.dockLayerList.setVisible(False)
+        self.napari.window.qt_viewer.dockLayerControls.setVisible(False)
         self.layout = QVBoxLayout()
         self.images = ImagesController(self.napari)
         self.annots = AnnotatorController(self.napari)
@@ -44,6 +49,9 @@ class MainController(QWidget):
         self.show()
         self.napari.window.add_dock_widget(self, area="right")
         self._connect_slots()
+        self.already_annotated: Dict[str, List] = None
+        self.starting_row: int = -1
+        self.has_new_shuffled_order = None
 
     def _connect_slots(self):
         """Connects annotator view buttons start, next, and prev to slots"""
@@ -51,22 +59,27 @@ class MainController(QWidget):
 
         self.annots.view.next_btn.clicked.connect(self._next_image_clicked)
         self.annots.view.prev_btn.clicked.connect(self._prev_image_clicked)
-        self.annots.view.file_input.file_selected.connect(self._csv_write_selected_evt)
+        self.annots.view.csv_input.file_selected.connect(self._csv_write_selected_evt)
         self.annots.view.save_exit_btn.clicked.connect(self._save_and_exit_clicked)
         self.annots.view.import_btn.clicked.connect(self._import_annots_clicked)
         self.annots.view.annot_input.file_selected.connect(self._csv_import_selected_evt)
         self.annots.view.create_btn.clicked.connect(self._create_clicked)
+        self.annots.view.save_json_btn.file_selected.connect(self._json_write_selected_evt)
 
     def _create_clicked(self):
         """Create dialog window and start viewing on accept."""
         dlg = CreateDialog(self)
         if dlg.exec() == QDialog.Accepted:
+            self.already_annotated = None
             self.annots.set_annot_json_data(dlg.new_annot_dict)
             self.annots.start_viewing()
 
-    def _csv_import_selected_evt(self, file_list: List[str]):
+    def _json_write_selected_evt(self, file_list: List[str]):
         """
-        Set csv file name for importing annotations.
+        Set json file name for writing annotations and write the annotations.
+
+        Ensure that all file names have .json extension and that a
+        file name is selected.
 
         Parameters
         ----------
@@ -77,8 +90,103 @@ class MainController(QWidget):
         if file_list is None or len(file_list) < 1:
             self.images.view.alert("No selection provided")
         else:
-            # TODO
             file_path = file_list[0]
+            extension = Path(file_path).suffix
+            if extension != ".json":
+                file_path = file_path + ".json"
+            self.annots.view.save_json_btn.setEnabled(False)
+            self.annots.write_json(file_path)
+
+    def _csv_import_selected_evt(self, file_list: List[str]):
+        """
+        Set csv file name for importing annotations.
+
+        Parameters
+        ----------
+        file_list : List[str]
+            The list containing one file name.
+        """
+        self.already_annotated = None
+        self.has_new_shuffled_order = None
+        if file_list is None or len(file_list) < 1:
+            self.images.view.alert("No selection provided")
+        else:
+            file_path = file_list[0]
+            if Path(file_path).suffix == ".json":
+                self.annots.read_json(file_path)
+
+            elif Path(file_path).suffix == ".csv":
+                proceed: bool = self.annots.view.popup("Would you like to use the images in this csv?\n Note: any currently listed images will be cleared.")
+                file = open(file_path)
+
+                reader = csv.reader(file)
+                shuffled = next(reader)[1]
+                shuffled = self.str_to_bool(shuffled)
+                # annotation data header
+                annts = next(reader)[1]
+                # set the json dictionary of annotations
+                self.annots.get_annotations_csv(annts)
+                # skip actual header
+                next(reader)
+                self.starting_row = None
+                if proceed:
+                    self.has_new_shuffled_order = False
+
+                    # get image/annotation data
+                    # dictionary File Path -> [file name, fms, annt1, annt2...]
+                    self.already_annotated = {}
+
+                    row_num: int = 0
+                    for row in reader:
+                        # for each line, add data to already annotated and check if there are null values
+                        # if null, starting row for annotations is set
+                        self.already_annotated[row[0]] = row[1::]
+                        if self.starting_row is None:
+                            # if there is a none value for an annotation
+                            if self.starting_row is None:
+                                if self.has_none_annotation(row[3::]):
+                                    self.starting_row = row_num
+                            row_num = row_num + 1
+                    if row_num == len(self.already_annotated):
+                        # all images have all annotations filled in, start annotating at last image
+                        self.starting_row = row_num - 1
+                    self.images.load_from_csv(self.already_annotated.keys(), shuffled)
+                    # keep track of if images are shuffled from now on:
+                    self.images.view.shuffle.toggled.connect(self._shuffle_toggled)
+                # start at row 0 if annotation data was not used from csv
+                if self.starting_row is None:
+                    self.starting_row = 0
+                file.close()
+
+            # move to view mode
+            self.annots.start_viewing()
+
+    def _shuffle_toggled(self, checked: bool):
+        if checked:
+            # images have been shuffled, have to adjust order
+            self.has_new_shuffled_order = True
+            self.images.view.shuffle.toggled.disconnect(self._shuffle_toggled)
+
+    def str_to_bool(self, string):
+        """
+        Convert a string to a bool.
+
+        Parameters
+        ----------
+        string_ : str
+        default : {'raise', False}
+            Default behaviour if none of the "true" strings is detected.
+
+        Returns
+        -------
+        boolean : bool
+        """
+        if string.lower() == "true":
+            return True
+        elif string.lower() == "false":
+            return False
+        else:
+            raise ValueError("The value '{}' cannot be mapped to boolean.".format(string))
 
     def _import_annots_clicked(self):
         """Open file widget for importing csv/json."""
@@ -86,7 +194,7 @@ class MainController(QWidget):
 
     def _csv_write_selected_evt(self, file_list: List[str]):
         """
-        Set csv file name for writing to the selected file.
+        Set csv file name for writing annotations.
 
         Ensure that all file names have .csv extension and that a
         file name is selected.
@@ -100,7 +208,7 @@ class MainController(QWidget):
             self.images.view.alert("No selection provided")
         else:
             file_path = file_list[0]
-            _, extension = os.path.splitext(file_path)
+            extension = Path(file_path).suffix
             if extension != ".csv":
                 file_path = file_path + ".csv"
             self.annots.set_csv_name(file_path)
@@ -122,7 +230,7 @@ class MainController(QWidget):
                 "you like to continue?"
             )
             if proceed:
-                self.annots.view.file_input.simulate_click()
+                self.annots.view.csv_input.simulate_click()
 
     def _stop_annotating(self):
         """
@@ -130,19 +238,149 @@ class MainController(QWidget):
 
         Display images and annots views.
         """
+        if self.has_new_shuffled_order is not None and not self.has_new_shuffled_order:
+            self.images.view.shuffle.toggled.disconnect(self._shuffle_toggled)
+            self.has_new_shuffled_order = None
+        if not self.images.view.file_widget.shuffled:
+            self.images.view.file_widget.currentItemChanged.disconnect(self.image_selected)
         self.layout.addWidget(self.images.view, stretch=1)
         self.layout.addWidget(self.annots.view, stretch=2)
         self.images.view.show()
         self.annots.stop_annotating()
         self.images.stop_annotating()
+        self.images.view.input_file.show()
+        self.images.view.input_dir.show()
+        self.images.view.shuffle.show()
+        self.images.view.delete.show()
 
     def _setup_annotating(self):
         """Hide the file viewer and start the annotating process."""
-        self.layout.removeWidget(self.images.view)
-        self.images.view.hide()
-        self.images.start_annotating()
-        self.annots.start_annotating(self.images.get_num_files(), self.images.get_files_dict())
+        dct, shuffled = self.images.get_files_dict()
+        if shuffled:
+            self.layout.removeWidget(self.images.view)
+            self.images.view.hide()
+        # if we are using csv annotation data
+        if self.already_annotated is not None and len(self.already_annotated) > 0:
+
+            self.fix_already_annotated(dct)
+
+            self.images.start_annotating(self.starting_row)
+
+            self.annots.start_annotating(self.images.get_num_files(), self.already_annotated, shuffled)
+
+        else:
+            self.images.start_annotating()
+            self.annots.start_annotating(self.images.get_num_files(), dct, shuffled)
         self.annots.set_curr_img(self.images.curr_img_dict())
+        if not shuffled:
+            self.images.view.file_widget.currentItemChanged.connect(self.image_selected)
+            self.images.view.input_dir.hide()
+            self.images.view.input_file.hide()
+            self.images.view.shuffle.hide()
+            self.images.view.delete.hide()
+
+    def fix_already_annotated(self, dct):
+        dct_keys = dct.keys()
+        alr_anntd_keys = self.already_annotated.keys()
+        new_starting_row_found: bool = False
+        new_already_annotated = {}
+        # dct_keys is the dictionary from the images list. may have been edited
+        # alr_anntd_keys was read in from csv. has not been edited
+        if not dct_keys == alr_anntd_keys:
+            # if dct .keys is not equal (order not considered) to aa.keys
+            # means files were either added/deleted
+            if self.has_new_shuffled_order:
+                # if dct .keys is not equal (minus order ) to aa.keys. and SHUFFLED
+                self._unequal_shuffled_fix_already_annotated(dct)
+
+            else:
+                self._unequal_unshuffled_fix_already_annotated(dct)
+        else:
+            # dct keys and aakeys are equal (except for order)
+            if self.has_new_shuffled_order:
+                # if dct.keys == aakeys and SHUFFLED walk through dct and keys and reorder aa and find new start row
+                self._equal_shuffled_fix_already_annotated(dct)
+            # if dct.keys == aakeys and NOT SHUFFLED then no changes
+
+    def _unequal_unshuffled_fix_already_annotated(self, dct):
+        # tested: delete first, add last, find new row in middle
+        # tested: add two at end, all previous images were fully annotated
+        # tested: delete all files but one
+        dct_keys = dct.keys()
+        alr_anntd_keys = self.already_annotated.keys()
+        new_starting_row_found: bool = False
+        new_already_annotated = {}
+        # order has not been changed/shuffled since upload
+        # need to add/delete files from already annotated and get a new starting row in case the
+        # file deleted or added is now the first file with a null annotation
+
+        for old_file, row in zip(alr_anntd_keys, range(len(alr_anntd_keys))):
+            if old_file in dct_keys:
+                # old file wasn't removed from files
+                new_already_annotated[old_file] = self.already_annotated[old_file]
+                if not new_starting_row_found:
+                    if row >= self.starting_row:
+                        # every file at index before the original starting row was fully annotated
+                        # if we are past that point in already_annotated then we need to test if we
+                        # have found a new none annotation value
+                        if self.has_none_annotation(self.already_annotated[old_file][2::]):
+                            self.starting_row = len(new_already_annotated) - 1
+                            new_starting_row_found = True
+
+            # if old_file not in dct_keys dont add it
+        if len(new_already_annotated) < len(dct):
+            # items were added into dct that were not in already annotated
+            if not new_starting_row_found:
+                # start on first new item from dct which has not been annotated
+                #todo is this right
+                self.starting_row = len(new_already_annotated)
+                new_starting_row_found = True
+            for file in list(dct_keys)[len(new_already_annotated)::]:
+                new_already_annotated[file] = dct[file]
+
+        if not new_starting_row_found:
+            self.starting_row = len(new_already_annotated) - 1
+        self.already_annotated = new_already_annotated
+
+    def _unequal_shuffled_fix_already_annotated(self, dct):
+        # it has been either shuffled and is now blind or it was given a new shuffle order
+        # want to save this order in case csv has unshuffled image order, annotation is supposed to be blind
+        # and next time the csv is opened it will be in insertion order still
+        dct_keys = dct.keys()
+        alr_anntd_keys = self.already_annotated.keys()
+        new_starting_row_found: bool = False
+        new_already_annotated = {}
+        for new_file, dct_index in itertools.zip_longest(dct_keys, range(len(dct_keys))):
+
+            if new_file not in alr_anntd_keys:
+                # only possible to encounter a new file in middle when shuffling has happened
+                # file added to dct
+                new_already_annotated[new_file] = dct[new_file]
+
+                if not new_starting_row_found:
+                    # just added a new, unannotated file
+                    self.starting_row = dct_index
+                    new_starting_row_found = True
+
+            elif new_file in alr_anntd_keys:
+                new_already_annotated[new_file] = self.already_annotated[new_file]
+                if not new_starting_row_found:
+                    if self.has_none_annotation(self.already_annotated[new_file][2::]):
+                        self.starting_row = dct_index
+                        new_starting_row_found = True
+        self.already_annotated = new_already_annotated
+
+    def _equal_shuffled_fix_already_annotated(self, dct):
+        dct_keys = dct.keys()
+        new_starting_row_found: bool = False
+        new_already_annotated = {}
+        for new_file, dct_index in itertools.zip_longest(dct_keys, range(len(dct_keys))):
+            new_already_annotated[new_file] = self.already_annotated[new_file]
+            if not new_starting_row_found:
+                if self.has_none_annotation(self.already_annotated[new_file][2::]):
+                    self.starting_row = dct_index
+                    new_starting_row_found = True
+        self.already_annotated = new_already_annotated
 
     def _next_image_clicked(self):
         """
@@ -155,8 +393,11 @@ class MainController(QWidget):
 
         self.images.next_img()
         self.annots.set_curr_img(self.images.curr_img_dict())
-        if self.images.curr_img_dict()["Row"] == "1":
-            self.annots.view.prev_btn.setEnabled(True)
+
+    def image_selected(self, current, previous):
+        if previous:
+            self.annots.record_annotations(previous.file_path)
+        self.annots.set_curr_img(self.images.curr_img_dict())
 
     def _prev_image_clicked(self):
         """
@@ -167,8 +408,6 @@ class MainController(QWidget):
         self.annots.record_annotations(self.images.curr_img_dict()["File Path"])
         self.images.prev_img()
         self.annots.set_curr_img(self.images.curr_img_dict())
-        if self.images.curr_img_dict()["Row"] == "0":
-            self.annots.view.prev_btn.setEnabled(False)
 
     def _save_and_exit_clicked(self):
         """Stop annotation if user confirms choice in popup."""
@@ -176,3 +415,13 @@ class MainController(QWidget):
 
         if proceed:
             self._stop_annotating()
+
+    def has_none_annotation(self, lst):
+
+        if len(lst) < len(self.annots.annot_json_data.keys()):
+            return True
+        else:
+            for item in lst:
+                if item is None or item == '':
+                    return True
+        return False
