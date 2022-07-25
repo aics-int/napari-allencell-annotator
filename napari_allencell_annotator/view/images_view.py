@@ -9,7 +9,6 @@ from PyQt5.QtWidgets import (
     QScrollArea,
     QGridLayout,
     QPushButton,
-    QMessageBox,
     QDialog,
 )
 import napari
@@ -113,17 +112,21 @@ class ImagesView(QWidget):
         else:
             self.shuffle.setText("Shuffle and Hide")
 
-
-
     def reset_buttons(self):
+        """
+        Reset buttons to pre-annotation settings
+
+        Disable delete, add, and shuffle buttons.
+        """
         self._toggle_delete(False)
         self.shuffle.setChecked(False)
         self._toggle_shuffle(False)
         self.toggle_add(True)
 
     def _delete_clicked(self):
+        """Ask user to approve a list of files to delete from the file list."""
         if len(self.file_widget.checked) > 0:
-            msg: str = "Delete these files?"
+            msg: str = "Delete these files from the list?"
             lst: List[str] = []
             for item in self.file_widget.checked:
                 lst.append("--- " + item.file_path)
@@ -182,16 +185,6 @@ class ImagesView(QWidget):
             self.shuffle.setEnabled(True)
         elif not files_added:
             self.shuffle.setEnabled(False)
-
-    # def enable_image_edits(self):
-    #     """Show shuffle and delete buttons"""
-    #     self.shuffle.show()
-    #     self.delete.show()
-    #
-    # def disable_csv_image_edits(self):
-    #     """Hide shuffle and delete buttons"""
-    #     self.shuffle.hide()
-    #     self.delete.hide()
 
     def _display_img(self, current: FileItem, previous: FileItem):
         """Display the current image in napari."""

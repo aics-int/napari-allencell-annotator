@@ -24,14 +24,14 @@ class ImagesController:
     load_from_csv(files : List[str], shuffled: bool)
         Adds files to file list from a csv list of file paths.
 
-    get_files_dict() -> Dict[str,List[str]]
-        Returns the file dictionary that has the current file order.
+    get_files_dict() -> Dict[str,List[str]], bool
+        Returns the file dictionary that has the current file order and boolean shuffled.
 
-    is_supported(file_name:str)->bool
+    is_supported(file_path:str)->bool
         Returns True if a file is a supported file type.
 
-    start_annotating()
-        Sets the current item.
+    start_annotating(row: Optional[int] = 0)
+        Sets the current item to the one at row.
 
     stop_annotating()
         Clears file widget and reset buttons.
@@ -63,34 +63,29 @@ class ImagesController:
 
     def load_from_csv(self, files: List[str], shuffled: bool):
         """
-        Clear file list and add files to file list from a csv list of file paths.
-        todo: is clearing the list good? users can add additional images after loading these in
-        but i don't want them to have images that are un-shuffled and then load in a blind annotation set ?
-        later can make this an option/warning
+        Clear current file list and add file list from csv with its shuffle state.
 
-        If the csv files are shuffled, set shuffled propertyand hide file names.
+        If the csv files are shuffled, set shuffled property, hide add button, and hide file names.
 
         Parameters
         __________
-        dct : List[str]
+        files : List[str]
             a list of file paths.
         shuffled: bool
             true if files are shuffled.
         """
-        self.view.file_widget.clear_all() # sets shuffle to false
+        self.view.file_widget.clear_all()  # sets shuffled to false
         for name in files:
             self.view.file_widget.add_new_item(name, shuffled)
         if shuffled:
-            self.view.file_widget.set_shuffled(shuffled)
+            self.view.file_widget.set_shuffled(True)
             self.view.toggle_add(False)
-            self.view.shuffle.setChecked(True)
-        else:
-            self.view.shuffle.setChecked(False)
 
+        self.view.shuffle.setChecked(shuffled)
 
     def get_files_dict(self) -> (Dict[str, List[str]], bool):
         """
-        Return the file dictionary that has the current file order.
+        Return the file dictionary and the shuffle state of file_widget.
 
         Returns
         ----------
@@ -113,19 +108,19 @@ class ImagesController:
         """
         if checked:
             files: Dict[str, List[str]] = self.view.file_widget.clear_for_shuff()
-            self.view.toggle_add(False)
-            keys = list(files.keys())
-            self.view.file_widget.files_dict = {}
-            random.shuffle(keys)
-            for k in keys:
-                # add new item will recreate files_dict in new order
-                self.view.file_widget.add_new_item(k, hidden=True)
+            if len(files) > 0:
+                self.view.toggle_add(False)
+                keys = list(files.keys())
+                self.view.file_widget.files_dict = {}
+                random.shuffle(keys)
+                for k in keys:
+                    # add new item will recreate files_dict in new order
+                    self.view.file_widget.add_new_item(k, hidden=True)
 
         else:
             self.view.toggle_add(True)
             self.view.file_widget.set_shuffled(False)
             self.view.file_widget.unhide_all()
-
 
     @staticmethod
     def is_supported(file_path: str) -> bool:
@@ -137,7 +132,7 @@ class ImagesController:
 
         Parameters
         ----------
-        file_name : str
+        file_path : str
             Name of the file to check.
 
         Returns
@@ -195,7 +190,7 @@ class ImagesController:
                     self.view.alert("Unsupported file type:" + file)
 
     def start_annotating(self, row: Optional[int] = 0):
-        """Set current item to the first item."""
+        """Set current item to the one at row."""
         if self.view.file_widget.count() > 0:
             self.view.file_widget.setCurrentItem(self.view.file_widget.item(row))
 

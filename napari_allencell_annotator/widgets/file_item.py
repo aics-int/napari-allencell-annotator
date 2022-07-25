@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 from PyQt5.QtWidgets import (
@@ -62,10 +61,19 @@ class FileItem(QListWidgetItem):
         return self._file_path
 
     def unhide(self):
+        """Display the file name instead of hidden name."""
         self.label.setText(self.make_display_name())
         self.check.setCheckable(True)
 
     def make_display_name(self) -> str:
+        """
+        Truncate long file names
+
+        Returns
+        -------
+        str
+            truncated file name
+        """
         # todo change
         path: str = self.get_name()
         if len(path) > 28:

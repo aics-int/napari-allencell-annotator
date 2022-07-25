@@ -48,16 +48,27 @@ class FilesWidget(QListWidget):
 
     @property
     def shuffled(self) -> bool:
+        """Current shuffle state of the list."""
         return self._shuffled
 
     def set_shuffled(self, shuffled: bool):
+        """Set the list shuffled property to shuffled or unshuffled."""
         self._shuffled = shuffled
 
     def unhide_all(self):
+        """Display the file names on all files in the list."""
         for i in range(self.count()):
             self.item(i).unhide()
 
     def get_curr_row(self) -> int:
+        """
+        Get the row of the currently selected image
+
+        Returns
+        -------
+        int
+            the current row.
+        """
         if self.currentItem() is not None:
             return self.row(self.currentItem())
         else:
@@ -71,7 +82,6 @@ class FilesWidget(QListWidget):
 
         self.setCurrentItem(None)
         self.clear()
-
 
     def clear_for_shuff(self) -> Dict[str, List[str]]:
         """
@@ -90,7 +100,7 @@ class FilesWidget(QListWidget):
         self.clear()
         return self.files_dict
 
-    def add_new_item(self, file: str, hidden : Optional[bool] = False):
+    def add_new_item(self, file: str, hidden: Optional[bool] = False):
         """
         Adds a new file to the list and files_dict.
 

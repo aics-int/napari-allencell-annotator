@@ -17,6 +17,23 @@ class TestFileWidget:
         self._widget._shuffled = True
         assert self._widget.shuffled
 
+    def test_set_shuffled(self):
+        self._widget.set_shuffled(True)
+        assert self._widget.shuffled
+        self._widget.set_shuffled(False)
+        assert not self._widget.shuffled
+
+    def test_unhide_all(self):
+        self._widget.count = MagicMock(return_value=3)
+        with mock.patch.object(FileItem, "__init__", lambda x: None):
+            item = FileItem()
+            item.unhide = MagicMock()
+            self._widget.item = MagicMock(return_value=item)
+        self._widget.unhide_all()
+        self._widget.item(0).unhide.assert_called()
+        self._widget.item(1).unhide.assert_called()
+        self._widget.item(2).unhide.assert_called()
+
     def test_get_curr_row_none(self):
         self._widget.currentItem = MagicMock(return_value=None)
         assert self._widget.get_curr_row() == -1
