@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QListWidget, QAbstractItemView
+from qtpy.QtWidgets import QListWidget, QAbstractItemView
 from typing import Set, List, Optional, Dict
 
 from qtpy.QtCore import Signal
@@ -55,11 +55,24 @@ class FilesWidget(QListWidget):
 
     @property
     def shuffled(self) -> bool:
-        """Current shuffle state of the list."""
+        """
+        Current shuffle state of the list.
+
+        Returns
+        -------
+        bool
+            the shuffled property.
+        """
         return self._shuffled
 
     def set_shuffled(self, shuffled: bool):
-        """Set the shuffled property to shuffled or unshuffled."""
+        """
+        Set the shuffled property to shuffled or unshuffled.
+
+        Parameters
+        ----------
+        shuffled : bool
+        """
         self._shuffled = shuffled
 
     def unhide_all(self):
@@ -98,8 +111,8 @@ class FilesWidget(QListWidget):
 
         Returns
         -------
-        List[str]
-            file_order.
+         Dict[str, List[str]]
+            file dictionary file path -> [filen name, fms].
         """
         self._shuffled = True
         self.setCurrentItem(None)
@@ -117,6 +130,8 @@ class FilesWidget(QListWidget):
         -------
         file: str
             a file path.
+        hidden : Optional[bool]
+            a boolean if true file path hidden in list.
         """
         if file not in self.files_dict.keys():
             item = FileItem(file, self, hidden)

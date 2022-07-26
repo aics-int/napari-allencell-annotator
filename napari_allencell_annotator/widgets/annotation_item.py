@@ -1,7 +1,6 @@
 from typing import Tuple, Dict
-
-from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import (
+from qtpy import QtWidgets
+from qtpy.QtWidgets import (
     QListWidgetItem,
     QListWidget,
     QWidget,
@@ -76,10 +75,17 @@ class AnnotationItem(QListWidgetItem):
         if parent is not None:
             parent.setItemWidget(self, self.widget)
 
-        self.type.currentTextChanged.connect(self.type_changed)
+        self.type.currentTextChanged.connect(self._type_changed)
 
-    def type_changed(self, text: str):
-        """Render the widgets which correspond to the new type"""
+    def _type_changed(self, text: str):
+        """
+        Render the widgets which correspond to the new type
+
+        Parameters
+        ----------
+        text : str
+            the new type selected.
+        """
         default_widget = self.layout.itemAtPosition(0, 7).widget()
         default_widget.setParent(None)
         self.layout.removeWidget(default_widget)
@@ -153,12 +159,12 @@ class AnnotationItem(QListWidgetItem):
                 # unhighlight by default
                 self._unhighlight(self.default_options)
                 # if there is less than two options provided
-                if txt2 is None or len(txt2.split(',')) < 2:
+                if txt2 is None or len(txt2.split(",")) < 2:
                     valid = False
                     self.highlight(self.default_options)
                     error = error + " Must provide two dropdown options. "
                 else:
-                    txt2 = [word.strip() for word in txt2.split(',')]
+                    txt2 = [word.strip() for word in txt2.split(",")]
                     contained: bool = False
                     if dct["default"] == "":
                         contained = True

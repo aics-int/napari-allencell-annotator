@@ -1,9 +1,9 @@
 from typing import List
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
+from qtpy.QtCore import Qt
+from qtpy.QtGui import QFont
 
-from PyQt5.QtWidgets import (
+from qtpy.QtWidgets import (
     QWidget,
     QLabel,
     QScrollArea,
@@ -40,7 +40,7 @@ class ImagesView(QWidget):
         Displays the alert message on the napari viewer
     """
 
-    def __init__(self, viewer: napari.Viewer, ctrl):
+    def __init__(self, viewer: napari.Viewer):
         """
         Parameters
         ----------
@@ -95,7 +95,6 @@ class ImagesView(QWidget):
 
         self.file_widget.currentItemChanged.connect(self._display_img)
 
-        self.ctrl = ctrl
         self.viewer = viewer
 
     def _update_shuff_text(self, checked: bool):
@@ -145,7 +144,6 @@ class ImagesView(QWidget):
         alert_msg : str
             The message to be displayed
         """
-        # TODO: move to main view
         show_info(alert_msg)
 
     def toggle_add(self, enable: bool):

@@ -161,14 +161,14 @@ class TestMainController:
     def test_csv_write_selected_evt_not_csv(self):
         self._controller._setup_annotating = MagicMock()
         self._controller._csv_write_selected_evt(["path"])
-        self._controller.annots.set_csv_name.assert_called_once_with("path.csv")
+        self._controller.annots.set_csv_path.assert_called_once_with("path.csv")
         self._controller._setup_annotating.assert_called_once_with()
         self._controller.images.view.alert.assert_not_called()
 
     def test_csv_write_selected_evt_csv(self):
         self._controller._setup_annotating = MagicMock()
         self._controller._csv_write_selected_evt(["path.csv"])
-        self._controller.annots.set_csv_name.assert_called_once_with("path.csv")
+        self._controller.annots.set_csv_path.assert_called_once_with("path.csv")
         self._controller._setup_annotating.assert_called_once_with()
         self._controller.images.view.alert.assert_not_called()
 

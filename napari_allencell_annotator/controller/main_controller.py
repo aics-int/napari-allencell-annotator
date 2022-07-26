@@ -2,7 +2,7 @@ import csv
 import itertools
 from pathlib import Path
 
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QDialog
+from qtpy.QtWidgets import QWidget, QVBoxLayout, QDialog
 
 from napari_allencell_annotator.controller.images_controller import (
     ImagesController,
@@ -105,6 +105,7 @@ class MainController(QWidget):
         file_list : List[str]
             The list containing one file name.
         """
+        # todo bad file: json or csv --> send back to add
         self.csv_annotation_values = None
         self.has_new_shuffled_order = None
         if file_list is None or len(file_list) < 1:
@@ -182,15 +183,13 @@ class MainController(QWidget):
             self.has_new_shuffled_order = True
             self.images.view.shuffle.toggled.disconnect(self._shuffle_toggled)
 
-    def str_to_bool(self, string):
+    def str_to_bool(self, string) -> bool:
         """
         Convert a string to a bool.
 
         Parameters
         ----------
         string_ : str
-        default : {'raise', False}
-            Default behaviour if none of the "true" strings is detected.
 
         Returns
         -------
@@ -226,7 +225,7 @@ class MainController(QWidget):
             extension = Path(file_path).suffix
             if extension != ".csv":
                 file_path = file_path + ".csv"
-            self.annots.set_csv_name(file_path)
+            self.annots.set_csv_path(file_path)
             self._setup_annotating()
 
     def _start_annotating_clicked(self):

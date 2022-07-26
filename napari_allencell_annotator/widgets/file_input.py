@@ -1,6 +1,6 @@
 from enum import Enum
 
-from PyQt5.QtWidgets import QPushButton
+from qtpy.QtWidgets import QPushButton
 from qtpy.QtWidgets import QHBoxLayout, QWidget, QFileDialog
 from qtpy.QtCore import Signal
 from typing import List
@@ -52,7 +52,13 @@ class FileInput(QWidget):
         self._input_btn.clicked.emit()
 
     def toggle(self, enabled: bool):
-        """Enable user to click the add file button"""
+        """
+        Enable and un-enable user clicking of the add file button.
+
+        Parameters
+        ----------
+        enabled : bool
+        """
         self._input_btn.setEnabled(enabled)
 
     def _select_file(self):  # pragma: no-cover

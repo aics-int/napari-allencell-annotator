@@ -1,6 +1,4 @@
-
-
-from PyQt5.QtWidgets import QListWidget, QAbstractItemView
+from qtpy.QtWidgets import QListWidget, QAbstractItemView
 from psygnal._signal import Signal
 
 from napari_allencell_annotator.widgets.annotation_item import AnnotationItem
@@ -11,6 +9,7 @@ class AnnotationWidget(QListWidget):
     A class used to create a QListWidget for annotations that are created.
 
     """
+
     # signal emitted when annotation check boxes are selected
     annots_selected = Signal(bool)
 

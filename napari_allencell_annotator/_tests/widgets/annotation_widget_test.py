@@ -41,7 +41,7 @@ class TestAnnotationWidget:
         self._widget.item = MagicMock(side_effect=[item, item2, item3, item3])
         self._widget.num_checked = 1
         self._widget.remove_item = MagicMock()
-        self._widget.annots_selected= MagicMock()
+        self._widget.annots_selected = MagicMock()
 
         self._widget.delete_checked()
         assert self._widget.num_checked == 0
@@ -62,11 +62,11 @@ class TestAnnotationWidget:
         self._widget.item = MagicMock(side_effect=[item, item, item2, item2, item3, item3])
         self._widget.num_checked = 3
         self._widget.remove_item = MagicMock()
-        self._widget.annots_selected= MagicMock()
+        self._widget.annots_selected = MagicMock()
 
         self._widget.delete_checked()
         assert self._widget.num_checked == 0
-        self._widget.remove_item.assert_has_calls([mock.call(item),mock.call(item2),mock.call(item3)])
+        self._widget.remove_item.assert_has_calls([mock.call(item), mock.call(item2), mock.call(item3)])
         self._widget.annots_selected.emit.assert_called_once_with(False)
 
     def test_check_evt_true_emit_signal(self):
@@ -112,6 +112,3 @@ class TestAnnotationWidget:
         self._widget._check_evt(item)
         assert self._widget.num_checked == 0
         self._widget.annots_selected.emit.assert_called_once_with(False)
-
-
-

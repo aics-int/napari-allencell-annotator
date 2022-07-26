@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from PyQt5.QtWidgets import (
+from qtpy.QtWidgets import (
     QListWidgetItem,
     QListWidget,
     QWidget,

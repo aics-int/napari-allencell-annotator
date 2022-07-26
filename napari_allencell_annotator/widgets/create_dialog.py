@@ -1,9 +1,9 @@
 from typing import Dict
 
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import (
+from qtpy import QtWidgets
+from qtpy.QtCore import Qt
+from qtpy.QtGui import QFont
+from qtpy.QtWidgets import (
     QWidget,
     QLabel,
     QPushButton,

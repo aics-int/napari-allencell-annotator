@@ -6,7 +6,6 @@ import random
 import napari
 
 from napari_allencell_annotator.view.images_view import ImagesView
-from napari_allencell_annotator.model import images_model
 from napari_allencell_annotator.constants.constants import SUPPORTED_FILE_TYPES
 
 
@@ -50,8 +49,7 @@ class ImagesController:
     """
 
     def __init__(self, viewer: napari.Viewer):
-        self.model: images_model = images_model
-        self.view: ImagesView = ImagesView(viewer, self)
+        self.view: ImagesView = ImagesView(viewer)
         self.view.show()
         self._connect_slots()
 
@@ -167,7 +165,7 @@ class ImagesController:
                     if self.is_supported(file):
                         self.view.file_widget.add_new_item(file)
                     else:
-                        self.view.alert("Unsupported file type:" + file)
+                        self.view.alert("Unsupported file type(s)")
         else:
             self.view.alert("No selection provided")
 
@@ -187,7 +185,7 @@ class ImagesController:
                 if self.is_supported(file):
                     self.view.file_widget.add_new_item(file)
                 else:
-                    self.view.alert("Unsupported file type:" + file)
+                    self.view.alert("Unsupported file type(s)")
 
     def start_annotating(self, row: Optional[int] = 0):
         """Set current item to the one at row."""

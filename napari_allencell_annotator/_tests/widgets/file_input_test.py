@@ -1,11 +1,7 @@
 from unittest import mock
 from unittest.mock import MagicMock, create_autospec
 
-from napari_allencell_annotator.widgets.file_input import (
-    FileInput,
-    FileInputMode,
-    QPushButton
-)
+from napari_allencell_annotator.widgets.file_input import FileInput, FileInputMode, QPushButton
 
 
 class TestFileInput:
