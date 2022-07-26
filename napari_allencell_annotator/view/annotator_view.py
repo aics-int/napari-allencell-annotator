@@ -19,6 +19,7 @@ from PyQt5.QtWidgets import (
     QAbstractScrollArea,
     QMessageBox,
     QVBoxLayout,
+    QSizePolicy,
 )
 from napari import Viewer
 from napari_allencell_annotator.widgets.file_input import (
@@ -101,6 +102,7 @@ class AnnotatorView(QWidget):
 
         self.annot_list = QListWidget()
         self.annot_list.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.annot_list.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self.scroll = QScrollArea()
         self.scroll.setWidget(self.annot_list)
@@ -142,12 +144,15 @@ class AnnotatorView(QWidget):
         view_layout = QHBoxLayout()
         self.cancel_btn = QPushButton("Cancel")
         self.start_btn = QPushButton("Start Annotating")
-        self.file_input = FileInput(mode=FileInputMode.CSV, placeholder_text="Start Annotating")
-        self.file_input.toggle(False)
+        self.csv_input = FileInput(mode=FileInputMode.CSV)
+        self.csv_input.toggle(False)
+        self.save_json_btn = FileInput(mode=FileInputMode.JSON, placeholder_text="Save to JSON")
+        self.save_json_btn.toggle(True)
         self.start_btn.setEnabled(True)
 
         view_layout.addWidget(self.cancel_btn, stretch=1)
-        view_layout.addWidget(self.start_btn, stretch=3)
+        view_layout.addWidget(self.save_json_btn, stretch=1)
+        view_layout.addWidget(self.start_btn, stretch=1)
         self.view_widget.setLayout(view_layout)
 
         # annot widget visible in ANNOTATE mode
@@ -193,9 +198,9 @@ class AnnotatorView(QWidget):
     def _reset_annotations(self):
         """Reset annotation data to empty."""
         self.annot_list.clear()
-        # todo
+        # todo: make size policy, remove this line
         self.annot_list.setMaximumHeight(600)
-        self.annotation_item_widgets: List[QWidget] = []
+        self.annotation_item_widgets = []
         self.annots_order: List[str] = []
         self.default_vals: List[str] = []
 
@@ -213,13 +218,20 @@ class AnnotatorView(QWidget):
         vals:List
             the values for the annotations.
         """
-        for (widget, val) in zip(self.annotation_item_widgets, vals):
+        for (widget, val, default) in zip(self.annotation_item_widgets, vals, self.default_vals):
+            if val is None or val == "":
+                val = default
             if isinstance(widget, QLineEdit):
                 widget.setText(val)
             elif isinstance(widget, QSpinBox):
-                widget.setValue(val)
+                widget.setValue(int(val))
             elif isinstance(widget, QCheckBox):
-                widget.setChecked(val)
+                if isinstance(val, str):
+                    # val is a str from previous annotaiton
+                    widget.setChecked(eval(val))
+                else:
+                    # val is bool from default vals
+                    widget.setChecked(val)
             elif isinstance(widget, QComboBox):
                 widget.setCurrentText(val)
 
@@ -261,13 +273,13 @@ class AnnotatorView(QWidget):
             self._reset_annotations()
             self.layout.addWidget(self.add_widget)
         elif self._mode == AnnotatorViewMode.VIEW:
+            self.save_json_btn.setEnabled(True)
             self.view_widget.show()
             self.layout.addWidget(self.view_widget)
         elif self._mode == AnnotatorViewMode.ANNOTATE:
             self.annot_widget.show()
             self.layout.addWidget(self.annot_widget)
             self.prev_btn.setEnabled(False)
-            self.toggle_annots_editable(True)
 
     def render_annotations(self, data: Dict[str, Dict]):
         """
@@ -282,6 +294,7 @@ class AnnotatorView(QWidget):
 
         for name in data.keys():
             self._create_annot(name, data[name])
+            # todo fix: doesnt work if certain widgets are first leaves blank spot on bottom
         self.annot_list.setMaximumHeight(self.annot_list.item(0).sizeHint().height() * len(data))
 
     def _create_annot(self, name: str, dictn: Dict):
@@ -299,7 +312,7 @@ class AnnotatorView(QWidget):
         layout = QHBoxLayout()
         label = QLabel(name)
         self.annots_order.append(name)
-        self.default_vals.append(dictn["default"])
+
         layout.addWidget(label)
         annot_type: str = dictn["type"]
         if annot_type == "string":
@@ -309,7 +322,7 @@ class AnnotatorView(QWidget):
             item.setValue(dictn["default"])
         elif annot_type == "bool":
             item = QCheckBox()
-            if dictn["default"] == "true" or dictn["default"]:
+            if dictn["default"]:
                 item.setChecked(True)
         elif annot_type == "list":
             item = QComboBox()
@@ -317,8 +330,9 @@ class AnnotatorView(QWidget):
                 item.addItem(opt)
             item.setCurrentText(dictn["default"])
         layout.addWidget(item)
+        self.default_vals.append(dictn["default"])
         self.annotation_item_widgets.append(item)
-        item.setEnabled(False)
+        item.setEnabled(True)
         layout.setContentsMargins(2, 12, 8, 12)
         layout.setSpacing(2)
         widget.setLayout(layout)

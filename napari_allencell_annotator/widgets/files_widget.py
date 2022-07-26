@@ -74,6 +74,8 @@ class FilesWidget(QListWidget):
 
     def set_shuff_order(self, dct: Optional[Dict[str, List[str]]] = {}):
         """Set shuffled order."""
+        if len(dct) > 0:
+            self._shuffled = True
         self.shuffled_files_dict = dct
 
     def clear_for_shuff(self) -> Dict[str, List[str]]:
@@ -94,7 +96,7 @@ class FilesWidget(QListWidget):
         self.clear()
         return self.files_dict
 
-    def add_new_item(self, file: str):
+    def add_new_item(self, file: str, shuffle: Optional[bool] = False):
         """
         Adds a new file to the list and files_dict.
 
@@ -106,7 +108,7 @@ class FilesWidget(QListWidget):
             a file path.
         """
         if file not in self.files_dict.keys():
-            item = FileItem(file, self, False)
+            item = FileItem(file, self, shuffle)
             item.check.stateChanged.connect(lambda: self._check_evt(item))
             self.files_dict[file] = [item.get_name(), ""]
             if len(self.files_dict) == 1:

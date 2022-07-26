@@ -1,3 +1,5 @@
+from typing import List
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 
@@ -8,6 +10,7 @@ from PyQt5.QtWidgets import (
     QGridLayout,
     QPushButton,
     QMessageBox,
+    QDialog,
 )
 import napari
 from aicsimageio import AICSImage, exceptions
@@ -17,6 +20,7 @@ from napari_allencell_annotator.widgets.file_input import (
     FileInput,
     FileInputMode,
 )
+from napari_allencell_annotator.widgets.scrollable_popup import ScrollablePopup
 from napari_allencell_annotator.widgets.files_widget import FilesWidget, FileItem
 
 
@@ -110,6 +114,7 @@ class ImagesView(QWidget):
             self.shuffle.setText("Shuffle and Hide")
 
     def reset_buttons(self):
+        self.enable_image_edits()
         self._toggle_delete(False)
         self._toggle_shuffle(False)
         self._update_shuff_text(False)
@@ -117,16 +122,12 @@ class ImagesView(QWidget):
 
     def _delete_clicked(self):
         if len(self.file_widget.checked) > 0:
-            msg_box = QMessageBox()
-            msg: str = "Are you sure you want to delete these files?\n"
+            msg: str = "Delete these files?"
+            lst: List[str] = []
             for item in self.file_widget.checked:
-                msg = msg + "--- " + item.file_path + "\n"
-
-            msg_box.setText(msg)
-            msg_box.setStandardButtons(QMessageBox.No | QMessageBox.Yes)
-
-            return_value = msg_box.exec()
-            if return_value == QMessageBox.Yes:
+                lst.append("--- " + item.file_path)
+            msg_box = ScrollablePopup(msg, lst)
+            if msg_box.exec() == QDialog.Accepted:
                 self.file_widget.delete_checked()
         else:
             self.alert("No Images Selected")
@@ -180,6 +181,16 @@ class ImagesView(QWidget):
             self.shuffle.setEnabled(True)
         elif not files_added:
             self.shuffle.setEnabled(False)
+
+    def enable_image_edits(self):
+        """Show shuffle and delete buttons"""
+        self.shuffle.show()
+        self.delete.show()
+
+    def disable_csv_image_edits(self):
+        """Hide shuffle and delete buttons"""
+        self.shuffle.hide()
+        self.delete.hide()
 
     def _display_img(self, current: FileItem, previous: FileItem):
         """Display the current image in napari."""
