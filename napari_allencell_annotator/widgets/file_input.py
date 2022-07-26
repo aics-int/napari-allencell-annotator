@@ -19,7 +19,7 @@ class FileInput(QWidget):
     A file input Widget that includes a file dialog for selecting a file / directory
     and a text box to display the selected file
     inputs:
-        mode (FileInputMode): files file dialog selection type to File, Directory, or Csv.
+        mode (FileInputMode): file dialog selection type to File, Directory, Csv, JSON/Csv, or JSON .
         initial_text (str): text to display in the widget before a file has been selected
     """
 

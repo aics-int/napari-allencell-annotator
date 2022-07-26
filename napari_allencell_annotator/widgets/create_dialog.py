@@ -4,21 +4,16 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
-    QMainWindow,
-    QListWidget,
     QWidget,
     QLabel,
-    QGridLayout,
     QPushButton,
     QDialog,
-    QDialogButtonBox,
     QVBoxLayout,
     QScrollArea,
     QHBoxLayout,
 )
 from psygnal._signal import Signal
 
-from napari_allencell_annotator.widgets.annotation_item import AnnotationItem
 from napari_allencell_annotator.widgets.annotation_widget import AnnotationWidget
 
 
@@ -26,12 +21,13 @@ class CreateDialog(QDialog):
     """
     A class that creates up to 10 annotations in a popup dialog.
 
-    Attributes
-    ----------
     Methods
     -------
+    get_annots()
+        Sets annotation dictionary and emits valid_annots_made signal if all annotations are valid.
     """
 
+    # signal emitted when all annotations created are valid
     valid_annots_made = Signal()
 
     def __init__(self, parent=None):
@@ -77,7 +73,7 @@ class CreateDialog(QDialog):
         self.layout.addWidget(self.btns)
 
         self.setLayout(self.layout)
-        self.add.clicked.connect(self.add_clicked)
+        self.add.clicked.connect(self._add_clicked)
         self.cancel.clicked.connect(self.reject)
         self.apply.clicked.connect(self.get_annots)
         self.valid_annots_made.connect(self.accept)
@@ -85,18 +81,25 @@ class CreateDialog(QDialog):
         self.list.annots_selected.connect(self._show_delete)
 
     def _show_delete(self, checked: bool):
-        """Display the delete button"""
+        """
+        Display the delete button
+
+        Parameters
+        ----------
+        checked : bool
+            True if delete is currently hidden.
+        """
         if checked:
             self.delete.show()
         else:
             self.delete.hide()
 
     def _delete_clicked(self):
-        """Call list's delete checked"""
+        """Delete checked items if there is at least one item checked"""
         if self.list.num_checked > 0:
             self.list.delete_checked()
 
-    def add_clicked(self):
+    def _add_clicked(self):
         """Add a new item if there are less than 9. Hide add button otherwise"""
         self.list.add_new_item()
         if self.list.count() > 9:

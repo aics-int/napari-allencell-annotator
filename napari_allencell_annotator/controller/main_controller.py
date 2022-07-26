@@ -116,8 +116,9 @@ class MainController(QWidget):
 
             elif Path(file_path).suffix == ".csv":
                 proceed: bool = self.annots.view.popup(
-                    "Would you like to use the images in this csv?\n Note: any "
-                    "currently listed images will be cleared."
+                    "Would you like to use the images from this csv in addition to the annotation list?\n "
+                    "Any annotation values in the file written for these images will be used."
+                    "\n Note: any currently listed images will be cleared."
                 )
                 file = open(file_path)
 

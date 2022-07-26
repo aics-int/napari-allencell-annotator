@@ -12,17 +12,24 @@ class FilesWidget(QListWidget):
 
     Attributes
     ----------
+    shuffled : bool
+        a boolean, True if list is currently shuffled
     checked : Set[FileItem]
         a set of items that are currently checked
     files_dict : Dict[str , List[str]]
         a dictionary of file path -> [File Name, FMS]
+        stores file order in insertion order of keys
 
     Methods
     -------
+    set_shuffled(shuffled : bool)
+        Sets the list shuffled property.
     clear_all()
         Clears all image data.
     clear_for_shuff() -> List[str]
         Clears the list display and returns the file_order.
+    get_curr_row() -> int
+        Returns current image row.
     add_new_item(file:str)
         Adds a new file to the list and file_order.
     add_item(file: str, hidden: bool)
@@ -52,7 +59,7 @@ class FilesWidget(QListWidget):
         return self._shuffled
 
     def set_shuffled(self, shuffled: bool):
-        """Set the list shuffled property to shuffled or unshuffled."""
+        """Set the shuffled property to shuffled or unshuffled."""
         self._shuffled = shuffled
 
     def unhide_all(self):
