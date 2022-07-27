@@ -92,7 +92,6 @@ setup(
     include_package_data=True,
     classifiers=[
         "Intended Audience :: Science/Research",
-        "Framework :: napari",
         "Topic :: Scientific/Engineering",
         "Topic :: Scientific/Engineering :: Visualization",
         "Topic :: Scientific/Engineering :: Information Analysis",
