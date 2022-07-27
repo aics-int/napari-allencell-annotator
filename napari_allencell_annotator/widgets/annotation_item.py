@@ -44,7 +44,7 @@ class AnnotationItem(QListWidgetItem):
         self.layout.addWidget(self.type, 0, 4, 1, 2)
         default_label = QLabel("Default:")
         self.default_text = QLineEdit()
-        self.default_text.setPlaceholderText("Default Text")
+        self.default_text.setPlaceholderText("Optional: Default Text")
         self.default_num = QSpinBox()
         self.default_num.setValue(2)
         self.default_check = QComboBox()

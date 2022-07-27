@@ -218,7 +218,6 @@ class AnnotatorController:
 
     def write_csv(self):
         """write headers and file info"""
-        # todo file not found
         file = open(self.csv_path, "w")
         writer = csv.writer(file)
         writer.writerow(["Shuffled:", self.shuffled])

@@ -127,9 +127,9 @@ class AnnotatorView(QWidget):
         # Add widget visible in ADD mode
         self.add_widget = QWidget()
         add_layout = QHBoxLayout()
-        self.create_btn = QPushButton("Create New Annotations")
+        self.create_btn = QPushButton("Create New Annotation Template")
         self.create_btn.setEnabled(True)
-        self.import_btn = QPushButton("Import Existing Annotations (.csv or .json)")
+        self.import_btn = QPushButton("Import Existing Annotation Template (.csv or .json)")
         self.import_btn.setEnabled(True)
         self.annot_input = FileInput(mode=FileInputMode.JSONCSV, placeholder_text="Start Annotating")
         self.annot_input.toggle(False)
