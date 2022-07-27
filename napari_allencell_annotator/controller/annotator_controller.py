@@ -6,7 +6,7 @@ from napari_allencell_annotator.view.annotator_view import (
 )
 import napari
 
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Any
 import csv
 
 
@@ -21,7 +21,7 @@ class AnnotatorController:
 
     Methods
     -------
-    set_annot_json_data(dct : dct: Dict[str, Dict[str, Union[int, str, bool, List[str]]]])
+    set_annot_json_data(dct : dct: Dict[str, Dict[str, Any]])
         Sets annotation data dictionary.
 
     set_csv_path(path : str)
@@ -58,7 +58,7 @@ class AnnotatorController:
     def __init__(self, viewer: napari.Viewer):
 
         # dictionary of json info:
-        self.annot_json_data: Dict[str, Dict[str, Union[int, str, bool, List[str]]]] = None
+        self.annot_json_data: Dict[str, Dict[str, Any]] = None
         # open in view mode
         self.view: AnnotatorView = AnnotatorView(viewer)
 
@@ -73,7 +73,7 @@ class AnnotatorController:
 
         self.shuffled: bool = None
 
-    def set_annot_json_data(self, dct: Dict[str, Dict[str, Union[int, str, bool, List[str]]]]):
+    def set_annot_json_data(self, dct: Dict[str, Dict[str, Any]]):
         """
         Set annotation data dictionary.
 

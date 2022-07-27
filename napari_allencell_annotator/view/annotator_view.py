@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Any, Union
 
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QFont
@@ -221,7 +221,7 @@ class AnnotatorView(QWidget):
         self.annot_list.clear()
         # todo: make size policy, remove this line
         self.annot_list.setMaximumHeight(600)
-        self.annotation_item_widgets = []
+        self.annotation_item_widgets : List[QWidget] = []
         self.annots_order: List[str] = []
         self.default_vals: List[str] = []
 
@@ -302,13 +302,13 @@ class AnnotatorView(QWidget):
             self.layout.addWidget(self.annot_widget)
             self.prev_btn.setEnabled(False)
 
-    def render_annotations(self, data: Dict[str, Dict[str, Union[int, str, bool, List[str]]]]):
+    def render_annotations(self, data: Dict[str, Dict[str, Any]]):
         """
         Read annotation dictionary into individual annotations.
 
         Parameters
         ----------
-        data : Dict[str, Dict[str, Union[int, str, bool, List[str]]]]
+        data : Dict[str, Dict[str, Any]]
             The dictionary of annotation names -> a dictionary of types, defaults, and options.
         """
         self.annotation_item_widgets = []
@@ -318,7 +318,7 @@ class AnnotatorView(QWidget):
             # todo fix: doesnt work if certain widgets are first leaves blank spot on bottom
         self.annot_list.setMaximumHeight(self.annot_list.item(0).sizeHint().height() * len(data))
 
-    def _create_annot(self, name: str, dictn: Dict[str, Union[int, str, bool, List[str]]]):
+    def _create_annot(self, name: str, dictn: Dict[str, Any]):
         """
         Create annotation widgets from dictionary entries.
 
@@ -326,7 +326,7 @@ class AnnotatorView(QWidget):
         ----------
         name : str
             annotation name.
-        dictn : Dict[str, Union[int, str, bool, List[str]]]
+        dictn : Dict[str, Any]
             annotation type, default, and options.
         """
         widget = QWidget()
