@@ -1,6 +1,5 @@
 [project]
 name = "napari-allencell-annotator"
-version = "0.0.1"
 description = ""
 readme = "README.md"
 authors = [{name= "Brian Kim", email = "brian.kim@alleninstitute.org"},
