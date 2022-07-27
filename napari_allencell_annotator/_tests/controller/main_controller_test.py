@@ -84,7 +84,7 @@ class TestMainController:
         self._controller.csv_annotation_values = {}
 
         self._controller.annots.view.popup = MagicMock(return_value=False)
-        path: str = str(Directories.get_assets_dir() / "test.csv")
+        path: str = str(Directories.get_test_assets_dir() / "test.csv")
         self._controller._csv_json_import_selected_evt([path])
 
         assert self._controller.csv_annotation_values is None
@@ -100,7 +100,7 @@ class TestMainController:
         self._controller.csv_annotation_values = {}
 
         self._controller.annots.view.popup = MagicMock(return_value=True)
-        path: str = str(Directories.get_assets_dir() / "test2.csv")
+        path: str = str(Directories.get_test_assets_dir() / "test2.csv")
         self._controller.has_none_annotation = MagicMock(side_effect=[False, False, True])
         self._controller._csv_json_import_selected_evt([path])
 
@@ -210,7 +210,10 @@ class TestMainController:
         self._controller.images.view.file_widget.currentItemChanged.disconnect.assert_not_called()
 
         self._controller.layout.addWidget.assert_has_calls(
-            [mock.call(self._controller.images.view, stretch=1), mock.call(self._controller.annots.view, stretch=2),]
+            [
+                mock.call(self._controller.images.view, stretch=1),
+                mock.call(self._controller.annots.view, stretch=2),
+            ]
         )
         self._controller.images.view.show.assert_called_once_with()
         self._controller.images.stop_annotating.assert_called_once_with()
@@ -259,7 +262,10 @@ class TestMainController:
         self._controller.images.view.file_widget.currentItemChanged.disconnect.assert_called_once()
 
         self._controller.layout.addWidget.assert_has_calls(
-            [mock.call(self._controller.images.view, stretch=1), mock.call(self._controller.annots.view, stretch=2),]
+            [
+                mock.call(self._controller.images.view, stretch=1),
+                mock.call(self._controller.annots.view, stretch=2),
+            ]
         )
         self._controller.images.view.show.assert_called_once_with()
         self._controller.images.stop_annotating.assert_called_once_with()

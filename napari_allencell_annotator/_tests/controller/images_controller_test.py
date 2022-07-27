@@ -144,7 +144,7 @@ class TestImagesController:
         os.listdir = MagicMock(return_value=["file_1.jpg"])
         d = ["/some/path"]
         self._controller._dir_selected_evt(d)
-        self._controller.view.alert.assert_called_once_with("Unsupported file type:/some/path/file_1.jpg")
+        self._controller.view.alert.assert_called_once_with("Unsupported file type(s)")
         self._controller.is_supported.assert_called_once_with("/some/path/file_1.jpg")
         self._controller.view.file_widget.add_new_item.assert_not_called()
 
@@ -191,10 +191,18 @@ class TestImagesController:
         self._controller._file_selected_evt(file_list)
         self._controller.view.alert.assert_not_called()
         self._controller.is_supported.assert_has_calls(
-            [mock.call("file_1.png"), mock.call("file_2.png"), mock.call("file_3.png"),]
+            [
+                mock.call("file_1.png"),
+                mock.call("file_2.png"),
+                mock.call("file_3.png"),
+            ]
         )
         self._controller.view.file_widget.add_new_item.assert_has_calls(
-            [mock.call("file_1.png"), mock.call("file_2.png"), mock.call("file_3.png"),]
+            [
+                mock.call("file_1.png"),
+                mock.call("file_2.png"),
+                mock.call("file_3.png"),
+            ]
         )
 
     def test_file_selected_evt_not_supported(self):
@@ -205,14 +213,18 @@ class TestImagesController:
         self._controller._file_selected_evt(file_list)
         self._controller.view.alert.assert_has_calls(
             [
-                mock.call("Unsupported file type:file_1.png"),
-                mock.call("Unsupported file type:file_2.png"),
-                mock.call("Unsupported file type:file_3.png"),
+                mock.call("Unsupported file type(s)"),
+                mock.call("Unsupported file type(s)"),
+                mock.call("Unsupported file type(s)"),
             ]
         )
 
         self._controller.is_supported.assert_has_calls(
-            [mock.call("file_1.png"), mock.call("file_2.png"), mock.call("file_3.png"),]
+            [
+                mock.call("file_1.png"),
+                mock.call("file_2.png"),
+                mock.call("file_3.png"),
+            ]
         )
         self._controller.view.file_widget.add_new_item.assert_not_called()
 

@@ -88,7 +88,9 @@ class AnnotatorView(QWidget):
     """
 
     def __init__(
-        self, viewer: Viewer, mode: AnnotatorViewMode = AnnotatorViewMode.ADD,
+        self,
+        viewer: Viewer,
+        mode: AnnotatorViewMode = AnnotatorViewMode.ADD,
     ):
         super().__init__()
         self._mode = mode
@@ -219,7 +221,7 @@ class AnnotatorView(QWidget):
         self.annot_list.clear()
         # todo: make size policy, remove this line
         self.annot_list.setMaximumHeight(600)
-        self.annotation_item_widgets : List[QWidget] = []
+        self.annotation_item_widgets: List[QWidget] = []
         self.annots_order: List[str] = []
         self.default_vals: List[str] = []
 
