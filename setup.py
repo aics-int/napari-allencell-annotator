@@ -36,7 +36,6 @@ test_requirements = [
 dev_requirements = [
     "black>=19.10b0",
     "bumpversion>=0.5.3",
-    "coverage>=5.0a4",
     "docutils>=0.10,<0.16",
     "flake8>=3.7.7",
     "gitchangelog>=3.0.4",
@@ -63,17 +62,12 @@ extra_requirements = {
     "test": test_requirements,
     "dev": dev_requirements,
     "setup": setup_requirements,
-    "all": [
-        *requirements,
-        *test_requirements,
-        *setup_requirements,
-        *dev_requirements,
-    ],
+    "all": [*requirements, *test_requirements, *setup_requirements, *dev_requirements,],
 }
 
 
 # https://github.com/pypa/setuptools_scm
-use_scm = {"write_to": "napari_allencell_segmenter/_version.py"}
+use_scm = {"write_to": "napari_allencell_annotator/_version.py"}
 
 setup(
     name="napari-allencell-annotator",
@@ -86,7 +80,7 @@ setup(
     python_requires=">=3.7",
     install_requires=requirements,
     setup_requires=setup_requirements,
-    test_suite="napari_allencell_segmenter/_tests",
+    test_suite="napari_allencell_annotator/_tests",
     tests_require=test_requirements,
     extras_require=extra_requirements,
     include_package_data=True,
@@ -104,4 +98,8 @@ setup(
         "Operating System :: OS Independent",
         "License :: OSI Approved :: BSD License",
     ],
+    # Do not edit this string manually, always use bumpversion
+    # Details in CONTRIBUTING.rst
+    version="0.0.2",
+    zip_safe=False,
 )

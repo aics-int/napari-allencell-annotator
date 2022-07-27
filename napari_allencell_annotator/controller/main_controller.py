@@ -4,16 +4,10 @@ from pathlib import Path
 
 from qtpy.QtWidgets import QWidget, QVBoxLayout, QDialog
 
-from napari_allencell_annotator.controller.images_controller import (
-    ImagesController,
-)
+from napari_allencell_annotator.controller.images_controller import ImagesController
 
-from napari_allencell_annotator.controller.annotator_controller import (
-    AnnotatorController,
-)
-from napari_allencell_annotator.widgets.create_dialog import (
-    CreateDialog,
-)
+from napari_allencell_annotator.controller.annotator_controller import AnnotatorController
+from napari_allencell_annotator.widgets.create_dialog import CreateDialog
 import napari
 from typing import List, Dict, Union
 

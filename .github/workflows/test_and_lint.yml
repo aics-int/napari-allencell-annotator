@@ -53,8 +53,8 @@ jobs:
         env:
           PLATFORM: ${{ matrix.platform }}
 
-      - name: Coverage
-        uses: codecov/codecov-action@v1
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v2
 
   lint:
     runs-on: ubuntu-latest
@@ -71,5 +71,5 @@ jobs:
           pip install .[test]
       - name: Lint with flake8
         run: |
-          flake8 napari_allencell_segmenter --count --verbose --show-source --statistics
-          black --check --exclude vendor napari_allencell_segmenter
+          flake8 napari_allencell_annotator --count --verbose --show-source --statistics
+          black --check --exclude vendor napari_allencell_annotator

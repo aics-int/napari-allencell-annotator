@@ -27,10 +27,7 @@ class FileInput(QWidget):
     selected_file: List[str] = None
 
     def __init__(
-        self,
-        parent: QWidget = None,
-        mode: FileInputMode = FileInputMode.FILE,
-        placeholder_text: str = None,
+        self, parent: QWidget = None, mode: FileInputMode = FileInputMode.FILE, placeholder_text: str = None,
     ):
         super().__init__(parent)
         self._mode = mode
