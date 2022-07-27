@@ -68,7 +68,7 @@ extra_requirements = {
 
 
 # https://github.com/pypa/setuptools_scm
-use_scm = {"write_to": "napari_allencell_segmenter/_version.py"}
+use_scm = {"write_to": "napari_allencell_annotator/_version.py"}
 
 setup(
     name="napari-allencell-annotator",
