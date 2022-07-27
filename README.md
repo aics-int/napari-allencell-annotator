@@ -7,7 +7,7 @@
 [![codecov](https://codecov.io/gh/bbridge0200/napari-allencell-annotator/branch/main/graph/badge.svg)](https://codecov.io/gh/bbridge0200/napari-allencell-annotator)
 [![napari hub](https://img.shields.io/endpoint?url=https://api.napari-hub.org/shields/napari-allencell-annotator)](https://napari-hub.org/plugins/napari-allencell-annotator)
 
-A plugin that enables large batch image annotating and writes annotations to a .csv file. 
+A plugin that enables large image set annotating and writes annotations to a .csv file. 
 Plugin provided by the Allen Institute for Cell Science.
 
 The Allen Cell Image Annotator plugin for napari provides an intuitive
