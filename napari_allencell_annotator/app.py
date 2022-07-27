@@ -2,9 +2,7 @@ import sys
 
 from PyQt5.QtWidgets import QApplication
 
-from napari_allencell_annotator.controller.main_controller import (
-    MainController,
-)
+from napari_allencell_annotator.controller.main_controller import MainController
 
 
 class App(QApplication):

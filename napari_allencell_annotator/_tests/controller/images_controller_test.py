@@ -5,9 +5,7 @@ from napari_allencell_annotator.controller.images_controller import (
     ImagesController,
     ImagesView,
 )
-from napari_allencell_annotator.controller.images_controller import (
-    SUPPORTED_FILE_TYPES,
-)
+from napari_allencell_annotator.controller.images_controller import SUPPORTED_FILE_TYPES
 import napari
 import os
 
@@ -195,18 +193,10 @@ class TestImagesController:
         self._controller._file_selected_evt(file_list)
         self._controller.view.alert.assert_not_called()
         self._controller.is_supported.assert_has_calls(
-            [
-                mock.call("file_1.png"),
-                mock.call("file_2.png"),
-                mock.call("file_3.png"),
-            ]
+            [mock.call("file_1.png"), mock.call("file_2.png"), mock.call("file_3.png"),]
         )
         self._controller.view.file_widget.add_new_item.assert_has_calls(
-            [
-                mock.call("file_1.png"),
-                mock.call("file_2.png"),
-                mock.call("file_3.png"),
-            ]
+            [mock.call("file_1.png"), mock.call("file_2.png"), mock.call("file_3.png"),]
         )
 
     def test_file_selected_evt_not_supported(self):
@@ -224,11 +214,7 @@ class TestImagesController:
         )
 
         self._controller.is_supported.assert_has_calls(
-            [
-                mock.call("file_1.png"),
-                mock.call("file_2.png"),
-                mock.call("file_3.png"),
-            ]
+            [mock.call("file_1.png"), mock.call("file_2.png"), mock.call("file_3.png"),]
         )
         self._controller.view.file_widget.add_new_item.assert_not_called()
 

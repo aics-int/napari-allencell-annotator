@@ -1,8 +1,6 @@
 from unittest import mock
 from unittest.mock import MagicMock, create_autospec
-from napari_allencell_annotator.controller.images_controller import (
-    ImagesController,
-)
+from napari_allencell_annotator.controller.images_controller import ImagesController
 from napari_allencell_annotator.view.images_view import ImagesView, FileItem
 
 from napari_allencell_annotator.view.images_view import AICSImage

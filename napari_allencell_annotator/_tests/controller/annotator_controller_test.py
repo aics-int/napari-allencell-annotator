@@ -2,9 +2,7 @@ from unittest import mock
 from unittest.mock import MagicMock, create_autospec, patch
 from unittest.mock import mock_open
 
-from napari_allencell_annotator.controller.annotator_controller import (
-    AnnotatorController,
-)
+from napari_allencell_annotator.controller.annotator_controller import AnnotatorController
 from napari_allencell_annotator.controller.annotator_controller import (
     AnnotatorViewMode,
     AnnotatorView,

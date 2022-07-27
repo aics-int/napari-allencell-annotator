@@ -192,10 +192,7 @@ class TestMainController:
         self._controller.images.view.file_widget.currentItemChanged.disconnect.assert_not_called()
 
         self._controller.layout.addWidget.assert_has_calls(
-            [
-                mock.call(self._controller.images.view, stretch=1),
-                mock.call(self._controller.annots.view, stretch=2),
-            ]
+            [mock.call(self._controller.images.view, stretch=1), mock.call(self._controller.annots.view, stretch=2),]
         )
         self._controller.images.view.show.assert_called_once_with()
         self._controller.images.stop_annotating.assert_called_once_with()
@@ -207,10 +204,7 @@ class TestMainController:
         self._controller.images.view.file_widget.currentItemChanged.disconnect.assert_called_once()
 
         self._controller.layout.addWidget.assert_has_calls(
-            [
-                mock.call(self._controller.images.view, stretch=1),
-                mock.call(self._controller.annots.view, stretch=2),
-            ]
+            [mock.call(self._controller.images.view, stretch=1), mock.call(self._controller.annots.view, stretch=2),]
         )
         self._controller.images.view.show.assert_called_once_with()
         self._controller.images.stop_annotating.assert_called_once_with()

@@ -63,12 +63,7 @@ extra_requirements = {
     "test": test_requirements,
     "dev": dev_requirements,
     "setup": setup_requirements,
-    "all": [
-        *requirements,
-        *test_requirements,
-        *setup_requirements,
-        *dev_requirements,
-    ],
+    "all": [*requirements, *test_requirements, *setup_requirements, *dev_requirements,],
 }
 
 

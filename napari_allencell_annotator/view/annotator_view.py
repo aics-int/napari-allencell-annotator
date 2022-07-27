@@ -88,9 +88,7 @@ class AnnotatorView(QWidget):
     """
 
     def __init__(
-        self,
-        viewer: Viewer,
-        mode: AnnotatorViewMode = AnnotatorViewMode.ADD,
+        self, viewer: Viewer, mode: AnnotatorViewMode = AnnotatorViewMode.ADD,
     ):
         super().__init__()
         self._mode = mode
