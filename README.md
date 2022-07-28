@@ -7,15 +7,23 @@
 [![codecov](https://codecov.io/gh/bbridge0200/napari-allencell-annotator/branch/main/graph/badge.svg)](https://codecov.io/gh/bbridge0200/napari-allencell-annotator)
 [![napari hub](https://img.shields.io/endpoint?url=https://api.napari-hub.org/shields/napari-allencell-annotator)](https://napari-hub.org/plugins/napari-allencell-annotator)
 
-A plugin to use with napari to annotate images and export .csv data
+A plugin that enables large image set annotating and writes annotations to a .csv file. 
+Plugin provided by the Allen Institute for Cell Science.
 
 The Allen Cell Image Annotator plugin for napari provides an intuitive
-graphical user interface to create, add, and export custom image annotations
-on large data sets. The Allen Cell Image Annotator is a Python-based open source toolkit
-developed at the Allen Institute for Cell Science. This toolkit allows 
-users to easily upload, shuffle, and hide images. Users can create annotations (text, checkbox, drop-down, and spinbox) which 
-are rendered into a custom user interface and can be applied to the uploaded images. Annotation data 
-is exported into a .csv file. 
+graphical user interface to create annotation templates, annotate large 
+image sets using these templates, and save image annotations to a csv file. 
+The Allen Cell Image Annotator is a Python-based open source toolkit 
+developed at the Allen Institute for Cell Science for both blind, unbiased and un-blind 
+microscope image annotating. This toolkit supports easy image set selection
+from a file finder and creation of annotation templates (text, checkbox, drop-down, and spinbox).
+With napari's multi-dimensional image viewing capabilities and AICSImageIO's
+image reading and metadata conversion, the plugin seamlessly allows users to
+view each image in a set and annotate according to the selected template.
+Annotation templates can be written to a json file for sharing or re-using. After annotating,
+both annotation template data and the annotations written for the image set 
+are saved to csv file, which can be re-opened for further annotating and conveniently
+stores annotations.
 
 -   Supports the following image types:
     - `OME-TIFF`
@@ -51,10 +59,16 @@ To install latest development version :
 
 ## Quick Start
 
-In the current version, there are two parts in the plugin: **Image Uploader** and **Annotator**. The **Annotator** allows
-users to create new or upload existing annotations and apply those annotations on the image set they create in the **Image Uploader**
-section of the plugin. 
+In the current version, there are two parts in the plugin: **Image List** and **Annotation Editor**. 
+The **Annotation Editor** allows users to create new annotation templates or upload existing annotation templates 
+from a previous plugin-created csv or json file. 
+Once an annotation template is chosen and approved, annotating can begin on the image set
+selected in the **Image Uploader** section of the plugin. 
 
+1. Select create new annotation template or upload existing. If the annotation template is uploaded from a csv file, using the image set will open and allow continued editing of all annotations in the csv. 
+2. Select images for annotating (the plugin is able to support .tiff, .tif. ome.tif, .ome.tiff, .czi, .png, .jpeg, and .jpg files). Once selected, the images can be shuffled and hidden or deleted using the checkbox on the right side. 
+3. Start Annotating and select or create a .csv file for writing. If the selected file already exists, it will be overwritten. 
+4. Click Save and Exit at any time and all created image annotations will be written to the .csv file. If the file is opened in the plugin again, annotation will start at the first image with a blank annotation.
 
 To install latest development version :
 

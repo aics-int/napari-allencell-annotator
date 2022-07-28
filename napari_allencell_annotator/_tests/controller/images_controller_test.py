@@ -19,65 +19,64 @@ class TestImagesController:
     def test_load_from_csv_one_item(self):
         self._controller.view = create_autospec(ImagesView)
         self._controller.view.file_widget = MagicMock()
-        self._controller.view.file_widget.files_dict = {}
+        self._controller.view.shuffle = MagicMock()
 
         self._controller.load_from_csv(["name"], True)
+        self._controller.view.file_widget.clear_all.assert_called_once_with()
         self._controller.view.file_widget.add_new_item.assert_called_once_with("name", True)
-        self._controller.view.disable_csv_image_edits.assert_called_once_with()
-        self._controller.view.file_widget.set_shuff_order.assert_called_once_with({})
+        self._controller.view.file_widget.set_shuffled.assert_called_once_with(True)
+        self._controller.view.toggle_add.assert_called_once_with(False)
+        self._controller.view.shuffle.setChecked.assert_called_once_with(True)
 
     def test_load_from_csv_two_items(self):
         self._controller.view = create_autospec(ImagesView)
         self._controller.view.file_widget = MagicMock()
-        self._controller.view.file_widget.files_dict = {}
+        self._controller.view.shuffle = MagicMock()
 
         self._controller.load_from_csv(["name", "name2"], False)
+        self._controller.view.file_widget.clear_all.assert_called_once_with()
         self._controller.view.file_widget.add_new_item.assert_has_calls(
             [mock.call("name", False), mock.call("name2", False)], any_order=True
         )
-        self._controller.view.disable_csv_image_edits.assert_called_once_with()
-        self._controller.view.file_widget.set_shuff_order.assert_not_called()
+        self._controller.view.file_widget.set_shuffled.assert_not_called()
+        self._controller.view.toggle_add.assert_not_called()
+        self._controller.view.shuffle.setChecked.assert_called_once_with(False)
 
     def test_get_files_dict(self):
         self._controller.view.file_widget.shuffled = False
-        self._controller.view.file_widget.shuffled_files_dict = "shuffle"
         self._controller.view.file_widget.files_dict = "file"
         assert self._controller.get_files_dict() == ("file", False)
 
     def test_get_files_dict_shuffled(self):
         self._controller.view.file_widget.shuffled = True
-        self._controller.view.file_widget.shuffled_files_dict = "shuffle"
         self._controller.view.file_widget.files_dict = "file"
-        assert self._controller.get_files_dict() == ("shuffle", True)
+        assert self._controller.get_files_dict() == ("file", True)
 
-    def test_shuffle_clicked_none(self):
+    def test_shuffle_clicked_empty(self):
         # test when list widget has no items
-        self._controller.view.file_widget.clear_for_shuff = MagicMock(return_value=[])
+        self._controller.view.file_widget.clear_for_shuff = MagicMock(return_value={})
         self._controller._shuffle_clicked(True)
         self._controller.view.file_widget.clear_for_shuff.assert_called_once_with()
-        self._controller.view.file_widget.set_shuff_order.assert_not_called()
         self._controller.view.toggle_add.assert_not_called()
         self._controller.view.file_widget.add_item.assert_not_called()
 
     def test_shuffle_clicked_one_file_hidden_true(self):
         # test when list widget has one item
         self._controller.view.file_widget = MagicMock()
-        self._controller.view.file_widget.clear_for_shuff.return_value = {
-            "file_1.png": {"File Name": "name", "FMS": ""}
-        }
+        dct = {"file_1.png": {"File Name": "name", "FMS": ""}}
+        self._controller.view.file_widget.clear_for_shuff.return_value = dct
 
         self._controller._shuffle_clicked(True)
-        self._controller.view.file_widget.add_item.assert_called_once_with("file_1.png", hidden=True)
-        self._controller.view.file_widget.set_shuff_order.assert_called_once()
+        self._controller.view.toggle_add.assert_called_once_with(False)
+        self._controller.view.file_widget.add_new_item.assert_called_once_with("file_1.png", hidden=True)
+        self._controller.view.file_widget.set_shuffled.assert_not_called()
 
     def test_shuffle_clicked_one_file_hidden_false(self):
         self._controller.view.file_widget = MagicMock()
-        self._controller.view.file_widget.clear_for_shuff.return_value = {
-            "file_1.png": {"File Name": "name", "FMS": ""}
-        }
         self._controller._shuffle_clicked(False)
-        self._controller.view.file_widget.add_item.assert_called_once_with("file_1.png", hidden=False)
-        self._controller.view.file_widget.set_shuff_order.assert_called_once_with()
+        self._controller.view.toggle_add.assert_called_once_with(True)
+        self._controller.view.file_widget.set_shuffled.assert_called_once_with(False)
+        self._controller.view.file_widget.unhide_all.assert_called_once_with()
 
     def test_shuffle_clicked_mult(self):
         # test when list widget has multiple items
@@ -91,10 +90,9 @@ class TestImagesController:
 
         self._controller.view.file_widget.clear_for_shuff.return_value = self._controller.view.file_widget.file_dict
         self._controller._shuffle_clicked(True)
-        assert len(self._controller.view.file_widget.add_item.mock_calls) == len(
+        assert len(self._controller.view.file_widget.add_new_item.mock_calls) == len(
             self._controller.view.file_widget.clear_for_shuff.return_value
         )
-        self._controller.view.file_widget.set_shuff_order.assert_called_once()
 
     def test_is_supported(self):
         for file_type in SUPPORTED_FILE_TYPES:
@@ -146,7 +144,7 @@ class TestImagesController:
         os.listdir = MagicMock(return_value=["file_1.jpg"])
         d = ["/some/path"]
         self._controller._dir_selected_evt(d)
-        self._controller.view.alert.assert_called_once_with("Unsupported file type:/some/path/file_1.jpg")
+        self._controller.view.alert.assert_called_once_with("Unsupported file type(s)")
         self._controller.is_supported.assert_called_once_with("/some/path/file_1.jpg")
         self._controller.view.file_widget.add_new_item.assert_not_called()
 
@@ -193,10 +191,18 @@ class TestImagesController:
         self._controller._file_selected_evt(file_list)
         self._controller.view.alert.assert_not_called()
         self._controller.is_supported.assert_has_calls(
-            [mock.call("file_1.png"), mock.call("file_2.png"), mock.call("file_3.png"),]
+            [
+                mock.call("file_1.png"),
+                mock.call("file_2.png"),
+                mock.call("file_3.png"),
+            ]
         )
         self._controller.view.file_widget.add_new_item.assert_has_calls(
-            [mock.call("file_1.png"), mock.call("file_2.png"), mock.call("file_3.png"),]
+            [
+                mock.call("file_1.png"),
+                mock.call("file_2.png"),
+                mock.call("file_3.png"),
+            ]
         )
 
     def test_file_selected_evt_not_supported(self):
@@ -207,14 +213,18 @@ class TestImagesController:
         self._controller._file_selected_evt(file_list)
         self._controller.view.alert.assert_has_calls(
             [
-                mock.call("Unsupported file type:file_1.png"),
-                mock.call("Unsupported file type:file_2.png"),
-                mock.call("Unsupported file type:file_3.png"),
+                mock.call("Unsupported file type(s)"),
+                mock.call("Unsupported file type(s)"),
+                mock.call("Unsupported file type(s)"),
             ]
         )
 
         self._controller.is_supported.assert_has_calls(
-            [mock.call("file_1.png"), mock.call("file_2.png"), mock.call("file_3.png"),]
+            [
+                mock.call("file_1.png"),
+                mock.call("file_2.png"),
+                mock.call("file_3.png"),
+            ]
         )
         self._controller.view.file_widget.add_new_item.assert_not_called()
 

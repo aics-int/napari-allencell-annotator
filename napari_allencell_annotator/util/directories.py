@@ -18,6 +18,13 @@ class Directories:
         return cls._module_base_dir / "assets"
 
     @classmethod
+    def get_test_assets_dir(cls) -> Path:
+        """
+        Path to the assets directory
+        """
+        return cls._module_base_dir / "_tests/assets"
+
+    @classmethod
     def get_style_dir(cls) -> Path:
         """
         Path to the stylesheet directory

@@ -1,7 +1,6 @@
-import os
 from pathlib import Path
 
-from PyQt5.QtWidgets import (
+from qtpy.QtWidgets import (
     QListWidgetItem,
     QListWidget,
     QWidget,
@@ -21,8 +20,10 @@ class FileItem(QListWidgetItem):
         a path to the file.
     Methods
     -------
-    name() -> str
+    get_name() -> str
         returns the basename of the file.
+    unhide()
+        shows the file name in label.
     """
 
     def __init__(self, file_path: str, parent: QListWidget, hidden: bool = False):
@@ -33,10 +34,7 @@ class FileItem(QListWidgetItem):
         if hidden:
             self.label = QLabel("Image " + str(parent.row(self) + 1))
         else:
-            path: str = self.get_name()
-            if len(path) > 28:
-                path = path[0:27] + "..."
-            self.label = QLabel(path)
+            self.label = QLabel(self._make_display_name())
         self.layout.addWidget(self.label, stretch=19)
         self.check = QCheckBox()
         self.check.setCheckState(False)
@@ -56,13 +54,33 @@ class FileItem(QListWidgetItem):
         if parent is not None:
             parent.setItemWidget(self, self.widget)
 
+    @property
+    def file_path(self) -> str:
+        return self._file_path
+
     def get_name(self):
         """Return basename"""
         return Path(self._file_path).stem
 
-    @property
-    def file_path(self) -> str:
-        return self._file_path
+    def unhide(self):
+        """Display the file name instead of hidden name."""
+        self.label.setText(self._make_display_name())
+        self.check.setCheckable(True)
+
+    def _make_display_name(self) -> str:
+        """
+        Truncate long file names
+
+        Returns
+        -------
+        str
+            truncated file name
+        """
+        # todo change
+        path: str = self.get_name()
+        if len(path) > 28:
+            path = path[0:27] + "..."
+        return path
 
     def highlight(self):
         """highlight item"""

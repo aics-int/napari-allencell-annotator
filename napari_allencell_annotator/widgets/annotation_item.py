@@ -1,7 +1,6 @@
 from typing import Tuple, Dict
-
-from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import (
+from qtpy import QtWidgets
+from qtpy.QtWidgets import (
     QListWidgetItem,
     QListWidget,
     QWidget,
@@ -45,7 +44,7 @@ class AnnotationItem(QListWidgetItem):
         self.layout.addWidget(self.type, 0, 4, 1, 2)
         default_label = QLabel("Default:")
         self.default_text = QLineEdit()
-        self.default_text.setPlaceholderText("Default Text")
+        self.default_text.setPlaceholderText("Optional: Default Text")
         self.default_num = QSpinBox()
         self.default_num.setValue(2)
         self.default_check = QComboBox()
@@ -76,10 +75,17 @@ class AnnotationItem(QListWidgetItem):
         if parent is not None:
             parent.setItemWidget(self, self.widget)
 
-        self.type.currentTextChanged.connect(self.type_changed)
+        self.type.currentTextChanged.connect(self._type_changed)
 
-    def type_changed(self, text: str):
-        """Render the widgets which correspond to the new type"""
+    def _type_changed(self, text: str):
+        """
+        Render the widgets which correspond to the new type
+
+        Parameters
+        ----------
+        text : str
+            the new type selected.
+        """
         default_widget = self.layout.itemAtPosition(0, 7).widget()
         default_widget.setParent(None)
         self.layout.removeWidget(default_widget)
@@ -138,9 +144,10 @@ class AnnotationItem(QListWidgetItem):
         if type == "text" or type == "dropdown":
             # grab default text entry
             default = self.default_text.text()
-            if default is None or default.isspace() or len(default) == 0:
+            if default is None or len(default) == 0 or default.isspace():
                 dct["default"] = ""
             else:
+                default = default.strip()
                 # default text exists
                 dct["default"] = default
             if type == "text":
@@ -148,21 +155,22 @@ class AnnotationItem(QListWidgetItem):
             else:
                 # type is options
                 # comma separate list of options
-                txt2 = self.default_options.text().split(",")
+                txt2 = self.default_options.text()
                 # unhighlight by default
                 self._unhighlight(self.default_options)
                 # if there is less than two options provided
-                if txt2 is None or len(txt2) < 2:
+                if txt2 is None or len(txt2.split(",")) < 2:
                     valid = False
                     self.highlight(self.default_options)
                     error = error + " Must provide two dropdown options. "
                 else:
+                    txt2 = [word.strip() for word in txt2.split(",")]
                     contained: bool = False
                     if dct["default"] == "":
                         contained = True
                     for item in txt2:
                         # check each item in options
-                        if item.isspace() or len(item) == 0:
+                        if len(item) == 0:
                             valid = False
                             self.highlight(self.default_options)
                             error = error + " Invalid options for dropdown. "
