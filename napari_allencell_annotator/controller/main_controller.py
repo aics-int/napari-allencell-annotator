@@ -28,7 +28,7 @@ class MainController(QWidget):
         Moves to the previous image for annotating.
     """
 
-    def __init__(self, napari_viewer : napari.Viewer):
+    def __init__(self, napari_viewer: napari.Viewer):
         super().__init__()
         self.napari = napari_viewer
         self.layout = QVBoxLayout()

@@ -11,5 +11,6 @@ except ImportError:
 # Details in CONTRIBUTING.md
 __version__ = "0.0.2"
 
+
 def make_widget():
     return MainController()
