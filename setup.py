@@ -18,6 +18,7 @@ requirements = [
     "aicssegmentation ~= 0.4.1",
     "magicgui >= 0.2.9",
     "aicsimageio >= 4.0.5",
+    "PyQt5",
 ]
 
 test_requirements = [
