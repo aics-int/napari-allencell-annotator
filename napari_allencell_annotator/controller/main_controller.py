@@ -28,11 +28,9 @@ class MainController(QWidget):
         Moves to the previous image for annotating.
     """
 
-    def __init__(self):
+    def __init__(self, napari_viewer : napari.Viewer):
         super().__init__()
-        self.napari = napari.Viewer()
-        self.napari.window.qt_viewer.dockLayerList.setVisible(False)
-        self.napari.window.qt_viewer.dockLayerControls.setVisible(False)
+        self.napari = napari_viewer
         self.layout = QVBoxLayout()
         self.images = ImagesController(self.napari)
         self.annots = AnnotatorController(self.napari)
@@ -40,7 +38,7 @@ class MainController(QWidget):
         self.layout.addWidget(self.annots.view, stretch=2)
         self.setLayout(self.layout)
         self.show()
-        self.napari.window.add_dock_widget(self, area="right")
+
         self._connect_slots()
         self.csv_annotation_values: Dict[str, List] = None
         self.starting_row: int = -1
