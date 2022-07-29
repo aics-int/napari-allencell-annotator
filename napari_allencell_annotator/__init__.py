@@ -7,4 +7,4 @@ except ImportError:
 # Details in CONTRIBUTING.md
 __version__ = "0.0.2"
 
-from ._dock_widget import napari_experimental_provide_dock_widget
+from ._dock_widget import napari_experimental_provide_dock_widget  # noqa # pylint: disable=unused-import
