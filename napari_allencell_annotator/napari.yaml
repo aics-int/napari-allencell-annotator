@@ -1,12 +1,12 @@
 name: napari-allencell-annotator
 contributions:
   commands:
-    - id: napari-allencell-annotator.start_widget
+    - id: napari-allencell-annotator.widget_wrapper
     title: Image Annotator
-    python_name: napari_allencell_annotator:napari_experimental_provide_dock_widget
+    python_name: napari_allencell_annotator._dock_widget:widget_wrapper
 
   widgets:
-    - command: napari-allencell-annotator.start_widget
+    - command: napari-allencell-annotator.widget_wrapper
       display_name: Annotator
       autogenerate: true
 

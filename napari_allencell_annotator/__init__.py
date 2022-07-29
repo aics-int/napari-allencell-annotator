@@ -1,4 +1,3 @@
-from napari_allencell_annotator.controller.main_controller import MainController
 
 try:
     from ._version import version as __version__
@@ -9,6 +8,5 @@ except ImportError:
 # Details in CONTRIBUTING.md
 __version__ = "0.0.2"
 
+from ._dock_widget import napari_experimental_provide_dock_widget
 
-def make_widget():
-    return MainController
