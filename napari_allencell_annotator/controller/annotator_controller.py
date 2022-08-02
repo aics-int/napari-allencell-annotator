@@ -6,7 +6,7 @@ from napari_allencell_annotator.view.annotator_view import (
 )
 import napari
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 import csv
 
 
@@ -21,10 +21,10 @@ class AnnotatorController:
 
     Methods
     -------
-    set_annot_json_data(dct : Dict[str, Dict])
+    set_annot_json_data(dct : dct: Dict[str, Dict[str, Any]])
         Sets annotation data dictionary.
 
-    set_csv_name(name : str)
+    set_csv_path(path : str)
         Sets csv file name for writing.
 
     start_viewing()
@@ -58,31 +58,50 @@ class AnnotatorController:
     def __init__(self, viewer: napari.Viewer):
 
         # dictionary of json info:
-        self.annot_json_data: Dict[str, Dict] = None
+        self.annot_json_data: Dict[str, Dict[str, Any]] = None
         # open in view mode
         self.view: AnnotatorView = AnnotatorView(viewer)
 
         self.view.show()
         # {'File Path' : path, 'Row' : str(row)}
         self.curr_img_dict: Dict[str, str] = None
-        self.csv_name: str = None
+        self.csv_path: str = None
         # annotation dictionary maps file paths -> [file name, FMS, annot1val, annot2val, ...]
         self.files_and_annots: Dict[str, List[str]] = {}
 
         self.view.cancel_btn.clicked.connect(self.stop_viewing)
 
-        self.shuffled = None
+        self.shuffled: bool = None
 
-    def set_annot_json_data(self, dct: Dict[str, Dict]):
-        """Set annotation data dictionary."""
+    def set_annot_json_data(self, dct: Dict[str, Dict[str, Any]]):
+        """
+        Set annotation data dictionary.
+
+        Parameters
+        ------
+        dct : Dict[str, Dict]
+            a dictionary of annotation data. name -> {type -> str,  options -> List[str], default -> bool, int, or str}
+        """
         self.annot_json_data = dct
 
-    def set_csv_name(self, name: Optional[str] = None):
-        """Set csv file name for writing."""
-        self.csv_name = name
+    def set_csv_path(self, path: Optional[str] = None):
+        """
+        Set csv file path for writing.
+
+        Parameters
+        ----------
+        path: Optional[str] = None
+            file path of csv. set to none if not provided.
+        """
+        self.csv_path = path
 
     def write_json(self, file_path: str):
-        """Write annotation dictionary to a file."""
+        """
+        Write annotation dictionary to a file.
+
+        file_path : str
+            file path for json file to write to.
+        """
         if self.annot_json_data is not None:
             json.dump(self.annot_json_data, open(file_path, "w"), indent=4)
 
@@ -122,7 +141,7 @@ class AnnotatorController:
         self.view.set_mode(mode=AnnotatorViewMode.ADD)
         self.view.render_default_values()
         self.set_curr_img()
-        self.set_csv_name()
+        self.set_csv_path()
 
     def set_curr_img(self, curr_img: Optional[Dict[str, str]] = None):
         """
@@ -173,20 +192,33 @@ class AnnotatorController:
         self.files_and_annots[prev_img] = self.files_and_annots[prev_img][:2:] + lst
 
     def read_json(self, file_path: str):
-        """Read a json file into a dictionary and set annot_json_data."""
+        """
+        Read a json file into a dictionary and set annot_json_data.
+
+        Parameters
+        ----------
+        file_path : str
+            file path to json file to read from
+        """
+        # todo file not found
         with open(file_path, "r") as f:
             self.annot_json_data: Dict[str, Dict] = json.loads(f.read())
-            print("booleans are True")
 
     def get_annotations_csv(self, annotations: str):
-        """Read the first line of a csv file into a dictionary and set annot_json_data."""
+        """
+        Read the first line of a csv file into a dictionary and set annot_json_data.
+
+        Parameters
+        ----------
+        annotations: str
+            a string of annotation dictionary data from the csv
+        """
 
         self.annot_json_data = json.loads(annotations)
-        print("hello")
 
     def write_csv(self):
         """write headers and file info"""
-        file = open(self.csv_name, "w")
+        file = open(self.csv_path, "w")
         writer = csv.writer(file)
         writer.writerow(["Shuffled:", self.shuffled])
         header: List[str] = ["Annotations:", json.dumps(self.annot_json_data)]

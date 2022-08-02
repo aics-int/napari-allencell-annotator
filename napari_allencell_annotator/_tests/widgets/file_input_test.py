@@ -1,10 +1,7 @@
 from unittest import mock
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, create_autospec
 
-from napari_allencell_annotator.widgets.file_input import (
-    FileInput,
-    FileInputMode,
-)
+from napari_allencell_annotator.widgets.file_input import FileInput, FileInputMode, QPushButton
 
 
 class TestFileInput:
@@ -17,6 +14,12 @@ class TestFileInput:
     def test_mode(self):
         expected_mode = FileInputMode.DIRECTORY
         assert self._input.mode == expected_mode
+
+    def test_simulate_click(self):
+        self._input._input_btn = create_autospec(QPushButton)
+        self._input._input_btn.clicked = MagicMock()
+        self._input.simulate_click()
+        self._input._input_btn.clicked.emit.assert_called_once_with()
 
     def test_toggle(self):
         self._input._input_btn = MagicMock()

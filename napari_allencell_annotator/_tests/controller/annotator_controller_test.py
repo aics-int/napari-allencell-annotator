@@ -25,9 +25,9 @@ class TestAnnotatorController:
         assert self._controller.annot_json_data == {}
 
     def test_set_csv_name(self):
-        self._controller.csv_name = None
-        self._controller.set_csv_name("name")
-        assert self._controller.csv_name == "name"
+        self._controller.csv_path = None
+        self._controller.set_csv_path("name")
+        assert self._controller.csv_path == "name"
 
     def test_start_viewing(self):
         self._controller.annot_json_data = "data"
@@ -64,7 +64,7 @@ class TestAnnotatorController:
         self._controller.curr_img_dict = {"File Path": "path"}
         self._controller.record_annotations = MagicMock()
         self._controller.set_curr_img = MagicMock()
-        self._controller.set_csv_name = MagicMock()
+        self._controller.set_csv_path = MagicMock()
 
         self._controller.stop_annotating()
 
@@ -77,7 +77,7 @@ class TestAnnotatorController:
         self._controller.view.set_mode.assert_called_once_with(mode=AnnotatorViewMode.ADD)
         self._controller.view.render_default_values.assert_called_once_with()
         self._controller.set_curr_img.assert_called_once_with()
-        self._controller.set_csv_name.assert_called_once_with()
+        self._controller.set_csv_path.assert_called_once_with()
 
     def test_set_curr_img_none(self):
         self._controller.curr_img_dict = {}
@@ -157,7 +157,7 @@ class TestAnnotatorController:
     @patch("builtins.open", new_callable=mock_open, read_data="data")
     def test_write_csv(self, mock_file):
         self._controller.annot_json_data = {"name": {}, "name2": {}, "name3": {}}
-        self._controller.csv_name = "test.csv"
+        self._controller.csv_path = "test.csv"
         self._controller.view.annots_order = ["ann1", "ann2", "ann3"]
         self._controller.files_and_annots = {
             "path1.png": ["path1", "", "text", 1, True],

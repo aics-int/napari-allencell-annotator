@@ -1,7 +1,7 @@
 from unittest import mock
-from unittest.mock import MagicMock, create_autospec
+from unittest.mock import create_autospec
 
-from napari_allencell_annotator.widgets.file_item import FileItem
+from napari_allencell_annotator.widgets.file_item import FileItem, QLabel, QCheckBox
 
 
 class TestFileItem:
@@ -14,9 +14,16 @@ class TestFileItem:
         expected_path = "path"
         assert self._widget.file_path == expected_path
 
-    def test_name(self):
+    def test_get_name(self):
         self._widget._file_path = "dir/path.png"
         assert self._widget.get_name() == "path"
+
+    def test_unhide(self):
+        self._widget.label = create_autospec(QLabel)
+        self._widget.check = create_autospec(QCheckBox)
+        self._widget.unhide()
+        self._widget.label.setText.assert_called_once_with(self._widget._make_display_name())
+        self._widget.check.setCheckable.assert_called_once_with(True)
 
     def test_eq(self):
         path = "path"

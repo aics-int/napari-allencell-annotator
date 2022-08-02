@@ -1,9 +1,9 @@
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any, Union
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import (
+from qtpy.QtCore import Qt
+from qtpy.QtGui import QFont
+from qtpy.QtWidgets import (
     QWidget,
     QHBoxLayout,
     QLabel,
@@ -88,7 +88,9 @@ class AnnotatorView(QWidget):
     """
 
     def __init__(
-        self, viewer: Viewer, mode: AnnotatorViewMode = AnnotatorViewMode.ADD,
+        self,
+        viewer: Viewer,
+        mode: AnnotatorViewMode = AnnotatorViewMode.ADD,
     ):
         super().__init__()
         self._mode = mode
@@ -125,9 +127,9 @@ class AnnotatorView(QWidget):
         # Add widget visible in ADD mode
         self.add_widget = QWidget()
         add_layout = QHBoxLayout()
-        self.create_btn = QPushButton("Create New Annotations")
+        self.create_btn = QPushButton("Create New Annotation Template")
         self.create_btn.setEnabled(True)
-        self.import_btn = QPushButton("Import Existing Annotations (.csv or .json)")
+        self.import_btn = QPushButton("Import Existing Annotation Template (.csv or .json)")
         self.import_btn.setEnabled(True)
         self.annot_input = FileInput(mode=FileInputMode.JSONCSV, placeholder_text="Start Annotating")
         self.annot_input.toggle(False)
@@ -180,15 +182,36 @@ class AnnotatorView(QWidget):
         return self._mode
 
     def set_mode(self, mode: AnnotatorViewMode):
+        """
+        Set current mode.
+
+        Parameters
+        ----------
+        mode: AnnotatorViewMode
+        """
         self._mode = mode
         self._display_mode()
 
     def set_num_images(self, num: Optional[int] = None):
-        """Set the total number of images to be annotated"""
+        """
+        Set the total number of images to be annotated
+
+        Parameters
+        ----------
+        num : Optional[int]
+            number of images, set to None if not provided.
+        """
         self.num_images = num
 
     def set_curr_index(self, num: Optional[int] = None):
-        """Set the index of the currently selected image and display it on progress bar."""
+        """
+        Set the index of the currently selected image and display it on progress bar.
+
+        Parameters
+        ----------
+        num : Optional[int]
+            row of the current image.
+        """
         if num is not None:
             self.curr_index = num
             self.progress_bar.setText("{} of {} Images".format(self.curr_index + 1, self.num_images))
@@ -198,7 +221,7 @@ class AnnotatorView(QWidget):
         self.annot_list.clear()
         # todo: make size policy, remove this line
         self.annot_list.setMaximumHeight(600)
-        self.annotation_item_widgets = []
+        self.annotation_item_widgets: List[QWidget] = []
         self.annots_order: List[str] = []
         self.default_vals: List[str] = []
 
@@ -207,13 +230,13 @@ class AnnotatorView(QWidget):
         # for curr index if annots exist fill else fill with default
         self.render_values(self.default_vals)
 
-    def render_values(self, vals: List):
+    def render_values(self, vals: List[str]):
         """
         Set the values of the annotation widgets.
 
         Parameters
         ----------
-        vals:List
+        vals:List[str]
             the values for the annotations.
         """
         for (widget, val, default) in zip(self.annotation_item_widgets, vals, self.default_vals):
@@ -225,7 +248,7 @@ class AnnotatorView(QWidget):
                 widget.setValue(int(val))
             elif isinstance(widget, QCheckBox):
                 if isinstance(val, str):
-                    # val is a str from previous annotaiton
+                    # val is a str from previous annotation
                     widget.setChecked(eval(val))
                 else:
                     # val is bool from default vals
@@ -233,7 +256,7 @@ class AnnotatorView(QWidget):
             elif isinstance(widget, QComboBox):
                 widget.setCurrentText(val)
 
-    def get_curr_annots(self) -> List:
+    def get_curr_annots(self) -> List[Union[str, bool, int]]:
         """
         Return the current annotation values in a list.
 
@@ -279,13 +302,13 @@ class AnnotatorView(QWidget):
             self.layout.addWidget(self.annot_widget)
             self.prev_btn.setEnabled(False)
 
-    def render_annotations(self, data: Dict[str, Dict]):
+    def render_annotations(self, data: Dict[str, Dict[str, Any]]):
         """
         Read annotation dictionary into individual annotations.
 
         Parameters
         ----------
-        data : Dict[str, Dict]
+        data : Dict[str, Dict[str, Any]]
             The dictionary of annotation names -> a dictionary of types, defaults, and options.
         """
         self.annotation_item_widgets = []
@@ -295,7 +318,7 @@ class AnnotatorView(QWidget):
             # todo fix: doesnt work if certain widgets are first leaves blank spot on bottom
         self.annot_list.setMaximumHeight(self.annot_list.item(0).sizeHint().height() * len(data))
 
-    def _create_annot(self, name: str, dictn: Dict):
+    def _create_annot(self, name: str, dictn: Dict[str, Any]):
         """
         Create annotation widgets from dictionary entries.
 
@@ -303,8 +326,8 @@ class AnnotatorView(QWidget):
         ----------
         name : str
             annotation name.
-        dictn : Dict[str, (list,str,int,or bool)]
-            annotation types and data.
+        dictn : Dict[str, Any]
+            annotation type, default, and options.
         """
         widget = QWidget()
         layout = QHBoxLayout()

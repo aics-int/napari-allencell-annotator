@@ -1,15 +1,14 @@
 from typing import List
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
+from qtpy.QtCore import Qt
+from qtpy.QtGui import QFont
 
-from PyQt5.QtWidgets import (
+from qtpy.QtWidgets import (
     QWidget,
     QLabel,
     QScrollArea,
     QGridLayout,
     QPushButton,
-    QMessageBox,
     QDialog,
 )
 import napari
@@ -41,7 +40,7 @@ class ImagesView(QWidget):
         Displays the alert message on the napari viewer
     """
 
-    def __init__(self, viewer: napari.Viewer, ctrl):
+    def __init__(self, viewer: napari.Viewer):
         """
         Parameters
         ----------
@@ -96,7 +95,6 @@ class ImagesView(QWidget):
 
         self.file_widget.currentItemChanged.connect(self._display_img)
 
-        self.ctrl = ctrl
         self.viewer = viewer
 
     def _update_shuff_text(self, checked: bool):
@@ -109,20 +107,25 @@ class ImagesView(QWidget):
             Toggle state of shuffle button.
         """
         if checked:
-            self.shuffle.setText("Unshuffle and Unhide")
+            self.shuffle.setText("Unhide")
         else:
             self.shuffle.setText("Shuffle and Hide")
 
     def reset_buttons(self):
-        self.enable_image_edits()
+        """
+        Reset buttons to pre-annotation settings
+
+        Disable delete, add, and shuffle buttons.
+        """
         self._toggle_delete(False)
+        self.shuffle.setChecked(False)
         self._toggle_shuffle(False)
-        self._update_shuff_text(False)
         self.toggle_add(True)
 
     def _delete_clicked(self):
+        """Ask user to approve a list of files to delete from the file list."""
         if len(self.file_widget.checked) > 0:
-            msg: str = "Delete these files?"
+            msg: str = "Delete these files from the list?"
             lst: List[str] = []
             for item in self.file_widget.checked:
                 lst.append("--- " + item.file_path)
@@ -141,7 +144,6 @@ class ImagesView(QWidget):
         alert_msg : str
             The message to be displayed
         """
-        # TODO: move to main view
         show_info(alert_msg)
 
     def toggle_add(self, enable: bool):
@@ -181,16 +183,6 @@ class ImagesView(QWidget):
             self.shuffle.setEnabled(True)
         elif not files_added:
             self.shuffle.setEnabled(False)
-
-    def enable_image_edits(self):
-        """Show shuffle and delete buttons"""
-        self.shuffle.show()
-        self.delete.show()
-
-    def disable_csv_image_edits(self):
-        """Hide shuffle and delete buttons"""
-        self.shuffle.hide()
-        self.delete.hide()
 
     def _display_img(self, current: FileItem, previous: FileItem):
         """Display the current image in napari."""

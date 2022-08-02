@@ -18,6 +18,7 @@ requirements = [
     "aicssegmentation ~= 0.4.1",
     "magicgui >= 0.2.9",
     "aicsimageio >= 4.0.5",
+    "PyQt5",
 ]
 
 test_requirements = [
@@ -62,7 +63,12 @@ extra_requirements = {
     "test": test_requirements,
     "dev": dev_requirements,
     "setup": setup_requirements,
-    "all": [*requirements, *test_requirements, *setup_requirements, *dev_requirements,],
+    "all": [
+        *requirements,
+        *test_requirements,
+        *setup_requirements,
+        *dev_requirements,
+    ],
 }
 
 
@@ -100,6 +106,10 @@ setup(
     ],
     # Do not edit this string manually, always use bumpversion
     # Details in CONTRIBUTING.rst
+<<<<<<< HEAD
     version="0.0.4",
+=======
+    version="0.0.6",
+>>>>>>> main
     zip_safe=False,
 )

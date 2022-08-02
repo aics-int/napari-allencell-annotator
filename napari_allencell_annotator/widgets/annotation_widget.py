@@ -1,6 +1,4 @@
-from typing import Set
-
-from PyQt5.QtWidgets import QListWidget, QAbstractItemView
+from qtpy.QtWidgets import QListWidget, QAbstractItemView
 from psygnal._signal import Signal
 
 from napari_allencell_annotator.widgets.annotation_item import AnnotationItem
@@ -8,10 +6,11 @@ from napari_allencell_annotator.widgets.annotation_item import AnnotationItem
 
 class AnnotationWidget(QListWidget):
     """
-    A class used to create a QListWidget for annotations.
+    A class used to create a QListWidget for annotations that are created.
 
     """
 
+    # signal emitted when annotation check boxes are selected
     annots_selected = Signal(bool)
 
     def __init__(self):
@@ -69,7 +68,7 @@ class AnnotationWidget(QListWidget):
 
     def _check_evt(self, item: AnnotationItem):
         """
-        Update checked set and emit files_selected signal.
+        Update checked count and emit files_selected signal.
 
         Params
         -------

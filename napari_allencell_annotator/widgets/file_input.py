@@ -1,6 +1,6 @@
 from enum import Enum
 
-from PyQt5.QtWidgets import QPushButton
+from qtpy.QtWidgets import QPushButton
 from qtpy.QtWidgets import QHBoxLayout, QWidget, QFileDialog
 from qtpy.QtCore import Signal
 from typing import List
@@ -19,7 +19,7 @@ class FileInput(QWidget):
     A file input Widget that includes a file dialog for selecting a file / directory
     and a text box to display the selected file
     inputs:
-        mode (FileInputMode): files file dialog selection type to File, Directory, or Csv.
+        mode (FileInputMode): file dialog selection type to File, Directory, Csv, JSON/Csv, or JSON .
         initial_text (str): text to display in the widget before a file has been selected
     """
 
@@ -27,7 +27,10 @@ class FileInput(QWidget):
     selected_file: List[str] = None
 
     def __init__(
-        self, parent: QWidget = None, mode: FileInputMode = FileInputMode.FILE, placeholder_text: str = None,
+        self,
+        parent: QWidget = None,
+        mode: FileInputMode = FileInputMode.FILE,
+        placeholder_text: str = None,
     ):
         super().__init__(parent)
         self._mode = mode
@@ -49,7 +52,13 @@ class FileInput(QWidget):
         self._input_btn.clicked.emit()
 
     def toggle(self, enabled: bool):
-        """Enable user to click the add file button"""
+        """
+        Enable and un-enable user clicking of the add file button.
+
+        Parameters
+        ----------
+        enabled : bool
+        """
         self._input_btn.setEnabled(enabled)
 
     def _select_file(self):  # pragma: no-cover
