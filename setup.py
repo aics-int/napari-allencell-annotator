@@ -106,10 +106,6 @@ setup(
     ],
     # Do not edit this string manually, always use bumpversion
     # Details in CONTRIBUTING.rst
-<<<<<<< HEAD
-    version="0.0.4",
-=======
     version="0.0.6",
->>>>>>> main
     zip_safe=False,
 )
