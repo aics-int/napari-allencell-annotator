@@ -25,6 +25,20 @@ class TestFileItem:
         self._widget.label.setText.assert_called_once_with(self._widget._make_display_name())
         self._widget.check.setCheckable.assert_called_once_with(True)
 
+    def test_highlight(self):
+        self._widget.label = create_autospec(QLabel)
+        self._widget.highlight()
+        self._widget.label.setStyleSheet.assert_called_once_with("""QLabel{
+                            font-weight: bold;
+                            text-decoration: underline;
+                        }""")
+
+    def test_unhighlight(self):
+        self._widget.label = create_autospec(QLabel)
+        self._widget.unhighlight()
+        self._widget.label.setStyleSheet.assert_called_once_with("""QLabel{}""")
+
+
     def test_eq(self):
         path = "path"
         with mock.patch.object(FileItem, "__init__", lambda x: None):

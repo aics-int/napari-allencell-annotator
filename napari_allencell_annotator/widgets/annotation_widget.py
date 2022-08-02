@@ -31,6 +31,7 @@ class AnnotationWidget(QListWidget):
         Adds a new Annotation Item to the list. .
 
         Only allows 10 items to be added.
+        # todo alert user only 10 allowed
         """
         if self.count() < 10:
             item = AnnotationItem(self)
