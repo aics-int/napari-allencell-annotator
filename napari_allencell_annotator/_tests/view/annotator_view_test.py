@@ -4,7 +4,6 @@ from unittest.mock import MagicMock, create_autospec
 from napari_allencell_annotator.view.annotator_view import (
     AnnotatorView,
     AnnotatorViewMode,
-    QWidget,
     QListWidget,
     QLineEdit,
     QSpinBox,

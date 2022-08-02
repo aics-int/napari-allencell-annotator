@@ -5,6 +5,7 @@ from napari_allencell_annotator.view.images_view import ImagesView, FileItem
 
 from napari_allencell_annotator.view.images_view import AICSImage
 from napari_allencell_annotator.view.images_view import napari
+from napari_allencell_annotator.view.images_view import show_info
 
 
 class TestImagesView:
