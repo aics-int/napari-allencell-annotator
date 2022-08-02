@@ -16,7 +16,7 @@ class TestAnnotationItem:
     def test_type_changed_dropdown(self):
         self._item.layout = create_autospec(QGridLayout)
         widget = create_autospec(QWidget)
-        self._item.layout.itemAtPosition(0,7).widget = MagicMock(return_value=widget)
+        self._item.layout.itemAtPosition(0, 7).widget = MagicMock(return_value=widget)
         self._item.default_options_label = create_autospec(QLabel)
 
         self._item._type_changed("dropdown")
@@ -31,7 +31,7 @@ class TestAnnotationItem:
     def test_type_changed_checkbox(self):
         self._item.layout = create_autospec(QGridLayout)
         widget = create_autospec(QWidget)
-        self._item.layout.itemAtPosition(0,7).widget = MagicMock(return_value=widget)
+        self._item.layout.itemAtPosition(0, 7).widget = MagicMock(return_value=widget)
         self._item.default_options_label = create_autospec(QLabel)
         self._item.default_check = MagicMock()
         self._item._type_changed("checkbox")
@@ -46,7 +46,7 @@ class TestAnnotationItem:
     def test_type_changed_number(self):
         self._item.layout = create_autospec(QGridLayout)
         widget = create_autospec(QWidget)
-        self._item.layout.itemAtPosition(0,7).widget = MagicMock(return_value=widget)
+        self._item.layout.itemAtPosition(0, 7).widget = MagicMock(return_value=widget)
         self._item.default_options_label = create_autospec(QLabel)
         self._item.default_num = MagicMock()
         self._item._type_changed("number")
@@ -61,7 +61,7 @@ class TestAnnotationItem:
     def test_type_changed_text(self):
         self._item.layout = create_autospec(QGridLayout)
         widget = create_autospec(QWidget)
-        self._item.layout.itemAtPosition(0,7).widget = MagicMock(return_value=widget)
+        self._item.layout.itemAtPosition(0, 7).widget = MagicMock(return_value=widget)
         self._item.default_options_label = create_autospec(QLabel)
 
         self._item._type_changed("text")
@@ -72,8 +72,6 @@ class TestAnnotationItem:
         self._item.default_options.hide.assert_called_once_with()
         self._item.default_options_label.hide.assert_called_once_with()
         self._item.layout.addWidget.assert_called_once_with(self._item.default_text, 0, 7, 1, 2)
-
-
 
     def test_get_data_none_name_text_none_default(self):
         self._item.name.text = MagicMock(return_value=None)

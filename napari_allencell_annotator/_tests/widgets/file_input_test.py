@@ -3,6 +3,7 @@ from unittest.mock import MagicMock, create_autospec
 
 from napari_allencell_annotator.widgets.file_input import FileInput, FileInputMode, QPushButton
 
+
 class TestFileInput:
     def setup_method(self):
         expected_mode = FileInputMode.DIRECTORY

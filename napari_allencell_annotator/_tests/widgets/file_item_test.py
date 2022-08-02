@@ -28,16 +28,17 @@ class TestFileItem:
     def test_highlight(self):
         self._widget.label = create_autospec(QLabel)
         self._widget.highlight()
-        self._widget.label.setStyleSheet.assert_called_once_with("""QLabel{
+        self._widget.label.setStyleSheet.assert_called_once_with(
+            """QLabel{
                             font-weight: bold;
                             text-decoration: underline;
-                        }""")
+                        }"""
+        )
 
     def test_unhighlight(self):
         self._widget.label = create_autospec(QLabel)
         self._widget.unhighlight()
         self._widget.label.setStyleSheet.assert_called_once_with("""QLabel{}""")
-
 
     def test_eq(self):
         path = "path"
