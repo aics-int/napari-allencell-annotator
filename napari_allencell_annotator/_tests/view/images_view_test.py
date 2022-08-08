@@ -1,11 +1,12 @@
 from unittest import mock
-from unittest.mock import MagicMock, create_autospec
+from unittest.mock import MagicMock, create_autospec, patch
 from napari_allencell_annotator.controller.images_controller import ImagesController
 from napari_allencell_annotator.view.images_view import ImagesView, FileItem
 
 from napari_allencell_annotator.view.images_view import AICSImage
 from napari_allencell_annotator.view.images_view import napari
 from napari_allencell_annotator.view.images_view import show_info
+
 
 
 class TestImagesView:
@@ -15,6 +16,17 @@ class TestImagesView:
             self._view.controller: MagicMock = create_autospec(ImagesController)
             self._view.viewer: MagicMock = create_autospec(napari.Viewer)
             self._view.AICSImage = create_autospec(AICSImage)
+
+    def test_update_shuff_text(self):
+        # checked
+        self._view.shuffle = MagicMock()
+        self._view.shuffle.setText = MagicMock()
+        self._view._update_shuff_text(True)
+        self._view.shuffle.setText.assert_called_once_with("Unhide")
+        # not checked
+        self._view.shuffle.setText = MagicMock()
+        self._view._update_shuff_text(False)
+        self._view.shuffle.setText.assert_called_once_with("Shuffle and Hide")
 
     def test_reset_buttons(self):
         self._view._toggle_delete = MagicMock()
@@ -28,17 +40,6 @@ class TestImagesView:
         self._view._toggle_shuffle.assert_called_once_with(False)
 
         self._view.toggle_add.assert_called_once_with(True)
-
-    def test_update_shuff_text(self):
-        # checked
-        self._view.shuffle = MagicMock()
-        self._view.shuffle.setText = MagicMock()
-        self._view._update_shuff_text(True)
-        self._view.shuffle.setText.assert_called_once_with("Unhide")
-        # not checked
-        self._view.shuffle.setText = MagicMock()
-        self._view._update_shuff_text(False)
-        self._view.shuffle.setText.assert_called_once_with("Shuffle and Hide")
 
     def test_delete_clicked(self):
         # test nothing checked
