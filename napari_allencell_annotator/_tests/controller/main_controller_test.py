@@ -23,6 +23,66 @@ class TestMainController:
             self._controller.annots = create_autospec(AnnotatorController)
             self._controller.annots.view = MagicMock()
 
+    def test_connect_slots(self):
+        self._controller.annots.view.start_btn = MagicMock()
+        self._controller.annots.view.start_btn.clicked = MagicMock()
+        self._controller.annots.view.start_btn.clicked.connect = MagicMock()
+        self._controller._start_annotating_clicked = MagicMock()
+
+        self._controller.annots.view.next_btn = MagicMock()
+        self._controller.annots.view.next_btn.clicked = MagicMock()
+        self._controller.annots.view.next_btn.clicked.connect = MagicMock()
+        self._controller._next_image_clicked = MagicMock()
+
+        self._controller.annots.view.prev_btn = MagicMock()
+        self._controller.annots.view.prev_btn.clicked = MagicMock()
+        self._controller.annots.view.prev_btn.clicked.connect = MagicMock()
+        self._controller._prev_image_clicked = MagicMock()
+
+        self._controller.annots.view.csv_input = MagicMock()
+        self._controller.annots.view.csv_input.file_selected = MagicMock()
+        self._controller.annots.view.csv_input.file_selected.connect = MagicMock()
+        self._controller._csv_write_selected_evt = MagicMock()
+
+        self._controller.annots.view.save_exit_btn = MagicMock()
+        self._controller.annots.view.save_exit_btn.clicked = MagicMock()
+        self._controller.annots.view.save_exit_btn.clicked.connect = MagicMock()
+        self._controller._save_and_exit_clicked = MagicMock()
+
+        self._controller.annots.view.import_btn = MagicMock()
+        self._controller.annots.view.import_btn.clicked = MagicMock()
+        self._controller.annots.view.import_btn.clicked.connect = MagicMock()
+        self._controller._import_annots_clicked = MagicMock()
+
+        self._controller.annots.view.annot_input = MagicMock()
+        self._controller.annots.view.annot_input.file_selected = MagicMock()
+        self._controller.annots.view.annot_input.file_selected.connect = MagicMock()
+        self._controller._csv_json_import_selected_evt = MagicMock()
+
+        self._controller.annots.view.create_btn = MagicMock()
+        self._controller.annots.view.create_btn.clicked = MagicMock()
+        self._controller.annots.view.create_btn.clicked.connect = MagicMock()
+        self._controller._create_clicked = MagicMock()
+
+        self._controller.annots.view.save_json_btn = MagicMock()
+        self._controller.annots.view.save_json_btn.file_selected = MagicMock()
+        self._controller.annots.view.save_json_btn.file_selected.connect = MagicMock()
+        self._controller._json_write_selected_evt = MagicMock()
+
+        self._controller._connect_slots()
+
+        self._controller.annots.view.start_btn.clicked.connect.assert_called_once_with(self._controller._start_annotating_clicked)
+        self._controller.annots.view.next_btn.clicked.connect.assert_called_once_with(
+            self._controller._next_image_clicked)
+        self._controller.annots.view.prev_btn.clicked.connect.assert_called_once_with(
+            self._controller._prev_image_clicked)
+        self._controller.annots.view.csv_input.file_selected.connect.assert_called_once_with(self._controller._csv_write_selected_evt)
+        self._controller.annots.view.save_exit_btn.clicked.connect.assert_called_once_with(self._controller._save_and_exit_clicked)
+        self._controller.annots.view.import_btn.clicked.connect.assert_called_once_with(self._controller._import_annots_clicked)
+        self._controller.annots.view.annot_input.file_selected.connect.assert_called_once_with(self._controller._csv_json_import_selected_evt)
+        self._controller.annots.view.create_btn.clicked.connect.assert_called_once_with(self._controller._create_clicked)
+        self._controller.annots.view.save_json_btn.file_selected.connect.assert_called_once_with(self._controller._json_write_selected_evt)
+
     def test_create_clicked_reject(self):
         with mock.patch.object(CreateDialog, "__init__", lambda x, y: None):
             with mock.patch.object(CreateDialog, "exec", lambda x: None):
@@ -778,6 +838,18 @@ class TestMainController:
             self._controller.images.curr_img_dict()["File Path"]
         )
         self._controller.images.prev_img.assert_called_once_with()
+        self._controller.annots.set_curr_img.assert_called_once_with(self._controller.images.curr_img_dict())
+
+    def test_image_selected_previous_none(self):
+        self._controller._image_selected('curr' , None)
+        self._controller.annots.record_annotations.assert_not_called()
+        self._controller.annots.set_curr_img.assert_called_once_with(self._controller.images.curr_img_dict())
+
+    def test_image_selected(self):
+        prev = MagicMock()
+        prev.file_path = "path"
+        self._controller._image_selected("current", prev)
+        self._controller.annots.record_annotations.assert_called_once_with('path')
         self._controller.annots.set_curr_img.assert_called_once_with(self._controller.images.curr_img_dict())
 
     def test_save_and_exit_clicked_false(self):
