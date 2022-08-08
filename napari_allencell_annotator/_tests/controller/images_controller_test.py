@@ -35,9 +35,12 @@ class TestImagesController:
 
         self._controller._connect_slots()
 
-        self._controller.view.input_dir.file_selected.connect.assert_called_once_with(self._controller._dir_selected_evt)
+        self._controller.view.input_dir.file_selected.connect.assert_called_once_with(
+            self._controller._dir_selected_evt
+        )
         self._controller.view.input_file.file_selected.connect.assert_called_once_with(
-            self._controller._file_selected_evt)
+            self._controller._file_selected_evt
+        )
         self._controller.view.shuffle.clicked.connect.assert_called_once_with(self._controller._shuffle_clicked)
 
     def test_load_from_csv_one_item(self):

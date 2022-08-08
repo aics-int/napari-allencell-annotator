@@ -71,17 +71,33 @@ class TestMainController:
 
         self._controller._connect_slots()
 
-        self._controller.annots.view.start_btn.clicked.connect.assert_called_once_with(self._controller._start_annotating_clicked)
+        self._controller.annots.view.start_btn.clicked.connect.assert_called_once_with(
+            self._controller._start_annotating_clicked
+        )
         self._controller.annots.view.next_btn.clicked.connect.assert_called_once_with(
-            self._controller._next_image_clicked)
+            self._controller._next_image_clicked
+        )
         self._controller.annots.view.prev_btn.clicked.connect.assert_called_once_with(
-            self._controller._prev_image_clicked)
-        self._controller.annots.view.csv_input.file_selected.connect.assert_called_once_with(self._controller._csv_write_selected_evt)
-        self._controller.annots.view.save_exit_btn.clicked.connect.assert_called_once_with(self._controller._save_and_exit_clicked)
-        self._controller.annots.view.import_btn.clicked.connect.assert_called_once_with(self._controller._import_annots_clicked)
-        self._controller.annots.view.annot_input.file_selected.connect.assert_called_once_with(self._controller._csv_json_import_selected_evt)
-        self._controller.annots.view.create_btn.clicked.connect.assert_called_once_with(self._controller._create_clicked)
-        self._controller.annots.view.save_json_btn.file_selected.connect.assert_called_once_with(self._controller._json_write_selected_evt)
+            self._controller._prev_image_clicked
+        )
+        self._controller.annots.view.csv_input.file_selected.connect.assert_called_once_with(
+            self._controller._csv_write_selected_evt
+        )
+        self._controller.annots.view.save_exit_btn.clicked.connect.assert_called_once_with(
+            self._controller._save_and_exit_clicked
+        )
+        self._controller.annots.view.import_btn.clicked.connect.assert_called_once_with(
+            self._controller._import_annots_clicked
+        )
+        self._controller.annots.view.annot_input.file_selected.connect.assert_called_once_with(
+            self._controller._csv_json_import_selected_evt
+        )
+        self._controller.annots.view.create_btn.clicked.connect.assert_called_once_with(
+            self._controller._create_clicked
+        )
+        self._controller.annots.view.save_json_btn.file_selected.connect.assert_called_once_with(
+            self._controller._json_write_selected_evt
+        )
 
     def test_create_clicked_reject(self):
         with mock.patch.object(CreateDialog, "__init__", lambda x, y: None):
@@ -841,7 +857,7 @@ class TestMainController:
         self._controller.annots.set_curr_img.assert_called_once_with(self._controller.images.curr_img_dict())
 
     def test_image_selected_previous_none(self):
-        self._controller._image_selected('curr' , None)
+        self._controller._image_selected("curr", None)
         self._controller.annots.record_annotations.assert_not_called()
         self._controller.annots.set_curr_img.assert_called_once_with(self._controller.images.curr_img_dict())
 
@@ -849,7 +865,7 @@ class TestMainController:
         prev = MagicMock()
         prev.file_path = "path"
         self._controller._image_selected("current", prev)
-        self._controller.annots.record_annotations.assert_called_once_with('path')
+        self._controller.annots.record_annotations.assert_called_once_with("path")
         self._controller.annots.set_curr_img.assert_called_once_with(self._controller.images.curr_img_dict())
 
     def test_save_and_exit_clicked_false(self):

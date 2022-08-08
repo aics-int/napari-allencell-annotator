@@ -14,7 +14,7 @@ from napari_allencell_annotator.view.annotator_view import (
     QWidget,
     QHBoxLayout,
     QLabel,
-    QMessageBox
+    QMessageBox,
 )
 
 
@@ -328,21 +328,25 @@ class TestAnnotatorView:
 
                                     assert self._view.annots_order == ["name"]
                                     assert QHBoxLayout().addWidget.has_call(mock.call(QLabel("name")))
-                                    line_edit = QLineEdit('')
+                                    line_edit = QLineEdit("")
                                     assert QHBoxLayout().addWidget.has_call(mock.call(line_edit))
-                                    assert self._view.default_vals == ['']
+                                    assert self._view.default_vals == [""]
                                     assert len(self._view.annotation_item_widgets) == 1
-                                    assert type(self._view.annotation_item_widgets[0]) == type(QLineEdit(''))
-                                    QLineEdit('').setEnabled.assert_called_once_with(True)
-                                    QHBoxLayout().setContentsMargins.assert_called_once_with(2,12,8,12)
+                                    assert type(self._view.annotation_item_widgets[0]) == type(QLineEdit(""))
+                                    QLineEdit("").setEnabled.assert_called_once_with(True)
+                                    QHBoxLayout().setContentsMargins.assert_called_once_with(2, 12, 8, 12)
                                     QHBoxLayout().setSpacing.assert_called_once_with(2)
                                     QWidget().setLayout.assert_called_once_with(ANY)
                                     assert isinstance(QWidget().setLayout.call_args.args[0], QHBoxLayout)
 
-                                    QListWidgetItem(self._view.annot_list).setSizeHint.assert_called_once_with(QWidget().minimumSizeHint())
+                                    QListWidgetItem(self._view.annot_list).setSizeHint.assert_called_once_with(
+                                        QWidget().minimumSizeHint()
+                                    )
 
-                                    self._view.annot_list.setItemWidget.assert_called_once_with(ANY,ANY)
-                                    assert isinstance(self._view.annot_list.setItemWidget.call_args.args[0], QListWidgetItem)
+                                    self._view.annot_list.setItemWidget.assert_called_once_with(ANY, ANY)
+                                    assert isinstance(
+                                        self._view.annot_list.setItemWidget.call_args.args[0], QListWidgetItem
+                                    )
 
                                     assert isinstance(self._view.annot_list.setItemWidget.call_args.args[1], QWidget)
 
@@ -377,15 +381,19 @@ class TestAnnotatorView:
                                     assert len(self._view.annotation_item_widgets) == 1
                                     assert type(self._view.annotation_item_widgets[0]) == type(QSpinBox())
                                     QSpinBox().setEnabled.assert_called_once_with(True)
-                                    QHBoxLayout().setContentsMargins.assert_called_once_with(2,12,8,12)
+                                    QHBoxLayout().setContentsMargins.assert_called_once_with(2, 12, 8, 12)
                                     QHBoxLayout().setSpacing.assert_called_once_with(2)
                                     QWidget().setLayout.assert_called_once_with(ANY)
                                     assert isinstance(QWidget().setLayout.call_args.args[0], QHBoxLayout)
 
-                                    QListWidgetItem(self._view.annot_list).setSizeHint.assert_called_once_with(QWidget().minimumSizeHint())
+                                    QListWidgetItem(self._view.annot_list).setSizeHint.assert_called_once_with(
+                                        QWidget().minimumSizeHint()
+                                    )
 
-                                    self._view.annot_list.setItemWidget.assert_called_once_with(ANY,ANY)
-                                    assert isinstance(self._view.annot_list.setItemWidget.call_args.args[0], QListWidgetItem)
+                                    self._view.annot_list.setItemWidget.assert_called_once_with(ANY, ANY)
+                                    assert isinstance(
+                                        self._view.annot_list.setItemWidget.call_args.args[0], QListWidgetItem
+                                    )
 
                                     assert isinstance(self._view.annot_list.setItemWidget.call_args.args[1], QWidget)
 
@@ -420,15 +428,19 @@ class TestAnnotatorView:
                                     assert len(self._view.annotation_item_widgets) == 1
                                     assert type(self._view.annotation_item_widgets[0]) == type(QCheckBox())
                                     QCheckBox().setEnabled.assert_called_once_with(True)
-                                    QHBoxLayout().setContentsMargins.assert_called_once_with(2,12,8,12)
+                                    QHBoxLayout().setContentsMargins.assert_called_once_with(2, 12, 8, 12)
                                     QHBoxLayout().setSpacing.assert_called_once_with(2)
                                     QWidget().setLayout.assert_called_once_with(ANY)
                                     assert isinstance(QWidget().setLayout.call_args.args[0], QHBoxLayout)
 
-                                    QListWidgetItem(self._view.annot_list).setSizeHint.assert_called_once_with(QWidget().minimumSizeHint())
+                                    QListWidgetItem(self._view.annot_list).setSizeHint.assert_called_once_with(
+                                        QWidget().minimumSizeHint()
+                                    )
 
-                                    self._view.annot_list.setItemWidget.assert_called_once_with(ANY,ANY)
-                                    assert isinstance(self._view.annot_list.setItemWidget.call_args.args[0], QListWidgetItem)
+                                    self._view.annot_list.setItemWidget.assert_called_once_with(ANY, ANY)
+                                    assert isinstance(
+                                        self._view.annot_list.setItemWidget.call_args.args[0], QListWidgetItem
+                                    )
 
                                     assert isinstance(self._view.annot_list.setItemWidget.call_args.args[1], QWidget)
 
@@ -463,15 +475,19 @@ class TestAnnotatorView:
                                     assert len(self._view.annotation_item_widgets) == 1
                                     assert type(self._view.annotation_item_widgets[0]) == type(QCheckBox())
                                     QCheckBox().setEnabled.assert_called_once_with(True)
-                                    QHBoxLayout().setContentsMargins.assert_called_once_with(2,12,8,12)
+                                    QHBoxLayout().setContentsMargins.assert_called_once_with(2, 12, 8, 12)
                                     QHBoxLayout().setSpacing.assert_called_once_with(2)
                                     QWidget().setLayout.assert_called_once_with(ANY)
                                     assert isinstance(QWidget().setLayout.call_args.args[0], QHBoxLayout)
 
-                                    QListWidgetItem(self._view.annot_list).setSizeHint.assert_called_once_with(QWidget().minimumSizeHint())
+                                    QListWidgetItem(self._view.annot_list).setSizeHint.assert_called_once_with(
+                                        QWidget().minimumSizeHint()
+                                    )
 
-                                    self._view.annot_list.setItemWidget.assert_called_once_with(ANY,ANY)
-                                    assert isinstance(self._view.annot_list.setItemWidget.call_args.args[0], QListWidgetItem)
+                                    self._view.annot_list.setItemWidget.assert_called_once_with(ANY, ANY)
+                                    assert isinstance(
+                                        self._view.annot_list.setItemWidget.call_args.args[0], QListWidgetItem
+                                    )
 
                                     assert isinstance(self._view.annot_list.setItemWidget.call_args.args[1], QWidget)
 
@@ -497,26 +513,34 @@ class TestAnnotatorView:
                                     self._view.annot_list = QListWidget()
                                     self._view.annot_list.setItemWidget = MagicMock()
                                     QHBoxLayout.addWidget = MagicMock()
-                                    self._view._create_annot("name", {"type": "list", "default": "", "options": ['op1','op2','op3']})
+                                    self._view._create_annot(
+                                        "name", {"type": "list", "default": "", "options": ["op1", "op2", "op3"]}
+                                    )
 
                                     assert self._view.annots_order == ["name"]
                                     assert QHBoxLayout().addWidget.has_call(mock.call(QLabel("name")))
-                                    QComboBox().setCurrentText.assert_called_once_with('')
-                                    QComboBox().addItem.assert_has_calls([mock.call('op1'), mock.call('op2'), mock.call('op3')])
+                                    QComboBox().setCurrentText.assert_called_once_with("")
+                                    QComboBox().addItem.assert_has_calls(
+                                        [mock.call("op1"), mock.call("op2"), mock.call("op3")]
+                                    )
                                     assert QHBoxLayout().addWidget.has_call(mock.call(QComboBox()))
-                                    assert self._view.default_vals == ['']
+                                    assert self._view.default_vals == [""]
                                     assert len(self._view.annotation_item_widgets) == 1
                                     assert type(self._view.annotation_item_widgets[0]) == type(QComboBox())
                                     QComboBox().setEnabled.assert_called_once_with(True)
-                                    QHBoxLayout().setContentsMargins.assert_called_once_with(2,12,8,12)
+                                    QHBoxLayout().setContentsMargins.assert_called_once_with(2, 12, 8, 12)
                                     QHBoxLayout().setSpacing.assert_called_once_with(2)
                                     QWidget().setLayout.assert_called_once_with(ANY)
                                     assert isinstance(QWidget().setLayout.call_args.args[0], QHBoxLayout)
 
-                                    QListWidgetItem(self._view.annot_list).setSizeHint.assert_called_once_with(QWidget().minimumSizeHint())
+                                    QListWidgetItem(self._view.annot_list).setSizeHint.assert_called_once_with(
+                                        QWidget().minimumSizeHint()
+                                    )
 
-                                    self._view.annot_list.setItemWidget.assert_called_once_with(ANY,ANY)
-                                    assert isinstance(self._view.annot_list.setItemWidget.call_args.args[0], QListWidgetItem)
+                                    self._view.annot_list.setItemWidget.assert_called_once_with(ANY, ANY)
+                                    assert isinstance(
+                                        self._view.annot_list.setItemWidget.call_args.args[0], QListWidgetItem
+                                    )
 
                                     assert isinstance(self._view.annot_list.setItemWidget.call_args.args[1], QWidget)
 
@@ -541,7 +565,3 @@ class TestAnnotatorView:
             QMessageBox.setText.assert_called_once_with("text")
             QMessageBox.setStandardButtons.assert_called_once_with(QMessageBox.No | QMessageBox.Yes)
             QMessageBox.exec.assert_called_once_with()
-
-
-
-

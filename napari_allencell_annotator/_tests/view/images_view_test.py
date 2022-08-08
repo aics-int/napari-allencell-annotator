@@ -8,7 +8,6 @@ from napari_allencell_annotator.view.images_view import napari
 from napari_allencell_annotator.view.images_view import show_info
 
 
-
 class TestImagesView:
     def setup_method(self):
         with mock.patch.object(ImagesView, "__init__", lambda x: None):
