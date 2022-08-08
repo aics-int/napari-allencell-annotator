@@ -337,7 +337,7 @@ class TestAnnotatorView:
                                     QHBoxLayout().setContentsMargins.assert_called_once_with(2, 12, 8, 12)
                                     QHBoxLayout().setSpacing.assert_called_once_with(2)
                                     QWidget().setLayout.assert_called_once_with(ANY)
-                                    assert isinstance(QWidget().setLayout.call_args.args[0], QHBoxLayout)
+                                    assert isinstance(QWidget().setLayout.call_args_list[0][0][0], QHBoxLayout)
 
                                     QListWidgetItem(self._view.annot_list).setSizeHint.assert_called_once_with(
                                         QWidget().minimumSizeHint()
@@ -345,10 +345,12 @@ class TestAnnotatorView:
 
                                     self._view.annot_list.setItemWidget.assert_called_once_with(ANY, ANY)
                                     assert isinstance(
-                                        self._view.annot_list.setItemWidget.call_args.args[0], QListWidgetItem
+                                        self._view.annot_list.setItemWidget.call_args_list[0][0][0], QListWidgetItem
                                     )
 
-                                    assert isinstance(self._view.annot_list.setItemWidget.call_args.args[1], QWidget)
+                                    assert isinstance(
+                                        self._view.annot_list.setItemWidget.call_args_list[0][0][1], QWidget
+                                    )
 
     def test_create_annot_number(self):
         with mock.patch.object(QWidget, "__init__", lambda x: None):
@@ -384,7 +386,7 @@ class TestAnnotatorView:
                                     QHBoxLayout().setContentsMargins.assert_called_once_with(2, 12, 8, 12)
                                     QHBoxLayout().setSpacing.assert_called_once_with(2)
                                     QWidget().setLayout.assert_called_once_with(ANY)
-                                    assert isinstance(QWidget().setLayout.call_args.args[0], QHBoxLayout)
+                                    assert isinstance(QWidget().setLayout.call_args_list[0][0][0], QHBoxLayout)
 
                                     QListWidgetItem(self._view.annot_list).setSizeHint.assert_called_once_with(
                                         QWidget().minimumSizeHint()
@@ -392,10 +394,12 @@ class TestAnnotatorView:
 
                                     self._view.annot_list.setItemWidget.assert_called_once_with(ANY, ANY)
                                     assert isinstance(
-                                        self._view.annot_list.setItemWidget.call_args.args[0], QListWidgetItem
+                                        self._view.annot_list.setItemWidget.call_args_list[0][0][0], QListWidgetItem
                                     )
 
-                                    assert isinstance(self._view.annot_list.setItemWidget.call_args.args[1], QWidget)
+                                    assert isinstance(
+                                        self._view.annot_list.setItemWidget.call_args_list[0][0][1], QWidget
+                                    )
 
     def test_create_annot_bool_true(self):
         with mock.patch.object(QWidget, "__init__", lambda x: None):
@@ -431,7 +435,7 @@ class TestAnnotatorView:
                                     QHBoxLayout().setContentsMargins.assert_called_once_with(2, 12, 8, 12)
                                     QHBoxLayout().setSpacing.assert_called_once_with(2)
                                     QWidget().setLayout.assert_called_once_with(ANY)
-                                    assert isinstance(QWidget().setLayout.call_args.args[0], QHBoxLayout)
+                                    assert isinstance(QWidget().setLayout.call_args_list[0][0][0], QHBoxLayout)
 
                                     QListWidgetItem(self._view.annot_list).setSizeHint.assert_called_once_with(
                                         QWidget().minimumSizeHint()
@@ -439,10 +443,12 @@ class TestAnnotatorView:
 
                                     self._view.annot_list.setItemWidget.assert_called_once_with(ANY, ANY)
                                     assert isinstance(
-                                        self._view.annot_list.setItemWidget.call_args.args[0], QListWidgetItem
+                                        self._view.annot_list.setItemWidget.call_args_list[0][0][0], QListWidgetItem
                                     )
 
-                                    assert isinstance(self._view.annot_list.setItemWidget.call_args.args[1], QWidget)
+                                    assert isinstance(
+                                        self._view.annot_list.setItemWidget.call_args_list[0][0][1], QWidget
+                                    )
 
     def test_create_annot_bool_false(self):
         with mock.patch.object(QWidget, "__init__", lambda x: None):
@@ -478,7 +484,7 @@ class TestAnnotatorView:
                                     QHBoxLayout().setContentsMargins.assert_called_once_with(2, 12, 8, 12)
                                     QHBoxLayout().setSpacing.assert_called_once_with(2)
                                     QWidget().setLayout.assert_called_once_with(ANY)
-                                    assert isinstance(QWidget().setLayout.call_args.args[0], QHBoxLayout)
+                                    assert isinstance(QWidget().setLayout.call_args_list[0][0][0], QHBoxLayout)
 
                                     QListWidgetItem(self._view.annot_list).setSizeHint.assert_called_once_with(
                                         QWidget().minimumSizeHint()
@@ -486,10 +492,12 @@ class TestAnnotatorView:
 
                                     self._view.annot_list.setItemWidget.assert_called_once_with(ANY, ANY)
                                     assert isinstance(
-                                        self._view.annot_list.setItemWidget.call_args.args[0], QListWidgetItem
+                                        self._view.annot_list.setItemWidget.call_args_list[0][0][0], QListWidgetItem
                                     )
 
-                                    assert isinstance(self._view.annot_list.setItemWidget.call_args.args[1], QWidget)
+                                    assert isinstance(
+                                        self._view.annot_list.setItemWidget.call_args_list[0][0][1], QWidget
+                                    )
 
     def test_create_annot_list(self):
         with mock.patch.object(QWidget, "__init__", lambda x: None):
@@ -531,7 +539,7 @@ class TestAnnotatorView:
                                     QHBoxLayout().setContentsMargins.assert_called_once_with(2, 12, 8, 12)
                                     QHBoxLayout().setSpacing.assert_called_once_with(2)
                                     QWidget().setLayout.assert_called_once_with(ANY)
-                                    assert isinstance(QWidget().setLayout.call_args.args[0], QHBoxLayout)
+                                    assert isinstance(QWidget().setLayout.call_args_list[0][0][0], QHBoxLayout)
 
                                     QListWidgetItem(self._view.annot_list).setSizeHint.assert_called_once_with(
                                         QWidget().minimumSizeHint()
@@ -539,10 +547,12 @@ class TestAnnotatorView:
 
                                     self._view.annot_list.setItemWidget.assert_called_once_with(ANY, ANY)
                                     assert isinstance(
-                                        self._view.annot_list.setItemWidget.call_args.args[0], QListWidgetItem
+                                        self._view.annot_list.setItemWidget.call_args_list[0][0][0], QListWidgetItem
                                     )
 
-                                    assert isinstance(self._view.annot_list.setItemWidget.call_args.args[1], QWidget)
+                                    assert isinstance(
+                                        self._view.annot_list.setItemWidget.call_args_list[0][0][1], QWidget
+                                    )
 
     def test_popup_yes(self):
         with mock.patch.object(QMessageBox, "__init__", lambda x: None):
