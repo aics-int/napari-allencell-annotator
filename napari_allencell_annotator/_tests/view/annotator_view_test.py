@@ -1,5 +1,5 @@
 from unittest import mock
-from unittest.mock import MagicMock, create_autospec
+from unittest.mock import MagicMock, create_autospec, ANY
 
 from napari_allencell_annotator.view.annotator_view import (
     AnnotatorView,
@@ -11,7 +11,10 @@ from napari_allencell_annotator.view.annotator_view import (
     QComboBox,
     QVBoxLayout,
     QListWidgetItem,
+    QWidget,
+    QHBoxLayout,
     QLabel,
+    QMessageBox
 )
 
 
@@ -291,7 +294,7 @@ class TestAnnotatorView:
         )
         self._view.annot_list.setMaximumHeight.assert_called_once_with(30)
 
-    def test_render_annotations(self):
+    def test_render_annotations_one_item(self):
         dct = {"name": []}
         self._view._create_annot = MagicMock()
 
@@ -300,3 +303,245 @@ class TestAnnotatorView:
         self._view.render_annotations(dct)
         self._view._create_annot.assert_has_calls([mock.call("name", [])])
         self._view.annot_list.setMaximumHeight.assert_called_once_with(10)
+
+    def test_create_annot_string(self):
+        with mock.patch.object(QWidget, "__init__", lambda x: None):
+            with mock.patch.object(QHBoxLayout, "__init__", lambda x: None):
+                with mock.patch.object(QLabel, "__init__", lambda x, y: None):
+                    with mock.patch.object(QLineEdit, "__init__", lambda x, y: None):
+                        with mock.patch.object(QListWidget, "__init__", lambda y: None):
+                            with mock.patch.object(QListWidget, "__init__", lambda y: None):
+                                with mock.patch.object(QListWidgetItem, "__init__", lambda x, y: None):
+                                    QLineEdit.setEnabled = MagicMock()
+                                    self._view.annots_order = []
+                                    self._view.default_vals = []
+                                    self._view.annotation_item_widgets = []
+                                    QHBoxLayout.setContentsMargins = MagicMock()
+                                    QHBoxLayout.setSpacing = MagicMock()
+                                    QWidget.setLayout = MagicMock()
+                                    QWidget.minimumSizeHint = MagicMock()
+                                    QListWidgetItem.setSizeHint = MagicMock()
+                                    self._view.annot_list = QListWidget()
+                                    self._view.annot_list.setItemWidget = MagicMock()
+                                    QHBoxLayout.addWidget = MagicMock()
+                                    self._view._create_annot("name", {"type": "string", "default": ""})
+
+                                    assert self._view.annots_order == ["name"]
+                                    assert QHBoxLayout().addWidget.has_call(mock.call(QLabel("name")))
+                                    line_edit = QLineEdit('')
+                                    assert QHBoxLayout().addWidget.has_call(mock.call(line_edit))
+                                    assert self._view.default_vals == ['']
+                                    assert len(self._view.annotation_item_widgets) == 1
+                                    assert type(self._view.annotation_item_widgets[0]) == type(QLineEdit(''))
+                                    QLineEdit('').setEnabled.assert_called_once_with(True)
+                                    QHBoxLayout().setContentsMargins.assert_called_once_with(2,12,8,12)
+                                    QHBoxLayout().setSpacing.assert_called_once_with(2)
+                                    QWidget().setLayout.assert_called_once_with(ANY)
+                                    assert isinstance(QWidget().setLayout.call_args.args[0], QHBoxLayout)
+
+                                    QListWidgetItem(self._view.annot_list).setSizeHint.assert_called_once_with(QWidget().minimumSizeHint())
+
+                                    self._view.annot_list.setItemWidget.assert_called_once_with(ANY,ANY)
+                                    assert isinstance(self._view.annot_list.setItemWidget.call_args.args[0], QListWidgetItem)
+
+                                    assert isinstance(self._view.annot_list.setItemWidget.call_args.args[1], QWidget)
+
+    def test_create_annot_number(self):
+        with mock.patch.object(QWidget, "__init__", lambda x: None):
+            with mock.patch.object(QHBoxLayout, "__init__", lambda x: None):
+                with mock.patch.object(QLabel, "__init__", lambda x, y: None):
+                    with mock.patch.object(QSpinBox, "__init__", lambda y: None):
+                        with mock.patch.object(QListWidget, "__init__", lambda y: None):
+                            with mock.patch.object(QListWidget, "__init__", lambda y: None):
+                                with mock.patch.object(QListWidgetItem, "__init__", lambda x, y: None):
+                                    QSpinBox.setEnabled = MagicMock()
+                                    QSpinBox.setValue = MagicMock()
+                                    self._view.annots_order = []
+                                    self._view.default_vals = []
+                                    self._view.annotation_item_widgets = []
+                                    QHBoxLayout.setContentsMargins = MagicMock()
+                                    QHBoxLayout.setSpacing = MagicMock()
+                                    QWidget.setLayout = MagicMock()
+                                    QWidget.minimumSizeHint = MagicMock()
+                                    QListWidgetItem.setSizeHint = MagicMock()
+                                    self._view.annot_list = QListWidget()
+                                    self._view.annot_list.setItemWidget = MagicMock()
+                                    QHBoxLayout.addWidget = MagicMock()
+                                    self._view._create_annot("name", {"type": "number", "default": 2})
+
+                                    assert self._view.annots_order == ["name"]
+                                    assert QHBoxLayout().addWidget.has_call(mock.call(QLabel("name")))
+                                    QSpinBox().setValue.assert_called_once_with(2)
+                                    assert QHBoxLayout().addWidget.has_call(mock.call(QSpinBox()))
+                                    assert self._view.default_vals == [2]
+                                    assert len(self._view.annotation_item_widgets) == 1
+                                    assert type(self._view.annotation_item_widgets[0]) == type(QSpinBox())
+                                    QSpinBox().setEnabled.assert_called_once_with(True)
+                                    QHBoxLayout().setContentsMargins.assert_called_once_with(2,12,8,12)
+                                    QHBoxLayout().setSpacing.assert_called_once_with(2)
+                                    QWidget().setLayout.assert_called_once_with(ANY)
+                                    assert isinstance(QWidget().setLayout.call_args.args[0], QHBoxLayout)
+
+                                    QListWidgetItem(self._view.annot_list).setSizeHint.assert_called_once_with(QWidget().minimumSizeHint())
+
+                                    self._view.annot_list.setItemWidget.assert_called_once_with(ANY,ANY)
+                                    assert isinstance(self._view.annot_list.setItemWidget.call_args.args[0], QListWidgetItem)
+
+                                    assert isinstance(self._view.annot_list.setItemWidget.call_args.args[1], QWidget)
+
+    def test_create_annot_bool_true(self):
+        with mock.patch.object(QWidget, "__init__", lambda x: None):
+            with mock.patch.object(QHBoxLayout, "__init__", lambda x: None):
+                with mock.patch.object(QLabel, "__init__", lambda x, y: None):
+                    with mock.patch.object(QCheckBox, "__init__", lambda y: None):
+                        with mock.patch.object(QListWidget, "__init__", lambda y: None):
+                            with mock.patch.object(QListWidget, "__init__", lambda y: None):
+                                with mock.patch.object(QListWidgetItem, "__init__", lambda x, y: None):
+                                    QCheckBox.setEnabled = MagicMock()
+                                    QCheckBox.setChecked = MagicMock()
+                                    self._view.annots_order = []
+                                    self._view.default_vals = []
+                                    self._view.annotation_item_widgets = []
+                                    QHBoxLayout.setContentsMargins = MagicMock()
+                                    QHBoxLayout.setSpacing = MagicMock()
+                                    QWidget.setLayout = MagicMock()
+                                    QWidget.minimumSizeHint = MagicMock()
+                                    QListWidgetItem.setSizeHint = MagicMock()
+                                    self._view.annot_list = QListWidget()
+                                    self._view.annot_list.setItemWidget = MagicMock()
+                                    QHBoxLayout.addWidget = MagicMock()
+                                    self._view._create_annot("name", {"type": "bool", "default": True})
+
+                                    assert self._view.annots_order == ["name"]
+                                    assert QHBoxLayout().addWidget.has_call(mock.call(QLabel("name")))
+                                    QCheckBox().setChecked.assert_called_once_with(True)
+                                    assert QHBoxLayout().addWidget.has_call(mock.call(QCheckBox()))
+                                    assert self._view.default_vals == [True]
+                                    assert len(self._view.annotation_item_widgets) == 1
+                                    assert type(self._view.annotation_item_widgets[0]) == type(QCheckBox())
+                                    QCheckBox().setEnabled.assert_called_once_with(True)
+                                    QHBoxLayout().setContentsMargins.assert_called_once_with(2,12,8,12)
+                                    QHBoxLayout().setSpacing.assert_called_once_with(2)
+                                    QWidget().setLayout.assert_called_once_with(ANY)
+                                    assert isinstance(QWidget().setLayout.call_args.args[0], QHBoxLayout)
+
+                                    QListWidgetItem(self._view.annot_list).setSizeHint.assert_called_once_with(QWidget().minimumSizeHint())
+
+                                    self._view.annot_list.setItemWidget.assert_called_once_with(ANY,ANY)
+                                    assert isinstance(self._view.annot_list.setItemWidget.call_args.args[0], QListWidgetItem)
+
+                                    assert isinstance(self._view.annot_list.setItemWidget.call_args.args[1], QWidget)
+
+    def test_create_annot_bool_false(self):
+        with mock.patch.object(QWidget, "__init__", lambda x: None):
+            with mock.patch.object(QHBoxLayout, "__init__", lambda x: None):
+                with mock.patch.object(QLabel, "__init__", lambda x, y: None):
+                    with mock.patch.object(QCheckBox, "__init__", lambda y: None):
+                        with mock.patch.object(QListWidget, "__init__", lambda y: None):
+                            with mock.patch.object(QListWidget, "__init__", lambda y: None):
+                                with mock.patch.object(QListWidgetItem, "__init__", lambda x, y: None):
+                                    QCheckBox.setEnabled = MagicMock()
+                                    QCheckBox.setChecked = MagicMock()
+                                    self._view.annots_order = []
+                                    self._view.default_vals = []
+                                    self._view.annotation_item_widgets = []
+                                    QHBoxLayout.setContentsMargins = MagicMock()
+                                    QHBoxLayout.setSpacing = MagicMock()
+                                    QWidget.setLayout = MagicMock()
+                                    QWidget.minimumSizeHint = MagicMock()
+                                    QListWidgetItem.setSizeHint = MagicMock()
+                                    self._view.annot_list = QListWidget()
+                                    self._view.annot_list.setItemWidget = MagicMock()
+                                    QHBoxLayout.addWidget = MagicMock()
+                                    self._view._create_annot("name", {"type": "bool", "default": False})
+
+                                    assert self._view.annots_order == ["name"]
+                                    assert QHBoxLayout().addWidget.has_call(mock.call(QLabel("name")))
+                                    QCheckBox().setChecked.assert_not_called()
+                                    assert QHBoxLayout().addWidget.has_call(mock.call(QCheckBox()))
+                                    assert self._view.default_vals == [False]
+                                    assert len(self._view.annotation_item_widgets) == 1
+                                    assert type(self._view.annotation_item_widgets[0]) == type(QCheckBox())
+                                    QCheckBox().setEnabled.assert_called_once_with(True)
+                                    QHBoxLayout().setContentsMargins.assert_called_once_with(2,12,8,12)
+                                    QHBoxLayout().setSpacing.assert_called_once_with(2)
+                                    QWidget().setLayout.assert_called_once_with(ANY)
+                                    assert isinstance(QWidget().setLayout.call_args.args[0], QHBoxLayout)
+
+                                    QListWidgetItem(self._view.annot_list).setSizeHint.assert_called_once_with(QWidget().minimumSizeHint())
+
+                                    self._view.annot_list.setItemWidget.assert_called_once_with(ANY,ANY)
+                                    assert isinstance(self._view.annot_list.setItemWidget.call_args.args[0], QListWidgetItem)
+
+                                    assert isinstance(self._view.annot_list.setItemWidget.call_args.args[1], QWidget)
+
+    def test_create_annot_list(self):
+        with mock.patch.object(QWidget, "__init__", lambda x: None):
+            with mock.patch.object(QHBoxLayout, "__init__", lambda x: None):
+                with mock.patch.object(QLabel, "__init__", lambda x, y: None):
+                    with mock.patch.object(QComboBox, "__init__", lambda y: None):
+                        with mock.patch.object(QListWidget, "__init__", lambda y: None):
+                            with mock.patch.object(QListWidget, "__init__", lambda y: None):
+                                with mock.patch.object(QListWidgetItem, "__init__", lambda x, y: None):
+                                    QComboBox.setEnabled = MagicMock()
+                                    QComboBox.addItem = MagicMock()
+                                    QComboBox.setCurrentText = MagicMock()
+                                    self._view.annots_order = []
+                                    self._view.default_vals = []
+                                    self._view.annotation_item_widgets = []
+                                    QHBoxLayout.setContentsMargins = MagicMock()
+                                    QHBoxLayout.setSpacing = MagicMock()
+                                    QWidget.setLayout = MagicMock()
+                                    QWidget.minimumSizeHint = MagicMock()
+                                    QListWidgetItem.setSizeHint = MagicMock()
+                                    self._view.annot_list = QListWidget()
+                                    self._view.annot_list.setItemWidget = MagicMock()
+                                    QHBoxLayout.addWidget = MagicMock()
+                                    self._view._create_annot("name", {"type": "list", "default": "", "options": ['op1','op2','op3']})
+
+                                    assert self._view.annots_order == ["name"]
+                                    assert QHBoxLayout().addWidget.has_call(mock.call(QLabel("name")))
+                                    QComboBox().setCurrentText.assert_called_once_with('')
+                                    QComboBox().addItem.assert_has_calls([mock.call('op1'), mock.call('op2'), mock.call('op3')])
+                                    assert QHBoxLayout().addWidget.has_call(mock.call(QComboBox()))
+                                    assert self._view.default_vals == ['']
+                                    assert len(self._view.annotation_item_widgets) == 1
+                                    assert type(self._view.annotation_item_widgets[0]) == type(QComboBox())
+                                    QComboBox().setEnabled.assert_called_once_with(True)
+                                    QHBoxLayout().setContentsMargins.assert_called_once_with(2,12,8,12)
+                                    QHBoxLayout().setSpacing.assert_called_once_with(2)
+                                    QWidget().setLayout.assert_called_once_with(ANY)
+                                    assert isinstance(QWidget().setLayout.call_args.args[0], QHBoxLayout)
+
+                                    QListWidgetItem(self._view.annot_list).setSizeHint.assert_called_once_with(QWidget().minimumSizeHint())
+
+                                    self._view.annot_list.setItemWidget.assert_called_once_with(ANY,ANY)
+                                    assert isinstance(self._view.annot_list.setItemWidget.call_args.args[0], QListWidgetItem)
+
+                                    assert isinstance(self._view.annot_list.setItemWidget.call_args.args[1], QWidget)
+
+    def test_popup_yes(self):
+        with mock.patch.object(QMessageBox, "__init__", lambda x: None):
+            QMessageBox.setText = MagicMock()
+            QMessageBox.setStandardButtons = MagicMock()
+            QMessageBox.exec = MagicMock(return_value=QMessageBox.Yes)
+
+            assert self._view.popup("text")
+            QMessageBox.setText.assert_called_once_with("text")
+            QMessageBox.setStandardButtons.assert_called_once_with(QMessageBox.No | QMessageBox.Yes)
+            QMessageBox.exec.assert_called_once_with()
+
+    def test_popup_no(self):
+        with mock.patch.object(QMessageBox, "__init__", lambda x: None):
+            QMessageBox.setText = MagicMock()
+            QMessageBox.setStandardButtons = MagicMock()
+            QMessageBox.exec = MagicMock(return_value=QMessageBox.No)
+
+            assert not self._view.popup("text")
+            QMessageBox.setText.assert_called_once_with("text")
+            QMessageBox.setStandardButtons.assert_called_once_with(QMessageBox.No | QMessageBox.Yes)
+            QMessageBox.exec.assert_called_once_with()
+
+
+
+
