@@ -1,11 +1,10 @@
 from unittest import mock
 from unittest.mock import MagicMock, create_autospec, patch
 from napari_allencell_annotator.controller.images_controller import ImagesController
-from napari_allencell_annotator.view.images_view import ImagesView, FileItem
+from napari_allencell_annotator.view.images_view import ImagesView, FileItem, ScrollablePopup, QDialog, FilesWidget
 
 from napari_allencell_annotator.view.images_view import AICSImage
 from napari_allencell_annotator.view.images_view import napari
-from napari_allencell_annotator.view.images_view import show_info
 
 
 class TestImagesView:
@@ -48,6 +47,44 @@ class TestImagesView:
         self._view.alert = MagicMock()
         self._view._delete_clicked()
         self._view.alert.assert_called_once_with("No Images Selected")
+
+    def test_delete_clicked_accept(self):
+        # test nothing checked
+        self._view.file_widget = create_autospec(FilesWidget)
+        item = create_autospec(FileItem)
+        item.file_path = "path"
+        self._view.file_widget.checked = set(item)
+        self._view.alert = MagicMock()
+        with mock.patch.object(ScrollablePopup, "__init__", lambda x, y,z: None):
+            ScrollablePopup.exec = MagicMock(return_value=QDialog.Accepted)
+            self._view.file_widget.delete_checked = MagicMock()
+        self._view._delete_clicked()
+
+        self._view.alert.assert_not_called()
+
+        ScrollablePopup.__init__.assert_called_once_with("Delete these files from the list?", ["--- path"])
+        ScrollablePopup.exec.assert_called_once_with()
+        self._view.file_widget.delete_checked.assert_called_once_with()
+
+    def test_delete_clicked_reject(self):
+        # test nothing checked
+        self._view.file_widget: MagicMock = MagicMock()
+        item = create_autospec(FileItem)
+        item.file_path = "path"
+        item2 = create_autospec(FileItem)
+        item2.file_path = "path2"
+        self._view.file_widget.checked = {item, item2}
+        self._view.alert = MagicMock()
+        with mock.patch.object(ScrollablePopup, "__init__", lambda x, y,z: None):
+            ScrollablePopup.exec = MagicMock(return_value=QDialog.Rejected)
+            self._view.file_widget.delete_checked = MagicMock()
+            self._view._delete_clicked()
+
+        self._view.alert.assert_not_called()
+        ScrollablePopup.assert_called_once_with("Delete these files from the list?", ["--- path", "--- path2"])
+        ScrollablePopup.exec.assert_called_once_with()
+        self._view.file_widget.delete_checked.assert_not_called()
+
 
     def test_toggle_add(self):
         # check enabled and un-enabled
