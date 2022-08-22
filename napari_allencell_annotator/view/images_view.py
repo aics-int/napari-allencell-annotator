@@ -1,4 +1,4 @@
-from typing import List
+from typing import Set
 
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QFont
@@ -126,7 +126,7 @@ class ImagesView(QWidget):
         """Ask user to approve a list of files to delete from the file list."""
         if len(self.file_widget.checked) > 0:
             msg: str = "Delete these files from the list?"
-            names: set[str] = set()
+            names: Set[str] = set()
             for item in self.file_widget.checked:
                 names.add("--- " + item.file_path)
             msg_box = ScrollablePopup(msg, names)
