@@ -16,6 +16,33 @@ class TestImagesController:
         with mock.patch("napari_allencell_annotator.controller.images_controller.ImagesView"):
             self._controller = ImagesController(self._mock_viewer)
 
+    def test_connect_slots(self):
+        self._controller.view = create_autospec(ImagesView)
+        self._controller.view.input_dir = MagicMock()
+        self._controller.view.input_dir.file_selected = MagicMock()
+        self._controller.view.input_dir.file_selected.connect = MagicMock()
+        self._controller._dir_selected_evt = MagicMock()
+
+        self._controller.view.input_file = MagicMock()
+        self._controller.view.input_file.file_selected = MagicMock()
+        self._controller.view.input_file.file_selected.connect = MagicMock()
+        self._controller._file_selected_evt = MagicMock()
+
+        self._controller.view.shuffle = MagicMock()
+        self._controller.view.shuffle.clicked = MagicMock()
+        self._controller.view.shuffle.clicked.connect = MagicMock()
+        self._controller._shuffle_clicked = MagicMock()
+
+        self._controller._connect_slots()
+
+        self._controller.view.input_dir.file_selected.connect.assert_called_once_with(
+            self._controller._dir_selected_evt
+        )
+        self._controller.view.input_file.file_selected.connect.assert_called_once_with(
+            self._controller._file_selected_evt
+        )
+        self._controller.view.shuffle.clicked.connect.assert_called_once_with(self._controller._shuffle_clicked)
+
     def test_load_from_csv_one_item(self):
         self._controller.view = create_autospec(ImagesView)
         self._controller.view.file_widget = MagicMock()

@@ -8,7 +8,7 @@ from napari_allencell_annotator.controller.annotator_controller import (
     AnnotatorView,
 )
 
-from napari_allencell_annotator.controller.annotator_controller import napari, csv
+from napari_allencell_annotator.controller.annotator_controller import napari, csv, json
 
 
 class TestAnnotatorController:
@@ -24,10 +24,23 @@ class TestAnnotatorController:
         self._controller.set_annot_json_data({})
         assert self._controller.annot_json_data == {}
 
-    def test_set_csv_name(self):
+    def test_set_csv_path(self):
         self._controller.csv_path = None
         self._controller.set_csv_path("name")
         assert self._controller.csv_path == "name"
+
+    def test_write_json_none(self):
+        self._controller.annot_json_data = None
+        json.dump = MagicMock()
+        self._controller.write_json("path.png")
+        json.dump.assert_not_called()
+
+    @patch("builtins.open", new_callable=mock_open, read_data="data")
+    def test_write_json(self, mock_file):
+        self._controller.annot_json_data = {"name": {}, "name2": {}, "name3": {}}
+        json.dump = MagicMock()
+        self._controller.write_json("path.png")
+        json.dump.assert_called_once_with(self._controller.annot_json_data, mock_file("path.png", "w"), indent=4)
 
     def test_start_viewing(self):
         self._controller.annot_json_data = "data"
@@ -153,6 +166,22 @@ class TestAnnotatorController:
         self._controller.record_annotations(prev)
         assert self._controller.files_and_annots[prev] == ["name", "fms", 1, 2, 3]
         self._controller.view.get_curr_annots.assert_called_once_with()
+
+    @patch("builtins.open", new_callable=mock_open, read_data="data")
+    def test_read_json(self, mock_file):
+        json.loads = MagicMock()
+        mock_file.read = MagicMock()
+        self._controller.annot_json_data = None
+
+        self._controller.read_json("path.png")
+        mock_file.assert_called_once_with("path.png", "r")
+        assert self._controller.annot_json_data == json.loads(mock_file.read())
+
+    def test_get_annotations_csv(self):
+        json.loads = MagicMock()
+        self._controller.annot_json_data = None
+        self._controller.get_annotations_csv("str")
+        assert self._controller.annot_json_data == json.loads("str")
 
     @patch("builtins.open", new_callable=mock_open, read_data="data")
     def test_write_csv(self, mock_file):

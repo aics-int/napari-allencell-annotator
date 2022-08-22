@@ -14,6 +14,12 @@ class TestAnnotationWidget:
         self._widget.clear_all()
         self._widget.clear.assert_called_once_with()
 
+    def test_add_new_item_greater_than_10(self):
+        self._widget.count = MagicMock(return_value=10)
+        self._widget.setMaximumHeight = MagicMock()
+        self._widget.add_new_item()
+        self._widget.setMaximumHeight.assert_not_called()
+
     def test_remove_item(self):
         self._widget.takeItem = MagicMock()
         self._widget.row = MagicMock(return_value=5)

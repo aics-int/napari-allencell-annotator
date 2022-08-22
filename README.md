@@ -47,15 +47,17 @@ https://napari.org/plugins/index.html
 
 ## Installation
 
-You can install `napari-allencell-annotator` via [pip]:
+First install the latest version of napari. Find instructions [here](https://napari.org/stable/tutorials/fundamentals/installation.html). If you are unfamiliar with installing Python packages, follow the section titled _Install as a bundled app_.
+
+### Option 1 (recommended):
+
+After you installed napari, you can go to "Plugins" --> "Install/Uninstall Package(s)". Then, you will be able to see all available napari plugins and you can find us by name `napari-allencell-annotator`. Just click the "install" button to install the Annotator plugin.
+
+### Option 2:
+
+You can also install `napari-allencell-annotator` via [pip]:
 
     pip install napari-allencell-annotator
-
-
-
-To install latest development version :
-
-    pip install git+https://github.com/bbridge0200/napari-allencell-annotator.git
 
 ## Quick Start
 
@@ -65,15 +67,19 @@ from a previous plugin-created csv or json file.
 Once an annotation template is chosen and approved, annotating can begin on the image set
 selected in the **Image Uploader** section of the plugin. 
 
-1. Select create new annotation template or upload existing. If the annotation template is uploaded from a csv file, using the image set will open and allow continued editing of all annotations in the csv. 
-2. Select images for annotating (the plugin is able to support .tiff, .tif. ome.tif, .ome.tiff, .czi, .png, .jpeg, and .jpg files). Once selected, the images can be shuffled and hidden or deleted using the checkbox on the right side. 
-3. Start Annotating and select or create a .csv file for writing. If the selected file already exists, it will be overwritten. 
-4. Click Save and Exit at any time and all created image annotations will be written to the .csv file. If the file is opened in the plugin again, annotation will start at the first image with a blank annotation.
-
-To install latest development version :
-
-    pip install git+https://github.com/bbridge0200/napari-allencell-annotator.git
-
+1. Open napari
+2. Start the plugin 
+   - Open napari, go to "Plugins" --> "napari-allencell-annotator".
+3. Click create new annotation template or upload existing.
+   - Up to 10 new annotations can be created. Each annotation must have a unique name and a type (text, number, checkbox, or dropdown).
+   - If the annotation template is uploaded from a csv file, using the image set will open and allow continued editing of all annotations in the csv.
+4. Click add images or add files to select images for annotating 
+   - The plugin is able to support .tiff, .tif. ome.tif, .ome.tiff, .czi, .png, .jpeg, and .jpg files. 
+   - Once selected, the images can be shuffled and hidden or deleted using the checkbox on the right side. 
+5. Start Annotating and select or create a .csv file for writing. 
+   - If the selected file already exists, it will be overwritten. 
+6. Click Save and Exit at any time and all created image annotations will be written to the .csv file. 
+   - If the file is opened in the plugin again, annotation will start at the first image with a blank annotation.
 
 ## Contributing
 

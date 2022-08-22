@@ -1,4 +1,5 @@
 from unittest import mock
+import pytest
 from unittest.mock import MagicMock, create_autospec
 
 from napari_allencell_annotator.controller.main_controller import (
@@ -22,6 +23,82 @@ class TestMainController:
 
             self._controller.annots = create_autospec(AnnotatorController)
             self._controller.annots.view = MagicMock()
+
+    def test_connect_slots(self):
+        self._controller.annots.view.start_btn = MagicMock()
+        self._controller.annots.view.start_btn.clicked = MagicMock()
+        self._controller.annots.view.start_btn.clicked.connect = MagicMock()
+        self._controller._start_annotating_clicked = MagicMock()
+
+        self._controller.annots.view.next_btn = MagicMock()
+        self._controller.annots.view.next_btn.clicked = MagicMock()
+        self._controller.annots.view.next_btn.clicked.connect = MagicMock()
+        self._controller._next_image_clicked = MagicMock()
+
+        self._controller.annots.view.prev_btn = MagicMock()
+        self._controller.annots.view.prev_btn.clicked = MagicMock()
+        self._controller.annots.view.prev_btn.clicked.connect = MagicMock()
+        self._controller._prev_image_clicked = MagicMock()
+
+        self._controller.annots.view.csv_input = MagicMock()
+        self._controller.annots.view.csv_input.file_selected = MagicMock()
+        self._controller.annots.view.csv_input.file_selected.connect = MagicMock()
+        self._controller._csv_write_selected_evt = MagicMock()
+
+        self._controller.annots.view.save_exit_btn = MagicMock()
+        self._controller.annots.view.save_exit_btn.clicked = MagicMock()
+        self._controller.annots.view.save_exit_btn.clicked.connect = MagicMock()
+        self._controller._save_and_exit_clicked = MagicMock()
+
+        self._controller.annots.view.import_btn = MagicMock()
+        self._controller.annots.view.import_btn.clicked = MagicMock()
+        self._controller.annots.view.import_btn.clicked.connect = MagicMock()
+        self._controller._import_annots_clicked = MagicMock()
+
+        self._controller.annots.view.annot_input = MagicMock()
+        self._controller.annots.view.annot_input.file_selected = MagicMock()
+        self._controller.annots.view.annot_input.file_selected.connect = MagicMock()
+        self._controller._csv_json_import_selected_evt = MagicMock()
+
+        self._controller.annots.view.create_btn = MagicMock()
+        self._controller.annots.view.create_btn.clicked = MagicMock()
+        self._controller.annots.view.create_btn.clicked.connect = MagicMock()
+        self._controller._create_clicked = MagicMock()
+
+        self._controller.annots.view.save_json_btn = MagicMock()
+        self._controller.annots.view.save_json_btn.file_selected = MagicMock()
+        self._controller.annots.view.save_json_btn.file_selected.connect = MagicMock()
+        self._controller._json_write_selected_evt = MagicMock()
+
+        self._controller._connect_slots()
+
+        self._controller.annots.view.start_btn.clicked.connect.assert_called_once_with(
+            self._controller._start_annotating_clicked
+        )
+        self._controller.annots.view.next_btn.clicked.connect.assert_called_once_with(
+            self._controller._next_image_clicked
+        )
+        self._controller.annots.view.prev_btn.clicked.connect.assert_called_once_with(
+            self._controller._prev_image_clicked
+        )
+        self._controller.annots.view.csv_input.file_selected.connect.assert_called_once_with(
+            self._controller._csv_write_selected_evt
+        )
+        self._controller.annots.view.save_exit_btn.clicked.connect.assert_called_once_with(
+            self._controller._save_and_exit_clicked
+        )
+        self._controller.annots.view.import_btn.clicked.connect.assert_called_once_with(
+            self._controller._import_annots_clicked
+        )
+        self._controller.annots.view.annot_input.file_selected.connect.assert_called_once_with(
+            self._controller._csv_json_import_selected_evt
+        )
+        self._controller.annots.view.create_btn.clicked.connect.assert_called_once_with(
+            self._controller._create_clicked
+        )
+        self._controller.annots.view.save_json_btn.file_selected.connect.assert_called_once_with(
+            self._controller._json_write_selected_evt
+        )
 
     def test_create_clicked_reject(self):
         with mock.patch.object(CreateDialog, "__init__", lambda x, y: None):
@@ -120,6 +197,31 @@ class TestMainController:
         self._controller.annots.read_json.assert_not_called()
         self._controller.annots.start_viewing.assert_called_once_with()
 
+    def test_csv_json_imported_selected_evt_csv_true_last_row(self):
+        self._controller.str_to_bool = MagicMock(return_value=True)
+        self._controller.starting_row = None
+        self._controller.csv_annotation_values = {}
+
+        self._controller.annots.view.popup = MagicMock(return_value=True)
+        path: str = str(Directories.get_test_assets_dir() / "test3.csv")
+        self._controller.has_none_annotation = MagicMock(side_effect=[False, False, False, False])
+        self._controller._csv_json_import_selected_evt([path])
+
+        assert self._controller.csv_annotation_values == {
+            "file.png": ["file", "", "text", "text", "text"],
+            "file2.png": ["file2", "", "text", "text", "text"],
+            "file3.png": ["file3", "", "text", "text", "text"],
+            "file4.png": ["file4", "", "text", "text", "text"],
+        }
+        assert self._controller.starting_row == 3
+        self._controller.annots.get_annotations_csv.assert_called_once_with('{"name": {}, "name2": {}, "name3": {}}')
+
+        self._controller.images.load_from_csv.assert_called_once_with(
+            self._controller.csv_annotation_values.keys(), True
+        )
+        self._controller.annots.read_json.assert_not_called()
+        self._controller.annots.start_viewing.assert_called_once_with()
+
     def test_shuffle_toggled_true(self):
         self._controller.has_new_shuffled_order = False
 
@@ -145,6 +247,10 @@ class TestMainController:
         assert not self._controller.str_to_bool("False")
         assert not self._controller.str_to_bool("FALSE")
         assert not self._controller.str_to_bool("false")
+
+    def test_str_to_bool_error(self):
+        with pytest.raises(ValueError, match="The value 'hello' cannot be mapped to boolean."):
+            self._controller.str_to_bool("hello")
 
     def test_import_annots_clicked(self):
         self._controller._import_annots_clicked()
@@ -664,6 +770,38 @@ class TestMainController:
         assert self._controller.starting_row == 0
         self._controller.has_none_annotation.assert_not_called()
 
+    def test_unequal_shuffled_fix_csv_annotations_additions_deletions_start_row_alr_annt(self):
+        dct = {
+            "name3.png": ["name3", ""],
+            "name1.png": ["name1", ""],
+            "name2.png": ["name2", ""],
+            "name7.png": ["name7", ""],
+            "name6.png": ["name6", ""],
+        }
+        self._controller.csv_annotation_values = {
+            "name1.png": ["name1", "", True, "hello"],
+            "name2.png": ["name2", "", None, "hello"],
+            "name3.png": ["name3", "", False, "hello"],
+            "name4.png": ["name4", "", True, "hello"],
+            "name5.png": ["name5", "", False, "hello"],
+        }
+        self._controller.starting_row = 1
+        self._controller.has_none_annotation = MagicMock(side_effect=[False, False, True])  # set side effect
+        self._controller._unequal_shuffled_fix_csv_annotations(dct)
+
+        assert self._controller.csv_annotation_values == {
+            "name3.png": ["name3", "", False, "hello"],
+            "name1.png": ["name1", "", True, "hello"],
+            "name2.png": ["name2", "", None, "hello"],
+            "name7.png": ["name7", ""],
+            "name6.png": ["name6", ""],
+        }
+
+        assert self._controller.starting_row == 2
+        self._controller.has_none_annotation.assert_has_calls(
+            [mock.call([False, "hello"]), mock.call([True, "hello"]), mock.call([None, "hello"])], any_order=True
+        )
+
     def test_unequal_shuffled_fix_csv_annotations_additions_deletions_end_start_row(self):
         dct = {
             "name3.png": ["name3", ""],
@@ -764,6 +902,50 @@ class TestMainController:
         assert self._controller.starting_row == 0
         self._controller.has_none_annotation.assert_called_once_with(["", ""])
 
+    def test_equal_shuffled_fix_csv_annotations_additions_end_start_row(self):
+        dct = {
+            "name6.png": ["name6", ""],
+            "name3.png": ["name3", ""],
+            "name1.png": ["name1", ""],
+            "name2.png": ["name2", ""],
+            "name4.png": ["name4", ""],
+            "name5.png": ["name5", ""],
+        }
+        self._controller.csv_annotation_values = {
+            "name1.png": ["name1", "", True, "hello"],
+            "name2.png": ["name2", "", True, "hello"],
+            "name3.png": ["name3", "", False, "hello"],
+            "name4.png": ["name4", "", True, "hello"],
+            "name5.png": ["name5", "", False, "hello"],
+            "name6.png": ["name6", "", True, "hello"],
+        }
+        self._controller.starting_row = 5
+        self._controller.has_none_annotation = MagicMock(
+            side_effect=[False, False, False, False, False, False]
+        )  # set side effect
+        self._controller._equal_shuffled_fix_csv_annotations(dct)
+
+        assert self._controller.csv_annotation_values == {
+            "name5.png": ["name5", "", False, "hello"],
+            "name3.png": ["name3", "", False, "hello"],
+            "name1.png": ["name1", "", True, "hello"],
+            "name2.png": ["name2", "", True, "hello"],
+            "name4.png": ["name4", "", True, "hello"],
+            "name6.png": ["name6", "", True, "hello"],
+        }
+
+        assert self._controller.starting_row == 5
+        self._controller.has_none_annotation.assert_has_calls(
+            [
+                mock.call([True, "hello"]),
+                mock.call([False, "hello"]),
+                mock.call([True, "hello"]),
+                mock.call([True, "hello"]),
+                mock.call([True, "hello"]),
+                mock.call([False, "hello"]),
+            ]
+        )
+
     def test_next_image_clicked_save(self):
         self._controller._next_image_clicked()
         self._controller.annots.record_annotations.assert_called_once_with(
@@ -778,6 +960,18 @@ class TestMainController:
             self._controller.images.curr_img_dict()["File Path"]
         )
         self._controller.images.prev_img.assert_called_once_with()
+        self._controller.annots.set_curr_img.assert_called_once_with(self._controller.images.curr_img_dict())
+
+    def test_image_selected_previous_none(self):
+        self._controller._image_selected("curr", None)
+        self._controller.annots.record_annotations.assert_not_called()
+        self._controller.annots.set_curr_img.assert_called_once_with(self._controller.images.curr_img_dict())
+
+    def test_image_selected(self):
+        prev = MagicMock()
+        prev.file_path = "path"
+        self._controller._image_selected("current", prev)
+        self._controller.annots.record_annotations.assert_called_once_with("path")
         self._controller.annots.set_curr_img.assert_called_once_with(self._controller.images.curr_img_dict())
 
     def test_save_and_exit_clicked_false(self):

@@ -1,4 +1,4 @@
-from typing import List
+from typing import Set
 
 from qtpy import QtWidgets
 from qtpy.QtCore import Qt
@@ -10,7 +10,7 @@ class ScrollablePopup(QDialog):
     A class used to create a popup asking for user approval that displays a scrollable list.
     """
 
-    def __init__(self, question: str, lst: List[str], parent=None):
+    def __init__(self, question: str, names: Set[str], parent=None):
         super().__init__(parent)
         self.setMinimumSize(500, 500)
 
@@ -20,7 +20,7 @@ class ScrollablePopup(QDialog):
         self.content = QListWidget()
         self.scroll.setWidget(self.content)
 
-        for str in lst:
+        for str in names:
             widget = QLabel(str)
             item = QListWidgetItem(self.content)
             item.setSizeHint(widget.minimumSizeHint())

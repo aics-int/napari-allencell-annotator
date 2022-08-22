@@ -160,7 +160,8 @@ class ImagesController:
             if len(os.listdir(d)) < 1:
                 self.view.alert("Folder is empty")
             else:
-                for file in os.listdir(d):
+                for file in [file for file in os.listdir(d) if not file.startswith(".")]:
+
                     file = d + "/" + file
                     if self.is_supported(file):
                         self.view.file_widget.add_new_item(file)
