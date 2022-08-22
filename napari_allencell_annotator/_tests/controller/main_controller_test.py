@@ -250,7 +250,7 @@ class TestMainController:
 
     def test_str_to_bool_error(self):
         with pytest.raises(ValueError, match="The value 'hello' cannot be mapped to boolean."):
-            self._controller.str_to_bool('hello')
+            self._controller.str_to_bool("hello")
 
     def test_import_annots_clicked(self):
         self._controller._import_annots_clicked()
@@ -920,7 +920,9 @@ class TestMainController:
             "name6.png": ["name6", "", True, "hello"],
         }
         self._controller.starting_row = 5
-        self._controller.has_none_annotation = MagicMock(side_effect=[False,False,False,False,False,False])  # set side effect
+        self._controller.has_none_annotation = MagicMock(
+            side_effect=[False, False, False, False, False, False]
+        )  # set side effect
         self._controller._equal_shuffled_fix_csv_annotations(dct)
 
         assert self._controller.csv_annotation_values == {
@@ -933,7 +935,16 @@ class TestMainController:
         }
 
         assert self._controller.starting_row == 5
-        self._controller.has_none_annotation.assert_has_calls([mock.call([True, "hello"]), mock.call([False, "hello"]), mock.call([True, "hello"]), mock.call([True, "hello"]), mock.call([True, "hello"]),mock.call([False, "hello"])])
+        self._controller.has_none_annotation.assert_has_calls(
+            [
+                mock.call([True, "hello"]),
+                mock.call([False, "hello"]),
+                mock.call([True, "hello"]),
+                mock.call([True, "hello"]),
+                mock.call([True, "hello"]),
+                mock.call([False, "hello"]),
+            ]
+        )
 
     def test_next_image_clicked_save(self):
         self._controller._next_image_clicked()

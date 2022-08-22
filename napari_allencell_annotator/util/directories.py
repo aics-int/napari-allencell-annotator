@@ -10,12 +10,9 @@ class Directories:
 
     _module_base_dir = Path(napari_allencell_annotator.__file__).parent
 
-
-
     @classmethod
     def get_test_assets_dir(cls) -> Path:
         """
         Path to the assets directory
         """
         return cls._module_base_dir / "_tests/assets"
-

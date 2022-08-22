@@ -275,13 +275,22 @@ class TestAnnotationItem:
         self._item._unhighlight.assert_has_calls([mock.call(self._item.name)])
         self._item.highlight.assert_not_called()
 
-    def test_get_data_check(self):
+    def test_get_data_checked(self):
         self._item.name.text = MagicMock(return_value="name")
         self._item._unhighlight = MagicMock()
         self._item.type.currentText = MagicMock(return_value="checkbox")
         self._item.default_check = MagicMock()
         self._item.default_check.currentText = MagicMock(return_value="checked")
         assert self._item.get_data() == (True, "name", {"default": True, "type": "bool"}, "")
+        self._item._unhighlight.assert_has_calls([mock.call(self._item.name)])
+
+    def test_get_data_unchecked(self):
+        self._item.name.text = MagicMock(return_value="name")
+        self._item._unhighlight = MagicMock()
+        self._item.type.currentText = MagicMock(return_value="checkbox")
+        self._item.default_check = MagicMock()
+        self._item.default_check.currentText = MagicMock(return_value="unchecked")
+        assert self._item.get_data() == (True, "name", {"default": False, "type": "bool"}, "")
         self._item._unhighlight.assert_has_calls([mock.call(self._item.name)])
 
     def test_highlight(self):

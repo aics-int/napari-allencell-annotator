@@ -5,6 +5,7 @@ from napari_allencell_annotator.view.images_view import ImagesView, FileItem, Sc
 
 from napari_allencell_annotator.view.images_view import AICSImage
 from napari_allencell_annotator.view.images_view import napari
+from napari_allencell_annotator.view.images_view import exceptions
 
 
 class TestImagesView:
@@ -48,26 +49,27 @@ class TestImagesView:
         self._view._delete_clicked()
         self._view.alert.assert_called_once_with("No Images Selected")
 
-    def test_delete_clicked_accept(self):
-        # test nothing checked
+    @patch("napari_allencell_annotator.view.images_view.ScrollablePopup.__init__")
+    def test_delete_clicked_accept(self, mock_init):
+        mock_init.return_value = None
         self._view.file_widget = create_autospec(FilesWidget)
         item = create_autospec(FileItem)
         item.file_path = "path"
-        self._view.file_widget.checked = set(item)
+        self._view.file_widget.checked = {item}
         self._view.alert = MagicMock()
-        with mock.patch.object(ScrollablePopup, "__init__", lambda x, y,z: None):
-            ScrollablePopup.exec = MagicMock(return_value=QDialog.Accepted)
-            self._view.file_widget.delete_checked = MagicMock()
+        ScrollablePopup.exec = MagicMock(return_value=QDialog.Accepted)
+        self._view.file_widget.delete_checked = MagicMock()
         self._view._delete_clicked()
 
         self._view.alert.assert_not_called()
 
-        ScrollablePopup.__init__.assert_called_once_with("Delete these files from the list?", ["--- path"])
+        mock_init.assert_called_once_with("Delete these files from the list?", {"--- path"})
         ScrollablePopup.exec.assert_called_once_with()
         self._view.file_widget.delete_checked.assert_called_once_with()
 
-    def test_delete_clicked_reject(self):
-        # test nothing checked
+    @patch("napari_allencell_annotator.view.images_view.ScrollablePopup.__init__")
+    def test_delete_clicked_reject(self, mock_init):
+        mock_init.return_value = None
         self._view.file_widget: MagicMock = MagicMock()
         item = create_autospec(FileItem)
         item.file_path = "path"
@@ -75,16 +77,19 @@ class TestImagesView:
         item2.file_path = "path2"
         self._view.file_widget.checked = {item, item2}
         self._view.alert = MagicMock()
-        with mock.patch.object(ScrollablePopup, "__init__", lambda x, y,z: None):
-            ScrollablePopup.exec = MagicMock(return_value=QDialog.Rejected)
-            self._view.file_widget.delete_checked = MagicMock()
-            self._view._delete_clicked()
+        ScrollablePopup.exec = MagicMock(return_value=QDialog.Rejected)
+        self._view.file_widget.delete_checked = MagicMock()
+        self._view._delete_clicked()
 
         self._view.alert.assert_not_called()
-        ScrollablePopup.assert_called_once_with("Delete these files from the list?", ["--- path", "--- path2"])
+        mock_init.assert_called_once_with("Delete these files from the list?", {"--- path", "--- path2"})
         ScrollablePopup.exec.assert_called_once_with()
         self._view.file_widget.delete_checked.assert_not_called()
 
+    def test_alert(self):
+        with mock.patch("napari_allencell_annotator.view.images_view.show_info") as mock_info:
+            self._view.alert("hello")
+            mock_info.assert_called_once_with("hello")
 
     def test_toggle_add(self):
         # check enabled and un-enabled
@@ -148,7 +153,6 @@ class TestImagesView:
         self._view.AICSImage.assert_not_called()
 
     def test_display_img(self):
-        # current item none
         self._view.viewer.layers = MagicMock()
         self._view.viewer.layers.clear = MagicMock()
         prev = create_autospec(FileItem)
@@ -167,3 +171,49 @@ class TestImagesView:
             self._view.viewer.add_image.assert_called_once_with("data")
             curr.highlight.assert_called_once_with()
             prev.unhighlight.assert_called_once_with()
+
+    def test_display_img_unsupported(self):
+        self._view.viewer.layers = MagicMock()
+        self._view.viewer.layers.clear = MagicMock()
+        prev = create_autospec(FileItem)
+        prev.unhighlight = MagicMock()
+        curr = create_autospec(FileItem)
+        curr.file_path = MagicMock(return_value="path")
+        curr.highlight = MagicMock()
+
+        self._view.viewer.add_image = MagicMock()
+        with mock.patch.object(exceptions.UnsupportedFileFormatError, "__init__", lambda x, y, z: None):
+            AICSImage.__init__ = MagicMock(side_effect=exceptions.UnsupportedFileFormatError("x", "y"))
+            AICSImage.data = "data"
+            self._view.alert = MagicMock()
+            self._view._display_img(curr, prev)
+
+            self._view.viewer.layers.clear.assert_called_once_with()
+            self._view.viewer.add_image.assert_not_called()
+            curr.highlight.assert_not_called()
+            prev.unhighlight.assert_called_once_with()
+            self._view.alert.assert_called_once_with("AICS Unsupported File Type")
+
+    def test_display_img_file_not_found(self):
+        # current item none
+        self._view.viewer.layers = MagicMock()
+        self._view.viewer.layers.clear = MagicMock()
+        prev = create_autospec(FileItem)
+        prev.unhighlight = MagicMock()
+        curr = create_autospec(FileItem)
+        curr.file_path = MagicMock(return_value="path")
+        curr.highlight = MagicMock()
+        self._view.file_widget = create_autospec(FilesWidget)
+
+        self._view.viewer.add_image = MagicMock()
+        AICSImage.__init__ = MagicMock(side_effect=FileNotFoundError)
+        AICSImage.data = "data"
+        self._view.alert = MagicMock()
+        self._view._display_img(curr, prev)
+
+        self._view.file_widget.remove_item.assert_called_once_with(curr)
+        self._view.viewer.layers.clear.assert_called_once_with()
+        self._view.viewer.add_image.assert_not_called()
+        curr.highlight.assert_not_called()
+        prev.unhighlight.assert_called_once_with()
+        self._view.alert.assert_called_once_with("File Not Found")
