@@ -4,6 +4,7 @@ from psygnal._signal import Signal
 from napari_allencell_annotator.widgets.annotation_item import AnnotationItem
 from napari_allencell_annotator._style import Style
 
+
 class AnnotationWidget(QListWidget):
     """
     A class used to create a QListWidget for annotations that are created.

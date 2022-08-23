@@ -166,6 +166,7 @@ class AnnotatorView(QFrame):
         self.next_btn = QPushButton("Next >")
         self.next_btn.setEnabled(True)
         self.progress_bar = QLabel()
+        self.progress_bar.setAlignment(Qt.AlignCenter)
         annot_layout.addWidget(self.progress_bar, 0, 1, 1, 2)
         annot_layout.addWidget(self.save_exit_btn, 1, 0, 1, 2)
         annot_layout.addWidget(self.prev_btn, 1, 2, 1, 1)

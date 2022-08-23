@@ -83,10 +83,9 @@ class FileItem(QListWidgetItem):
         str
             truncated file name
         """
-        # todo change
         path: str = self.get_name()
-        if len(path) > 28:
-            path = path[0:27] + "..."
+        if len(path) > 36:
+            path = path[0:15] + "..." + path[-18:]
         return path
 
     def highlight(self):

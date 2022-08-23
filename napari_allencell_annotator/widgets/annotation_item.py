@@ -27,7 +27,6 @@ class AnnotationItem(QListWidgetItem):
         self.layout = QGridLayout()
         name_label = QLabel("Name:")
 
-
         self.name = QLineEdit()
         self.name.setPlaceholderText("Enter name")
 

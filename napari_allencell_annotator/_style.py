@@ -1,5 +1,6 @@
 from napari_allencell_annotator.util.directories import Directories
 
+
 class Style:
     cache = dict()
 
