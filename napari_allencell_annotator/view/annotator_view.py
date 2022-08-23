@@ -1,8 +1,8 @@
 from enum import Enum
 from typing import Dict, List, Optional, Any, Union
 
+from PyQt5.QtWidgets import QFrame, QLayout
 from qtpy.QtCore import Qt
-from qtpy.QtGui import QFont
 from qtpy.QtWidgets import (
     QWidget,
     QHBoxLayout,
@@ -26,6 +26,7 @@ from napari_allencell_annotator.widgets.file_input import (
     FileInput,
     FileInputMode,
 )
+from napari_allencell_annotator._style import Style
 
 
 class AnnotatorViewMode(Enum):
@@ -42,7 +43,7 @@ class AnnotatorViewMode(Enum):
     ANNOTATE = "annotate"
 
 
-class AnnotatorView(QWidget):
+class AnnotatorView(QFrame):
     """
     A class used to create a view for annotations.
 
@@ -96,9 +97,9 @@ class AnnotatorView(QWidget):
         self._mode = mode
         label = QLabel("Annotations")
         label.setAlignment(Qt.AlignCenter)
-        label.setFont(QFont("Arial", 15))
         self.layout = QVBoxLayout()
         self.layout.addWidget(label)
+        self.setStyleSheet(Style.get_stylesheet("main.qss"))
 
         self.annot_list = QListWidget()
         self.annot_list.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
@@ -127,9 +128,9 @@ class AnnotatorView(QWidget):
         # Add widget visible in ADD mode
         self.add_widget = QWidget()
         add_layout = QHBoxLayout()
-        self.create_btn = QPushButton("Create New Annotation Template")
+        self.create_btn = QPushButton("Create Template")
         self.create_btn.setEnabled(True)
-        self.import_btn = QPushButton("Import Existing Annotation Template (.csv or .json)")
+        self.import_btn = QPushButton("Import Template (.csv or .json)")
         self.import_btn.setEnabled(True)
         self.annot_input = FileInput(mode=FileInputMode.JSONCSV, placeholder_text="Start Annotating")
         self.annot_input.toggle(False)
@@ -164,6 +165,7 @@ class AnnotatorView(QWidget):
         self.next_btn = QPushButton("Next >")
         self.next_btn.setEnabled(True)
         self.progress_bar = QLabel()
+        self.progress_bar.setAlignment(Qt.AlignCenter)
         annot_layout.addWidget(self.progress_bar, 0, 1, 1, 2)
         annot_layout.addWidget(self.save_exit_btn, 1, 0, 1, 2)
         annot_layout.addWidget(self.prev_btn, 1, 2, 1, 1)
@@ -356,6 +358,7 @@ class AnnotatorView(QWidget):
         item.setEnabled(True)
         layout.setContentsMargins(2, 12, 8, 12)
         layout.setSpacing(2)
+        layout.setSizeConstraint(QLayout.SetMinimumSize)
         widget.setLayout(layout)
         list_item = QListWidgetItem(self.annot_list)
         list_item.setSizeHint(widget.minimumSizeHint())

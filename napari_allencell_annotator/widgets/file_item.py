@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import QLayout
 from qtpy.QtWidgets import (
     QListWidgetItem,
     QListWidget,
@@ -35,7 +37,10 @@ class FileItem(QListWidgetItem):
             self.label = QLabel("Image " + str(parent.row(self) + 1))
         else:
             self.label = QLabel(self._make_display_name())
+        self.label.setFont(QFont("Arial", 18))
+
         self.layout.addWidget(self.label, stretch=19)
+
         self.check = QCheckBox()
         self.check.setCheckState(False)
         self.check.setCheckable(not hidden)
@@ -49,8 +54,10 @@ class FileItem(QListWidgetItem):
                 }
         """
         )
+        self.layout.setSizeConstraint(QLayout.SetMinimumSize)
         self.widget.setLayout(self.layout)
-        self.setSizeHint(self.widget.sizeHint())
+
+        self.setSizeHint(self.widget.minimumSizeHint())
         if parent is not None:
             parent.setItemWidget(self, self.widget)
 
@@ -76,10 +83,9 @@ class FileItem(QListWidgetItem):
         str
             truncated file name
         """
-        # todo change
         path: str = self.get_name()
-        if len(path) > 28:
-            path = path[0:27] + "..."
+        if len(path) > 36:
+            path = path[0:15] + "..." + path[-18:]
         return path
 
     def highlight(self):
@@ -100,4 +106,6 @@ class FileItem(QListWidgetItem):
 
     def __eq__(self, other):
         """Compares two ListItems file_path attributes"""
+        if not isinstance(other, type(self)):
+            return NotImplemented
         return self._file_path == other._file_path
