@@ -2,7 +2,6 @@ from typing import Set
 
 from PyQt5.QtWidgets import QFrame
 from qtpy.QtCore import Qt
-from qtpy.QtGui import QFont
 
 from qtpy.QtWidgets import (
     QWidget,
