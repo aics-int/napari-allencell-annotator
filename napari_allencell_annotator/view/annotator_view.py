@@ -3,7 +3,6 @@ from typing import Dict, List, Optional, Any, Union
 
 from PyQt5.QtWidgets import QFrame, QLayout
 from qtpy.QtCore import Qt
-from qtpy.QtGui import QFont
 from qtpy.QtWidgets import (
     QWidget,
     QHBoxLayout,
