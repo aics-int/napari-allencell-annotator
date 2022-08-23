@@ -47,7 +47,7 @@ class ImagesView(QFrame):
         viewer : napari.Viewer
             The napari viewer for the plugin
         ctrl : ImagesController
-            The controller
+            The images controller
         """
         super().__init__()
 
