@@ -1,4 +1,6 @@
 from typing import Tuple, Dict
+
+from PyQt5.QtWidgets import QLayout
 from qtpy import QtWidgets
 from qtpy.QtWidgets import (
     QListWidgetItem,
@@ -24,6 +26,8 @@ class AnnotationItem(QListWidgetItem):
         self.widget = QWidget()
         self.layout = QGridLayout()
         name_label = QLabel("Name:")
+
+
         self.name = QLineEdit()
         self.name.setPlaceholderText("Enter name")
 
@@ -33,11 +37,13 @@ class AnnotationItem(QListWidgetItem):
         self.name.setWhatsThis("name")
         self.type.setWhatsThis("type")
         self.name_widget = QWidget()
-        name_layout = QHBoxLayout()
+        self.name_layout = QHBoxLayout()
         self.check = QCheckBox()
-        name_layout.addWidget(self.check)
-        name_layout.addWidget(name_label)
-        self.name_widget.setLayout(name_layout)
+
+        self.name_layout.addWidget(self.check)
+        self.name_layout.addWidget(name_label)
+        self.name_layout.setSizeConstraint(QLayout.SetMinimumSize)
+        self.name_widget.setLayout(self.name_layout)
         self.layout.addWidget(self.name_widget, 0, 0, 1, 1)
         self.layout.addWidget(self.name, 0, 1, 1, 2)
         self.layout.addWidget(type_label, 0, 3, 1, 1)

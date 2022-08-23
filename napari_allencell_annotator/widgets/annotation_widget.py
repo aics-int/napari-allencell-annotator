@@ -2,7 +2,7 @@ from qtpy.QtWidgets import QListWidget, QAbstractItemView
 from psygnal._signal import Signal
 
 from napari_allencell_annotator.widgets.annotation_item import AnnotationItem
-
+from napari_allencell_annotator._style import Style
 
 class AnnotationWidget(QListWidget):
     """
@@ -18,6 +18,7 @@ class AnnotationWidget(QListWidget):
         self.num_checked: int = 0
         # allow drag and drop rearrangement
         self.setDragDropMode(QAbstractItemView.InternalMove)
+        self.setStyleSheet(Style.get_stylesheet("main.qss"))
 
         # TODO: styling https://blog.actorsfit.com/a?ID=01450-929cf741-2d80-418c-8a55-a52395053369
 
