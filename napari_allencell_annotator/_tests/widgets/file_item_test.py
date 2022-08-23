@@ -1,5 +1,5 @@
 from unittest import mock
-from unittest.mock import create_autospec
+from unittest.mock import create_autospec, MagicMock
 
 from napari_allencell_annotator.widgets.file_item import FileItem, QLabel, QCheckBox
 
@@ -24,6 +24,29 @@ class TestFileItem:
         self._widget.unhide()
         self._widget.label.setText.assert_called_once_with(self._widget._make_display_name())
         self._widget.check.setCheckable.assert_called_once_with(True)
+
+    def test_make_display_name_less_than(self):
+        self._widget.get_name = MagicMock(return_value="name")
+        assert "name" == self._widget._make_display_name()
+
+    def test_make_display_name(self):
+        self._widget.get_name = MagicMock(return_value="123456789012345678901234567890")
+        assert "123456789012345678901234567..." == self._widget._make_display_name()
+
+    def test_highlight(self):
+        self._widget.label = create_autospec(QLabel)
+        self._widget.highlight()
+        self._widget.label.setStyleSheet.assert_called_once_with(
+            """QLabel{
+                            font-weight: bold;
+                            text-decoration: underline;
+                        }"""
+        )
+
+    def test_unhighlight(self):
+        self._widget.label = create_autospec(QLabel)
+        self._widget.unhighlight()
+        self._widget.label.setStyleSheet.assert_called_once_with("""QLabel{}""")
 
     def test_eq(self):
         path = "path"

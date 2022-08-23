@@ -13,7 +13,7 @@ class AnnotationWidget(QListWidget):
     # signal emitted when annotation check boxes are selected
     annots_selected = Signal(bool)
 
-    def __init__(self):
+    def __init__(self):  # pragma: no-cover
         QListWidget.__init__(self)
         self.num_checked: int = 0
         # allow drag and drop rearrangement
@@ -31,6 +31,7 @@ class AnnotationWidget(QListWidget):
         Adds a new Annotation Item to the list. .
 
         Only allows 10 items to be added.
+        # todo alert user only 10 allowed
         """
         if self.count() < 10:
             item = AnnotationItem(self)

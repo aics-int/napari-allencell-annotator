@@ -1,7 +1,7 @@
 from unittest import mock
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, create_autospec
 
-from napari_allencell_annotator.widgets.annotation_item import AnnotationItem
+from napari_allencell_annotator.widgets.annotation_item import AnnotationItem, QLineEdit, QGridLayout, QWidget, QLabel
 
 
 class TestAnnotationItem:
@@ -12,6 +12,66 @@ class TestAnnotationItem:
             self._item.type = MagicMock()
             self._item.default_text = MagicMock()
             self._item.default_options = MagicMock()
+
+    def test_type_changed_dropdown(self):
+        self._item.layout = create_autospec(QGridLayout)
+        widget = create_autospec(QWidget)
+        self._item.layout.itemAtPosition(0, 7).widget = MagicMock(return_value=widget)
+        self._item.default_options_label = create_autospec(QLabel)
+
+        self._item._type_changed("dropdown")
+
+        widget.setParent.assert_called_once_with(None)
+        self._item.layout.removeWidget.assert_called_once_with(widget)
+
+        self._item.default_options.show.assert_called_once_with()
+        self._item.default_options_label.show.assert_called_once_with()
+        self._item.layout.addWidget.assert_called_once_with(self._item.default_text, 0, 7, 1, 2)
+
+    def test_type_changed_checkbox(self):
+        self._item.layout = create_autospec(QGridLayout)
+        widget = create_autospec(QWidget)
+        self._item.layout.itemAtPosition(0, 7).widget = MagicMock(return_value=widget)
+        self._item.default_options_label = create_autospec(QLabel)
+        self._item.default_check = MagicMock()
+        self._item._type_changed("checkbox")
+
+        widget.setParent.assert_called_once_with(None)
+        self._item.layout.removeWidget.assert_called_once_with(widget)
+
+        self._item.default_options.hide.assert_called_once_with()
+        self._item.default_options_label.hide.assert_called_once_with()
+        self._item.layout.addWidget.assert_called_once_with(self._item.default_check, 0, 7, 1, 2)
+
+    def test_type_changed_number(self):
+        self._item.layout = create_autospec(QGridLayout)
+        widget = create_autospec(QWidget)
+        self._item.layout.itemAtPosition(0, 7).widget = MagicMock(return_value=widget)
+        self._item.default_options_label = create_autospec(QLabel)
+        self._item.default_num = MagicMock()
+        self._item._type_changed("number")
+
+        widget.setParent.assert_called_once_with(None)
+        self._item.layout.removeWidget.assert_called_once_with(widget)
+
+        self._item.default_options.hide.assert_called_once_with()
+        self._item.default_options_label.hide.assert_called_once_with()
+        self._item.layout.addWidget.assert_called_once_with(self._item.default_num, 0, 7, 1, 2)
+
+    def test_type_changed_text(self):
+        self._item.layout = create_autospec(QGridLayout)
+        widget = create_autospec(QWidget)
+        self._item.layout.itemAtPosition(0, 7).widget = MagicMock(return_value=widget)
+        self._item.default_options_label = create_autospec(QLabel)
+
+        self._item._type_changed("text")
+
+        widget.setParent.assert_called_once_with(None)
+        self._item.layout.removeWidget.assert_called_once_with(widget)
+
+        self._item.default_options.hide.assert_called_once_with()
+        self._item.default_options_label.hide.assert_called_once_with()
+        self._item.layout.addWidget.assert_called_once_with(self._item.default_text, 0, 7, 1, 2)
 
     def test_get_data_none_name_text_none_default(self):
         self._item.name.text = MagicMock(return_value=None)
@@ -215,7 +275,7 @@ class TestAnnotationItem:
         self._item._unhighlight.assert_has_calls([mock.call(self._item.name)])
         self._item.highlight.assert_not_called()
 
-    def test_get_data_check(self):
+    def test_get_data_checked(self):
         self._item.name.text = MagicMock(return_value="name")
         self._item._unhighlight = MagicMock()
         self._item.type.currentText = MagicMock(return_value="checkbox")
@@ -223,3 +283,22 @@ class TestAnnotationItem:
         self._item.default_check.currentText = MagicMock(return_value="checked")
         assert self._item.get_data() == (True, "name", {"default": True, "type": "bool"}, "")
         self._item._unhighlight.assert_has_calls([mock.call(self._item.name)])
+
+    def test_get_data_unchecked(self):
+        self._item.name.text = MagicMock(return_value="name")
+        self._item._unhighlight = MagicMock()
+        self._item.type.currentText = MagicMock(return_value="checkbox")
+        self._item.default_check = MagicMock()
+        self._item.default_check.currentText = MagicMock(return_value="unchecked")
+        assert self._item.get_data() == (True, "name", {"default": False, "type": "bool"}, "")
+        self._item._unhighlight.assert_has_calls([mock.call(self._item.name)])
+
+    def test_highlight(self):
+        objct = create_autospec(QLineEdit)
+        self._item.highlight(objct)
+        objct.setStyleSheet.assert_called_once_with("""QLineEdit{border: 1px solid red}""")
+
+    def test_unhighlight(self):
+        objct = create_autospec(QLineEdit)
+        self._item._unhighlight(objct)
+        objct.setStyleSheet.assert_called_once_with("""QLineEdit{}""")

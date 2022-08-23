@@ -1,4 +1,4 @@
-from typing import List
+from typing import Set
 
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QFont
@@ -126,10 +126,10 @@ class ImagesView(QWidget):
         """Ask user to approve a list of files to delete from the file list."""
         if len(self.file_widget.checked) > 0:
             msg: str = "Delete these files from the list?"
-            lst: List[str] = []
+            names: Set[str] = set()
             for item in self.file_widget.checked:
-                lst.append("--- " + item.file_path)
-            msg_box = ScrollablePopup(msg, lst)
+                names.add("--- " + item.file_path)
+            msg_box = ScrollablePopup(msg, names)
             if msg_box.exec() == QDialog.Accepted:
                 self.file_widget.delete_checked()
         else:
@@ -197,5 +197,5 @@ class ImagesView(QWidget):
             except exceptions.UnsupportedFileFormatError:
                 self.alert("AICS Unsupported File Type")
             except FileNotFoundError:
-                self.alert("File no longer exists")
+                self.alert("File Not Found")
                 self.file_widget.remove_item(current)

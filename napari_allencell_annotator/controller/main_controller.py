@@ -450,16 +450,6 @@ class MainController(QWidget):
         self.images.next_img()
         self.annots.set_curr_img(self.images.curr_img_dict())
 
-    def _image_selected(self, current, previous):
-        """
-        Record the annotations for the previously selected image and set current image.
-
-        Called only when annotating un-blind and users select an image from the list.
-        """
-        if previous:
-            self.annots.record_annotations(previous.file_path)
-        self.annots.set_curr_img(self.images.curr_img_dict())
-
     def _prev_image_clicked(self):
         """
         Move to the previous image for annotating.
@@ -468,6 +458,16 @@ class MainController(QWidget):
         """
         self.annots.record_annotations(self.images.curr_img_dict()["File Path"])
         self.images.prev_img()
+        self.annots.set_curr_img(self.images.curr_img_dict())
+
+    def _image_selected(self, current, previous):
+        """
+        Record the annotations for the previously selected image and set current image.
+
+        Called only when annotating un-blind and users select an image from the list.
+        """
+        if previous:
+            self.annots.record_annotations(previous.file_path)
         self.annots.set_curr_img(self.images.curr_img_dict())
 
     def _save_and_exit_clicked(self):
