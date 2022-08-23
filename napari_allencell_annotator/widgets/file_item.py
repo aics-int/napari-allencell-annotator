@@ -100,4 +100,6 @@ class FileItem(QListWidgetItem):
 
     def __eq__(self, other):
         """Compares two ListItems file_path attributes"""
+        if not isinstance(other, type(self)):
+            return NotImplemented
         return self._file_path == other._file_path

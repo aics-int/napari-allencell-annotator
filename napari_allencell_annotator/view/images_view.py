@@ -1,5 +1,6 @@
 from typing import Set
 
+from PyQt5.QtWidgets import QFrame
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QFont
 
@@ -21,9 +22,10 @@ from napari_allencell_annotator.widgets.file_input import (
 )
 from napari_allencell_annotator.widgets.scrollable_popup import ScrollablePopup
 from napari_allencell_annotator.widgets.files_widget import FilesWidget, FileItem
+from napari_allencell_annotator._style import Style
 
 
-class ImagesView(QWidget):
+class ImagesView(QFrame):
     """
     A class used to create a view for image file uploading and selecting.
 
@@ -51,6 +53,7 @@ class ImagesView(QWidget):
         """
         super().__init__()
 
+        self.setStyleSheet(Style.get_stylesheet("main.qss"))
         self.label = QLabel()
         self.label.setAlignment(Qt.AlignCenter)
         self.label.setText("Images")

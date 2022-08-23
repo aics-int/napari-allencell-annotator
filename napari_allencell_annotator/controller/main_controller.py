@@ -2,6 +2,7 @@ import csv
 import itertools
 from pathlib import Path
 
+from PyQt5.QtWidgets import QFrame
 from qtpy.QtWidgets import QWidget, QVBoxLayout, QDialog
 
 from napari_allencell_annotator.controller.images_controller import ImagesController
@@ -12,7 +13,7 @@ import napari
 from typing import List, Dict, Union
 
 
-class MainController(QWidget):
+class MainController(QFrame):
     """
     A class used to combine/communicate between AnnotatorController and ViewController.
 
@@ -35,7 +36,7 @@ class MainController(QWidget):
         self.images = ImagesController(self.napari)
         self.annots = AnnotatorController(self.napari)
         self.layout.addWidget(self.images.view, stretch=1)
-        self.layout.addWidget(self.annots.view, stretch=2)
+        self.layout.addWidget(self.annots.view, stretch=1)
         self.setLayout(self.layout)
         self.show()
 
