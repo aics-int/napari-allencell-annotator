@@ -58,7 +58,6 @@ class ImagesView(QFrame):
         self.label.setAlignment(Qt.AlignCenter)
         self.label.setText("Images")
 
-        self.label.setFont(QFont("Arial", 15))
         self.layout = QGridLayout()
         self.layout.addWidget(self.label, 0, 0, 1, 4)
 

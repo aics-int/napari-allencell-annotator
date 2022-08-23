@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Dict, List, Optional, Any, Union
 
-from PyQt5.QtWidgets import QFrame
+from PyQt5.QtWidgets import QFrame, QLayout
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QFont
 from qtpy.QtWidgets import (
@@ -98,7 +98,6 @@ class AnnotatorView(QFrame):
         self._mode = mode
         label = QLabel("Annotations")
         label.setAlignment(Qt.AlignCenter)
-        label.setFont(QFont("Arial", 15))
         self.layout = QVBoxLayout()
         self.layout.addWidget(label)
         self.setStyleSheet(Style.get_stylesheet("main.qss"))
@@ -359,6 +358,7 @@ class AnnotatorView(QFrame):
         item.setEnabled(True)
         layout.setContentsMargins(2, 12, 8, 12)
         layout.setSpacing(2)
+        layout.setSizeConstraint(QLayout.SetMinimumSize)
         widget.setLayout(layout)
         list_item = QListWidgetItem(self.annot_list)
         list_item.setSizeHint(widget.minimumSizeHint())

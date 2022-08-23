@@ -13,7 +13,7 @@ class AnnotationWidget(QListWidget):
     # signal emitted when annotation check boxes are selected
     annots_selected = Signal(bool)
 
-    def __init__(self):  # pragma: no-cover
+    def __init__(self):
         QListWidget.__init__(self)
         self.num_checked: int = 0
         # allow drag and drop rearrangement

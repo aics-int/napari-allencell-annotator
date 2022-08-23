@@ -21,7 +21,7 @@ class AnnotationItem(QListWidgetItem):
     A class used to create custom annotation QListWidgetItems.
     """
 
-    def __init__(self, parent: QListWidget):  # pragma: no-cover
+    def __init__(self, parent: QListWidget):
         QListWidgetItem.__init__(self, parent)
         self.widget = QWidget()
         self.layout = QGridLayout()
