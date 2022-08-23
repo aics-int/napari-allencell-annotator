@@ -3,7 +3,7 @@ import itertools
 from pathlib import Path
 
 from PyQt5.QtWidgets import QFrame
-from qtpy.QtWidgets import QWidget, QVBoxLayout, QDialog
+from qtpy.QtWidgets import QVBoxLayout, QDialog
 
 from napari_allencell_annotator.controller.images_controller import ImagesController
 

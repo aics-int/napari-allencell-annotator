@@ -2,7 +2,6 @@ from typing import Dict
 
 from qtpy import QtWidgets
 from qtpy.QtCore import Qt
-from qtpy.QtGui import QFont
 from qtpy.QtWidgets import (
     QWidget,
     QLabel,

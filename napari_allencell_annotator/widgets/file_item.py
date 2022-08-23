@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QLayout, QSizePolicy
+from PyQt5.QtWidgets import QLayout
 from qtpy.QtWidgets import (
     QListWidgetItem,
     QListWidget,

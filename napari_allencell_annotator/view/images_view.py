@@ -4,7 +4,6 @@ from PyQt5.QtWidgets import QFrame
 from qtpy.QtCore import Qt
 
 from qtpy.QtWidgets import (
-    QWidget,
     QLabel,
     QScrollArea,
     QGridLayout,
