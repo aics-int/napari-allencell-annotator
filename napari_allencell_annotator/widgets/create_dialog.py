@@ -15,8 +15,6 @@ from psygnal._signal import Signal
 
 from napari_allencell_annotator.widgets.annotation_widget import AnnotationWidget
 
-from napari_allencell_annotator._style import Style
-
 
 class CreateDialog(QDialog):
     """
@@ -33,7 +31,8 @@ class CreateDialog(QDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setStyleSheet(Style.get_stylesheet("main.qss"))
+        with open("napari_allencell_annotator/styles/main.qss", "r") as handle:
+            self.setStyleSheet(handle.read())
         self.setWindowTitle("Create Annotations")
         self.setMinimumSize(700, 500)
 

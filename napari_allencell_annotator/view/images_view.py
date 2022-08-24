@@ -20,7 +20,6 @@ from napari_allencell_annotator.widgets.file_input import (
 )
 from napari_allencell_annotator.widgets.scrollable_popup import ScrollablePopup
 from napari_allencell_annotator.widgets.files_widget import FilesWidget, FileItem
-from napari_allencell_annotator._style import Style
 
 
 class ImagesView(QFrame):
@@ -50,8 +49,8 @@ class ImagesView(QFrame):
             The images controller
         """
         super().__init__()
-
-        self.setStyleSheet(Style.get_stylesheet("main.qss"))
+        with open("napari_allencell_annotator/styles/main.qss", "r") as handle:
+            self.setStyleSheet(handle.read())
         self.label = QLabel()
         self.label.setAlignment(Qt.AlignCenter)
         self.label.setText("Images")
