@@ -112,7 +112,7 @@ class FilesWidget(QListWidget):
         Returns
         -------
          Dict[str, List[str]]
-            file dictionary file path -> [filen name, fms].
+            file dictionary file path -> [file name, fms].
         """
         self._shuffled = True
         self.setCurrentItem(None)

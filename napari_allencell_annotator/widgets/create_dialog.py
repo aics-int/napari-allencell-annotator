@@ -2,7 +2,6 @@ from typing import Dict
 
 from qtpy import QtWidgets
 from qtpy.QtCore import Qt
-from qtpy.QtGui import QFont
 from qtpy.QtWidgets import (
     QWidget,
     QLabel,
@@ -15,6 +14,8 @@ from qtpy.QtWidgets import (
 from psygnal._signal import Signal
 
 from napari_allencell_annotator.widgets.annotation_widget import AnnotationWidget
+
+from napari_allencell_annotator._style import Style
 
 
 class CreateDialog(QDialog):
@@ -32,7 +33,7 @@ class CreateDialog(QDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-
+        self.setStyleSheet(Style.get_stylesheet("main.qss"))
         self.setWindowTitle("Create Annotations")
         self.setMinimumSize(700, 500)
 
@@ -41,7 +42,6 @@ class CreateDialog(QDialog):
 
         label = QLabel("Create Annotations")
         label.setAlignment(Qt.AlignCenter)
-        label.setFont(QFont("Arial", 15))
         self.layout = QVBoxLayout()
         self.layout.addWidget(label)
 

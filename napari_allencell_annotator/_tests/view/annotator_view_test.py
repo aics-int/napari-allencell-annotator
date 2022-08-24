@@ -324,6 +324,8 @@ class TestAnnotatorView:
                                     self._view.annot_list = QListWidget()
                                     self._view.annot_list.setItemWidget = MagicMock()
                                     QHBoxLayout.addWidget = MagicMock()
+
+                                    QHBoxLayout.setSizeConstraint = MagicMock()
                                     self._view._create_annot("name", {"type": "string", "default": ""})
 
                                     assert self._view.annots_order == ["name"]
@@ -373,6 +375,8 @@ class TestAnnotatorView:
                                     self._view.annot_list = QListWidget()
                                     self._view.annot_list.setItemWidget = MagicMock()
                                     QHBoxLayout.addWidget = MagicMock()
+
+                                    QHBoxLayout.setSizeConstraint = MagicMock()
                                     self._view._create_annot("name", {"type": "number", "default": 2})
 
                                     assert self._view.annots_order == ["name"]
@@ -422,6 +426,8 @@ class TestAnnotatorView:
                                     self._view.annot_list = QListWidget()
                                     self._view.annot_list.setItemWidget = MagicMock()
                                     QHBoxLayout.addWidget = MagicMock()
+
+                                    QHBoxLayout.setSizeConstraint = MagicMock()
                                     self._view._create_annot("name", {"type": "bool", "default": True})
 
                                     assert self._view.annots_order == ["name"]
@@ -471,6 +477,8 @@ class TestAnnotatorView:
                                     self._view.annot_list = QListWidget()
                                     self._view.annot_list.setItemWidget = MagicMock()
                                     QHBoxLayout.addWidget = MagicMock()
+
+                                    QHBoxLayout.setSizeConstraint = MagicMock()
                                     self._view._create_annot("name", {"type": "bool", "default": False})
 
                                     assert self._view.annots_order == ["name"]
@@ -521,6 +529,7 @@ class TestAnnotatorView:
                                     self._view.annot_list = QListWidget()
                                     self._view.annot_list.setItemWidget = MagicMock()
                                     QHBoxLayout.addWidget = MagicMock()
+                                    QHBoxLayout.setSizeConstraint = MagicMock()
                                     self._view._create_annot(
                                         "name", {"type": "list", "default": "", "options": ["op1", "op2", "op3"]}
                                     )

@@ -29,9 +29,17 @@ class TestFileItem:
         self._widget.get_name = MagicMock(return_value="name")
         assert "name" == self._widget._make_display_name()
 
-    def test_make_display_name(self):
-        self._widget.get_name = MagicMock(return_value="123456789012345678901234567890")
-        assert "123456789012345678901234567..." == self._widget._make_display_name()
+    def test_make_display_name_equal_to_36(self):
+        name = "12345678901234567890123456789012345"
+        self._widget.get_name = MagicMock(return_value=name)
+        assert name == self._widget._make_display_name()
+
+    def test_make_display_name_greater_than(self):
+        name = "12345678901234567890123456789012345678"
+        self._widget.get_name = MagicMock(return_value=name)
+        disp = self._widget._make_display_name()
+        assert len(disp) == 36
+        assert disp == "123456789012345...123456789012345678"
 
     def test_highlight(self):
         self._widget.label = create_autospec(QLabel)
