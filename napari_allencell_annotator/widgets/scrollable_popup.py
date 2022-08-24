@@ -1,11 +1,10 @@
 from typing import Set
 
+from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import QLayout
 from qtpy import QtWidgets
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QScrollArea, QLabel, QListWidget, QListWidgetItem, QDialog, QDialogButtonBox
-
-
-from napari_allencell_annotator._style import Style
 
 
 class ScrollablePopup(QDialog):
@@ -16,7 +15,8 @@ class ScrollablePopup(QDialog):
     def __init__(self, question: str, names: Set[str], parent=None):
         super().__init__(parent)
         self.setMinimumSize(500, 500)
-        self.setStyleSheet(Style.get_stylesheet("main.qss"))
+        with open("napari_allencell_annotator/styles/main.qss", "r") as handle:
+            self.setStyleSheet(handle.read())
         self.label = QLabel(question)
         self.scroll = QScrollArea()
         self.scroll.setWidgetResizable(True)
@@ -25,6 +25,7 @@ class ScrollablePopup(QDialog):
 
         for str in names:
             widget = QLabel(str)
+            widget.setFont(QFont("Arial", 18))
             item = QListWidgetItem(self.content)
             item.setSizeHint(widget.minimumSizeHint())
             self.content.setItemWidget(item, widget)
@@ -36,5 +37,5 @@ class ScrollablePopup(QDialog):
         self.layout.addWidget(self.label)
         self.layout.addWidget(self.scroll)
         self.layout.addWidget(self.buttons)
-
+        self.layout.setSizeConstraint(QLayout.SetMinimumSize)
         self.setLayout(self.layout)
