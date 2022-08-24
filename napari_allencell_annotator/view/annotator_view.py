@@ -26,7 +26,6 @@ from napari_allencell_annotator.widgets.file_input import (
     FileInput,
     FileInputMode,
 )
-from napari_allencell_annotator._style import Style
 
 
 class AnnotatorViewMode(Enum):
@@ -99,7 +98,8 @@ class AnnotatorView(QFrame):
         label.setAlignment(Qt.AlignCenter)
         self.layout = QVBoxLayout()
         self.layout.addWidget(label)
-        self.setStyleSheet(Style.get_stylesheet("main.qss"))
+        with open("napari_allencell_annotator/styles/main.qss", "r") as handle:
+            self.setStyleSheet(handle.read())
 
         self.annot_list = QListWidget()
         self.annot_list.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)

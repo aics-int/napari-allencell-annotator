@@ -18,6 +18,6 @@ class Style:
 
     @classmethod
     def _load_from_file(cls, name: str) -> str:
-        path = Directories.get_style_dir() / name
+        path = str(Directories.get_style_dir() / name)
         with open(path, "r") as handle:
             return handle.read()
