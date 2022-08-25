@@ -29,6 +29,8 @@ class AnnotationWidget(QListWidget):
         self.num_checked = 0
         self.clear()
 
+    def add_existing_item(self, name: str, dct: Dict[str, Any]):
+
     def add_new_item(self):
         """
         Adds a new Annotation Item to the list. .

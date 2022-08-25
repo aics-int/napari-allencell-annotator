@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Optional, Any
 
 from qtpy import QtWidgets
 from qtpy.QtCore import Qt
@@ -29,8 +29,10 @@ class CreateDialog(QDialog):
     # signal emitted when all annotations created are valid
     valid_annots_made = Signal()
 
-    def __init__(self, parent=None):
+    def __init__(self, existing_annots: Optional[Dict[str, Dict[str, Any]]] = None, has_been_annotated : Optional[bool] = False,parent=None):
         super().__init__(parent)
+        # self.has_annots = has_annotations
+        # if is_edit then change title, render them,
         with open("napari_allencell_annotator/styles/main.qss", "r") as handle:
             self.setStyleSheet(handle.read())
         self.setWindowTitle("Create Annotations")
@@ -38,10 +40,14 @@ class CreateDialog(QDialog):
 
         self.list = AnnotationWidget()
         self.list.add_new_item()
-
-        label = QLabel("Create Annotations")
-        label.setAlignment(Qt.AlignCenter)
         self.layout = QVBoxLayout()
+        self.existing_annots = existing_annots
+        if self.existing_annots is None:
+            label = QLabel("Create Annotations")
+            label.setAlignment(Qt.AlignCenter)
+        else:
+            label = QLabel("Edit Annotations")
+        label.setAlignment(Qt.AlignCenter)
         self.layout.addWidget(label)
 
         self.scroll = QScrollArea()
@@ -51,7 +57,7 @@ class CreateDialog(QDialog):
 
         self.add = QPushButton("Add +")
         self.delete = QPushButton("Delete Selected")
-        self.cancel = QPushButton("Cancel")
+        self.cancel = QPushButton("Cancel") # check: if edit -> cancel go back to view
         self.apply = QPushButton("Apply")
         self.btns = QWidget()
         self.new_annot_dict: Dict[str, Dict] = None
@@ -78,6 +84,8 @@ class CreateDialog(QDialog):
         self.valid_annots_made.connect(self.accept)
         self.delete.clicked.connect(self._delete_clicked)
         self.list.annots_selected.connect(self._show_delete)
+        if self.existing_annots:
+            self.render_annotations()
 
     def _show_delete(self, checked: bool):
         """
@@ -92,6 +100,12 @@ class CreateDialog(QDialog):
             self.delete.show()
         else:
             self.delete.hide()
+
+    def render_annotations(self):
+        """"""
+        for name,dct in self.existing_annots.items():
+            self.list.add_existing_item(name,dct)
+
 
     def _delete_clicked(self):
         """Delete checked items if there is at least one item checked"""

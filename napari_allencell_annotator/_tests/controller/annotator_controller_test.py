@@ -19,6 +19,12 @@ class TestAnnotatorController:
             self._controller.files_and_annots = {}
             self._controller.view = create_autospec(AnnotatorView)
 
+    def test_get_annot_json_data(self):
+        self._controller.annot_json_data = None
+        assert self._controller.get_annot_json_data() is None
+        self._controller.annot_json_data = {"name": {}}
+        assert self._controller.get_annot_json_data() == {"name": {}}
+
     def test_set_annot_json_data(self):
         self._controller.annot_json_data = None
         self._controller.set_annot_json_data({})

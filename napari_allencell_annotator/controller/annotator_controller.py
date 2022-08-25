@@ -73,13 +73,24 @@ class AnnotatorController:
 
         self.shuffled: bool = None
 
+    def get_annot_json_data(self) -> Dict[str, Dict[str, Any]]:
+        """
+        Get annotation data dictionary.
+
+        Retunrs
+        ------
+        dct : Dict[str, Dict[str, Any]]
+            a dictionary of annotation data. name -> {type -> str,  options -> List[str], default -> bool, int, or str}
+        """
+        return self.annot_json_data
+
     def set_annot_json_data(self, dct: Dict[str, Dict[str, Any]]):
         """
         Set annotation data dictionary.
 
         Parameters
         ------
-        dct : Dict[str, Dict]
+        dct : Dict[str, Dict[str, Any]]
             a dictionary of annotation data. name -> {type -> str,  options -> List[str], default -> bool, int, or str}
         """
         self.annot_json_data = dct

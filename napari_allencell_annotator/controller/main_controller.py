@@ -487,7 +487,7 @@ class MainController(QFrame):
             True if null values are in the list.
         """
 
-        if len(lst) < len(self.annots.annot_json_data.keys()):
+        if len(lst) < len(self.annots.get_annot_json_data().keys()):
             return True
         else:
             for item in lst:

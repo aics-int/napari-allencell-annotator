@@ -987,17 +987,17 @@ class TestMainController:
         self._controller._stop_annotating.assert_called_once_with()
 
     def test_has_none_annotation_false(self):
-        self._controller.annots.annot_json_data = {"key1": {}, "key2": {}, "key3": {}, "key4:": {}}
+        self._controller.annots.get_annot_json_data = MagicMock(return_value={"key1": {}, "key2": {}, "key3": {}, "key4:": {}})
         assert not self._controller.has_none_annotation([True, 5, "h", " "])
 
     def test_has_none_annotation_len_too_small(self):
-        self._controller.annots.annot_json_data = {"key1": {}, "key2": {}, "key3": {}, "key4:": {}}
+        self._controller.annots.get_annot_json_data = MagicMock(return_value={"key1": {}, "key2": {}, "key3": {}, "key4:": {}})
         assert self._controller.has_none_annotation([True, 5, "h"])
 
     def test_has_none_annotation_none(self):
-        self._controller.annots.annot_json_data = {"key1": {}, "key2": {}, "key3": {}, "key4:": {}}
+        self._controller.annots.get_annot_json_data = MagicMock(return_value={"key1": {}, "key2": {}, "key3": {}, "key4:": {}})
         assert self._controller.has_none_annotation([True, None, "h", " "])
 
     def test_has_none_annotation_empty_string(self):
-        self._controller.annots.annot_json_data = {"key1": {}, "key2": {}, "key3": {}, "key4:": {}}
+        self._controller.annots.get_annot_json_data = MagicMock(return_value= {"key1": {}, "key2": {}, "key3": {}, "key4:": {}})
         assert self._controller.has_none_annotation([True, 5, "h", ""])
