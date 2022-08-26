@@ -4,6 +4,7 @@ from psygnal._signal import Signal
 from napari_allencell_annotator.widgets.annotation_item import AnnotationItem
 from napari_allencell_annotator._style import Style
 
+
 class AnnotationWidget(QListWidget):
     """
     A class used to create a QListWidget for annotations that are created.
@@ -19,7 +20,6 @@ class AnnotationWidget(QListWidget):
         # allow drag and drop rearrangement
         self.setDragDropMode(QAbstractItemView.InternalMove)
         self.setStyleSheet(Style.get_stylesheet("main.qss"))
-
 
         # TODO: styling https://blog.actorsfit.com/a?ID=01450-929cf741-2d80-418c-8a55-a52395053369
 
