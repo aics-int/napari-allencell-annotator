@@ -1,7 +1,7 @@
 from typing import Set
-
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QLayout
+from napari_allencell_annotator._style import Style
+from qtpy.QtGui import QFont
+from qtpy.QtWidgets import QLayout
 from qtpy import QtWidgets
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import QScrollArea, QLabel, QListWidget, QListWidgetItem, QDialog, QDialogButtonBox
@@ -15,8 +15,9 @@ class ScrollablePopup(QDialog):
     def __init__(self, question: str, names: Set[str], parent=None):
         super().__init__(parent)
         self.setMinimumSize(500, 500)
-        with open("napari_allencell_annotator/styles/main.qss", "r") as handle:
-            self.setStyleSheet(handle.read())
+
+        self.setStyleSheet(Style.get_stylesheet("main.qss"))
+
         self.label = QLabel(question)
         self.scroll = QScrollArea()
         self.scroll.setWidgetResizable(True)
