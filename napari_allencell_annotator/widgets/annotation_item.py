@@ -1,6 +1,6 @@
 from typing import Tuple, Dict
 
-from PyQt5.QtWidgets import QLayout
+from qtpy.QtWidgets import QLayout
 from qtpy import QtWidgets
 from qtpy.QtWidgets import (
     QListWidgetItem,

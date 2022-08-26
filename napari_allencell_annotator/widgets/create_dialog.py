@@ -1,5 +1,5 @@
 from typing import Dict
-
+from napari_allencell_annotator._style import Style
 from qtpy import QtWidgets
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import (
@@ -31,8 +31,9 @@ class CreateDialog(QDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        with open("napari_allencell_annotator/styles/main.qss", "r") as handle:
-            self.setStyleSheet(handle.read())
+
+        self.setStyleSheet(Style.get_stylesheet("main.qss"))
+
         self.setWindowTitle("Create Annotations")
         self.setMinimumSize(700, 500)
 
