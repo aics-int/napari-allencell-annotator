@@ -1,4 +1,3 @@
-
 from typing import Dict, Optional, Any
 
 from napari_allencell_annotator._style import Style
@@ -26,6 +25,8 @@ class CreateDialog(QDialog):
     -------
     get_annots()
         Sets annotation dictionary and emits valid_annots_made signal if all annotations are valid.
+    render_annotations()
+        Displays the types and defaults for each existing annotation.
     """
 
     # signal emitted when all annotations created are valid
@@ -58,7 +59,7 @@ class CreateDialog(QDialog):
 
         self.add = QPushButton("Add +")
         self.delete = QPushButton("Delete Selected")
-        self.cancel = QPushButton("Cancel") # check: if edit -> cancel go back to view
+        self.cancel = QPushButton("Cancel")  # check: if edit -> cancel go back to view
         self.apply = QPushButton("Apply")
         self.btns = QWidget()
         self.new_annot_dict: Dict[str, Dict] = None
@@ -79,14 +80,19 @@ class CreateDialog(QDialog):
         self.layout.addWidget(self.btns)
 
         self.setLayout(self.layout)
+
+        if self.existing_annots:
+            self.render_annotations()
+        self._connect_slots()
+
+    def _connect_slots(self):
+        """Connect signals and slots"""
         self.add.clicked.connect(self._add_clicked)
         self.cancel.clicked.connect(self.reject)
         self.apply.clicked.connect(self.get_annots)
         self.valid_annots_made.connect(self.accept)
         self.delete.clicked.connect(self._delete_clicked)
         self.list.annots_selected.connect(self._show_delete)
-        if self.existing_annots:
-            self.render_annotations()
 
     def _show_delete(self, checked: bool):
         """
@@ -103,17 +109,17 @@ class CreateDialog(QDialog):
             self.delete.hide()
 
     def render_annotations(self):
-        """"""
-        for name,dct in self.existing_annots.items():
-            self.list.add_existing_item(name,dct)
+        """Display the types and defaults for each existing annotation."""
+        for name, dct in self.existing_annots.items():
+            self.list.add_existing_item(name, dct)
 
     def _delete_clicked(self):
-        """Delete checked items if there is at least one item checked"""
+        """Delete checked items if there is at least one item checked."""
         if self.list.num_checked > 0:
             self.list.delete_checked()
 
     def _add_clicked(self):
-        """Add a new item if there are less than 9. Hide add button otherwise"""
+        """Add a new item if there are less than 9. Hide add button otherwise."""
         self.list.add_new_item()
         if self.list.count() > 9:
             self.add.hide()

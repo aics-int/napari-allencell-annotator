@@ -11,6 +11,40 @@ class TestCreateDialog:
             self._create = CreateDialog()
             self._create.list = create_autospec(AnnotationWidget)
 
+    def test_connect_slots(self):
+        self._create.add = create_autospec(QPushButton)
+        self._create.add.clicked.connect = MagicMock()
+        self._create._add_clicked = MagicMock()
+
+        self._create.cancel = create_autospec(QPushButton)
+        self._create.cancel.clicked.connect = MagicMock()
+        self._create.reject = MagicMock()
+
+        self._create.apply = create_autospec(QPushButton)
+        self._create.apply.clicked.connect = MagicMock()
+        self._create.get_annots = MagicMock()
+
+        self._create.valid_annots_made = MagicMock()
+        self._create.valid_annots_made.connect = MagicMock()
+        self._create.accept = MagicMock()
+
+        self._create.delete = create_autospec(QPushButton)
+        self._create.delete.clicked.connect = MagicMock()
+        self._create._delete_clicked = MagicMock()
+
+        self._create.list.annots_selected = MagicMock()
+        self._create.list.annots_selected.connect = MagicMock()
+        self._create._show_delete = MagicMock()
+
+        self._create._connect_slots()
+
+        self._create.add.clicked.connect.assert_called_once_with(self._create._add_clicked)
+        self._create.cancel.clicked.connect.assert_called_once_with(self._create.reject)
+        self._create.apply.clicked.connect.assert_called_once_with(self._create.get_annots)
+        self._create.valid_annots_made.connect.assert_called_once_with(self._create.accept)
+        self._create.delete.clicked.connect.assert_called_once_with(self._create._delete_clicked)
+        self._create.list.annots_selected.connect.assert_called_once_with(self._create._show_delete)
+
     def test_show_delete_true(self):
         self._create.delete = create_autospec(QPushButton)
         self._create._show_delete(True)
@@ -20,6 +54,12 @@ class TestCreateDialog:
         self._create.delete = create_autospec(QPushButton)
         self._create._show_delete(False)
         self._create.delete.hide.assert_called_once_with()
+
+    def test_render_annotations(self):
+        self._create.existing_annots = {"name1": {}, "name2": {}}
+        self._create.render_annotations()
+
+        self._create.list.add_existing_item.assert_has_calls([mock.call("name1", {}), mock.call("name2", {})])
 
     def test_delete_clicked_zero(self):
         self._create.list.num_checked = 0

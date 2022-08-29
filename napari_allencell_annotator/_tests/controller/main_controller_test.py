@@ -1,6 +1,6 @@
 from unittest import mock
 import pytest
-from unittest.mock import MagicMock, create_autospec
+from unittest.mock import MagicMock, create_autospec, patch
 
 from napari_allencell_annotator.controller.main_controller import (
     MainController,
@@ -70,6 +70,11 @@ class TestMainController:
         self._controller.annots.view.save_json_btn.file_selected.connect = MagicMock()
         self._controller._json_write_selected_evt = MagicMock()
 
+        self._controller.annots.view.edit_btn = MagicMock()
+        self._controller.annots.view.edit_btn.clicked = MagicMock()
+        self._controller.annots.view.edit_btn.clicked.connect = MagicMock()
+        self._controller._create_clicked = MagicMock()
+
         self._controller._connect_slots()
 
         self._controller.annots.view.start_btn.clicked.connect.assert_called_once_with(
@@ -99,26 +104,33 @@ class TestMainController:
         self._controller.annots.view.save_json_btn.file_selected.connect.assert_called_once_with(
             self._controller._json_write_selected_evt
         )
+        self._controller.annots.view.edit_btn.clicked.connect.assert_called_once_with(self._controller._create_clicked)
 
-    def test_create_clicked_reject(self):
-        with mock.patch.object(CreateDialog, "__init__", lambda x, y: None):
-            with mock.patch.object(CreateDialog, "exec", lambda x: None):
-                dlg = create_autospec(CreateDialog)
-                dlg.exec = MagicMock(return_value=QDialog.Rejected)
-                self._controller._create_clicked()
-                self._controller.annots.set_annot_json_data.assert_not_called()
+    @patch("napari_allencell_annotator.controller.main_controller.CreateDialog.__init__")
+    def test_create_clicked_reject(self, mock_init):
+        mock_init.return_value = None
+        self._controller.annots.get_annot_json_data = MagicMock(return_value=None)
+        with mock.patch.object(CreateDialog, "exec", lambda x: None):
+            dlg = create_autospec(CreateDialog)
+            dlg.exec = MagicMock(return_value=QDialog.Rejected)
+            self._controller._create_clicked()
+            mock_init.assert_called_once_with(self._controller, None)
+            self._controller.annots.set_annot_json_data.assert_not_called()
 
-    def test_create_clicked_accept(self):
-        with mock.patch.object(CreateDialog, "__init__", lambda x, y: None):
-            with mock.patch.object(CreateDialog, "exec", lambda x: None):
-                self._controller.csv_annotation_values = {}
-                CreateDialog.exec = MagicMock(return_value=QDialog.Accepted)
-                CreateDialog.new_annot_dict = {}
+    @patch("napari_allencell_annotator.controller.main_controller.CreateDialog.__init__")
+    def test_create_clicked_accept(self, mock_init):
+        mock_init.return_value = None
+        self._controller.annots.get_annot_json_data = MagicMock(return_value={})
+        with mock.patch.object(CreateDialog, "exec", lambda x: None):
+            self._controller.csv_annotation_values = {}
+            CreateDialog.exec = MagicMock(return_value=QDialog.Accepted)
+            CreateDialog.new_annot_dict = {}
 
-                self._controller._create_clicked()
-                self._controller.annots.start_viewing.assert_called_once_with()
-                assert self._controller.csv_annotation_values is None
-                self._controller.annots.set_annot_json_data.assert_called_once_with(CreateDialog.new_annot_dict)
+            self._controller._create_clicked()
+            self._controller.annots.start_viewing.assert_called_once_with()
+            mock_init.assert_called_once_with(self._controller, {})
+            assert self._controller.csv_annotation_values is None
+            self._controller.annots.set_annot_json_data.assert_called_once_with(CreateDialog.new_annot_dict)
 
     def test_json_write_selected_evt_none(self):
         self._controller._json_write_selected_evt(None)
@@ -153,7 +165,7 @@ class TestMainController:
         self._controller._csv_json_import_selected_evt(["path.json"])
 
         self._controller.annots.read_json.assert_called_once_with("path.json")
-        self._controller.annots.start_viewing.assert_called_once_with()
+        self._controller.annots.start_viewing.assert_called_once_with(False)
 
     def test_csv_json_imported_selected_evt_csv_false(self):
         self._controller.str_to_bool = MagicMock(return_value=False)
@@ -170,7 +182,7 @@ class TestMainController:
         self._controller.annots.get_annotations_csv.assert_called_once_with('{"name": {}, "name2": {}, "name3": {}}')
 
         self._controller.annots.read_json.assert_not_called()
-        self._controller.annots.start_viewing.assert_called_once_with()
+        self._controller.annots.start_viewing.assert_called_once_with(False)
 
     def test_csv_json_imported_selected_evt_csv_true(self):
         self._controller.str_to_bool = MagicMock(return_value=True)
@@ -196,7 +208,7 @@ class TestMainController:
             self._controller.csv_annotation_values.keys(), True
         )
         self._controller.annots.read_json.assert_not_called()
-        self._controller.annots.start_viewing.assert_called_once_with()
+        self._controller.annots.start_viewing.assert_called_once_with(True)
 
     def test_csv_json_imported_selected_evt_csv_true_last_row(self):
         self._controller.str_to_bool = MagicMock(return_value=True)
@@ -221,7 +233,7 @@ class TestMainController:
             self._controller.csv_annotation_values.keys(), True
         )
         self._controller.annots.read_json.assert_not_called()
-        self._controller.annots.start_viewing.assert_called_once_with()
+        self._controller.annots.start_viewing.assert_called_once_with(True)
 
     def test_shuffle_toggled_true(self):
         self._controller.has_new_shuffled_order = False
@@ -319,7 +331,7 @@ class TestMainController:
         self._controller.layout.addWidget.assert_has_calls(
             [
                 mock.call(self._controller.images.view, stretch=1),
-                mock.call(self._controller.annots.view, stretch=2),
+                mock.call(self._controller.annots.view, stretch=1),
             ]
         )
         self._controller.images.view.show.assert_called_once_with()
@@ -335,7 +347,7 @@ class TestMainController:
         self._controller.layout.addWidget.assert_has_calls(
             [
                 mock.call(self._controller.images.view, stretch=1),
-                mock.call(self._controller.annots.view, stretch=2),
+                mock.call(self._controller.annots.view, stretch=1),
             ]
         )
         self._controller.images.view.show.assert_called_once_with()
@@ -355,7 +367,7 @@ class TestMainController:
         self._controller.layout.addWidget.assert_has_calls(
             [
                 mock.call(self._controller.images.view, stretch=1),
-                mock.call(self._controller.annots.view, stretch=2),
+                mock.call(self._controller.annots.view, stretch=1),
             ]
         )
         self._controller.images.view.show.assert_called_once_with()
@@ -371,7 +383,7 @@ class TestMainController:
         self._controller.layout.addWidget.assert_has_calls(
             [
                 mock.call(self._controller.images.view, stretch=1),
-                mock.call(self._controller.annots.view, stretch=2),
+                mock.call(self._controller.annots.view, stretch=1),
             ]
         )
         self._controller.images.view.show.assert_called_once_with()
@@ -387,7 +399,7 @@ class TestMainController:
         self._controller.layout.addWidget.assert_has_calls(
             [
                 mock.call(self._controller.images.view, stretch=1),
-                mock.call(self._controller.annots.view, stretch=2),
+                mock.call(self._controller.annots.view, stretch=1),
             ]
         )
         self._controller.images.view.show.assert_called_once_with()
@@ -407,7 +419,7 @@ class TestMainController:
         self._controller.layout.addWidget.assert_has_calls(
             [
                 mock.call(self._controller.images.view, stretch=1),
-                mock.call(self._controller.annots.view, stretch=2),
+                mock.call(self._controller.annots.view, stretch=1),
             ]
         )
         self._controller.images.view.show.assert_called_once_with()
@@ -988,17 +1000,25 @@ class TestMainController:
         self._controller._stop_annotating.assert_called_once_with()
 
     def test_has_none_annotation_false(self):
-        self._controller.annots.get_annot_json_data = MagicMock(return_value={"key1": {}, "key2": {}, "key3": {}, "key4:": {}})
+        self._controller.annots.get_annot_json_data = MagicMock(
+            return_value={"key1": {}, "key2": {}, "key3": {}, "key4:": {}}
+        )
         assert not self._controller.has_none_annotation([True, 5, "h", " "])
 
     def test_has_none_annotation_len_too_small(self):
-        self._controller.annots.get_annot_json_data = MagicMock(return_value={"key1": {}, "key2": {}, "key3": {}, "key4:": {}})
+        self._controller.annots.get_annot_json_data = MagicMock(
+            return_value={"key1": {}, "key2": {}, "key3": {}, "key4:": {}}
+        )
         assert self._controller.has_none_annotation([True, 5, "h"])
 
     def test_has_none_annotation_none(self):
-        self._controller.annots.get_annot_json_data = MagicMock(return_value={"key1": {}, "key2": {}, "key3": {}, "key4:": {}})
+        self._controller.annots.get_annot_json_data = MagicMock(
+            return_value={"key1": {}, "key2": {}, "key3": {}, "key4:": {}}
+        )
         assert self._controller.has_none_annotation([True, None, "h", " "])
 
     def test_has_none_annotation_empty_string(self):
-        self._controller.annots.get_annot_json_data = MagicMock(return_value= {"key1": {}, "key2": {}, "key3": {}, "key4:": {}})
+        self._controller.annots.get_annot_json_data = MagicMock(
+            return_value={"key1": {}, "key2": {}, "key3": {}, "key4:": {}}
+        )
         assert self._controller.has_none_annotation([True, 5, "h", ""])

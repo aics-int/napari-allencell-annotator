@@ -77,7 +77,7 @@ class AnnotatorController:
         """
         Get annotation data dictionary.
 
-        Retunrs
+        Returns
         ------
         dct : Dict[str, Dict[str, Any]]
             a dictionary of annotation data. name -> {type -> str,  options -> List[str], default -> bool, int, or str}
@@ -116,14 +116,12 @@ class AnnotatorController:
         if self.annot_json_data is not None:
             json.dump(self.annot_json_data, open(file_path, "w"), indent=4)
 
-    def start_viewing(self, alr_anntd : Optional[bool] = False):
+    def start_viewing(self, alr_anntd: Optional[bool] = False):
         """Change view to VIEW mode and render annotations."""
         self.view.set_mode(mode=AnnotatorViewMode.VIEW)
         self.view.render_annotations(self.annot_json_data)
-        if alr_anntd:
-            self.view.edit_btn.setEnabled(False)
-        else:
-            self.view.edit_btn.setEnabled(True)
+        # disable edit button if already annotated is True
+        self.view.edit_btn.setEnabled(not alr_anntd)
 
     def stop_viewing(self):
         """Change view to ADD mode, reset annotations, and clear annotation json data."""

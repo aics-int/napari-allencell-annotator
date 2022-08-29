@@ -31,7 +31,17 @@ class AnnotationWidget(QListWidget):
         self.clear()
 
     def add_existing_item(self, name: str, dct: Dict[str, Any]):
-        item = self.add_new_item()
+        """
+        Add a previously created annotation item to the list for editing.
+
+        Parameters
+        ----------
+        name: str
+            a name for the annotation
+        dct: Dict[str, Any]
+            a dictionary containing type, default, options
+        """
+        item: AnnotationItem = self.add_new_item()
         annot_type: str = dct["type"]
         if annot_type == "string":
             item.fill_vals_text(name, dct["default"])
@@ -42,12 +52,16 @@ class AnnotationWidget(QListWidget):
         elif annot_type == "list":
             item.fill_vals_list(name, dct["default"], dct["options"])
 
-    def add_new_item(self):
+    def add_new_item(self) -> AnnotationItem:
         """
         Adds a new Annotation Item to the list. .
 
         Only allows 10 items to be added.
-        # todo alert user only 10 allowed
+
+        Returns
+        -------
+        AnnotationItem
+            the item added
         """
         if self.count() < 10:
             item = AnnotationItem(self)
@@ -60,7 +74,7 @@ class AnnotationWidget(QListWidget):
         """
         Remove the item.
 
-        Params
+        Parameters
         -------
         item: AnnotationItem
             an item to remove.

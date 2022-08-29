@@ -10,7 +10,7 @@ from napari_allencell_annotator.controller.images_controller import ImagesContro
 from napari_allencell_annotator.controller.annotator_controller import AnnotatorController
 from napari_allencell_annotator.widgets.create_dialog import CreateDialog
 import napari
-from typing import List, Dict, Union, Optional
+from typing import List, Dict, Union
 
 
 class MainController(QFrame):
@@ -57,15 +57,12 @@ class MainController(QFrame):
         self.annots.view.annot_input.file_selected.connect(self._csv_json_import_selected_evt)
         self.annots.view.create_btn.clicked.connect(self._create_clicked)
         self.annots.view.save_json_btn.file_selected.connect(self._json_write_selected_evt)
-        self.annots.view.edit_btn.clicked.connect(lambda: self._create_clicked(is_edit=True))
+        self.annots.view.edit_btn.clicked.connect(self._create_clicked)
 
-    def _create_clicked(self, is_edit : Optional[bool]= False):
+    def _create_clicked(self):
         """Create dialog window for annotation creation and start viewing on accept event."""
-        if not is_edit:
-            dlg = CreateDialog(self)
-        else:
-            dlg = CreateDialog(self,self.annots.get_annot_json_data())
 
+        dlg = CreateDialog(self, self.annots.get_annot_json_data())
         if dlg.exec() == QDialog.Accepted:
             self.csv_annotation_values = None
             self.annots.set_annot_json_data(dlg.new_annot_dict)
@@ -110,11 +107,12 @@ class MainController(QFrame):
             self.images.view.alert("No selection provided")
         else:
             file_path = file_list[0]
+            use_annots: bool = False
             if Path(file_path).suffix == ".json":
                 self.annots.read_json(file_path)
 
             elif Path(file_path).suffix == ".csv":
-                proceed: bool = self.annots.view.popup(
+                use_annots = self.annots.view.popup(
                     "Would you like to use the images from this csv in addition to the annotation list?\n "
                     "Any annotation values in the file written for these images will be used."
                     "\n Note: any currently listed images will be cleared."
@@ -131,7 +129,7 @@ class MainController(QFrame):
                 # skip actual header
                 next(reader)
                 self.starting_row = None
-                if proceed:
+                if use_annots:
                     self.has_new_shuffled_order = False
 
                     # get image/annotation data
@@ -162,7 +160,7 @@ class MainController(QFrame):
 
             # move to view mode
             # proceed True is has annotation values,
-            self.annots.start_viewing(proceed)
+            self.annots.start_viewing(use_annots)
 
     def _shuffle_toggled(self, checked: bool):
         """
