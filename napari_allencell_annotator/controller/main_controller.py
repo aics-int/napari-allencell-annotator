@@ -161,8 +161,8 @@ class MainController(QFrame):
                 file.close()
 
             # move to view mode
-            if self.csv_annotation_values is not None:
-                self.annots.start_viewing(True)
+            # proceed True is has annotation values,
+            self.annots.start_viewing(proceed)
 
     def _shuffle_toggled(self, checked: bool):
         """
@@ -257,7 +257,7 @@ class MainController(QFrame):
         if not self.images.view.file_widget.shuffled:
             self.images.view.file_widget.currentItemChanged.disconnect(self._image_selected)
         self.layout.addWidget(self.images.view, stretch=1)
-        self.layout.addWidget(self.annots.view, stretch=2)
+        self.layout.addWidget(self.annots.view, stretch=1)
         self.images.view.show()
         self.annots.stop_annotating()
         self.images.stop_annotating()
