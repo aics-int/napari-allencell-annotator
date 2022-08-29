@@ -31,19 +31,19 @@ class CreateDialog(QDialog):
     # signal emitted when all annotations created are valid
     valid_annots_made = Signal()
 
-    def __init__(self, existing_annots: Optional[Dict[str, Dict[str, Any]]] = None, has_been_annotated : Optional[bool] = False,parent=None):
+    def __init__(self, parent=None, existing_annots: Optional[Dict[str, Dict[str, Any]]] = None):
         super().__init__(parent)
-
         self.setStyleSheet(Style.get_stylesheet("main.qss"))
 
         self.setWindowTitle("Create Annotations")
         self.setMinimumSize(700, 500)
 
         self.list = AnnotationWidget()
-        self.list.add_new_item()
+
         self.layout = QVBoxLayout()
         self.existing_annots = existing_annots
         if self.existing_annots is None:
+            self.list.add_new_item()
             label = QLabel("Create Annotations")
             label.setAlignment(Qt.AlignCenter)
         else:
@@ -106,7 +106,6 @@ class CreateDialog(QDialog):
         """"""
         for name,dct in self.existing_annots.items():
             self.list.add_existing_item(name,dct)
-
 
     def _delete_clicked(self):
         """Delete checked items if there is at least one item checked"""

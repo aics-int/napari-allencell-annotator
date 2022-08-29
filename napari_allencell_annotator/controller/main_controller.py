@@ -10,7 +10,7 @@ from napari_allencell_annotator.controller.images_controller import ImagesContro
 from napari_allencell_annotator.controller.annotator_controller import AnnotatorController
 from napari_allencell_annotator.widgets.create_dialog import CreateDialog
 import napari
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Optional
 
 
 class MainController(QFrame):
@@ -57,10 +57,15 @@ class MainController(QFrame):
         self.annots.view.annot_input.file_selected.connect(self._csv_json_import_selected_evt)
         self.annots.view.create_btn.clicked.connect(self._create_clicked)
         self.annots.view.save_json_btn.file_selected.connect(self._json_write_selected_evt)
+        self.annots.view.edit_btn.clicked.connect(lambda: self._create_clicked(is_edit=True))
 
-    def _create_clicked(self):
+    def _create_clicked(self, is_edit : Optional[bool]= False):
         """Create dialog window for annotation creation and start viewing on accept event."""
-        dlg = CreateDialog(self)
+        if not is_edit:
+            dlg = CreateDialog(self)
+        else:
+            dlg = CreateDialog(self,self.annots.get_annot_json_data())
+
         if dlg.exec() == QDialog.Accepted:
             self.csv_annotation_values = None
             self.annots.set_annot_json_data(dlg.new_annot_dict)
@@ -156,7 +161,8 @@ class MainController(QFrame):
                 file.close()
 
             # move to view mode
-            self.annots.start_viewing()
+            if self.csv_annotation_values is not None:
+                self.annots.start_viewing(True)
 
     def _shuffle_toggled(self, checked: bool):
         """

@@ -1,3 +1,5 @@
+from typing import Dict, Any
+
 from qtpy.QtWidgets import QListWidget, QAbstractItemView
 from psygnal._signal import Signal
 
@@ -29,6 +31,16 @@ class AnnotationWidget(QListWidget):
         self.clear()
 
     def add_existing_item(self, name: str, dct: Dict[str, Any]):
+        item = self.add_new_item()
+        annot_type: str = dct["type"]
+        if annot_type == "string":
+            item.fill_vals_text(name, dct["default"])
+        elif annot_type == "number":
+            item.fill_vals_number(name, dct["default"])
+        elif annot_type == "bool":
+            item.fill_vals_check(name, dct["default"])
+        elif annot_type == "list":
+            item.fill_vals_list(name, dct["default"], dct["options"])
 
     def add_new_item(self):
         """
@@ -42,6 +54,7 @@ class AnnotationWidget(QListWidget):
             item.check.stateChanged.connect(lambda: self._check_evt(item))
             h = item.sizeHint().height()
             self.setMaximumHeight(h * self.count())
+            return item
 
     def remove_item(self, item: AnnotationItem):
         """

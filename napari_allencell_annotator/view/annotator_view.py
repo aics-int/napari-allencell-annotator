@@ -142,15 +142,17 @@ class AnnotatorView(QFrame):
         # view widget visible in VIEW mode
         self.view_widget = QWidget()
         view_layout = QHBoxLayout()
-        self.cancel_btn = QPushButton("Cancel")
-        self.start_btn = QPushButton("Start Annotating")
+        self.edit_btn = QPushButton("Edit")
+        self.cancel_btn = QPushButton("Clear")
+        self.start_btn = QPushButton("Start")
         self.csv_input = FileInput(mode=FileInputMode.CSV)
         self.csv_input.toggle(False)
-        self.save_json_btn = FileInput(mode=FileInputMode.JSON, placeholder_text="Save to JSON")
+        self.save_json_btn = FileInput(mode=FileInputMode.JSON, placeholder_text="Save")
         self.save_json_btn.toggle(True)
         self.start_btn.setEnabled(True)
-
+        self.edit_btn.setEnabled(False)
         view_layout.addWidget(self.cancel_btn, stretch=1)
+        view_layout.addWidget(self.edit_btn, stretch=1)
         view_layout.addWidget(self.save_json_btn, stretch=1)
         view_layout.addWidget(self.start_btn, stretch=1)
         self.view_widget.setLayout(view_layout)
@@ -240,6 +242,7 @@ class AnnotatorView(QFrame):
         vals:List[str]
             the values for the annotations.
         """
+
         for (widget, val, default) in zip(self.annotation_item_widgets, vals, self.default_vals):
             if val is None or val == "":
                 val = default
@@ -295,6 +298,7 @@ class AnnotatorView(QFrame):
             self._reset_annotations()
             self.layout.addWidget(self.add_widget)
         elif self._mode == AnnotatorViewMode.VIEW:
+
             self.save_json_btn.setEnabled(True)
             self.view_widget.show()
             self.layout.addWidget(self.view_widget)
@@ -313,7 +317,7 @@ class AnnotatorView(QFrame):
             The dictionary of annotation names -> a dictionary of types, defaults, and options.
         """
         self.annotation_item_widgets = []
-
+        self.annot_list.clear()
         for name in data.keys():
             self._create_annot(name, data[name])
             # todo fix: doesnt work if certain widgets are first leaves blank spot on bottom

@@ -1,4 +1,4 @@
-from typing import Tuple, Dict
+from typing import Tuple, Dict, List
 
 from qtpy.QtWidgets import QLayout
 from qtpy import QtWidgets
@@ -81,6 +81,32 @@ class AnnotationItem(QListWidgetItem):
             parent.setItemWidget(self, self.widget)
 
         self.type.currentTextChanged.connect(self._type_changed)
+
+    def fill_vals_text(self, name : str, default: str):
+        self.type.setCurrentText("text")
+        self.name.setText(name)
+        self.default_text.setText(default)
+
+    def fill_vals_number(self, name: str, default : int):
+        self.type.setCurrentText("number")
+        self.name.setText(name)
+        self.default_num.setValue(default)
+
+    def fill_vals_check(self, name: str, default : bool):
+        self.type.setCurrentText("checkbox")
+        self.name.setText(name)
+        print("should be a bool")
+        print(default)
+        if default:
+            self.default_check.setCurrentText("checked")
+        else:
+            self.default_text.setText("unchecked")
+
+    def fill_vals_list(self, name: str, default : str, options: List[str]):
+        self.type.setCurrentText("dropdown")
+        self.name.setText(name)
+        self.default_text.setText(default)
+        self.default_options.setText(",".join(options))
 
     def _type_changed(self, text: str):
         """
