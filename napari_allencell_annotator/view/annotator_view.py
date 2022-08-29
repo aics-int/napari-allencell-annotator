@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Dict, List, Optional, Any, Union
 
-from PyQt5.QtWidgets import QFrame, QLayout
+from qtpy.QtWidgets import QFrame, QLayout
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import (
     QWidget,
@@ -26,6 +26,7 @@ from napari_allencell_annotator.widgets.file_input import (
     FileInput,
     FileInputMode,
 )
+from napari_allencell_annotator._style import Style
 
 
 class AnnotatorViewMode(Enum):
@@ -98,9 +99,7 @@ class AnnotatorView(QFrame):
         label.setAlignment(Qt.AlignCenter)
         self.layout = QVBoxLayout()
         self.layout.addWidget(label)
-        with open("napari_allencell_annotator/styles/main.qss", "r") as handle:
-            self.setStyleSheet(handle.read())
-
+        self.setStyleSheet(Style.get_stylesheet("main.qss"))
         self.annot_list = QListWidget()
         self.annot_list.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.annot_list.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)

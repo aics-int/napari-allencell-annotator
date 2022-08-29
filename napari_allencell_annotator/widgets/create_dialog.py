@@ -1,5 +1,7 @@
+
 from typing import Dict, Optional, Any
 
+from napari_allencell_annotator._style import Style
 from qtpy import QtWidgets
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import (
@@ -31,10 +33,9 @@ class CreateDialog(QDialog):
 
     def __init__(self, existing_annots: Optional[Dict[str, Dict[str, Any]]] = None, has_been_annotated : Optional[bool] = False,parent=None):
         super().__init__(parent)
-        # self.has_annots = has_annotations
-        # if is_edit then change title, render them,
-        with open("napari_allencell_annotator/styles/main.qss", "r") as handle:
-            self.setStyleSheet(handle.read())
+
+        self.setStyleSheet(Style.get_stylesheet("main.qss"))
+
         self.setWindowTitle("Create Annotations")
         self.setMinimumSize(700, 500)
 

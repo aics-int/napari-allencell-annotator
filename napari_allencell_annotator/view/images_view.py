@@ -1,6 +1,6 @@
 from typing import Set
 
-from PyQt5.QtWidgets import QFrame
+from qtpy.QtWidgets import QFrame
 from qtpy.QtCore import Qt
 
 from qtpy.QtWidgets import (
@@ -20,6 +20,7 @@ from napari_allencell_annotator.widgets.file_input import (
 )
 from napari_allencell_annotator.widgets.scrollable_popup import ScrollablePopup
 from napari_allencell_annotator.widgets.files_widget import FilesWidget, FileItem
+from napari_allencell_annotator._style import Style
 
 
 class ImagesView(QFrame):
@@ -49,8 +50,9 @@ class ImagesView(QFrame):
             The images controller
         """
         super().__init__()
-        with open("napari_allencell_annotator/styles/main.qss", "r") as handle:
-            self.setStyleSheet(handle.read())
+
+        self.setStyleSheet(Style.get_stylesheet("main.qss"))
+
         self.label = QLabel()
         self.label.setAlignment(Qt.AlignCenter)
         self.label.setText("Images")
