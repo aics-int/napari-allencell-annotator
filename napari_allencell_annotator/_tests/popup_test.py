@@ -16,13 +16,4 @@ class TestPopup:
             QMessageBox.setStandardButtons.assert_called_once_with(QMessageBox.No | QMessageBox.Yes)
             QMessageBox.exec.assert_called_once_with()
 
-    def test_popup_no(self):
-        with mock.patch.object(QMessageBox, "__init__", lambda x: None):
-            QMessageBox.setText = MagicMock()
-            QMessageBox.setStandardButtons = MagicMock()
-            QMessageBox.exec = MagicMock(return_value=QMessageBox.No)
 
-            assert not Popup.make_popup("text")
-            QMessageBox.setText.assert_called_once_with("text")
-            QMessageBox.setStandardButtons.assert_called_once_with(QMessageBox.No | QMessageBox.Yes)
-            QMessageBox.exec.assert_called_once_with()
