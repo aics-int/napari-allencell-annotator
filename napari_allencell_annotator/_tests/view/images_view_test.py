@@ -5,6 +5,7 @@ from napari_allencell_annotator.view.images_view import (
     ImagesView,
     FileItem,
     ScrollablePopup,
+    Popup,
     QDialog,
     QPushButton,
     FilesWidget,
@@ -74,14 +75,31 @@ class TestImagesView:
 
         self._view.toggle_add.assert_called_once_with(True)
 
-    def test_delete_clicked(self):
+    def test_delete_clicked_none_checked_true(self):
         # test nothing checked
         self._view.file_widget: MagicMock = MagicMock()
+        Popup.make_popup = MagicMock(return_value=True)
+        self._view.file_widget = create_autospec(FilesWidget)
+        self._view.reset_buttons = MagicMock()
 
         self._view.file_widget.checked = set()
-        self._view.alert = MagicMock()
         self._view._delete_clicked()
-        self._view.alert.assert_called_once_with("No Images Selected")
+
+        self._view.file_widget.clear_all.assert_called_once_with()
+        self._view.reset_buttons.assert_called_once_with()
+
+    def test_delete_clicked_none_checked_false(self):
+        # test nothing checked
+        self._view.file_widget: MagicMock = MagicMock()
+        Popup.make_popup = MagicMock(return_value=False)
+        self._view.file_widget = create_autospec(FilesWidget)
+        self._view.reset_buttons = MagicMock()
+
+        self._view.file_widget.checked = set()
+        self._view._delete_clicked()
+
+        self._view.file_widget.clear_all.assert_not_called()
+        self._view.reset_buttons.assert_not_called()
 
     @patch("napari_allencell_annotator.view.images_view.ScrollablePopup.__init__")
     def test_delete_clicked_accept(self, mock_init):
@@ -141,23 +159,25 @@ class TestImagesView:
         self._view.input_dir.toggle.assert_called_once_with(False)
         self._view.input_file.toggle.assert_called_once_with(False)
 
-    def test_toggle_delete(self):
-        self._view.delete = MagicMock()
-        self._view.delete.setEnabled = MagicMock()
+    def test_toggle_delete_true(self):
+        self._view.delete = create_autospec(QPushButton)
         self._view._toggle_delete(True)
-        self._view.delete.setEnabled.assert_called_once_with(True)
+        self._view.delete.setText("Delete Selected")
 
-        self._view.delete.setEnabled = MagicMock()
+    def test_toggle_delete_false(self):
+        self._view.delete = create_autospec(QPushButton)
         self._view._toggle_delete(False)
-        self._view.delete.setEnabled.assert_called_once_with(False)
+        self._view.delete.setText("Delete All")
 
     def test_toggle_shuffle_true(self):
         self._view.shuffle = MagicMock()
         self._view.delete = create_autospec(QPushButton)
         self._view.shuffle.setEnabled = MagicMock()
         self._view._toggle_shuffle(True)
-        self._view.delete.setToolTip.assert_called_once_with("Check box on the right \n to select for deletion")
+        self._view.delete.setToolTip.assert_called_once_with("Check box on the right \n to select files for deletion")
         self._view.shuffle.setEnabled.assert_called_once_with(True)
+        self._view.delete.setText.assert_called_once_with("Delete All")
+        self._view.delete.setEnabled.assert_called_once_with(True)
 
     def test_toggle_shuffle_false(self):
         self._view.shuffle = MagicMock()
@@ -166,6 +186,7 @@ class TestImagesView:
         self._view._toggle_shuffle(False)
         self._view.delete.setToolTip.assert_called_once_with(None)
         self._view.shuffle.setEnabled.assert_called_once_with(False)
+        self._view.delete.setEnabled.assert_called_once_with(False)
 
     def test_display_img_none_both(self):
         # current item none
