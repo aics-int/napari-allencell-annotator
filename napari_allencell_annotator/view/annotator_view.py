@@ -17,7 +17,6 @@ from qtpy.QtWidgets import (
     QListWidgetItem,
     QPushButton,
     QAbstractScrollArea,
-    QMessageBox,
     QVBoxLayout,
     QSizePolicy,
 )
@@ -83,9 +82,6 @@ class AnnotatorView(QFrame):
 
     render_annotations(data : Dict[str,Dict]))
         Renders GUI elements from the dictionary of annotations.
-
-    popup(text:str) -> bool
-        Pop up dialog that asks the user a question. Returns True if 'Yes' False if 'No'.
     """
 
     def __init__(
@@ -142,15 +138,21 @@ class AnnotatorView(QFrame):
         # view widget visible in VIEW mode
         self.view_widget = QWidget()
         view_layout = QHBoxLayout()
-        self.cancel_btn = QPushButton("Cancel")
-        self.start_btn = QPushButton("Start Annotating")
+        self.edit_btn = QPushButton("Edit")
+        self.edit_btn.setToolTip("Edit annotation Template")
+        self.cancel_btn = QPushButton("Clear")
+        self.cancel_btn.setToolTip("Clear annotation template")
+        self.start_btn = QPushButton("Start")
+        self.start_btn.setToolTip("Start Annotating Images")
         self.csv_input = FileInput(mode=FileInputMode.CSV)
         self.csv_input.toggle(False)
-        self.save_json_btn = FileInput(mode=FileInputMode.JSON, placeholder_text="Save to JSON")
+        self.save_json_btn = FileInput(mode=FileInputMode.JSON, placeholder_text="Save")
         self.save_json_btn.toggle(True)
+        self.save_json_btn.setToolTip("Save annotation template \n to JSON file")
         self.start_btn.setEnabled(True)
-
+        self.edit_btn.setEnabled(False)
         view_layout.addWidget(self.cancel_btn, stretch=1)
+        view_layout.addWidget(self.edit_btn, stretch=1)
         view_layout.addWidget(self.save_json_btn, stretch=1)
         view_layout.addWidget(self.start_btn, stretch=1)
         self.view_widget.setLayout(view_layout)
@@ -240,6 +242,7 @@ class AnnotatorView(QFrame):
         vals:List[str]
             the values for the annotations.
         """
+
         for (widget, val, default) in zip(self.annotation_item_widgets, vals, self.default_vals):
             if val is None or val == "":
                 val = default
@@ -295,6 +298,7 @@ class AnnotatorView(QFrame):
             self._reset_annotations()
             self.layout.addWidget(self.add_widget)
         elif self._mode == AnnotatorViewMode.VIEW:
+
             self.save_json_btn.setEnabled(True)
             self.view_widget.show()
             self.layout.addWidget(self.view_widget)
@@ -313,7 +317,7 @@ class AnnotatorView(QFrame):
             The dictionary of annotation names -> a dictionary of types, defaults, and options.
         """
         self.annotation_item_widgets = []
-
+        self.annot_list.clear()
         for name in data.keys():
             self._create_annot(name, data[name])
             # todo fix: doesnt work if certain widgets are first leaves blank spot on bottom
@@ -362,27 +366,3 @@ class AnnotatorView(QFrame):
         list_item = QListWidgetItem(self.annot_list)
         list_item.setSizeHint(widget.minimumSizeHint())
         self.annot_list.setItemWidget(list_item, widget)
-
-    def popup(self, text: str) -> bool:
-        """
-        Pop up dialog to ask the user yes or no.
-
-        Parameters
-        ----------
-        text : str
-            question for the message box.
-
-        Returns
-        ----------
-        bool
-            user input, true if 'Yes' false if 'No'
-
-        """
-        msg_box = QMessageBox()
-        msg_box.setText(text)
-        msg_box.setStandardButtons(QMessageBox.No | QMessageBox.Yes)
-        return_value = msg_box.exec()
-        if return_value == QMessageBox.Yes:
-            return True
-        else:
-            return False

@@ -21,6 +21,7 @@ from napari_allencell_annotator.widgets.file_input import (
 from napari_allencell_annotator.widgets.scrollable_popup import ScrollablePopup
 from napari_allencell_annotator.widgets.files_widget import FilesWidget, FileItem
 from napari_allencell_annotator._style import Style
+from napari_allencell_annotator.widgets.popup import Popup
 
 
 class ImagesView(QFrame):
@@ -70,8 +71,6 @@ class ImagesView(QFrame):
         self.layout.addWidget(self.input_file, 1, 2, 1, 2)
 
         self.file_widget = FilesWidget()
-        self.file_widget.files_selected.connect(self._toggle_delete)
-        self.file_widget.files_added.connect(self._toggle_shuffle)
 
         self.scroll = QScrollArea()
         self.scroll.setWidget(self.file_widget)
@@ -80,23 +79,28 @@ class ImagesView(QFrame):
 
         self.shuffle = QPushButton("Shuffle and Hide")
         self.shuffle.setCheckable(True)
-        self.shuffle.toggled.connect(self._update_shuff_text)
 
         self.shuffle.setEnabled(False)
 
-        self.delete = QPushButton("Delete Selected")
+        self.delete = QPushButton("Delete All")
         self.delete.setEnabled(False)
-
-        self.delete.clicked.connect(self._delete_clicked)
 
         self.layout.addWidget(self.shuffle, 13, 0, 1, 3)
         self.layout.addWidget(self.delete, 13, 3, 1, 1)
 
         self.setLayout(self.layout)
 
-        self.file_widget.currentItemChanged.connect(self._display_img)
-
         self.viewer = viewer
+        self._connect_slots()
+
+    def _connect_slots(self):
+        """Connect signals to slots."""
+        self.file_widget.files_selected.connect(self._toggle_delete)
+        self.file_widget.files_added.connect(self._toggle_shuffle)
+
+        self.shuffle.toggled.connect(self._update_shuff_text)
+        self.delete.clicked.connect(self._delete_clicked)
+        self.file_widget.currentItemChanged.connect(self._display_img)
 
     def _update_shuff_text(self, checked: bool):
         """
@@ -134,7 +138,10 @@ class ImagesView(QFrame):
             if msg_box.exec() == QDialog.Accepted:
                 self.file_widget.delete_checked()
         else:
-            self.alert("No Images Selected")
+            proceed: bool = Popup.make_popup("Remove all images?")
+            if proceed:
+                self.file_widget.clear_all()
+                self.reset_buttons()
 
     def alert(self, alert_msg: str):
         """
@@ -168,9 +175,9 @@ class ImagesView(QFrame):
         checked : bool
         """
         if checked:
-            self.delete.setEnabled(True)
+            self.delete.setText("Delete Selected")
         elif not checked:
-            self.delete.setEnabled(False)
+            self.delete.setText("Delete All")
 
     def _toggle_shuffle(self, files_added: bool):
         """
@@ -181,9 +188,14 @@ class ImagesView(QFrame):
         files_added : bool
         """
         if files_added:
+            self.delete.setToolTip("Check box on the right \n to select files for deletion")
+            self.delete.setText("Delete All")
             self.shuffle.setEnabled(True)
+            self.delete.setEnabled(True)
         elif not files_added:
+            self.delete.setToolTip(None)
             self.shuffle.setEnabled(False)
+            self.delete.setEnabled(False)
 
     def _display_img(self, current: FileItem, previous: FileItem):
         """Display the current image in napari."""

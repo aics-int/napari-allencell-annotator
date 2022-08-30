@@ -1,6 +1,8 @@
 from unittest import mock
 from unittest.mock import MagicMock, create_autospec
 
+from qtpy.QtCore import QSize
+
 from napari_allencell_annotator.widgets.annotation_widget import AnnotationWidget, AnnotationItem
 
 
@@ -14,11 +16,61 @@ class TestAnnotationWidget:
         self._widget.clear_all()
         self._widget.clear.assert_called_once_with()
 
+    def test_add_existing_item_str(self):
+        item = create_autospec(AnnotationItem)
+        self._widget.add_new_item = MagicMock(return_value=item)
+        self._widget.add_existing_item("name", {"type": "string", "default": "default value"})
+        self._widget.add_new_item.assert_called_once_with()
+        item.fill_vals_text.assert_called_once_with("name", "default value")
+
+    def test_add_existing_item_num(self):
+        item = create_autospec(AnnotationItem)
+        self._widget.add_new_item = MagicMock(return_value=item)
+        self._widget.add_existing_item("name", {"type": "number", "default": 1})
+        self._widget.add_new_item.assert_called_once_with()
+        item.fill_vals_number.assert_called_once_with("name", 1)
+
+    def test_add_existing_item_bool(self):
+        item = create_autospec(AnnotationItem)
+        self._widget.add_new_item = MagicMock(return_value=item)
+        self._widget.add_existing_item("name", {"type": "bool", "default": True})
+        self._widget.add_new_item.assert_called_once_with()
+        item.fill_vals_check.assert_called_once_with("name", True)
+
+    def test_add_existing_item_list(self):
+        item = create_autospec(AnnotationItem)
+        self._widget.add_new_item = MagicMock(return_value=item)
+        self._widget.add_existing_item("name", {"type": "list", "default": "1", "options": ["1", "2", "3"]})
+        self._widget.add_new_item.assert_called_once_with()
+        item.fill_vals_list.assert_called_once_with("name", "1", ["1", "2", "3"])
+
     def test_add_new_item_greater_than_10(self):
         self._widget.count = MagicMock(return_value=10)
         self._widget.setMaximumHeight = MagicMock()
+
         self._widget.add_new_item()
+
+        self._widget.count.assert_called_once_with()
         self._widget.setMaximumHeight.assert_not_called()
+
+    def test_add_new_item_less_than_10(self):
+        with mock.patch.object(AnnotationItem, "__init__", lambda x, y: None):
+
+            item = AnnotationItem("x")
+            AnnotationItem.check = MagicMock()
+            size = create_autospec(QSize)
+            AnnotationItem.sizeHint = MagicMock(return_value=size)
+            size.height = MagicMock(return_value=10)
+
+            self._widget.count = MagicMock(return_value=5)
+            self._widget.setMaximumHeight = MagicMock()
+            assert isinstance(self._widget.add_new_item(), AnnotationItem)
+
+            item.check.stateChanged.connect.assert_called_once()
+            item.sizeHint.assert_called_once_with()
+            size.height.assert_called_once_with()
+            assert len(self._widget.count.mock_calls) == 2
+            self._widget.setMaximumHeight.assert_called_once_with(50)
 
     def test_remove_item(self):
         self._widget.takeItem = MagicMock()

@@ -14,7 +14,6 @@ from napari_allencell_annotator.view.annotator_view import (
     QWidget,
     QHBoxLayout,
     QLabel,
-    QMessageBox,
 )
 
 
@@ -562,25 +561,3 @@ class TestAnnotatorView:
                                     assert isinstance(
                                         self._view.annot_list.setItemWidget.call_args_list[0][0][1], QWidget
                                     )
-
-    def test_popup_yes(self):
-        with mock.patch.object(QMessageBox, "__init__", lambda x: None):
-            QMessageBox.setText = MagicMock()
-            QMessageBox.setStandardButtons = MagicMock()
-            QMessageBox.exec = MagicMock(return_value=QMessageBox.Yes)
-
-            assert self._view.popup("text")
-            QMessageBox.setText.assert_called_once_with("text")
-            QMessageBox.setStandardButtons.assert_called_once_with(QMessageBox.No | QMessageBox.Yes)
-            QMessageBox.exec.assert_called_once_with()
-
-    def test_popup_no(self):
-        with mock.patch.object(QMessageBox, "__init__", lambda x: None):
-            QMessageBox.setText = MagicMock()
-            QMessageBox.setStandardButtons = MagicMock()
-            QMessageBox.exec = MagicMock(return_value=QMessageBox.No)
-
-            assert not self._view.popup("text")
-            QMessageBox.setText.assert_called_once_with("text")
-            QMessageBox.setStandardButtons.assert_called_once_with(QMessageBox.No | QMessageBox.Yes)
-            QMessageBox.exec.assert_called_once_with()

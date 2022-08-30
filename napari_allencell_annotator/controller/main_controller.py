@@ -9,6 +9,7 @@ from napari_allencell_annotator.controller.images_controller import ImagesContro
 
 from napari_allencell_annotator.controller.annotator_controller import AnnotatorController
 from napari_allencell_annotator.widgets.create_dialog import CreateDialog
+from napari_allencell_annotator.widgets.popup import Popup
 import napari
 from typing import List, Dict, Union
 
@@ -37,6 +38,7 @@ class MainController(QFrame):
         self.annots = AnnotatorController(self.napari)
         self.layout.addWidget(self.images.view, stretch=1)
         self.layout.addWidget(self.annots.view, stretch=1)
+
         self.setLayout(self.layout)
         self.show()
 
@@ -57,10 +59,12 @@ class MainController(QFrame):
         self.annots.view.annot_input.file_selected.connect(self._csv_json_import_selected_evt)
         self.annots.view.create_btn.clicked.connect(self._create_clicked)
         self.annots.view.save_json_btn.file_selected.connect(self._json_write_selected_evt)
+        self.annots.view.edit_btn.clicked.connect(self._create_clicked)
 
     def _create_clicked(self):
         """Create dialog window for annotation creation and start viewing on accept event."""
-        dlg = CreateDialog(self)
+
+        dlg = CreateDialog(self, self.annots.get_annot_json_data())
         if dlg.exec() == QDialog.Accepted:
             self.csv_annotation_values = None
             self.annots.set_annot_json_data(dlg.new_annot_dict)
@@ -105,12 +109,13 @@ class MainController(QFrame):
             self.images.view.alert("No selection provided")
         else:
             file_path = file_list[0]
+            use_annots: bool = False
             if Path(file_path).suffix == ".json":
                 self.annots.read_json(file_path)
 
             elif Path(file_path).suffix == ".csv":
-                proceed: bool = self.annots.view.popup(
-                    "Would you like to use the images from this csv in addition to the annotation list?\n "
+                use_annots = Popup.make_popup(
+                    "Would you like to use the images from this csv in addition to the annotation list?\n\n "
                     "Any annotation values in the file written for these images will be used."
                     "\n Note: any currently listed images will be cleared."
                 )
@@ -126,7 +131,7 @@ class MainController(QFrame):
                 # skip actual header
                 next(reader)
                 self.starting_row = None
-                if proceed:
+                if use_annots:
                     self.has_new_shuffled_order = False
 
                     # get image/annotation data
@@ -156,7 +161,8 @@ class MainController(QFrame):
                 file.close()
 
             # move to view mode
-            self.annots.start_viewing()
+            # proceed True is has annotation values,
+            self.annots.start_viewing(use_annots)
 
     def _shuffle_toggled(self, checked: bool):
         """
@@ -231,7 +237,7 @@ class MainController(QFrame):
         if self.images.get_num_files() is None or self.images.get_num_files() < 1:
             self.images.view.alert("Can't Annotate Without Adding Images")
         else:
-            proceed: bool = self.annots.view.popup(
+            proceed: bool = Popup.make_popup(
                 "Once annotating starts both the image set and annotations cannot be "
                 "edited.\n Would "
                 "you like to continue?"
@@ -251,7 +257,7 @@ class MainController(QFrame):
         if not self.images.view.file_widget.shuffled:
             self.images.view.file_widget.currentItemChanged.disconnect(self._image_selected)
         self.layout.addWidget(self.images.view, stretch=1)
-        self.layout.addWidget(self.annots.view, stretch=2)
+        self.layout.addWidget(self.annots.view, stretch=1)
         self.images.view.show()
         self.annots.stop_annotating()
         self.images.stop_annotating()
@@ -473,7 +479,7 @@ class MainController(QFrame):
 
     def _save_and_exit_clicked(self):
         """Stop annotation if user confirms choice in popup."""
-        proceed: bool = self.annots.view.popup("Close this session?")
+        proceed: bool = Popup.make_popup("Close this session?")
 
         if proceed:
             self._stop_annotating()
@@ -487,7 +493,7 @@ class MainController(QFrame):
             True if null values are in the list.
         """
 
-        if len(lst) < len(self.annots.annot_json_data.keys()):
+        if len(lst) < len(self.annots.get_annot_json_data().keys()):
             return True
         else:
             for item in lst:

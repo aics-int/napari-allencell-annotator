@@ -1,17 +1,56 @@
 from unittest import mock
 from unittest.mock import MagicMock, create_autospec
 
-from napari_allencell_annotator.widgets.annotation_item import AnnotationItem, QLineEdit, QGridLayout, QWidget, QLabel
+from napari_allencell_annotator.widgets.annotation_item import (
+    AnnotationItem,
+    QLineEdit,
+    QGridLayout,
+    QWidget,
+    QLabel,
+    QSpinBox,
+    QComboBox,
+)
 
 
 class TestAnnotationItem:
     def setup_method(self):
         with mock.patch.object(AnnotationItem, "__init__", lambda x: None):
             self._item = AnnotationItem()
-            self._item.name = MagicMock()
-            self._item.type = MagicMock()
-            self._item.default_text = MagicMock()
-            self._item.default_options = MagicMock()
+            self._item.name = create_autospec(QLineEdit)
+            self._item.type = create_autospec(QComboBox)
+            self._item.default_text = create_autospec(QLineEdit)
+            self._item.default_options = create_autospec(QLineEdit)
+            self._item.default_num = create_autospec(QSpinBox)
+            self._item.default_check = create_autospec(QComboBox)
+
+    def test_fill_vals_text(self):
+        self._item.fill_vals_text("name", "default")
+
+        self._item.type.setCurrentText.assert_called_once_with("text")
+        self._item.name.setText.assert_called_once_with("name")
+        self._item.default_text.setText.assert_called_once_with("default")
+
+    def test_fill_vals_number(self):
+        self._item.fill_vals_number("name", 3)
+
+        self._item.type.setCurrentText.assert_called_once_with("number")
+        self._item.name.setText.assert_called_once_with("name")
+        self._item.default_num.setValue.assert_called_once_with(3)
+
+    def test_fill_vals_check(self):
+        self._item.fill_vals_check("name", True)
+
+        self._item.type.setCurrentText.assert_called_once_with("checkbox")
+        self._item.name.setText.assert_called_once_with("name")
+        self._item.default_check.setCurrentText.assert_called_once_with("checked")
+
+    def test_fill_vals_list(self):
+        self._item.fill_vals_list("name", "one", ["one", "two", "three"])
+
+        self._item.type.setCurrentText.assert_called_once_with("dropdown")
+        self._item.name.setText.assert_called_once_with("name")
+        self._item.default_text.setText.assert_called_once_with("one")
+        self._item.default_options.setText.assert_called_once_with("one, two, three")
 
     def test_type_changed_dropdown(self):
         self._item.layout = create_autospec(QGridLayout)

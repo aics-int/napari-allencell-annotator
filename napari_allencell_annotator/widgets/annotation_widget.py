@@ -1,3 +1,5 @@
+from typing import Dict, Any
+
 from qtpy.QtWidgets import QListWidget, QAbstractItemView
 from psygnal._signal import Signal
 
@@ -28,24 +30,51 @@ class AnnotationWidget(QListWidget):
         self.num_checked = 0
         self.clear()
 
-    def add_new_item(self):
+    def add_existing_item(self, name: str, dct: Dict[str, Any]):
+        """
+        Add a previously created annotation item to the list for editing.
+
+        Parameters
+        ----------
+        name: str
+            a name for the annotation
+        dct: Dict[str, Any]
+            a dictionary containing type, default, options
+        """
+        item: AnnotationItem = self.add_new_item()
+        annot_type: str = dct["type"]
+        if annot_type == "string":
+            item.fill_vals_text(name, dct["default"])
+        elif annot_type == "number":
+            item.fill_vals_number(name, dct["default"])
+        elif annot_type == "bool":
+            item.fill_vals_check(name, dct["default"])
+        elif annot_type == "list":
+            item.fill_vals_list(name, dct["default"], dct["options"])
+
+    def add_new_item(self) -> AnnotationItem:
         """
         Adds a new Annotation Item to the list. .
 
         Only allows 10 items to be added.
-        # todo alert user only 10 allowed
+
+        Returns
+        -------
+        AnnotationItem
+            the item added
         """
         if self.count() < 10:
             item = AnnotationItem(self)
             item.check.stateChanged.connect(lambda: self._check_evt(item))
             h = item.sizeHint().height()
             self.setMaximumHeight(h * self.count())
+            return item
 
     def remove_item(self, item: AnnotationItem):
         """
         Remove the item.
 
-        Params
+        Parameters
         -------
         item: AnnotationItem
             an item to remove.

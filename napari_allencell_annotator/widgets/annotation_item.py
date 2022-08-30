@@ -1,4 +1,4 @@
-from typing import Tuple, Dict
+from typing import Tuple, Dict, List
 
 from qtpy.QtWidgets import QLayout
 from qtpy import QtWidgets
@@ -81,6 +81,72 @@ class AnnotationItem(QListWidgetItem):
             parent.setItemWidget(self, self.widget)
 
         self.type.currentTextChanged.connect(self._type_changed)
+
+    def fill_vals_text(self, name: str, default: str):
+        """
+        Fill in item name, default, and type for text.
+
+        Parameters
+        ----------
+        name : str
+            a name for the annotation
+        default: str
+            a default text value
+        """
+        self.type.setCurrentText("text")
+        self.name.setText(name)
+        self.default_text.setText(default)
+
+    def fill_vals_number(self, name: str, default: int):
+        """
+        Fill in item name, default and type for number.
+
+        Parameters
+        ----------
+        name : str
+            a name for the annotation
+        default: int
+            a default number value
+        """
+        self.type.setCurrentText("number")
+        self.name.setText(name)
+        self.default_num.setValue(default)
+
+    def fill_vals_check(self, name: str, default: bool):
+        """
+        Fill in name, default, and type for checkbox.
+
+        Parameters
+        ----------
+        name : str
+            a name for the annotation
+        default: bool
+            a bool default (True -> checked)
+        """
+        self.type.setCurrentText("checkbox")
+        self.name.setText(name)
+        if default:
+            self.default_check.setCurrentText("checked")
+        else:
+            self.default_check.setCurrentText("unchecked")
+
+    def fill_vals_list(self, name: str, default: str, options: List[str]):
+        """
+        Fill in item name, default, options, and type for dropdown.
+
+        Parameters
+        ----------
+        name : str
+            a name for the annotation
+        default: str
+            a default dropdown option
+        options : List[str]
+            a list of dropdown options
+        """
+        self.type.setCurrentText("dropdown")
+        self.name.setText(name)
+        self.default_text.setText(default)
+        self.default_options.setText(", ".join(options))
 
     def _type_changed(self, text: str):
         """

@@ -9,6 +9,7 @@ from napari_allencell_annotator.controller.annotator_controller import (
 )
 
 from napari_allencell_annotator.controller.annotator_controller import napari, csv, json
+from napari_allencell_annotator.view.annotator_view import QPushButton
 
 
 class TestAnnotatorController:
@@ -18,6 +19,12 @@ class TestAnnotatorController:
             self._controller = AnnotatorController(self._mock_viewer)
             self._controller.files_and_annots = {}
             self._controller.view = create_autospec(AnnotatorView)
+
+    def test_get_annot_json_data(self):
+        self._controller.annot_json_data = None
+        assert self._controller.get_annot_json_data() is None
+        self._controller.annot_json_data = {"name": {}}
+        assert self._controller.get_annot_json_data() == {"name": {}}
 
     def test_set_annot_json_data(self):
         self._controller.annot_json_data = None
@@ -44,7 +51,17 @@ class TestAnnotatorController:
 
     def test_start_viewing(self):
         self._controller.annot_json_data = "data"
+        self._controller.view.edit_btn = create_autospec(QPushButton)
         self._controller.start_viewing()
+        self._controller.view.edit_btn.setEnabled.assert_called_once_with(True)
+        self._controller.view.set_mode.assert_called_once_with(mode=AnnotatorViewMode.VIEW)
+        self._controller.view.render_annotations.assert_called_once_with("data")
+
+    def test_start_viewing_alr_anntd(self):
+        self._controller.annot_json_data = "data"
+        self._controller.view.edit_btn = create_autospec(QPushButton)
+        self._controller.start_viewing(True)
+        self._controller.view.edit_btn.setEnabled.assert_called_once_with(False)
         self._controller.view.set_mode.assert_called_once_with(mode=AnnotatorViewMode.VIEW)
         self._controller.view.render_annotations.assert_called_once_with("data")
 
