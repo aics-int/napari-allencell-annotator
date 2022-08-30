@@ -17,7 +17,6 @@ from qtpy.QtWidgets import (
     QListWidgetItem,
     QPushButton,
     QAbstractScrollArea,
-    QMessageBox,
     QVBoxLayout,
     QSizePolicy,
 )

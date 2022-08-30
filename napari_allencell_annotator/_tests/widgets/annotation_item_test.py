@@ -6,7 +6,6 @@ from napari_allencell_annotator.widgets.annotation_item import (
     QLineEdit,
     QGridLayout,
     QWidget,
-    QCheckBox,
     QLabel,
     QSpinBox,
     QComboBox,

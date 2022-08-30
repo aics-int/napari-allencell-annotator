@@ -14,7 +14,6 @@ from napari_allencell_annotator.view.annotator_view import (
     QWidget,
     QHBoxLayout,
     QLabel,
-    QMessageBox,
 )
 
 
