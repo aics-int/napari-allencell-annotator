@@ -70,8 +70,6 @@ class ImagesView(QFrame):
         self.layout.addWidget(self.input_file, 1, 2, 1, 2)
 
         self.file_widget = FilesWidget()
-        self.file_widget.files_selected.connect(self._toggle_delete)
-        self.file_widget.files_added.connect(self._toggle_shuffle)
 
         self.scroll = QScrollArea()
         self.scroll.setWidget(self.file_widget)
@@ -80,23 +78,28 @@ class ImagesView(QFrame):
 
         self.shuffle = QPushButton("Shuffle and Hide")
         self.shuffle.setCheckable(True)
-        self.shuffle.toggled.connect(self._update_shuff_text)
 
         self.shuffle.setEnabled(False)
 
         self.delete = QPushButton("Delete Selected")
         self.delete.setEnabled(False)
 
-        self.delete.clicked.connect(self._delete_clicked)
-
         self.layout.addWidget(self.shuffle, 13, 0, 1, 3)
         self.layout.addWidget(self.delete, 13, 3, 1, 1)
 
         self.setLayout(self.layout)
 
-        self.file_widget.currentItemChanged.connect(self._display_img)
-
         self.viewer = viewer
+        self._connect_slots()
+
+    def _connect_slots(self):
+        """Connect signals to slots."""
+        self.file_widget.files_selected.connect(self._toggle_delete)
+        self.file_widget.files_added.connect(self._toggle_shuffle)
+
+        self.shuffle.toggled.connect(self._update_shuff_text)
+        self.delete.clicked.connect(self._delete_clicked)
+        self.file_widget.currentItemChanged.connect(self._display_img)
 
     def _update_shuff_text(self, checked: bool):
         """

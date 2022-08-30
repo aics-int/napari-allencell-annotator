@@ -23,6 +23,33 @@ class TestImagesView:
             self._view.viewer: MagicMock = create_autospec(napari.Viewer)
             self._view.AICSImage = create_autospec(AICSImage)
 
+    def test_connect_slots(self):
+        self._view.file_widget = create_autospec(FilesWidget)
+        self._view.file_widget.files_selected.connect = MagicMock()
+        self._view._toggle_delete = MagicMock()
+
+        self._view.file_widget.files_added.connect = MagicMock()
+        self._view._toggle_shuffle = MagicMock()
+
+        self._view.shuffle = create_autospec(QPushButton)
+        self._view.shuffle.toggled.connect = MagicMock()
+        self._view._update_shuff_text = MagicMock()
+
+        self._view.delete = create_autospec(QPushButton)
+        self._view.delete.clicked.connect = MagicMock()
+        self._view._delete_clicked = MagicMock()
+
+        self._view.file_widget.currentItemChanged.connect = MagicMock()
+        self._view._display_img = MagicMock()
+
+        self._view._connect_slots()
+
+        self._view.file_widget.files_selected.connect.assert_called_once_with(self._view._toggle_delete)
+        self._view.file_widget.files_added.connect.assert_called_once_with(self._view._toggle_shuffle)
+        self._view.shuffle.toggled.connect.assert_called_once_with(self._view._update_shuff_text)
+        self._view.delete.clicked.connect.assert_called_once_with(self._view._delete_clicked)
+        self._view.file_widget.currentItemChanged.connect.assert_called_once_with(self._view._display_img)
+
     def test_update_shuff_text(self):
         # checked
         self._view.shuffle = MagicMock()
