@@ -1,7 +1,14 @@
 from unittest import mock
 from unittest.mock import MagicMock, create_autospec, patch
 from napari_allencell_annotator.controller.images_controller import ImagesController
-from napari_allencell_annotator.view.images_view import ImagesView, FileItem, ScrollablePopup, QDialog, FilesWidget
+from napari_allencell_annotator.view.images_view import (
+    ImagesView,
+    FileItem,
+    ScrollablePopup,
+    QDialog,
+    QPushButton,
+    FilesWidget,
+)
 
 from napari_allencell_annotator.view.images_view import AICSImage
 from napari_allencell_annotator.view.images_view import napari
@@ -117,14 +124,20 @@ class TestImagesView:
         self._view._toggle_delete(False)
         self._view.delete.setEnabled.assert_called_once_with(False)
 
-    def test_toggle_shuffle(self):
+    def test_toggle_shuffle_true(self):
         self._view.shuffle = MagicMock()
+        self._view.delete = create_autospec(QPushButton)
         self._view.shuffle.setEnabled = MagicMock()
         self._view._toggle_shuffle(True)
+        self._view.delete.setToolTip.assert_called_once_with("Check box on the right \n to select for deletion")
         self._view.shuffle.setEnabled.assert_called_once_with(True)
 
+    def test_toggle_shuffle_false(self):
+        self._view.shuffle = MagicMock()
+        self._view.delete = create_autospec(QPushButton)
         self._view.shuffle.setEnabled = MagicMock()
         self._view._toggle_shuffle(False)
+        self._view.delete.setToolTip.assert_called_once_with(None)
         self._view.shuffle.setEnabled.assert_called_once_with(False)
 
     def test_display_img_none_both(self):

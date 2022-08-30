@@ -181,8 +181,10 @@ class ImagesView(QFrame):
         files_added : bool
         """
         if files_added:
+            self.delete.setToolTip("Check box on the right \n to select for deletion")
             self.shuffle.setEnabled(True)
         elif not files_added:
+            self.delete.setToolTip(None)
             self.shuffle.setEnabled(False)
 
     def _display_img(self, current: FileItem, previous: FileItem):

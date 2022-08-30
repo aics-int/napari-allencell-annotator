@@ -37,6 +37,7 @@ class MainController(QFrame):
         self.annots = AnnotatorController(self.napari)
         self.layout.addWidget(self.images.view, stretch=1)
         self.layout.addWidget(self.annots.view, stretch=1)
+
         self.setLayout(self.layout)
         self.show()
 

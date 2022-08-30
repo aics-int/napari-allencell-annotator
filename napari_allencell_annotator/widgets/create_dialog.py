@@ -59,6 +59,7 @@ class CreateDialog(QDialog):
 
         self.add = QPushButton("Add +")
         self.delete = QPushButton("Delete Selected")
+        self.delete.setToolTip("Click boxes on the left of items to select for deletion")
         self.cancel = QPushButton("Cancel")  # check: if edit -> cancel go back to view
         self.apply = QPushButton("Apply")
         self.btns = QWidget()
@@ -69,7 +70,7 @@ class CreateDialog(QDialog):
         sp_retain = QtWidgets.QSizePolicy()
         sp_retain.setRetainSizeWhenHidden(True)
         self.delete.setSizePolicy(sp_retain)
-        self.delete.hide()
+        self.delete.setEnabled(False)
         layout.addWidget(self.cancel)
         layout.addWidget(self.apply)
 
@@ -103,10 +104,7 @@ class CreateDialog(QDialog):
         checked : bool
             True if delete is currently hidden.
         """
-        if checked:
-            self.delete.show()
-        else:
-            self.delete.hide()
+        self.delete.setEnabled(checked)
 
     def render_annotations(self):
         """Display the types and defaults for each existing annotation."""

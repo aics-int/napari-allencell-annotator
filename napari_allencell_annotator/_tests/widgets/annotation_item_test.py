@@ -51,7 +51,7 @@ class TestAnnotationItem:
         self._item.type.setCurrentText.assert_called_once_with("dropdown")
         self._item.name.setText.assert_called_once_with("name")
         self._item.default_text.setText.assert_called_once_with("one")
-        self._item.default_options.setText.assert_called_once_with("one,two,three")
+        self._item.default_options.setText.assert_called_once_with("one, two, three")
 
     def test_type_changed_dropdown(self):
         self._item.layout = create_autospec(QGridLayout)

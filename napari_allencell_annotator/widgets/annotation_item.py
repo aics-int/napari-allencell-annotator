@@ -146,7 +146,7 @@ class AnnotationItem(QListWidgetItem):
         self.type.setCurrentText("dropdown")
         self.name.setText(name)
         self.default_text.setText(default)
-        self.default_options.setText(",".join(options))
+        self.default_options.setText(", ".join(options))
 
     def _type_changed(self, text: str):
         """

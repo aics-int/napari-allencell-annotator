@@ -48,12 +48,12 @@ class TestCreateDialog:
     def test_show_delete_true(self):
         self._create.delete = create_autospec(QPushButton)
         self._create._show_delete(True)
-        self._create.delete.show.assert_called_once_with()
+        self._create.delete.setEnabled.assert_called_once_with(True)
 
     def test_show_delete_false(self):
         self._create.delete = create_autospec(QPushButton)
         self._create._show_delete(False)
-        self._create.delete.hide.assert_called_once_with()
+        self._create.delete.setEnabled.assert_called_once_with(False)
 
     def test_render_annotations(self):
         self._create.existing_annots = {"name1": {}, "name2": {}}
