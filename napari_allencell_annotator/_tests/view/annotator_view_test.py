@@ -562,4 +562,3 @@ class TestAnnotatorView:
                                     assert isinstance(
                                         self._view.annot_list.setItemWidget.call_args_list[0][0][1], QWidget
                                     )
-

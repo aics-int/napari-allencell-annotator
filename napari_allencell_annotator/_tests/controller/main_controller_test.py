@@ -9,7 +9,7 @@ from napari_allencell_annotator.controller.main_controller import (
     QVBoxLayout,
     CreateDialog,
     QDialog,
-    Popup
+    Popup,
 )
 from napari_allencell_annotator.util.directories import Directories
 
@@ -995,7 +995,7 @@ class TestMainController:
         self._controller._stop_annotating.assert_not_called()
 
     def test_save_and_exit_clicked_true(self):
-        Popup.make_popup= MagicMock(return_value=True)
+        Popup.make_popup = MagicMock(return_value=True)
         self._controller._stop_annotating = MagicMock()
         self._controller._save_and_exit_clicked()
         self._controller._stop_annotating.assert_called_once_with()

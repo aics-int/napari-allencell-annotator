@@ -367,4 +367,3 @@ class AnnotatorView(QFrame):
         list_item = QListWidgetItem(self.annot_list)
         list_item.setSizeHint(widget.minimumSizeHint())
         self.annot_list.setItemWidget(list_item, widget)
-

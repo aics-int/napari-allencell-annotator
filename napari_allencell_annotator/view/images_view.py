@@ -138,9 +138,7 @@ class ImagesView(QFrame):
             if msg_box.exec() == QDialog.Accepted:
                 self.file_widget.delete_checked()
         else:
-            proceed: bool = Popup.make_popup(
-                "Remove all images?"
-            )
+            proceed: bool = Popup.make_popup("Remove all images?")
             if proceed:
                 self.file_widget.clear_all()
                 self.reset_buttons()

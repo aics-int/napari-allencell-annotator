@@ -3,7 +3,7 @@ from qtpy.QtWidgets import QMessageBox
 
 class Popup:
     @classmethod
-    def make_popup(cls, text : str) -> bool:
+    def make_popup(cls, text: str) -> bool:
         """
         Pop up dialog to ask the user yes or no.
 
