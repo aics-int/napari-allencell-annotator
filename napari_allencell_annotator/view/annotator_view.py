@@ -1,31 +1,26 @@
+import itertools
 from enum import Enum
 from typing import Dict, List, Optional, Any, Union
 
-from qtpy.QtWidgets import QFrame, QLayout
+from qtpy.QtWidgets import QFrame
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import (
     QWidget,
     QHBoxLayout,
     QLabel,
-    QLineEdit,
-    QSpinBox,
-    QCheckBox,
-    QComboBox,
     QGridLayout,
-    QListWidget,
     QScrollArea,
-    QListWidgetItem,
     QPushButton,
     QAbstractScrollArea,
     QMessageBox,
     QVBoxLayout,
-    QSizePolicy,
 )
 from napari import Viewer
 from napari_allencell_annotator.widgets.file_input import (
     FileInput,
     FileInputMode,
 )
+from napari_allencell_annotator.widgets.template_list import TemplateList
 from napari_allencell_annotator._style import Style
 
 
@@ -100,10 +95,7 @@ class AnnotatorView(QFrame):
         self.layout = QVBoxLayout()
         self.layout.addWidget(label)
         self.setStyleSheet(Style.get_stylesheet("main.qss"))
-        self.annot_list = QListWidget()
-        self.annot_list.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.annot_list.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-
+        self.annot_list = TemplateList()
         self.scroll = QScrollArea()
         self.scroll.setWidget(self.annot_list)
         self.scroll.setWidgetResizable(True)
@@ -178,9 +170,8 @@ class AnnotatorView(QFrame):
         self.annot_widget.setLayout(annot_layout)
 
         self._display_mode()
-        self.annotation_item_widgets: List[QWidget] = []
+
         self.annots_order: List[str] = []
-        self.default_vals: List[str] = []
         self.setLayout(self.layout)
         self.viewer: Viewer = viewer
 
@@ -225,19 +216,16 @@ class AnnotatorView(QFrame):
 
     def _reset_annotations(self):
         """Reset annotation data to empty."""
-        self.annot_list.clear()
-        # todo: make size policy, remove this line
-        self.annot_list.setMaximumHeight(600)
-        self.annotation_item_widgets: List[QWidget] = []
+        self.annot_list.clear_all()
+
         self.annots_order: List[str] = []
-        self.default_vals: List[str] = []
 
     def render_default_values(self):
         """Set annotation widget values to default."""
         # for curr index if annots exist fill else fill with default
-        self.render_values(self.default_vals)
+        self.render_values()
 
-    def render_values(self, vals: List[str]):
+    def render_values(self, vals: Optional[List[str]] = None):
         """
         Set the values of the annotation widgets.
 
@@ -246,23 +234,13 @@ class AnnotatorView(QFrame):
         vals:List[str]
             the values for the annotations.
         """
+        for (item, val) in itertools.zip_longest(self.annot_list.items, vals):
 
-        for (widget, val, default) in zip(self.annotation_item_widgets, vals, self.default_vals):
             if val is None or val == "":
-                val = default
-            if isinstance(widget, QLineEdit):
-                widget.setText(val)
-            elif isinstance(widget, QSpinBox):
-                widget.setValue(int(val))
-            elif isinstance(widget, QCheckBox):
-                if isinstance(val, str):
-                    # val is a str from previous annotation
-                    widget.setChecked(eval(val))
-                else:
-                    # val is bool from default vals
-                    widget.setChecked(val)
-            elif isinstance(widget, QComboBox):
-                widget.setCurrentText(val)
+                item.set_default_value()
+            else:
+                item.set_value(val)
+
 
     def get_curr_annots(self) -> List[Union[str, bool, int]]:
         """
@@ -274,23 +252,10 @@ class AnnotatorView(QFrame):
             a list of annotation values.
         """
         annots = []
-        for i in self.annotation_item_widgets:
-            value = ""
-            if isinstance(i, QLineEdit):
-                value = i.text()
-            elif isinstance(i, QSpinBox):
-                value = i.value()
-            elif isinstance(i, QCheckBox):
-                value = i.isChecked()
-            elif isinstance(i, QComboBox):
-                value = i.currentText()
+        for i in self.annot_list.items:
+            value = i.get_value()
             annots.append(value)
         return annots
-
-    def toggle_annots_editable(self, editable: bool):
-        """Enable the annotation widgets for editing."""
-        for i in self.annotation_item_widgets:
-            i.setEnabled(editable)
 
     def _display_mode(self):
         """Render GUI buttons visible depending on the mode."""
@@ -320,14 +285,11 @@ class AnnotatorView(QFrame):
         data : Dict[str, Dict[str, Any]]
             The dictionary of annotation names -> a dictionary of types, defaults, and options.
         """
-        self.annotation_item_widgets = []
-        self.annot_list.clear()
+        self.annot_list.clear_all()
         for name in data.keys():
             self._create_annot(name, data[name])
-            # todo fix: doesnt work if certain widgets are first leaves blank spot on bottom
-        self.annot_list.setMaximumHeight(self.annot_list.item(0).sizeHint().height() * len(data))
 
-    def _create_annot(self, name: str, dictn: Dict[str, Any]):
+    def _create_annot(self, name: str, dct: Dict[str, Any]):
         """
         Create annotation widgets from dictionary entries.
 
@@ -338,38 +300,10 @@ class AnnotatorView(QFrame):
         dictn : Dict[str, Any]
             annotation type, default, and options.
         """
-        widget = QWidget()
-        layout = QHBoxLayout()
-        label = QLabel(name)
-        self.annots_order.append(name)
 
-        layout.addWidget(label)
-        annot_type: str = dictn["type"]
-        if annot_type == "string":
-            item = QLineEdit(dictn["default"])
-        elif annot_type == "number":
-            item = QSpinBox()
-            item.setValue(dictn["default"])
-        elif annot_type == "bool":
-            item = QCheckBox()
-            if dictn["default"]:
-                item.setChecked(True)
-        elif annot_type == "list":
-            item = QComboBox()
-            for opt in dictn["options"]:
-                item.addItem(opt)
-            item.setCurrentText(dictn["default"])
-        layout.addWidget(item)
-        self.default_vals.append(dictn["default"])
-        self.annotation_item_widgets.append(item)
-        item.setEnabled(True)
-        layout.setContentsMargins(2, 12, 8, 12)
-        layout.setSpacing(2)
-        layout.setSizeConstraint(QLayout.SetMinimumSize)
-        widget.setLayout(layout)
-        list_item = QListWidgetItem(self.annot_list)
-        list_item.setSizeHint(widget.minimumSizeHint())
-        self.annot_list.setItemWidget(list_item, widget)
+        self.annots_order.append(name)
+        self.annot_list.add_item(name, dct)
+
 
     def popup(self, text: str) -> bool:
         """
