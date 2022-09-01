@@ -144,15 +144,18 @@ class AnnotatorController:
         self.view.set_mode(mode=AnnotatorViewMode.ANNOTATE)
         self.shuffled = shuffled
 
-    def stop_annotating(self):
-        """Reset values from annotating and change mode to ADD."""
+    def save_annotations(self):
         self.record_annotations(self.curr_img_dict["File Path"])
         self.write_csv()
+
+    def stop_annotating(self):
+        """Reset values from annotating and change mode to ADD."""
+        self.save_annotations()
         self.view.set_curr_index()
         self.files_and_annots = {}
         self.view.set_num_images()
         self.view.set_mode(mode=AnnotatorViewMode.ADD)
-        self.view.render_default_values()
+        self.annot_json_data = None
         self.set_curr_img()
         self.set_csv_path()
 

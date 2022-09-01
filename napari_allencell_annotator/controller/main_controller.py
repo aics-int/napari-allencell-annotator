@@ -480,9 +480,10 @@ class MainController(QFrame):
     def _save_and_exit_clicked(self):
         """Stop annotation if user confirms choice in popup."""
         proceed: bool = Popup.make_popup("Close this session?")
-
         if proceed:
             self._stop_annotating()
+        else:
+            self.annots.save_annotations()
 
     def has_none_annotation(self, lst: List[Union[str, int, bool]]) -> bool:
         """

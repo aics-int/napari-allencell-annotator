@@ -23,7 +23,7 @@ class TemplateList(QListWidget):
         QListWidget.__init__(self)
 
         self.setStyleSheet(Style.get_stylesheet("main.qss"))
-        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         #todo single selection
         self._items = []
         self.height = 0
@@ -36,10 +36,10 @@ class TemplateList(QListWidget):
 
 
     def clear_all(self):
-
         self.clear()
         self._items = []
         self.setMaximumHeight(600)
+        print(600)
         self.height = 0
 
     def add_item(self, name : str, dct : Dict[str, Any]):

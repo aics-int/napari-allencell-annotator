@@ -1,20 +1,13 @@
 from enum import Enum
-from typing import Tuple, Dict, List, Any
+from typing import Any
 
-from PyQt5.QtGui import QBrush, QColor
 from qtpy.QtWidgets import QLayout
-from qtpy import QtWidgets
 from qtpy.QtWidgets import (
     QListWidgetItem,
     QListWidget,
     QWidget,
     QHBoxLayout,
-    QLineEdit,
-    QComboBox,
-    QLabel,
-    QSpinBox,
-    QGridLayout,
-    QCheckBox,
+    QLabel
 )
 
 
@@ -45,6 +38,7 @@ class TemplateItem(QListWidgetItem):
         self.editable_widget = editable_widget
         self.widget = QWidget()
 
+
         self.layout = QHBoxLayout()
         self.name = QLabel(name)
         self.layout.addWidget(self.name)
@@ -57,6 +51,7 @@ class TemplateItem(QListWidgetItem):
         self.widget.setLayout(self.layout)
         self.setSizeHint(self.widget.minimumSizeHint())
         parent.setItemWidget(self, self.widget)
+
 
 
 

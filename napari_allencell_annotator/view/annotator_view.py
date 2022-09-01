@@ -172,7 +172,6 @@ class AnnotatorView(QFrame):
         self.annots_order: List[str] = []
         self.setLayout(self.layout)
         self.viewer: Viewer = viewer
-        self.annot_list.setStyleSheet("""QListWidget{background-color: #262930; border : 2px; border-color : black}""")
 
     @property
     def mode(self) -> AnnotatorViewMode:
@@ -222,7 +221,8 @@ class AnnotatorView(QFrame):
     def render_default_values(self):
         """Set annotation widget values to default."""
         # for curr index if annots exist fill else fill with default
-        self.render_values()
+        for item in self.annot_list.items:
+                item.set_default_value()
 
     def render_values(self, vals: Optional[List[str]] = None):
         """
@@ -233,7 +233,7 @@ class AnnotatorView(QFrame):
         vals:List[str]
             the values for the annotations.
         """
-        for (item, val) in itertools.zip_longest(self.annot_list.items, vals):
+        for (item, val) in zip(self.annot_list.items, vals):
 
             if val is None or val == "":
                 item.set_default_value()
@@ -287,7 +287,6 @@ class AnnotatorView(QFrame):
         self.annot_list.clear_all()
         for name in data.keys():
             self._create_annot(name, data[name])
-        print(self.annot_list.sizeHint().height())
         self.scroll.setMaximumHeight(self.annot_list.height)
         self.annot_list.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
 

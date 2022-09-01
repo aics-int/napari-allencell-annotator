@@ -175,7 +175,6 @@ class TestMainController:
 
         Popup.make_popup = MagicMock(return_value=False)
         path: str = str(Directories.get_test_assets_dir() / "test.csv")
-        print(path + " path!")
         self._controller._csv_json_import_selected_evt([path])
 
         assert self._controller.csv_annotation_values is None

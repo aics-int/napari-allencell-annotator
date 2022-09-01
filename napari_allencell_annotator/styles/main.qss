@@ -19,3 +19,10 @@ QLabel {
 QToolTip {
     font-size: 14px;
 }
+QListWidget{
+    background-color: #262930;
+}
+
+QScrollArea{
+    border: 1px solid black
+}
