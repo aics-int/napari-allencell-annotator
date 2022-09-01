@@ -9,6 +9,7 @@ from napari_allencell_annotator.controller.images_controller import ImagesContro
 
 from napari_allencell_annotator.controller.annotator_controller import AnnotatorController
 from napari_allencell_annotator.widgets.create_dialog import CreateDialog
+from napari_allencell_annotator.widgets.popup import Popup
 import napari
 from typing import List, Dict, Union
 
@@ -113,8 +114,8 @@ class MainController(QFrame):
                 self.annots.read_json(file_path)
 
             elif Path(file_path).suffix == ".csv":
-                use_annots = self.annots.view.popup(
-                    "Would you like to use the images from this csv in addition to the annotation list?\n "
+                use_annots = Popup.make_popup(
+                    "Would you like to use the images from this csv in addition to the annotation list?\n\n "
                     "Any annotation values in the file written for these images will be used."
                     "\n Note: any currently listed images will be cleared."
                 )
@@ -236,7 +237,7 @@ class MainController(QFrame):
         if self.images.get_num_files() is None or self.images.get_num_files() < 1:
             self.images.view.alert("Can't Annotate Without Adding Images")
         else:
-            proceed: bool = self.annots.view.popup(
+            proceed: bool = Popup.make_popup(
                 "Once annotating starts both the image set and annotations cannot be "
                 "edited.\n Would "
                 "you like to continue?"
@@ -478,7 +479,7 @@ class MainController(QFrame):
 
     def _save_and_exit_clicked(self):
         """Stop annotation if user confirms choice in popup."""
-        proceed: bool = self.annots.view.popup("Close this session?")
+        proceed: bool = Popup.make_popup("Close this session?")
 
         if proceed:
             self._stop_annotating()

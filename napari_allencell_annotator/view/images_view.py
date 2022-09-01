@@ -21,6 +21,7 @@ from napari_allencell_annotator.widgets.file_input import (
 from napari_allencell_annotator.widgets.scrollable_popup import ScrollablePopup
 from napari_allencell_annotator.widgets.files_widget import FilesWidget, FileItem
 from napari_allencell_annotator._style import Style
+from napari_allencell_annotator.widgets.popup import Popup
 
 
 class ImagesView(QFrame):
@@ -81,7 +82,7 @@ class ImagesView(QFrame):
 
         self.shuffle.setEnabled(False)
 
-        self.delete = QPushButton("Delete Selected")
+        self.delete = QPushButton("Delete All")
         self.delete.setEnabled(False)
 
         self.layout.addWidget(self.shuffle, 13, 0, 1, 3)
@@ -137,7 +138,10 @@ class ImagesView(QFrame):
             if msg_box.exec() == QDialog.Accepted:
                 self.file_widget.delete_checked()
         else:
-            self.alert("No Images Selected")
+            proceed: bool = Popup.make_popup("Remove all images?")
+            if proceed:
+                self.file_widget.clear_all()
+                self.reset_buttons()
 
     def alert(self, alert_msg: str):
         """
@@ -171,9 +175,9 @@ class ImagesView(QFrame):
         checked : bool
         """
         if checked:
-            self.delete.setEnabled(True)
+            self.delete.setText("Delete Selected")
         elif not checked:
-            self.delete.setEnabled(False)
+            self.delete.setText("Delete All")
 
     def _toggle_shuffle(self, files_added: bool):
         """
@@ -184,11 +188,14 @@ class ImagesView(QFrame):
         files_added : bool
         """
         if files_added:
-            self.delete.setToolTip("Check box on the right \n to select for deletion")
+            self.delete.setToolTip("Check box on the right \n to select files for deletion")
+            self.delete.setText("Delete All")
             self.shuffle.setEnabled(True)
+            self.delete.setEnabled(True)
         elif not files_added:
             self.delete.setToolTip(None)
             self.shuffle.setEnabled(False)
+            self.delete.setEnabled(False)
 
     def _display_img(self, current: FileItem, previous: FileItem):
         """Display the current image in napari."""

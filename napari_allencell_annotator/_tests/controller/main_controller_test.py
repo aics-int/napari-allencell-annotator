@@ -9,6 +9,7 @@ from napari_allencell_annotator.controller.main_controller import (
     QVBoxLayout,
     CreateDialog,
     QDialog,
+    Popup,
 )
 from napari_allencell_annotator.util.directories import Directories
 
@@ -172,7 +173,7 @@ class TestMainController:
         self._controller.starting_row = None
         self._controller.csv_annotation_values = {}
 
-        self._controller.annots.view.popup = MagicMock(return_value=False)
+        Popup.make_popup = MagicMock(return_value=False)
         path: str = str(Directories.get_test_assets_dir() / "test.csv")
         print(path + " path!")
         self._controller._csv_json_import_selected_evt([path])
@@ -189,7 +190,7 @@ class TestMainController:
         self._controller.starting_row = None
         self._controller.csv_annotation_values = {}
 
-        self._controller.annots.view.popup = MagicMock(return_value=True)
+        Popup.make_popup = MagicMock(return_value=True)
         path: str = str(Directories.get_test_assets_dir() / "test2.csv")
         self._controller.has_none_annotation = MagicMock(side_effect=[False, False, True])
         self._controller._csv_json_import_selected_evt([path])
@@ -215,7 +216,7 @@ class TestMainController:
         self._controller.starting_row = None
         self._controller.csv_annotation_values = {}
 
-        self._controller.annots.view.popup = MagicMock(return_value=True)
+        Popup.make_popup = MagicMock(return_value=True)
         path: str = str(Directories.get_test_assets_dir() / "test3.csv")
         self._controller.has_none_annotation = MagicMock(side_effect=[False, False, False, False])
         self._controller._csv_json_import_selected_evt([path])
@@ -308,7 +309,7 @@ class TestMainController:
     def test_start_annotating_clicked_true(self):
         self._controller.images.get_num_files = MagicMock(return_value=1)
 
-        self._controller.annots.view.popup.return_value = True
+        Popup.make_popup.return_value = True
         self._controller._start_annotating_clicked()
         assert len(self._controller.images.get_num_files.mock_calls) == 2
         self._controller.images.view.alert.assert_not_called()
@@ -316,7 +317,7 @@ class TestMainController:
 
     def test_start_annotating_clicked_false(self):
         self._controller.images.get_num_files.return_value = 1
-        self._controller.annots.view.popup.return_value = False
+        Popup.make_popup.return_value = False
         self._controller._start_annotating_clicked()
         assert len(self._controller.images.get_num_files.mock_calls) == 2
         self._controller.images.view.alert.assert_not_called()
@@ -988,13 +989,13 @@ class TestMainController:
         self._controller.annots.set_curr_img.assert_called_once_with(self._controller.images.curr_img_dict())
 
     def test_save_and_exit_clicked_false(self):
-        self._controller.annots.view.popup = MagicMock(return_value=False)
+        Popup.make_popup = MagicMock(return_value=False)
         self._controller._stop_annotating = MagicMock()
         self._controller._save_and_exit_clicked()
         self._controller._stop_annotating.assert_not_called()
 
     def test_save_and_exit_clicked_true(self):
-        self._controller.annots.view.popup = MagicMock(return_value=True)
+        Popup.make_popup = MagicMock(return_value=True)
         self._controller._stop_annotating = MagicMock()
         self._controller._save_and_exit_clicked()
         self._controller._stop_annotating.assert_called_once_with()
