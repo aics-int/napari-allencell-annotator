@@ -2,6 +2,7 @@ import itertools
 from enum import Enum
 from typing import Dict, List, Optional, Any, Union
 
+from qtpy import QtWidgets
 from qtpy.QtWidgets import QFrame
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import (
@@ -111,6 +112,7 @@ class AnnotatorView(QFrame):
         style = """QScrollBar::handle:vertical {border: 0px solid red; border-radius: 
         2px;} """
         self.scroll.setStyleSheet(self.scroll.styleSheet() + style)
+
         self.layout.addWidget(self.scroll)
 
         self.num_images: int = None
@@ -174,6 +176,7 @@ class AnnotatorView(QFrame):
         self.annots_order: List[str] = []
         self.setLayout(self.layout)
         self.viewer: Viewer = viewer
+        self.annot_list.setStyleSheet("""QListWidget{background-color: #262930; border : 2px; border-color : black}""")
 
     @property
     def mode(self) -> AnnotatorViewMode:
@@ -288,6 +291,9 @@ class AnnotatorView(QFrame):
         self.annot_list.clear_all()
         for name in data.keys():
             self._create_annot(name, data[name])
+        print(self.annot_list.sizeHint().height())
+        self.scroll.setMaximumHeight(self.annot_list.height)
+        self.annot_list.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
 
     def _create_annot(self, name: str, dct: Dict[str, Any]):
         """

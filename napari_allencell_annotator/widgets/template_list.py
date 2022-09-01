@@ -23,11 +23,12 @@ class TemplateList(QListWidget):
         QListWidget.__init__(self)
 
         self.setStyleSheet(Style.get_stylesheet("main.qss"))
-        self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         #todo single selection
         self._items = []
         self.height = 0
+
+
 
     @property
     def items(self) -> List[TemplateItem]:
@@ -77,6 +78,7 @@ class TemplateList(QListWidget):
         item = TemplateItem(self,name,annot_type, default,widget)
 
         self._items.append(item)
+
         self.height = self.height + item.widget.sizeHint().height()
         self.setMaximumHeight(self.height)
 
