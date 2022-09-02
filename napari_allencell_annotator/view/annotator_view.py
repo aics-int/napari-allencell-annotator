@@ -1,8 +1,7 @@
-import itertools
+
 from enum import Enum
 from typing import Dict, List, Optional, Any, Union
 
-from qtpy import QtWidgets
 from qtpy.QtWidgets import QFrame
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import (
