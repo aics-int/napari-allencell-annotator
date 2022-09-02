@@ -26,10 +26,8 @@ class TestTemplateList:
         self._list._items = ["item"]
         self._list.height = 7
         self._list.clear = MagicMock()
-        QListWidget.setMaximumHeight = MagicMock()
         self._list.clear_all()
 
-        QListWidget.setMaximumHeight.assert_called_once_with(600)
         self._list.clear.assert_called_once_with()
         assert self._list._items == []
         assert self._list.height == 0

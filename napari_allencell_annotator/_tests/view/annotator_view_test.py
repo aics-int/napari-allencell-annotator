@@ -43,8 +43,10 @@ class TestAnnotatorView:
     def test_reset_annotations(self):
         self._view.annot_list = create_autospec(TemplateList)
         self._view.annots_order = ["item"]
-        self._view._reset_annotations()
+        self._view.scroll = create_autospec(QScrollArea)
 
+        self._view._reset_annotations()
+        self._view.scroll.setMaximumHeight.assert_called_once_with(600)
         self._view.annot_list.clear_all.assert_called_once_with()
         assert self._view.annots_order == []
 

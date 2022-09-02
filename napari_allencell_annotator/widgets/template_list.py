@@ -49,7 +49,7 @@ class TemplateList(QListWidget):
         """
         self.clear()
         self._items = []
-        self.setMaximumHeight(600)
+
         self.height = 0
 
     def add_item(self, name: str, dct: Dict[str, Any]):

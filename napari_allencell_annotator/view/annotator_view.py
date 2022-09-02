@@ -214,6 +214,7 @@ class AnnotatorView(QFrame):
         self.annot_list.clear_all()
 
         self.annots_order: List[str] = []
+        self.scroll.setMaximumHeight(600)
 
     def render_default_values(self):
         """Set annotation widget values to default."""
