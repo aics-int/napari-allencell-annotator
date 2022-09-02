@@ -1,19 +1,19 @@
 from typing import Dict, Any, List
 
+from qtpy import QtWidgets
 from qtpy.QtWidgets import QLineEdit, QCheckBox, QComboBox, QSpinBox
-from qtpy.QtWidgets import QAbstractScrollArea, QSizePolicy
+from qtpy.QtWidgets import QSizePolicy
 from qtpy.QtWidgets import QListWidget
 
 from napari_allencell_annotator.widgets.template_item import TemplateItem, ItemType
 from napari_allencell_annotator._style import Style
 
 
-
 class TemplateList(QListWidget):
     """
     A class used to create a QListWidget for annotation templates.
 
-    Attributes
+    Properties
     ----------
     items : List[TemplateItem]
 
@@ -24,25 +24,35 @@ class TemplateList(QListWidget):
 
         self.setStyleSheet(Style.get_stylesheet("main.qss"))
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        #todo single selection
-        self._items = []
-        self.height = 0
-
-
+        # todo single selection
+        self._items: List[TemplateItem] = []
+        self.height: int = 0
+        self.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
 
     @property
     def items(self) -> List[TemplateItem]:
+        """
+        Item property.
+
+        Returns
+        -------
+        List[TemplateItem]
+            a list of items.
+        """
         return self._items
 
-
     def clear_all(self):
+        """
+        Clear all data.
+
+        Reset height, items, list.
+        """
         self.clear()
         self._items = []
         self.setMaximumHeight(600)
-        print(600)
         self.height = 0
 
-    def add_item(self, name : str, dct : Dict[str, Any]):
+    def add_item(self, name: str, dct: Dict[str, Any]):
         """
         Add annotation template item from dictionary entries.
 
@@ -50,12 +60,11 @@ class TemplateList(QListWidget):
         ----------
         name : str
             annotation name.
-        dictn : Dict[str, Any]
+        dct : Dict[str, Any]
             annotation type, default, and options.
         """
-
         annot_type: str = dct["type"]
-        default : Any = dct["default"]
+        default: Any = dct["default"]
         widget = None
         if annot_type == "string":
             annot_type = ItemType.STRING
@@ -67,20 +76,18 @@ class TemplateList(QListWidget):
         elif annot_type == "bool":
             annot_type = ItemType.BOOL
             widget = QCheckBox()
-            if default:
-                widget.setChecked(True)
+            widget.setChecked(default)
         elif annot_type == "list":
             annot_type = ItemType.LIST
             widget = QComboBox()
             for opt in dct["options"]:
                 widget.addItem(opt)
             widget.setCurrentText(default)
-        item = TemplateItem(self,name,annot_type, default,widget)
+        item = TemplateItem(self, name, annot_type, default, widget)
 
         self._items.append(item)
 
         self.height = self.height + item.widget.sizeHint().height()
         self.setMaximumHeight(self.height)
 
-
-    #add method for create keyboard shortcuts and take away keyboard stuff
+    # add method for create keyboard shortcuts and take away keyboard stuff

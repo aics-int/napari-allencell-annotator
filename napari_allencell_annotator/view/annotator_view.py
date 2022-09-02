@@ -73,9 +73,6 @@ class AnnotatorView(QFrame):
     get_curr_annots() -> List
         Returns the current annotation values in a list form.
 
-    toggle_annots_editable()
-        Enables the annotations for editing.
-
     render_annotations(data : Dict[str,Dict]))
         Renders GUI elements from the dictionary of annotations.
     """
@@ -222,9 +219,9 @@ class AnnotatorView(QFrame):
         """Set annotation widget values to default."""
         # for curr index if annots exist fill else fill with default
         for item in self.annot_list.items:
-                item.set_default_value()
+            item.set_default_value()
 
-    def render_values(self, vals: Optional[List[str]] = None):
+    def render_values(self, vals: List[str]):
         """
         Set the values of the annotation widgets.
 
@@ -239,7 +236,6 @@ class AnnotatorView(QFrame):
                 item.set_default_value()
             else:
                 item.set_value(val)
-
 
     def get_curr_annots(self) -> List[Union[str, bool, int]]:
         """
@@ -266,7 +262,6 @@ class AnnotatorView(QFrame):
             self._reset_annotations()
             self.layout.addWidget(self.add_widget)
         elif self._mode == AnnotatorViewMode.VIEW:
-
             self.save_json_btn.setEnabled(True)
             self.view_widget.show()
             self.layout.addWidget(self.view_widget)
@@ -288,7 +283,6 @@ class AnnotatorView(QFrame):
         for name in data.keys():
             self._create_annot(name, data[name])
         self.scroll.setMaximumHeight(self.annot_list.height)
-        self.annot_list.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
 
     def _create_annot(self, name: str, dct: Dict[str, Any]):
         """
@@ -304,5 +298,3 @@ class AnnotatorView(QFrame):
 
         self.annots_order.append(name)
         self.annot_list.add_item(name, dct)
-
-        

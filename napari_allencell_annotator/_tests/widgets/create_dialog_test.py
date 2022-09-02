@@ -63,13 +63,27 @@ class TestCreateDialog:
 
     def test_delete_clicked_zero(self):
         self._create.list.num_checked = 0
+        self._create.list.count = MagicMock(return_value=9)
+        self._create.add = create_autospec(QPushButton)
         self._create._delete_clicked()
         self._create.list.delete_checked.assert_not_called()
+        self._create.add.show.assert_called_once_with()
 
     def test_delete_clicked_not_zero(self):
         self._create.list.num_checked = 2
+        self._create.list.count = MagicMock(return_value=8)
+        self._create.add = create_autospec(QPushButton)
         self._create._delete_clicked()
         self._create.list.delete_checked.assert_called_once_with()
+        self._create.add.show.assert_called_once_with()
+
+    def test_delete_clicked_not_zero_10(self):
+        self._create.list.num_checked = 2
+        self._create.list.count = MagicMock(return_value=10)
+        self._create.add = create_autospec(QPushButton)
+        self._create._delete_clicked()
+        self._create.list.delete_checked.assert_called_once_with()
+        self._create.add.show.assert_not_called()
 
     def test_add_clicked_less_than_9(self):
         self._create.list.count = MagicMock(return_value=8)

@@ -2,16 +2,12 @@ from enum import Enum
 from typing import Any
 
 from qtpy.QtWidgets import QLayout
-from qtpy.QtWidgets import (
-    QListWidgetItem,
-    QListWidget,
-    QWidget,
-    QHBoxLayout,
-    QLabel
-)
+from qtpy.QtWidgets import QListWidgetItem, QListWidget, QWidget, QHBoxLayout, QLabel
 
 
 class ItemType(Enum):
+    """"""
+
     STRING = "string"
     NUMBER = "number"
     BOOL = "bool"
@@ -30,14 +26,13 @@ class TemplateItem(QListWidgetItem):
     value
     """
 
-    def __init__(self, parent: QListWidget, name : str, type: ItemType, default : Any, editable_widget : QWidget):
+    def __init__(self, parent: QListWidget, name: str, type: ItemType, default: Any, editable_widget: QWidget):
         QListWidgetItem.__init__(self, parent)
-        self._type = type
-        self.default = default
-        self.value = default
-        self.editable_widget = editable_widget
+        self._type: ItemType = type
+        self.default: Any = default
+        self.value: Any = default
+        self.editable_widget: QWidget = editable_widget
         self.widget = QWidget()
-
 
         self.layout = QHBoxLayout()
         self.name = QLabel(name)
@@ -45,24 +40,30 @@ class TemplateItem(QListWidgetItem):
         self.layout.addWidget(self.editable_widget)
 
         self.editable_widget.setEnabled(True)
-        self.layout.setContentsMargins(2, 12, 8,12)
+        self.layout.setContentsMargins(2, 12, 8, 12)
         self.layout.setSpacing(2)
         self.layout.setSizeConstraint(QLayout.SetMinimumSize)
         self.widget.setLayout(self.layout)
         self.setSizeHint(self.widget.minimumSizeHint())
         parent.setItemWidget(self, self.widget)
 
-
-
-
     @property
     def type(self) -> ItemType:
+        """Annotation type (string, number, bool, list)"""
         return self._type
 
     def set_default_value(self):
+        """Set the value for the annotation to the default."""
         self.set_value(self.default)
 
-    def set_value(self, val : Any):
+    def set_value(self, val: Any):
+        """
+        Set the value of the annotation.
+
+        Parameters
+        ----------
+        val : Any
+        """
         if self._type == ItemType.STRING:
             self.editable_widget.setText(val)
         elif self._type == ItemType.NUMBER:
@@ -78,6 +79,13 @@ class TemplateItem(QListWidgetItem):
             self.editable_widget.setCurrentText(val)
 
     def get_value(self) -> Any:
+        """
+        Return the current annotation value.
+
+        Returns
+        -------
+        Any
+        """
         if self._type == ItemType.STRING:
             return self.editable_widget.text()
         elif self._type == ItemType.NUMBER:
@@ -85,41 +93,10 @@ class TemplateItem(QListWidgetItem):
         elif self._type == ItemType.BOOL:
             return self.editable_widget.isChecked()
         elif self._type == ItemType.LIST:
-            self.editable_widget.currentText()
-
-    # def set_default(self, value : Any):
-    #     """
-    #     Set the default property to shuffled or unshuffled.
-    #
-    #     Parameters
-    #     ----------
-    #     value : Any
-    #     """
-    #     self._default = value
-
-    # @property
-    # def editable_widget(self) -> QWidget:
-    #     """
-    #     Current editable widget of the item.
-    #
-    #     Returns
-    #     -------
-    #     QWidget
-    #         the shuffled property.
-    #     """
-    #     return self._editable_widget
-
-    # def set_editable_widget(self, widget : QWidget):
-    #     """
-    #     Set the shuffled property to shuffled or unshuffled.
-    #
-    #     Parameters
-    #     ----------
-    #     widget : QWidget
-    #     """
-    #     self._editable_widget = widget
+            return self.editable_widget.currentText()
 
     def highlight(self):
+        """Highlight the editable widget in blue."""
         style = ""
         if self._type == ItemType.STRING:
             style = """QLineEdit{border: 1px solid cyan}"""
@@ -131,7 +108,8 @@ class TemplateItem(QListWidgetItem):
             style = """QComboBox{border: 1px solid cyan}"""
         self.editable_widget.setStyleSheet(style)
 
-    def _unhighlight(self):
+    def unhighlight(self):
+        """Unhighlight the editable widget."""
         style = ""
         if self._type == ItemType.STRING:
             style = """QLineEdit{}"""
@@ -140,5 +118,5 @@ class TemplateItem(QListWidgetItem):
         elif self._type == ItemType.BOOL:
             style = """QCheckBox{}"""
         elif self._type == ItemType.LIST:
-            style = """QComboBox{border: 1px solid red}"""
+            style = """QComboBox{}"""
         self.editable_widget.setStyleSheet(style)
