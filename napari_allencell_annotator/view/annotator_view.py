@@ -1,9 +1,8 @@
-
 from enum import Enum
 from typing import Dict, List, Optional, Any, Union
 
 from qtpy.QtWidgets import QFrame
-from qtpy.QtCore import Qt
+from qtpy import QtCore
 from qtpy.QtWidgets import (
     QWidget,
     QHBoxLayout,
@@ -11,7 +10,6 @@ from qtpy.QtWidgets import (
     QGridLayout,
     QScrollArea,
     QPushButton,
-    QAbstractScrollArea,
     QVBoxLayout,
 )
 from napari import Viewer
@@ -84,7 +82,7 @@ class AnnotatorView(QFrame):
         super().__init__()
         self._mode = mode
         label = QLabel("Annotations")
-        label.setAlignment(Qt.AlignCenter)
+        label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.layout = QVBoxLayout()
         self.layout.addWidget(label)
         self.setStyleSheet(Style.get_stylesheet("main.qss"))
@@ -92,9 +90,9 @@ class AnnotatorView(QFrame):
         self.scroll = QScrollArea()
         self.scroll.setWidget(self.annot_list)
         self.scroll.setWidgetResizable(True)
-        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.scroll.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+        # self.scroll.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.scroll.setStyleSheet(
             """QScrollBar:vertical {
             width:10px;    
@@ -156,7 +154,7 @@ class AnnotatorView(QFrame):
         self.next_btn = QPushButton("Next >")
         self.next_btn.setEnabled(True)
         self.progress_bar = QLabel()
-        self.progress_bar.setAlignment(Qt.AlignCenter)
+        self.progress_bar.setAlignment(QtCore.Qt.AlignCenter)
         annot_layout.addWidget(self.progress_bar, 0, 1, 1, 2)
         annot_layout.addWidget(self.save_exit_btn, 1, 0, 1, 2)
         annot_layout.addWidget(self.prev_btn, 1, 2, 1, 1)
@@ -292,7 +290,7 @@ class AnnotatorView(QFrame):
         ----------
         name : str
             annotation name.
-        dictn : Dict[str, Any]
+        dct : Dict[str, Any]
             annotation type, default, and options.
         """
 
