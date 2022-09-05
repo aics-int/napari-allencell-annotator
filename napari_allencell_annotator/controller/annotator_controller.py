@@ -73,6 +73,8 @@ class AnnotatorController:
 
         self.shuffled: bool = None
 
+    # next item, prev item, itemchanged event to call highlight, click -> selection, select on open
+
     def get_annot_json_data(self) -> Dict[str, Dict[str, Any]]:
         """
         Get annotation data dictionary.

@@ -325,7 +325,10 @@ class TestMainController:
     def test_stop_annotating_shuffled(self):
         self._controller.images.view.file_widget.shuffled = True
         self._controller.has_new_shuffled_order = None
+        self._controller.annotating_shortcuts_off = MagicMock()
         self._controller._stop_annotating()
+        self._controller.annotating_shortcuts_off.assert_called_once_with()
+
         self._controller.images.view.file_widget.currentItemChanged.disconnect.assert_not_called()
 
         self._controller.layout.addWidget.assert_has_calls(
@@ -341,7 +344,10 @@ class TestMainController:
     def test_stop_annotating_shuffled_new_shuff_order_true(self):
         self._controller.images.view.file_widget.shuffled = True
         self._controller.has_new_shuffled_order = True
+        self._controller.annotating_shortcuts_off = MagicMock()
         self._controller._stop_annotating()
+        self._controller.annotating_shortcuts_off.assert_called_once_with()
+
         self._controller.images.view.file_widget.currentItemChanged.disconnect.assert_not_called()
 
         self._controller.layout.addWidget.assert_has_calls(
@@ -358,7 +364,10 @@ class TestMainController:
         self._controller.images.view.file_widget.shuffled = True
         self._controller.has_new_shuffled_order = False
         self._controller.images.view.shuffle = MagicMock()
+        self._controller.annotating_shortcuts_off = MagicMock()
         self._controller._stop_annotating()
+        self._controller.annotating_shortcuts_off.assert_called_once_with()
+
         self._controller.images.view.file_widget.currentItemChanged.disconnect.assert_not_called()
         self._controller.images.view.shuffle.toggled.disconnect.assert_called_once_with(
             self._controller._shuffle_toggled
@@ -377,7 +386,10 @@ class TestMainController:
     def test_stop_annotating_not_shuffled(self):
         self._controller.has_new_shuffled_order = None
         self._controller.images.view.file_widget.shuffled = False
+        self._controller.annotating_shortcuts_off = MagicMock()
         self._controller._stop_annotating()
+        self._controller.annotating_shortcuts_off.assert_called_once_with()
+
         self._controller.images.view.file_widget.currentItemChanged.disconnect.assert_called_once()
 
         self._controller.layout.addWidget.assert_has_calls(
@@ -393,7 +405,10 @@ class TestMainController:
     def test_stop_annotating_not_shuffled_new_shuff_order_true(self):
         self._controller.has_new_shuffled_order = True
         self._controller.images.view.file_widget.shuffled = False
+        self._controller.annotating_shortcuts_off = MagicMock()
         self._controller._stop_annotating()
+        self._controller.annotating_shortcuts_off.assert_called_once_with()
+
         self._controller.images.view.file_widget.currentItemChanged.disconnect.assert_called_once()
 
         self._controller.layout.addWidget.assert_has_calls(
@@ -410,7 +425,9 @@ class TestMainController:
         self._controller.has_new_shuffled_order = False
         self._controller.images.view.shuffle = MagicMock()
         self._controller.images.view.file_widget.shuffled = False
+        self._controller.annotating_shortcuts_off = MagicMock()
         self._controller._stop_annotating()
+        self._controller.annotating_shortcuts_off.assert_called_once_with()
         self._controller.images.view.file_widget.currentItemChanged.disconnect.assert_called_once()
         self._controller.images.view.shuffle.toggled.disconnect.assert_called_once_with(
             self._controller._shuffle_toggled
@@ -432,7 +449,10 @@ class TestMainController:
         self._controller.csv_annotation_values = {"filepath.png": ["filepath", "", "text"]}
         self._controller._fix_csv_annotations = MagicMock()
 
+        self._controller.annotating_shortcuts_on = MagicMock()
+
         self._controller._setup_annotating()
+        self._controller.annotating_shortcuts_on.assert_called_once_with()
 
         self._controller.layout.removeWidget.assert_called_once_with(self._controller.images.view)
         self._controller.images.view.hide.assert_called_once()
@@ -450,8 +470,10 @@ class TestMainController:
         self._controller.starting_row = None
         self._controller.images.get_files_dict = MagicMock(return_value=({"filepath.png": ["filepath", ""]}, False))
         self._controller.csv_annotation_values = None
+        self._controller.annotating_shortcuts_on = MagicMock()
 
         self._controller._setup_annotating()
+        self._controller.annotating_shortcuts_on.assert_called_once_with()
         self._controller.layout.removeWidget.assert_not_called()
         self._controller.images.view.hide.assert_not_called()
         self._controller.images.start_annotating.assert_called_once_with()
