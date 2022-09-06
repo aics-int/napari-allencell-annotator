@@ -33,6 +33,7 @@ class TemplateItem(QListWidgetItem):
         self.value: Any = default
         self.editable_widget: QWidget = editable_widget
         self.widget = QWidget()
+        self.parent = parent
 
         self.layout = QHBoxLayout()
         self.name = QLabel(name)
@@ -95,17 +96,27 @@ class TemplateItem(QListWidgetItem):
         elif self._type == ItemType.LIST:
             return self.editable_widget.currentText()
 
+    def create_evt_listener(self):
+        if self._type == ItemType.STRING:
+            self.editable_widget.textEdited.connect(lambda: self.parent.setCurrentItem(self))
+        elif self._type == ItemType.NUMBER:
+            self.editable_widget.valueChanged.connect(lambda: self.parent.setCurrentItem(self))
+        elif self._type == ItemType.BOOL:
+            self.editable_widget.isChecked()
+        elif self._type == ItemType.LIST:
+            self.editable_widget.currentText()
+
     def highlight(self):
         """Highlight the editable widget in blue."""
         style = ""
         if self._type == ItemType.STRING:
-            style = """QLineEdit{border: 1px solid #39a844}"""
+            style = """QLineEdit{border: 1px solid #759e78}"""
         elif self._type == ItemType.NUMBER:
-            style = """QSpinBox{border: 1px solid #39a844}"""
+            style = """QSpinBox{border: 1px solid #759e78}"""
         elif self._type == ItemType.BOOL:
-            style = """QCheckBox:indicator{border: 1px solid #39a844}"""
+            style = """QCheckBox:indicator{border: 1px solid #759e78}"""
         elif self._type == ItemType.LIST:
-            style = """QComboBox{border: 1px solid #39a844}"""
+            style = """QComboBox{border: 1px solid #759e78}"""
         self.editable_widget.setStyleSheet(style)
 
     def unhighlight(self):

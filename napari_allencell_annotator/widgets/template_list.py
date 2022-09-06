@@ -41,6 +41,10 @@ class TemplateList(QListWidget):
         """
         return self._items
 
+    def create_evt_listeners(self):
+        for item in self.items:
+            item.create_evt_listener()
+
     def clear_all(self):
         """
         Clear all data.

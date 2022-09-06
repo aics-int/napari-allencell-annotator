@@ -5,6 +5,7 @@ from pathlib import Path
 from qtpy import QtCore
 from qtpy.QtWidgets import QFrame, QShortcut
 from qtpy.QtWidgets import QVBoxLayout, QDialog
+from qtpy.QtGui import QKeySequence
 
 from napari_allencell_annotator.controller.images_controller import ImagesController
 
@@ -310,9 +311,9 @@ class MainController(QFrame):
 
     def annotating_shortcuts_on(self):
         """Create annotation keyboard shortcuts and connect them to slots."""
-        self.next_sc = QShortcut(QtCore.Qt.Key_Right, self)
+        self.next_sc = QShortcut(QKeySequence(QtCore.Qt.CTRL +QtCore.Qt.SHIFT + QtCore.Qt.Key_Right), self)
         self.next_sc.activated.connect(self._next_image_clicked)
-        self.prev_sc = QShortcut(QtCore.Qt.Key_Left, self)
+        self.prev_sc = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.SHIFT + QtCore.Qt.Key_Left), self)
         self.prev_sc.activated.connect(self._prev_image_clicked)
 
     def annotating_shortcuts_off(self):

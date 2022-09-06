@@ -147,6 +147,7 @@ class AnnotatorController:
         self.view.set_mode(mode=AnnotatorViewMode.ANNOTATE)
         self.shuffled = shuffled
         self.view.annot_list.currentItemChanged.connect(self._curr_item_changed)
+        self.view.annot_list.create_evt_listeners()
 
     def save_annotations(self):
         """Save current annotation data"""
@@ -175,7 +176,9 @@ class AnnotatorController:
         current : TemplateItem
         previous : TemplateItem
         """
-        current.highlight()
+        if current is not None:
+            # test
+            current.highlight()
         if previous is not None:
             previous.unhighlight()
 

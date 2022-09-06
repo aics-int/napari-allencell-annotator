@@ -1,15 +1,12 @@
 from unittest import mock
-from unittest.mock import create_autospec, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 from napari_allencell_annotator.widgets.template_list import (
     TemplateList,
     TemplateItem,
-    QListWidget,
-    QLineEdit,
     QSpinBox,
     QCheckBox,
     QComboBox,
-    ItemType,
 )
 
 
