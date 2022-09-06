@@ -92,25 +92,27 @@ class TestTemplateItem:
         self._item._type = ItemType.STRING
         self._item.editable_widget = create_autospec(QWidget)
         self._item.highlight()
-        self._item.editable_widget.setStyleSheet.assert_called_once_with("""QLineEdit{border: 1px solid cyan}""")
+        self._item.editable_widget.setStyleSheet.assert_called_once_with("""QLineEdit{border: 1px solid #39a844}""")
 
     def test_highlight_num(self):
         self._item._type = ItemType.NUMBER
         self._item.editable_widget = create_autospec(QWidget)
         self._item.highlight()
-        self._item.editable_widget.setStyleSheet.assert_called_once_with("""QSpinBox{border: 1px solid cyan}""")
+        self._item.editable_widget.setStyleSheet.assert_called_once_with("""QSpinBox{border: 1px solid #39a844}""")
 
     def test_highlight_bool(self):
         self._item._type = ItemType.BOOL
         self._item.editable_widget = create_autospec(QWidget)
         self._item.highlight()
-        self._item.editable_widget.setStyleSheet.assert_called_once_with("""QCheckBox{border: 1px solid cyan}""")
+        self._item.editable_widget.setStyleSheet.assert_called_once_with(
+            """QCheckBox:indicator{border: 1px solid #39a844}"""
+        )
 
     def test_highlight_list(self):
         self._item._type = ItemType.LIST
         self._item.editable_widget = create_autospec(QWidget)
         self._item.highlight()
-        self._item.editable_widget.setStyleSheet.assert_called_once_with("""QComboBox{border: 1px solid cyan}""")
+        self._item.editable_widget.setStyleSheet.assert_called_once_with("""QComboBox{border: 1px solid #39a844}""")
 
     def test_unhighlight_str(self):
         self._item._type = ItemType.STRING
@@ -128,7 +130,7 @@ class TestTemplateItem:
         self._item._type = ItemType.BOOL
         self._item.editable_widget = create_autospec(QWidget)
         self._item.unhighlight()
-        self._item.editable_widget.setStyleSheet.assert_called_once_with("""QCheckBox{}""")
+        self._item.editable_widget.setStyleSheet.assert_called_once_with("""QCheckBox:indicator{}""")
 
     def test_unhighlight_list(self):
         self._item._type = ItemType.LIST

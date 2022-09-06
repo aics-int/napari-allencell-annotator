@@ -99,13 +99,13 @@ class TemplateItem(QListWidgetItem):
         """Highlight the editable widget in blue."""
         style = ""
         if self._type == ItemType.STRING:
-            style = """QLineEdit{border: 1px solid cyan}"""
+            style = """QLineEdit{border: 1px solid #39a844}"""
         elif self._type == ItemType.NUMBER:
-            style = """QSpinBox{border: 1px solid cyan}"""
+            style = """QSpinBox{border: 1px solid #39a844}"""
         elif self._type == ItemType.BOOL:
-            style = """QCheckBox{border: 1px solid cyan}"""
+            style = """QCheckBox:indicator{border: 1px solid #39a844}"""
         elif self._type == ItemType.LIST:
-            style = """QComboBox{border: 1px solid cyan}"""
+            style = """QComboBox{border: 1px solid #39a844}"""
         self.editable_widget.setStyleSheet(style)
 
     def unhighlight(self):
@@ -116,7 +116,7 @@ class TemplateItem(QListWidgetItem):
         elif self._type == ItemType.NUMBER:
             style = """QSpinBox{}"""
         elif self._type == ItemType.BOOL:
-            style = """QCheckBox{}"""
+            style = """QCheckBox:indicator{}"""
         elif self._type == ItemType.LIST:
             style = """QComboBox{}"""
         self.editable_widget.setStyleSheet(style)

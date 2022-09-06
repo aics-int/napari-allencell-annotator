@@ -9,7 +9,7 @@ from napari_allencell_annotator.controller.annotator_controller import (
 )
 
 from napari_allencell_annotator.controller.annotator_controller import napari, csv, json
-from napari_allencell_annotator.view.annotator_view import QPushButton
+from napari_allencell_annotator.view.annotator_view import QPushButton, TemplateList
 
 
 class TestAnnotatorController:
@@ -73,7 +73,14 @@ class TestAnnotatorController:
 
     def test_start_annotating_empty(self):
         self._controller.shuffled = None
+        self._controller.view.annot_list = MagicMock(TemplateList)
+        self._controller._curr_item_changed = MagicMock()
+
         self._controller.start_annotating(4, {}, True)
+
+        self._controller.view.annot_list.currentItemChanged.connect.assert_called_once_with(
+            self._controller._curr_item_changed
+        )
 
         assert self._controller.files_and_annots == {}
         self._controller.view.set_num_images.assert_called_once_with(4)
@@ -81,12 +88,27 @@ class TestAnnotatorController:
         assert self._controller.shuffled == True
 
     def test_start_annotating(self):
+        self._controller.view.annot_list = MagicMock(TemplateList)
+        self._controller._curr_item_changed = MagicMock()
+
         self._controller.start_annotating(4, {"path": ["lst"]}, False)
+
+        self._controller.view.annot_list.currentItemChanged.connect.assert_called_once_with(
+            self._controller._curr_item_changed
+        )
 
         assert self._controller.files_and_annots == {"path": ["lst"]}
         self._controller.view.set_num_images.assert_called_once_with(4)
         self._controller.view.set_mode.assert_called_once_with(mode=AnnotatorViewMode.ANNOTATE)
         assert self._controller.shuffled == False
+
+    def test_save_annotations(self):
+        self._controller.curr_img_dict = {"File Path": "path"}
+        self._controller.record_annotations = MagicMock()
+        self._controller.write_csv = MagicMock()
+        self._controller.save_annotations()
+        self._controller.record_annotations.assert_called_once_with("path")
+        self._controller.write_csv.assert_called_once_with()
 
     def test_stop_annotating(self):
         self._controller.files_and_annots = {"item": "item"}
@@ -95,9 +117,14 @@ class TestAnnotatorController:
         self._controller.record_annotations = MagicMock()
         self._controller.set_curr_img = MagicMock()
         self._controller.set_csv_path = MagicMock()
+        self._controller.view.annot_list = MagicMock(TemplateList)
+        self._controller._curr_item_changed = MagicMock()
 
         self._controller.stop_annotating()
 
+        self._controller.view.annot_list.currentItemChanged.disconnect.assert_called_once_with(
+            self._controller._curr_item_changed
+        )
         self._controller.write_csv.assert_called_once_with()
         self._controller.record_annotations.assert_called_once_with("path")
         self._controller.view.set_curr_index.assert_called_once_with()
@@ -108,6 +135,22 @@ class TestAnnotatorController:
 
         self._controller.set_curr_img.assert_called_once_with()
         self._controller.set_csv_path.assert_called_once_with()
+
+    def test_curr_item_changed(self):
+        current = MagicMock()
+        current.highlight = MagicMock()
+        previous = MagicMock()
+        previous.unhighlight = MagicMock()
+        self._controller._curr_item_changed(current, previous)
+        current.highlight.assert_called_once_with()
+        previous.unhighlight.assert_called_once_with()
+
+    def test_curr_item_changed_none(self):
+        current = MagicMock()
+        current.highlight = MagicMock()
+        previous = None
+        self._controller._curr_item_changed(current, previous)
+        current.highlight.assert_called_once_with()
 
     def test_set_curr_img_none(self):
         self._controller.curr_img_dict = {}

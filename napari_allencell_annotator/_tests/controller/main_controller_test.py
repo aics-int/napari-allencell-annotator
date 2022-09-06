@@ -10,6 +10,8 @@ from napari_allencell_annotator.controller.main_controller import (
     CreateDialog,
     QDialog,
     Popup,
+    QShortcut,
+    QtCore,
 )
 from napari_allencell_annotator.util.directories import Directories
 
@@ -485,6 +487,36 @@ class TestMainController:
         self._controller.images.view.file_widget.currentItemChanged.connect.assert_called_once()
         self._controller.images.view.input_dir.hide.assert_called_once_with()
         self._controller.images.view.input_file.hide.assert_called_once_with()
+
+    @patch("napari_allencell_annotator.controller.main_controller.QShortcut.__init__")
+    def test_annotating_shortcuts_on(self, mock_init):
+        mock_init.return_value = None
+        QShortcut.activated = MagicMock()
+        QShortcut.activated.connect = MagicMock()
+        self._controller._next_image_clicked = MagicMock()
+        self._controller._prev_image_clicked = MagicMock()
+        self._controller.next_sc = None
+        self._controller.prev_sc = None
+        self._controller.annotating_shortcuts_on()
+
+        mock_init.assert_has_calls(
+            [mock.call(QtCore.Qt.Key_Right, self._controller), mock.call(QtCore.Qt.Key_Left, self._controller)]
+        )
+
+        QShortcut.activated.connect.assert_has_calls(
+            [mock.call(self._controller._next_image_clicked), mock.call(self._controller._prev_image_clicked)]
+        )
+
+    def test_annotating_shortcuts_off(self):
+        self._controller.next_sc = create_autospec(QShortcut)
+        self._controller.prev_sc = create_autospec(QShortcut)
+        self._controller._next_image_clicked = MagicMock()
+        self._controller._prev_image_clicked = MagicMock()
+        self._controller.next_sc.activated.disconnect = MagicMock()
+        self._controller.prev_sc.activated.disconnect = MagicMock()
+        self._controller.annotating_shortcuts_off()
+        self._controller.next_sc.activated.disconnect.assert_called_once_with(self._controller._next_image_clicked)
+        self._controller.prev_sc.activated.disconnect.assert_called_once_with(self._controller._prev_image_clicked)
 
     def test_fix_csv_annotations_keys_equal_shuffled(self):
         dct = {

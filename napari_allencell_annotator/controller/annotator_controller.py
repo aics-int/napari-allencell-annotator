@@ -141,12 +141,15 @@ class AnnotatorController:
         dct : Dict[str, List[str]]
             The files to be used. path -> [name, FMS]
         """
+
         self.files_and_annots = dct
         self.view.set_num_images(num_images)
         self.view.set_mode(mode=AnnotatorViewMode.ANNOTATE)
         self.shuffled = shuffled
+        self.view.annot_list.currentItemChanged.connect(self._curr_item_changed)
 
     def save_annotations(self):
+        """Save current annotation data"""
         self.record_annotations(self.curr_img_dict["File Path"])
         self.write_csv()
 
@@ -160,6 +163,21 @@ class AnnotatorController:
         self.annot_json_data = None
         self.set_curr_img()
         self.set_csv_path()
+
+        self.view.annot_list.currentItemChanged.disconnect(self._curr_item_changed)
+
+    def _curr_item_changed(self, current, previous):
+        """
+        Highlight the new current annotation selection and unhighlight the previous.
+
+        Parameters
+        ----------
+        current : TemplateItem
+        previous : TemplateItem
+        """
+        current.highlight()
+        if previous is not None:
+            previous.unhighlight()
 
     def set_curr_img(self, curr_img: Optional[Dict[str, str]] = None):
         """

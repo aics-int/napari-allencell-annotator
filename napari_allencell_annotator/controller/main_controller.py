@@ -309,12 +309,14 @@ class MainController(QFrame):
             self.images.view.delete.hide()
 
     def annotating_shortcuts_on(self):
+        """Create annotation keyboard shortcuts and connect them to slots."""
         self.next_sc = QShortcut(QtCore.Qt.Key_Right, self)
         self.next_sc.activated.connect(self._next_image_clicked)
         self.prev_sc = QShortcut(QtCore.Qt.Key_Left, self)
         self.prev_sc.activated.connect(self._prev_image_clicked)
 
     def annotating_shortcuts_off(self):
+        """Disconnect signals and slots for annotation shortcuts"""
         self.next_sc.activated.disconnect(self._next_image_clicked)
         self.prev_sc.activated.disconnect(self._prev_image_clicked)
 
