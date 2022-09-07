@@ -311,9 +311,9 @@ class MainController(QFrame):
 
     def annotating_shortcuts_on(self):
         """Create annotation keyboard shortcuts and connect them to slots."""
-        self.next_sc = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_Plus), self)
+        self.next_sc = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_Greater), self)
         self.next_sc.activated.connect(self._next_image_clicked)
-        self.prev_sc = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_Minus), self)
+        self.prev_sc = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_Less), self)
         self.prev_sc.activated.connect(self._prev_image_clicked)
 
     def annotating_shortcuts_off(self):
