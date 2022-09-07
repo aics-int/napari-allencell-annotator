@@ -15,10 +15,9 @@ requirements = [
     "napari>=0.4.9",
     "napari-plugin-engine>=0.1.4",
     "numpy",
-    "aicssegmentation ~= 0.4.1",
-    "magicgui >= 0.2.9",
-    "aicsimageio >= 4.0.5",
-    "PyQt5",
+    "aicsimageio >= 4.9.1",
+    "xarray >= 2022.6.0",
+    "magicgui >= 0.3.7", #psygnal 0.3.0
 ]
 
 test_requirements = [
@@ -83,7 +82,7 @@ setup(
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
     packages=find_packages(),
-    python_requires=">=3.7",
+    python_requires=">=3.9",
     install_requires=requirements,
     setup_requires=setup_requirements,
     test_suite="napari_allencell_annotator/_tests",
@@ -97,10 +96,9 @@ setup(
         "Topic :: Scientific/Engineering :: Visualization",
         "Topic :: Scientific/Engineering :: Information Analysis",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3"
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Operating System :: OS Independent",
         "License :: OSI Approved :: BSD License",
     ],
