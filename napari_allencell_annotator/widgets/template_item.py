@@ -102,9 +102,9 @@ class TemplateItem(QListWidgetItem):
         elif self._type == ItemType.NUMBER:
             self.editable_widget.valueChanged.connect(lambda: self.parent.setCurrentItem(self))
         elif self._type == ItemType.BOOL:
-            self.editable_widget.isChecked()
+            self.editable_widget.stateChanged.connect(lambda: self.parent.setCurrentItem(self))
         elif self._type == ItemType.LIST:
-            self.editable_widget.currentText()
+            self.editable_widget.activated.connect(lambda: self.parent.setCurrentItem(self))
 
     def highlight(self):
         """Highlight the editable widget in blue."""
