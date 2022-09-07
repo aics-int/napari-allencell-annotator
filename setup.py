@@ -17,7 +17,7 @@ requirements = [
     "numpy",
     "aicsimageio >= 4.9.1",
     "xarray >= 2022.6.0",
-    "magicgui >= 0.3.7", #psygnal 0.3.0
+    "magicgui >= 0.3.7",  # psygnal 0.3.0
 ]
 
 test_requirements = [
@@ -96,8 +96,7 @@ setup(
         "Topic :: Scientific/Engineering :: Visualization",
         "Topic :: Scientific/Engineering :: Information Analysis",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3"
-        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3" "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Operating System :: OS Independent",
         "License :: OSI Approved :: BSD License",
