@@ -332,7 +332,7 @@ class MainController(QFrame):
 
     def _toggle_check(self):
         """Toggle the checkbox state if the current annotation is a checkbox."""
-        curr : TemplateItem = self.annots.view.annot_list.currentItem()
+        curr: TemplateItem = self.annots.view.annot_list.currentItem()
         if curr is not None and curr.type == ItemType.BOOL:
             curr.editable_widget.setChecked(not curr.get_value())
 

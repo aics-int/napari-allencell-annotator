@@ -20,28 +20,28 @@ class TestTemplateList:
         assert self._list.items == []
 
     def test_next_item_last(self):
-        self._list._items = [1,2,3,4]
+        self._list._items = [1, 2, 3, 4]
         self._list.setCurrentRow = MagicMock()
-        self._list.currentRow = MagicMock(return_value = 3)
+        self._list.currentRow = MagicMock(return_value=3)
         self._list.next_item()
         self._list.setCurrentRow.assert_called_once_with(0)
 
     def test_next_item(self):
-        self._list._items = [1,2,3,4]
+        self._list._items = [1, 2, 3, 4]
         self._list.setCurrentRow = MagicMock()
-        self._list.currentRow = MagicMock(return_value = 2)
+        self._list.currentRow = MagicMock(return_value=2)
         self._list.next_item()
         self._list.setCurrentRow.assert_called_once_with(3)
 
     def test_prev_item_zero(self):
         self._list.setCurrentRow = MagicMock()
-        self._list.currentRow = MagicMock(return_value = 0)
+        self._list.currentRow = MagicMock(return_value=0)
         self._list.prev_item()
         self._list.setCurrentRow.assert_not_called()
 
     def test_prev_item(self):
         self._list.setCurrentRow = MagicMock()
-        self._list.currentRow = MagicMock(return_value = 1)
+        self._list.currentRow = MagicMock(return_value=1)
         self._list.prev_item()
         self._list.setCurrentRow.assert_called_once_with(0)
 

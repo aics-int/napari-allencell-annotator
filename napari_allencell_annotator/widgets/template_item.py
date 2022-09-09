@@ -97,7 +97,7 @@ class TemplateItem(QListWidgetItem):
             return self.editable_widget.currentText()
 
     def create_evt_listener(self):
-        """Create event listener for editable widget edits to set the current item. """
+        """Create event listener for editable widget edits to set the current item."""
         if self._type == ItemType.STRING:
             self.editable_widget.textEdited.connect(lambda: self.parent.setCurrentItem(self))
         elif self._type == ItemType.NUMBER:

@@ -507,9 +507,11 @@ class TestMainController:
         self._controller.next_sc.activated.connect.assert_called_once_with(self._controller._next_image_clicked)
         self._controller.prev_sc.activated.connect.assert_called_once_with(self._controller._prev_image_clicked)
         self._controller.down_sc.activated.connect.assert_called_once_with(
-            self._controller.annots.view.annot_list.next_item)
+            self._controller.annots.view.annot_list.next_item
+        )
         self._controller.up_sc.activated.connect.assert_called_once_with(
-            self._controller.annots.view.annot_list.prev_item)
+            self._controller.annots.view.annot_list.prev_item
+        )
         self._controller.check_sc.activated.connect.assert_called_once_with(self._controller._toggle_check)
 
     def test_annotating_shortcuts_off(self):
@@ -529,29 +531,31 @@ class TestMainController:
         self._controller.next_sc.activated.disconnect.assert_called_once_with(self._controller._next_image_clicked)
         self._controller.prev_sc.activated.disconnect.assert_called_once_with(self._controller._prev_image_clicked)
         self._controller.down_sc.activated.disconnect.assert_called_once_with(
-            self._controller.annots.view.annot_list.next_item)
+            self._controller.annots.view.annot_list.next_item
+        )
         self._controller.up_sc.activated.disconnect.assert_called_once_with(
-            self._controller.annots.view.annot_list.prev_item)
+            self._controller.annots.view.annot_list.prev_item
+        )
         self._controller.check_sc.activated.disconnect.assert_called_once_with(self._controller._toggle_check)
 
     def test_toggle_check_none(self):
         item = None
-        self._controller.annots.view.annot_list.currentItem = MagicMock(return_value = item)
+        self._controller.annots.view.annot_list.currentItem = MagicMock(return_value=item)
         self._controller._toggle_check()
 
     def test_toggle_check_wrong_type(self):
         item = create_autospec(TemplateItem)
         item.type = ItemType.STRING
-        self._controller.annots.view.annot_list.currentItem = MagicMock(return_value = item)
+        self._controller.annots.view.annot_list.currentItem = MagicMock(return_value=item)
         self._controller._toggle_check()
 
     def test_toggle_check(self):
         item = create_autospec(TemplateItem)
         item.type = ItemType.BOOL
         item.editable_widget = create_autospec(QCheckBox)
-        item.get_value = MagicMock(return_value = True)
+        item.get_value = MagicMock(return_value=True)
         item.editable_widget.setChecked = MagicMock()
-        self._controller.annots.view.annot_list.currentItem = MagicMock(return_value = item)
+        self._controller.annots.view.annot_list.currentItem = MagicMock(return_value=item)
         self._controller._toggle_check()
         item.editable_widget.setChecked.assert_called_once_with(False)
 
