@@ -67,7 +67,7 @@ class TestTemplateItem:
         self._item.editable_widget.setCurrentText = MagicMock()
 
         self._item.set_value("text")
-        self._item.editable_widget.setCurrentText.assert_called_once_with('text')
+        self._item.editable_widget.setCurrentText.assert_called_once_with("text")
 
     def test_get_value_str(self):
         self._item._type = ItemType.STRING
