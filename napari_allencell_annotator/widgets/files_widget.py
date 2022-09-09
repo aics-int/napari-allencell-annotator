@@ -1,5 +1,4 @@
 from qtpy.QtWidgets import QListWidget
-from qtpy import QtCore
 from typing import Set, List, Optional, Dict
 
 from qtpy.QtCore import Signal

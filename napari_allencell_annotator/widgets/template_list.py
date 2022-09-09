@@ -42,18 +42,24 @@ class TemplateList(QListWidget):
         return self._items
 
     def next_item(self):
+        """Move the current item down one annotation."""
         curr_row = self.currentRow()
-        if curr_row < len(self._items):
+        if curr_row < len(self._items) - 1:
             next_row = curr_row + 1
             self.setCurrentRow(next_row)
+        else:
+            # if at last start over
+            self.setCurrentRow(0)
 
     def prev_item(self):
+        """Move the current item up one annotation."""
         curr_row = self.currentRow()
         if curr_row > 0:
             next_row = curr_row - 1
             self.setCurrentRow(next_row)
 
     def create_evt_listeners(self):
+        """Create annotating event listeners for each item."""
         for item in self.items:
             item.create_evt_listener()
 
@@ -106,5 +112,3 @@ class TemplateList(QListWidget):
 
         self.height = self.height + item.widget.sizeHint().height()
         self.setMaximumHeight(self.height)
-
-    # add method for create keyboard shortcuts and take away keyboard stuff
