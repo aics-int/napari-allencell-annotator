@@ -11,6 +11,7 @@ from napari_allencell_annotator.controller.images_controller import ImagesContro
 
 from napari_allencell_annotator.controller.annotator_controller import AnnotatorController
 from napari_allencell_annotator.widgets.create_dialog import CreateDialog
+from napari_allencell_annotator.widgets.template_item import ItemType, TemplateItem
 from napari_allencell_annotator.widgets.popup import Popup
 import napari
 from typing import List, Dict, Union
@@ -45,6 +46,7 @@ class MainController(QFrame):
         self.prev_sc = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_Less), self)
         self.down_sc = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_Return), self)
         self.up_sc = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.SHIFT + QtCore.Qt.Key_Return), self)
+        self.check_sc = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.SHIFT + QtCore.Qt.Key_Space), self)
 
         self.setLayout(self.layout)
         self.show()
@@ -318,11 +320,20 @@ class MainController(QFrame):
         self.prev_sc.activated.connect(self._prev_image_clicked)
         self.down_sc.activated.connect(self.annots.view.annot_list.next_item)
         self.up_sc.activated.connect(self.annots.view.annot_list.prev_item)
+        self.check_sc.activated.connect(self.toggle_check)
 
     def annotating_shortcuts_off(self):
         """Disconnect signals and slots for annotation shortcuts"""
         self.next_sc.activated.disconnect(self._next_image_clicked)
         self.prev_sc.activated.disconnect(self._prev_image_clicked)
+        self.down_sc.activated.disconnect(self.annots.view.annot_list.next_item)
+        self.up_sc.activated.disconnect(self.annots.view.annot_list.prev_item)
+        self.check_sc.activated.disconnect(self.toggle_check)
+
+    def toggle_check(self):
+        curr : TemplateItem = self.annots.view.annot_list.currentItem()
+        if curr is not None and curr.type == ItemType.BOOL:
+            curr.editable_widget.setChecked(not curr.get_value())
 
     def _fix_csv_annotations(self, dct: Dict[str, List[str]]):
         """
