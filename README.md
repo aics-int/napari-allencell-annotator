@@ -51,10 +51,12 @@ https://napari.org/plugins/index.html
 The plugin requires Conda. Install Conda [here](https://docs.anaconda.com/anaconda/install).
 
 ### 2. Install the plugin)
-[Download Minion](napari_allencell_annotator/assets/install_napari.sh "download")
+
+Click on the appropriate link below. Once on the new page, click Raw -> new page -> right click -> Save As
+
 #### [Windows](napari_allencell_annotator/assets/install_napari.sh)
 Download this file and double click.
-#### [MacOS/Unix](napari_allencell_annotator/assets/install_napari.command)
+#### [MacOS/Unix](https://alleninstitute-my.sharepoint.com/:u:/g/personal/beatrice_bridge_alleninstitute_org/EaeV_RPXZz9DijxYy7qfoeMB3Hbq4vMpmJERqDyhL97KAg?e=HuKY2k)
 Download this file. In the terminal run _chmod +x ./install_napari.command_ . Then double click the file. 
 
 ### 3. Launch the Plugin
