@@ -41,6 +41,18 @@ class TemplateList(QListWidget):
         """
         return self._items
 
+    def next_item(self):
+        curr_row = self.currentRow()
+        if curr_row < len(self._items):
+            next_row = curr_row + 1
+            self.setCurrentRow(next_row)
+
+    def prev_item(self):
+        curr_row = self.currentRow()
+        if curr_row > 0:
+            next_row = curr_row - 1
+            self.setCurrentRow(next_row)
+
     def create_evt_listeners(self):
         for item in self.items:
             item.create_evt_listener()
@@ -51,6 +63,7 @@ class TemplateList(QListWidget):
 
         Reset height, items, list.
         """
+
         self.clear()
         self._items = []
 

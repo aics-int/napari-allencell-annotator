@@ -1,6 +1,9 @@
 from enum import Enum
 from typing import Any
 
+from qtpy import QtCore
+from qtpy.QtGui import QKeySequence
+from qtpy.QtWidgets import QShortcut
 from qtpy.QtWidgets import QLayout
 from qtpy.QtWidgets import QListWidgetItem, QListWidget, QWidget, QHBoxLayout, QLabel
 
@@ -47,6 +50,7 @@ class TemplateItem(QListWidgetItem):
         self.widget.setLayout(self.layout)
         self.setSizeHint(self.widget.minimumSizeHint())
         parent.setItemWidget(self, self.widget)
+        self.check_sc = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_Return), self.parent)
 
     @property
     def type(self) -> ItemType:
@@ -106,6 +110,16 @@ class TemplateItem(QListWidgetItem):
         elif self._type == ItemType.LIST:
             self.editable_widget.activated.connect(lambda: self.parent.setCurrentItem(self))
 
+    def set_focus(self):
+        if self._type == ItemType.STRING:
+            self.editable_widget.setFocus()
+        elif self._type == ItemType.NUMBER:
+            self.editable_widget.lineEdit().setFocus()
+        elif self._type == ItemType.BOOL:
+            self.check_sc.activated.connect(lambda : self.editable_widget.setChecked(self.get_value()))
+        elif self._type == ItemType.LIST:
+            self.editable_widget.showPopup()
+
     def highlight(self):
         """Highlight the editable widget in blue."""
         style = ""
@@ -127,6 +141,8 @@ class TemplateItem(QListWidgetItem):
         elif self._type == ItemType.NUMBER:
             style = """QSpinBox{}"""
         elif self._type == ItemType.BOOL:
+            if self.check_sc.isSignalConnected(self.check_sc.activated):
+                self.check_sc.activated.disconnect(lambda : self.editable_widget.setChecked(self.get_value()))
             style = """QCheckBox:indicator{}"""
         elif self._type == ItemType.LIST:
             style = """QComboBox{}"""

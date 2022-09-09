@@ -41,8 +41,10 @@ class MainController(QFrame):
         self.layout.addWidget(self.images.view, stretch=1)
         self.layout.addWidget(self.annots.view, stretch=1)
 
-        self.next_sc = None
-        self.prev_sc = None
+        self.next_sc = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_Greater), self)
+        self.prev_sc = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_Less), self)
+        self.down_sc = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_Return), self)
+        self.up_sc = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.SHIFT + QtCore.Qt.Key_Return), self)
 
         self.setLayout(self.layout)
         self.show()
@@ -311,10 +313,11 @@ class MainController(QFrame):
 
     def annotating_shortcuts_on(self):
         """Create annotation keyboard shortcuts and connect them to slots."""
-        self.next_sc = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_Greater), self)
+
         self.next_sc.activated.connect(self._next_image_clicked)
-        self.prev_sc = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_Less), self)
         self.prev_sc.activated.connect(self._prev_image_clicked)
+        self.down_sc.activated.connect(self.annots.view.annot_list.next_item)
+        self.up_sc.activated.connect(self.annots.view.annot_list.prev_item)
 
     def annotating_shortcuts_off(self):
         """Disconnect signals and slots for annotation shortcuts"""

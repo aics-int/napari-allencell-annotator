@@ -146,8 +146,9 @@ class AnnotatorController:
         self.view.set_num_images(num_images)
         self.view.set_mode(mode=AnnotatorViewMode.ANNOTATE)
         self.shuffled = shuffled
-        self.view.annot_list.currentItemChanged.connect(self._curr_item_changed)
+
         self.view.annot_list.create_evt_listeners()
+        self.view.annot_list.currentItemChanged.connect(self._curr_item_changed)
 
     def save_annotations(self):
         """Save current annotation data"""
@@ -179,6 +180,7 @@ class AnnotatorController:
         if current is not None:
             # test
             current.highlight()
+            current.set_focus()
         if previous is not None:
             previous.unhighlight()
 

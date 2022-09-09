@@ -216,8 +216,10 @@ class AnnotatorView(QFrame):
     def render_default_values(self):
         """Set annotation widget values to default."""
         # for curr index if annots exist fill else fill with default
+        first_item = self.annot_list.items[0]
         for item in self.annot_list.items:
             item.set_default_value()
+        self.annot_list.setCurrentItem(first_item)
 
     def render_values(self, vals: List[str]):
         """
@@ -228,12 +230,13 @@ class AnnotatorView(QFrame):
         vals:List[str]
             the values for the annotations.
         """
+        first_item = self.annot_list.items[0]
         for (item, val) in zip(self.annot_list.items, vals):
-
             if val is None or val == "":
                 item.set_default_value()
             else:
                 item.set_value(val)
+        self.annot_list.setCurrentItem(first_item)
 
     def get_curr_annots(self) -> List[Union[str, bool, int]]:
         """
