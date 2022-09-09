@@ -320,7 +320,7 @@ class MainController(QFrame):
         self.prev_sc.activated.connect(self._prev_image_clicked)
         self.down_sc.activated.connect(self.annots.view.annot_list.next_item)
         self.up_sc.activated.connect(self.annots.view.annot_list.prev_item)
-        self.check_sc.activated.connect(self.toggle_check)
+        self.check_sc.activated.connect(self._toggle_check)
 
     def annotating_shortcuts_off(self):
         """Disconnect signals and slots for annotation shortcuts"""
@@ -328,9 +328,10 @@ class MainController(QFrame):
         self.prev_sc.activated.disconnect(self._prev_image_clicked)
         self.down_sc.activated.disconnect(self.annots.view.annot_list.next_item)
         self.up_sc.activated.disconnect(self.annots.view.annot_list.prev_item)
-        self.check_sc.activated.disconnect(self.toggle_check)
+        self.check_sc.activated.disconnect(self._toggle_check)
 
-    def toggle_check(self):
+    def _toggle_check(self):
+        """Toggle the checkbox state if the current annotation is a checkbox."""
         curr : TemplateItem = self.annots.view.annot_list.currentItem()
         if curr is not None and curr.type == ItemType.BOOL:
             curr.editable_widget.setChecked(not curr.get_value())

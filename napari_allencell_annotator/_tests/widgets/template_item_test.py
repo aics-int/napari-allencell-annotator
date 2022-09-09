@@ -2,6 +2,7 @@ from unittest import mock
 from unittest.mock import create_autospec, MagicMock
 
 from napari_allencell_annotator.widgets.template_item import TemplateItem, ItemType, QWidget
+from napari_allencell_annotator.widgets.template_list import QLineEdit, QSpinBox, QCheckBox, QComboBox
 
 
 class TestTemplateItem:
@@ -88,31 +89,78 @@ class TestTemplateItem:
 
         assert self._item.get_value() == "return"
 
+    def test_create_evt_listener_string(self):
+        self._item._type = ItemType.STRING
+        self._item.editable_widget = create_autospec(QLineEdit)
+        self._item.editable_widget.textEdited.connect = MagicMock()
+        self._item.create_evt_listener()
+        self._item.editable_widget.textEdited.connect.assert_called_once()
+
+    def test_create_evt_listener_num(self):
+        self._item._type = ItemType.NUMBER
+        self._item.editable_widget = create_autospec(QSpinBox)
+        self._item.editable_widget.valueChanged.connect = MagicMock()
+        self._item.create_evt_listener()
+        self._item.editable_widget.valueChanged.connect.assert_called_once()
+
+    def test_create_evt_listener_bool(self):
+        self._item._type = ItemType.BOOL
+        self._item.editable_widget = create_autospec(QCheckBox)
+        self._item.editable_widget.stateChanged.connect = MagicMock()
+        self._item.create_evt_listener()
+        self._item.editable_widget.stateChanged.connect.assert_called_once()
+
+    def test_create_evt_listener_list(self):
+        self._item._type = ItemType.LIST
+        self._item.editable_widget = create_autospec(QComboBox)
+        self._item.editable_widget.activated.connect = MagicMock()
+        self._item.create_evt_listener()
+        self._item.editable_widget.activated.connect.assert_called_once()
+
+    def test_set_focus_str(self):
+        self._item._type = ItemType.STRING
+        self._item.editable_widget = create_autospec(QLineEdit)
+        self._item.set_focus()
+        self._item.editable_widget.setFocus.assert_called_once_with()
+
+    def test_set_focus_num(self):
+        self._item._type = ItemType.NUMBER
+        self._item.editable_widget = create_autospec(QSpinBox)
+        self._item.editable_widget.lineEdit = create_autospec(QLineEdit)
+        self._item.set_focus()
+        self._item.editable_widget.lineEdit().setFocus.assert_called_once_with()
+
+    def test_set_focus_list(self):
+        self._item._type = ItemType.LIST
+        self._item.editable_widget = create_autospec(QComboBox)
+        self._item.set_focus()
+        self._item.editable_widget.showPopup.assert_called_once_with()
+
     def test_highlight_string(self):
         self._item._type = ItemType.STRING
         self._item.editable_widget = create_autospec(QWidget)
         self._item.highlight()
-        self._item.editable_widget.setStyleSheet.assert_called_once_with("""QLineEdit{border: 1px solid #39a844}""")
+        self._item.editable_widget.setStyleSheet.assert_called_once_with("""QLineEdit{border: 1px solid #759e78}""")
 
     def test_highlight_num(self):
         self._item._type = ItemType.NUMBER
         self._item.editable_widget = create_autospec(QWidget)
         self._item.highlight()
-        self._item.editable_widget.setStyleSheet.assert_called_once_with("""QSpinBox{border: 1px solid #39a844}""")
+        self._item.editable_widget.setStyleSheet.assert_called_once_with("""QSpinBox{border: 1px solid #759e78}""")
 
     def test_highlight_bool(self):
         self._item._type = ItemType.BOOL
         self._item.editable_widget = create_autospec(QWidget)
         self._item.highlight()
         self._item.editable_widget.setStyleSheet.assert_called_once_with(
-            """QCheckBox:indicator{border: 1px solid #39a844}"""
+            """QCheckBox:indicator{border: 1px solid #759e78}"""
         )
 
     def test_highlight_list(self):
         self._item._type = ItemType.LIST
         self._item.editable_widget = create_autospec(QWidget)
         self._item.highlight()
-        self._item.editable_widget.setStyleSheet.assert_called_once_with("""QComboBox{border: 1px solid #39a844}""")
+        self._item.editable_widget.setStyleSheet.assert_called_once_with("""QComboBox{border: 1px solid #759e78}""")
 
     def test_unhighlight_str(self):
         self._item._type = ItemType.STRING

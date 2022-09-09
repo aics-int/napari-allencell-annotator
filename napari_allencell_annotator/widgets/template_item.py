@@ -1,9 +1,6 @@
 from enum import Enum
 from typing import Any
 
-from qtpy import QtCore
-from qtpy.QtGui import QKeySequence
-from qtpy.QtWidgets import QShortcut
 from qtpy.QtWidgets import QLayout
 from qtpy.QtWidgets import QListWidgetItem, QListWidget, QWidget, QHBoxLayout, QLabel
 
@@ -100,6 +97,7 @@ class TemplateItem(QListWidgetItem):
             return self.editable_widget.currentText()
 
     def create_evt_listener(self):
+        """Create event listener for editable widget edits to set the current item. """
         if self._type == ItemType.STRING:
             self.editable_widget.textEdited.connect(lambda: self.parent.setCurrentItem(self))
         elif self._type == ItemType.NUMBER:
@@ -110,6 +108,7 @@ class TemplateItem(QListWidgetItem):
             self.editable_widget.activated.connect(lambda: self.parent.setCurrentItem(self))
 
     def set_focus(self):
+        """Set the annotating focus on the widget of the current item."""
         if self._type == ItemType.STRING:
             self.editable_widget.setFocus()
         elif self._type == ItemType.NUMBER:
