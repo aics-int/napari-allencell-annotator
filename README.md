@@ -51,7 +51,7 @@ https://napari.org/plugins/index.html
 The plugin requires Conda. Install Conda [here](https://docs.anaconda.com/anaconda/install).
 
 ### 2. Install the plugin)
-<a href="napari_allencell_annotator/assets/install_napari.sh" download="install_napari"><img src="napari_allencell_annotator/assets/install_napari.sh" /></a>
+[Download Minion](napari_allencell_annotator/assets/install_napari.sh "download")
 #### [Windows](napari_allencell_annotator/assets/install_napari.sh)
 Download this file and double click.
 #### [MacOS/Unix](napari_allencell_annotator/assets/install_napari.command)
