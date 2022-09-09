@@ -52,9 +52,7 @@ The plugin requires Conda. Install Conda [here](https://docs.anaconda.com/anacon
 
 ### 2. Install the plugin)
 
-Click on the appropriate link below. Once on the new page, click Raw -> new page -> right click -> Save As
-
-#### [Windows](napari_allencell_annotator/assets/install_napari.sh)
+#### [Windows](https://alleninstitute-my.sharepoint.com/:u:/g/personal/beatrice_bridge_alleninstitute_org/EVOKZ8-PZB5AvO6z6OAjZ_YB2EHbaU9XRc_Z281oM0ctOg?e=skbKzh)
 Download this file and double click.
 #### [MacOS/Unix](https://alleninstitute-my.sharepoint.com/:u:/g/personal/beatrice_bridge_alleninstitute_org/EaeV_RPXZz9DijxYy7qfoeMB3Hbq4vMpmJERqDyhL97KAg?e=HuKY2k)
 Download this file. In the terminal run _chmod +x ./install_napari.command_ . Then double click the file. 
