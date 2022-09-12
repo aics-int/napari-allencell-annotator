@@ -73,6 +73,8 @@ class AnnotatorController:
 
         self.shuffled: bool = None
 
+    # next item, prev item, itemchanged event to call highlight, click -> selection, select on open
+
     def get_annot_json_data(self) -> Dict[str, Dict[str, Any]]:
         """
         Get annotation data dictionary.
@@ -139,22 +141,48 @@ class AnnotatorController:
         dct : Dict[str, List[str]]
             The files to be used. path -> [name, FMS]
         """
+
         self.files_and_annots = dct
         self.view.set_num_images(num_images)
         self.view.set_mode(mode=AnnotatorViewMode.ANNOTATE)
         self.shuffled = shuffled
 
-    def stop_annotating(self):
-        """Reset values from annotating and change mode to ADD."""
+        self.view.annot_list.create_evt_listeners()
+        self.view.annot_list.currentItemChanged.connect(self._curr_item_changed)
+
+    def save_annotations(self):
+        """Save current annotation data"""
         self.record_annotations(self.curr_img_dict["File Path"])
         self.write_csv()
+
+    def stop_annotating(self):
+        """Reset values from annotating and change mode to ADD."""
+        self.save_annotations()
         self.view.set_curr_index()
         self.files_and_annots = {}
         self.view.set_num_images()
         self.view.set_mode(mode=AnnotatorViewMode.ADD)
-        self.view.render_default_values()
+        self.annot_json_data = None
         self.set_curr_img()
         self.set_csv_path()
+
+        self.view.annot_list.currentItemChanged.disconnect(self._curr_item_changed)
+
+    def _curr_item_changed(self, current, previous):
+        """
+        Highlight the new current annotation selection and unhighlight the previous.
+
+        Parameters
+        ----------
+        current : TemplateItem
+        previous : TemplateItem
+        """
+        if current is not None:
+            # test
+            current.highlight()
+            current.set_focus()
+        if previous is not None:
+            previous.unhighlight()
 
     def set_curr_img(self, curr_img: Optional[Dict[str, str]] = None):
         """

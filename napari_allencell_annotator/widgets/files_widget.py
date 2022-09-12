@@ -1,4 +1,4 @@
-from qtpy.QtWidgets import QListWidget, QAbstractItemView
+from qtpy.QtWidgets import QListWidget
 from typing import Set, List, Optional, Dict
 
 from qtpy.QtCore import Signal
@@ -46,7 +46,6 @@ class FilesWidget(QListWidget):
     def __init__(self):
         QListWidget.__init__(self)
         self.checked: Set[FileItem] = set()
-        self.setSelectionMode(QAbstractItemView.SingleSelection)
         # files_dict holds all image info file path -> [file name, FMS]
         # also holds the original insertion order in .keys()
         self.files_dict: Dict[str, List[str]] = {}

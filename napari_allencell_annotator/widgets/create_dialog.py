@@ -115,6 +115,8 @@ class CreateDialog(QDialog):
         """Delete checked items if there is at least one item checked."""
         if self.list.num_checked > 0:
             self.list.delete_checked()
+        if self.list.count() <= 9:
+            self.add.show()
 
     def _add_clicked(self):
         """Add a new item if there are less than 9. Hide add button otherwise."""
