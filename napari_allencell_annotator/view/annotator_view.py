@@ -148,7 +148,8 @@ class AnnotatorView(QFrame):
         # annot widget visible in ANNOTATE mode
         self.annot_widget = QWidget()
         annot_layout = QGridLayout()
-        self.save_exit_btn = QPushButton("Save + Exit")
+        self.save_btn = QPushButton("Save")
+        self.exit_btn = QPushButton("Exit")
 
         self.prev_btn = QPushButton("< Previous")
         self.next_btn = QPushButton("Next >")
@@ -156,7 +157,8 @@ class AnnotatorView(QFrame):
         self.progress_bar = QLabel()
         self.progress_bar.setAlignment(QtCore.Qt.AlignCenter)
         annot_layout.addWidget(self.progress_bar, 0, 1, 1, 2)
-        annot_layout.addWidget(self.save_exit_btn, 1, 0, 1, 2)
+        annot_layout.addWidget(self.save_btn, 1, 1, 1, 1)
+        annot_layout.addWidget(self.exit_btn, 1, 0, 1, 1)
         annot_layout.addWidget(self.prev_btn, 1, 2, 1, 1)
         annot_layout.addWidget(self.next_btn, 1, 3, 1, 1)
         self.annot_widget.setLayout(annot_layout)
