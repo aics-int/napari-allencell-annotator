@@ -6,6 +6,8 @@ from napari_allencell_annotator.controller.images_controller import (
     ImagesView,
 )
 from napari_allencell_annotator.controller.images_controller import SUPPORTED_FILE_TYPES
+from napari_allencell_annotator.widgets.files_widget import FilesWidget
+
 import napari
 import os
 
@@ -264,10 +266,10 @@ class TestImagesController:
         self._controller.view.file_widget.setCurrentItem.assert_not_called()
         self._controller.view.alert.assert_called_once_with("No files to annotate")
 
-    def test_start_annotating_not_shuffled(self):
-        self._controller.view.file_widget = MagicMock()
+    def test_start_annotating(self):
+        self._controller.view.file_widget = create_autospec(FilesWidget)
         self._controller.view.file_widget.count = MagicMock(return_value=3)
-        self._controller.view.file_widget.setCurrentItem = MagicMock()
+        self._controller.view.file_widget.item = MagicMock()
         self._controller.view.alert = MagicMock()
 
         self._controller.start_annotating()
@@ -275,6 +277,8 @@ class TestImagesController:
             self._controller.view.file_widget.item(0)
         )
         self._controller.view.alert.assert_not_called()
+        self._controller.view.file_widget.item.assert_has_calls([mock.call(0), mock.call(1), mock.call(2)])
+        self._controller.view.file_widget.item.disable_check.assert_called()
 
     def test_stop_annotating(self):
         self._controller.view.file_widget = MagicMock()
