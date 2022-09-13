@@ -191,8 +191,8 @@ class ImagesController:
     def start_annotating(self, row: Optional[int] = 0):
         """Set current item to the one at row."""
         count = self.view.file_widget.count()
-        for x in range(count - 1):
-            self.view.file_widget.item(x).disable_check()
+        for x in range(count):
+            self.view.file_widget.item(x).hide_check()
         if count > 0:
             self.view.file_widget.setCurrentItem(self.view.file_widget.item(row))
 
