@@ -37,7 +37,7 @@ class CreateDialog(QDialog):
         self.setStyleSheet(Style.get_stylesheet("main.qss"))
 
         self.setWindowTitle("Create Annotations")
-        self.setMinimumSize(700, 500)
+        self.setMinimumSize(800, 500)
 
         self.list = AnnotationWidget()
 

@@ -6,6 +6,8 @@ from napari_allencell_annotator.controller.images_controller import (
     ImagesView,
 )
 from napari_allencell_annotator.controller.images_controller import SUPPORTED_FILE_TYPES
+from napari_allencell_annotator.widgets.files_widget import FilesWidget, FileItem
+
 import napari
 import os
 
@@ -264,17 +266,19 @@ class TestImagesController:
         self._controller.view.file_widget.setCurrentItem.assert_not_called()
         self._controller.view.alert.assert_called_once_with("No files to annotate")
 
-    def test_start_annotating_not_shuffled(self):
-        self._controller.view.file_widget = MagicMock()
+    def test_start_annotating(self):
+        self._controller.view.file_widget = create_autospec(FilesWidget)
         self._controller.view.file_widget.count = MagicMock(return_value=3)
-        self._controller.view.file_widget.setCurrentItem = MagicMock()
+        item = create_autospec(FileItem)
+        self._controller.view.file_widget.item = MagicMock(return_value=item)
         self._controller.view.alert = MagicMock()
 
         self._controller.start_annotating()
-        self._controller.view.file_widget.setCurrentItem.assert_called_once_with(
-            self._controller.view.file_widget.item(0)
-        )
+        self._controller.view.file_widget.setCurrentItem.assert_called_once_with(item)
         self._controller.view.alert.assert_not_called()
+
+        assert len(self._controller.view.file_widget.item.mock_calls) == 4
+        assert len(item.hide_check.mock_calls) == 3
 
     def test_stop_annotating(self):
         self._controller.view.file_widget = MagicMock()

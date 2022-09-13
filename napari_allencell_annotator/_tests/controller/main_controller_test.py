@@ -50,10 +50,15 @@ class TestMainController:
         self._controller.annots.view.csv_input.file_selected.connect = MagicMock()
         self._controller._csv_write_selected_evt = MagicMock()
 
-        self._controller.annots.view.save_exit_btn = MagicMock()
-        self._controller.annots.view.save_exit_btn.clicked = MagicMock()
-        self._controller.annots.view.save_exit_btn.clicked.connect = MagicMock()
-        self._controller._save_and_exit_clicked = MagicMock()
+        self._controller.annots.view.exit_btn = MagicMock()
+        self._controller.annots.view.exit_btn.clicked = MagicMock()
+        self._controller.annots.view.exit_btn.clicked.connect = MagicMock()
+        self._controller._exit_clicked = MagicMock()
+
+        self._controller.annots.view.save_btn = MagicMock()
+        self._controller.annots.view.save_btn.clicked = MagicMock()
+        self._controller.annots.view.save_btn.clicked.connect = MagicMock()
+        self._controller._save = MagicMock()
 
         self._controller.annots.view.import_btn = MagicMock()
         self._controller.annots.view.import_btn.clicked = MagicMock()
@@ -94,9 +99,8 @@ class TestMainController:
         self._controller.annots.view.csv_input.file_selected.connect.assert_called_once_with(
             self._controller._csv_write_selected_evt
         )
-        self._controller.annots.view.save_exit_btn.clicked.connect.assert_called_once_with(
-            self._controller._save_and_exit_clicked
-        )
+        self._controller.annots.view.save_btn.clicked.connect.assert_called_once_with(self._controller._save)
+        self._controller.annots.view.exit_btn.clicked.connect.assert_called_once_with(self._controller._exit_clicked)
         self._controller.annots.view.import_btn.clicked.connect.assert_called_once_with(
             self._controller._import_annots_clicked
         )
@@ -1082,17 +1086,25 @@ class TestMainController:
         self._controller.annots.record_annotations.assert_called_once_with("path")
         self._controller.annots.set_curr_img.assert_called_once_with(self._controller.images.curr_img_dict())
 
-    def test_save_and_exit_clicked_false(self):
+    def test_exit_clicked_false(self):
         Popup.make_popup = MagicMock(return_value=False)
         self._controller._stop_annotating = MagicMock()
-        self._controller._save_and_exit_clicked()
+        self._controller._exit_clicked()
         self._controller._stop_annotating.assert_not_called()
 
-    def test_save_and_exit_clicked_true(self):
+    def test_exit_clicked_true(self):
         Popup.make_popup = MagicMock(return_value=True)
         self._controller._stop_annotating = MagicMock()
-        self._controller._save_and_exit_clicked()
+        self._controller._exit_clicked()
         self._controller._stop_annotating.assert_called_once_with()
+
+    def test_save(self):
+        self._controller.annots.save_annotations = MagicMock()
+        self._controller.annots.view.save_btn.setEnabled = MagicMock()
+
+        self._controller._save()
+        self._controller.annots.save_annotations.assert_called_once_with()
+        self._controller.annots.view.save_btn.setEnabled.assert_called_once_with(False)
 
     def test_has_none_annotation_false(self):
         self._controller.annots.get_annot_json_data = MagicMock(

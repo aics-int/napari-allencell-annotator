@@ -74,6 +74,10 @@ class FileItem(QListWidgetItem):
         self.label.setText(self._make_display_name())
         self.check.setCheckable(True)
 
+    def hide_check(self):
+        """Hide the delete checkbox when annotating."""
+        self.check.hide()
+
     def _make_display_name(self) -> str:
         """
         Truncate long file names

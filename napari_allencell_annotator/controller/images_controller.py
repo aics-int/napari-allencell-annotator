@@ -7,6 +7,7 @@ import napari
 
 from napari_allencell_annotator.view.images_view import ImagesView
 from napari_allencell_annotator.constants.constants import SUPPORTED_FILE_TYPES
+from napari_allencell_annotator.widgets.file_item import FileItem
 
 
 class ImagesController:
@@ -190,7 +191,11 @@ class ImagesController:
 
     def start_annotating(self, row: Optional[int] = 0):
         """Set current item to the one at row."""
-        if self.view.file_widget.count() > 0:
+        count = self.view.file_widget.count()
+        for x in range(count):
+            file_item: FileItem = self.view.file_widget.item(x)
+            file_item.hide_check()
+        if count > 0:
             self.view.file_widget.setCurrentItem(self.view.file_widget.item(row))
 
         else:

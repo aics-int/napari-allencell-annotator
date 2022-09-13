@@ -48,30 +48,63 @@ https://napari.org/plugins/index.html
 ## Installation
 ### 1. Prerequisites
 
-The plugin requires Conda. Install Conda [here](https://docs.anaconda.com/anaconda/install).
+The plugin requires [Conda](https://docs.anaconda.com/anaconda/install/).
+- [Installing on Windows ](https://docs.anaconda.com/anaconda/install/windows/) 
+  - Follow the steps linked above except
+  - On step 8, check top the box to add to PATH
+  - ![Alt text](napari_allencell_annotator/assets/windowsstep8.png)
+- [Installing on Mac ](https://docs.anaconda.com/anaconda/install/mac-os/) 
 
-### 2. Install the plugin)
-
+### 2. Install the plugin
+Click the link corresponding to your OS.
 #### [Windows](https://alleninstitute-my.sharepoint.com/:u:/g/personal/beatrice_bridge_alleninstitute_org/EVOKZ8-PZB5AvO6z6OAjZ_YB2EHbaU9XRc_Z281oM0ctOg?e=skbKzh)
-Download this file and double click.
+- From the link above, click the three dots on the top menu bar and select download. 
+- Open a file explorer and go to the Downloads folder. Use **Option 1** below. A prompt window should open and start installing. If this fails use **Option 2**. 
+  - **Option 1**: Double-click the file _install_napari.sh_
+  - **Option 2**: Search the file finder for Anaconda Prompt. Open version 3. Run the following commands one line at a time. 
+    - conda create -n napari_annotator python=3.9 anaconda
+    - conda activate napari_annotator
+    - python -m pip install --upgrade pip
+    - python -m pip install "napari[all]"
+    - python -m pip install napari-allencell-annotator
+    - napari
 #### [MacOS/Unix](https://alleninstitute-my.sharepoint.com/:u:/g/personal/beatrice_bridge_alleninstitute_org/EaeV_RPXZz9DijxYy7qfoeMB3Hbq4vMpmJERqDyhL97KAg?e=HuKY2k)
-Download this file. In the terminal run _chmod +x ./install_napari.command_ . Then double click the file. 
+- From the link above, download the file. 
+- Open terminal. 
+- Run _chmod +x ./Downloads/install_napari.command_ 
+  - If you get a file not found error try adjusting the path to match where install_napari.command was downloaded.
+- Open finder, navigate to the file, double-click _install_napari.command_ . 
+  - A terminal window should open and start installing. 
+  
 
 ### 3. Launch the Plugin
 
-Once the napari window opens, go to "Plugins" --> napari-allencell-annotator.
+Once the napari window opens, go to **Plugins**.
+- If **napari-allencell-annotator: Annotator** is listed click it to launch. 
+- If it is not listed 
+- **Install/Uninstall Plugins** ⇨ check the box next to **napari-allencell-annotator** ⇨ **close** ⇨ **Plugins** ⇨ **napari-allencell-annotator: Annotator** .
+
+### 4. Re-opening the Plugin After Installing
+- Windows
+  - Search for anaconda navigator in file finder
+  - Click on navigator version 3
+  - Once the navigator opens, click **Environments** on the left side
+  - Click on the annotator environment and wait for it to load
+  - Press the play button
+  - Type _napari_ in the prompt that opens
+  - Click **Plugins** ⇨ **napari-allencell-annotator: Annotator**
+- MacOS
+  - Open terminal
+  - Run these commands one line at a time
+    - conda activate napari_annotator
+    - napari
+  - Click **Plugins** ⇨ **napari-allencell-annotator: Annotator**
 
 ## Quick Start
 
-In the current version, there are two parts in the plugin: **Image List** and **Annotation Editor**. 
-The **Annotation Editor** allows users to create new annotation templates or upload existing annotation templates 
-from a previous plugin-created csv or json file. 
-Once an annotation template is chosen and approved, annotating can begin on the image set
-selected in the **Image Uploader** section of the plugin. 
-
 1. Open napari
 2. Start the plugin 
-   - Open napari, go to "Plugins" --> "napari-allencell-annotator".
+   - Open napari, go to "Plugins" ⇨ "napari-allencell-annotator".
 3. Click create new annotation template or upload existing.
    - Up to 10 new annotations can be created. Each annotation must have a unique name and a type (text, number, checkbox, or dropdown).
    - If the annotation template is uploaded from a csv file, using the image set will open and allow continued editing of all annotations in the csv.

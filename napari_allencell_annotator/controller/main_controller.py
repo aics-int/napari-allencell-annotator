@@ -63,7 +63,8 @@ class MainController(QFrame):
         self.annots.view.next_btn.clicked.connect(self._next_image_clicked)
         self.annots.view.prev_btn.clicked.connect(self._prev_image_clicked)
         self.annots.view.csv_input.file_selected.connect(self._csv_write_selected_evt)
-        self.annots.view.save_exit_btn.clicked.connect(self._save_and_exit_clicked)
+        self.annots.view.save_btn.clicked.connect(self._save)
+        self.annots.view.exit_btn.clicked.connect(self._exit_clicked)
         self.annots.view.import_btn.clicked.connect(self._import_annots_clicked)
         self.annots.view.annot_input.file_selected.connect(self._csv_json_import_selected_evt)
         self.annots.view.create_btn.clicked.connect(self._create_clicked)
@@ -488,7 +489,7 @@ class MainController(QFrame):
         image is being annotated, enable previous button.
         """
         self.annots.record_annotations(self.images.curr_img_dict()["File Path"])
-
+        self.annots.view.save_btn.setEnabled(True)
         self.images.next_img()
         self.annots.set_curr_img(self.images.curr_img_dict())
 
@@ -500,6 +501,7 @@ class MainController(QFrame):
         """
         self.annots.record_annotations(self.images.curr_img_dict()["File Path"])
         self.images.prev_img()
+        self.annots.view.save_btn.setEnabled(True)
         self.annots.set_curr_img(self.images.curr_img_dict())
 
     def _image_selected(self, current, previous):
@@ -508,17 +510,21 @@ class MainController(QFrame):
 
         Called only when annotating un-blind and users select an image from the list.
         """
+        self.annots.view.save_btn.setEnabled(True)
         if previous:
             self.annots.record_annotations(previous.file_path)
         self.annots.set_curr_img(self.images.curr_img_dict())
 
-    def _save_and_exit_clicked(self):
+    def _exit_clicked(self):
         """Stop annotation if user confirms choice in popup."""
-        proceed: bool = Popup.make_popup("Close this session?")
+        proceed: bool = Popup.make_popup("Close this session? Your work will be saved.")
         if proceed:
             self._stop_annotating()
-        else:
-            self.annots.save_annotations()
+
+    def _save(self):
+        """Save and write current annotations."""
+        self.annots.save_annotations()
+        self.annots.view.save_btn.setEnabled(False)
 
     def has_none_annotation(self, lst: List[Union[str, int, bool]]) -> bool:
         """
