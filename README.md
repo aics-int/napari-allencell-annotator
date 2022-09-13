@@ -102,8 +102,6 @@ Once the napari window opens, go to **Plugins**.
 
 ## Quick Start
 
-Below is a plugin use guide along with some helpful tips!
-
 1. Open napari
 2. Start the plugin 
    - Open napari, go to "Plugins" ⇨ "napari-allencell-annotator".
