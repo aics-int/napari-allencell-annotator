@@ -58,7 +58,7 @@ The plugin requires [Conda](https://docs.anaconda.com/anaconda/install/).
 ### 2. Install the plugin
 Click the link corresponding to your OS.
 #### [Windows](https://alleninstitute-my.sharepoint.com/:u:/g/personal/beatrice_bridge_alleninstitute_org/EVOKZ8-PZB5AvO6z6OAjZ_YB2EHbaU9XRc_Z281oM0ctOg?e=skbKzh)
-- From the page above, click the three dots on the top menu bar and select download. 
+- From the link above, click the three dots on the top menu bar and select download. 
 - Open a file explorer and go to the Downloads folder. Use **Option 1** below. A prompt window should open and start installing. If this fails use **Option 2**. 
   - **Option 1**: Double-click the file _install_napari.sh_
   - **Option 2**: Search the file finder for Anaconda Prompt. Open version 3. Run the following commands one line at a time. 
@@ -69,7 +69,7 @@ Click the link corresponding to your OS.
     - python -m pip install napari-allencell-annotator
     - napari
 #### [MacOS/Unix](https://alleninstitute-my.sharepoint.com/:u:/g/personal/beatrice_bridge_alleninstitute_org/EaeV_RPXZz9DijxYy7qfoeMB3Hbq4vMpmJERqDyhL97KAg?e=HuKY2k)
-- Download the file. 
+- From the link above, download the file. 
 - Open terminal. 
 - Run _chmod +x ./Downloads/install_napari.command_ 
   - If you get a file not found error try adjusting the path to match where install_napari.command was downloaded.
