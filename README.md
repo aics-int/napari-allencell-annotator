@@ -46,18 +46,20 @@ https://napari.org/plugins/index.html
 -->
 
 ## Installation
+### 1. Prerequisites
 
-First install the latest version of napari. Find instructions [here](https://napari.org/stable/tutorials/fundamentals/installation.html). If you are unfamiliar with installing Python packages, follow the section titled _Install as a bundled app_.
+The plugin requires Conda. Install Conda [here](https://docs.anaconda.com/anaconda/install).
 
-### Option 1 (recommended):
+### 2. Install the plugin)
 
-After you installed napari, you can go to "Plugins" --> "Install/Uninstall Package(s)". Then, you will be able to see all available napari plugins and you can find us by name `napari-allencell-annotator`. Just click the "install" button to install the Annotator plugin.
+#### [Windows](https://alleninstitute-my.sharepoint.com/:u:/g/personal/beatrice_bridge_alleninstitute_org/EVOKZ8-PZB5AvO6z6OAjZ_YB2EHbaU9XRc_Z281oM0ctOg?e=skbKzh)
+Download this file and double click.
+#### [MacOS/Unix](https://alleninstitute-my.sharepoint.com/:u:/g/personal/beatrice_bridge_alleninstitute_org/EaeV_RPXZz9DijxYy7qfoeMB3Hbq4vMpmJERqDyhL97KAg?e=HuKY2k)
+Download this file. In the terminal run _chmod +x ./install_napari.command_ . Then double click the file. 
 
-### Option 2:
+### 3. Launch the Plugin
 
-You can also install `napari-allencell-annotator` via [pip]:
-
-    pip install napari-allencell-annotator
+Once the napari window opens, go to "Plugins" --> napari-allencell-annotator.
 
 ## Quick Start
 
