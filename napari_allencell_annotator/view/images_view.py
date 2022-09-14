@@ -75,7 +75,7 @@ class ImagesView(QFrame):
         self.scroll = QScrollArea()
         self.scroll.setWidget(self.file_widget)
         self.scroll.setWidgetResizable(True)
-        self.scroll.horizontalScrollBar().setEnabled(False)
+        self.file_widget.horizontalScrollBar().setEnabled(False)
         self.layout.addWidget(self.scroll, 2, 0, 10, 4)
 
         self.shuffle = QPushButton("Shuffle and Hide")
