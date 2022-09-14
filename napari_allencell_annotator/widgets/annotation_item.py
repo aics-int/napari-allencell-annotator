@@ -38,6 +38,7 @@ class AnnotationItem(QListWidgetItem):
         self.name_widget = QWidget()
         self.name_layout = QHBoxLayout()
         self.check = QCheckBox()
+        self.check.setToolTip("Check box to select this annotation for deletion.")
 
         self.name_layout.addWidget(self.check)
         self.name_layout.addWidget(name_label)

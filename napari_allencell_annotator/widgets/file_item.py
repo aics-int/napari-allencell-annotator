@@ -38,24 +38,18 @@ class FileItem(QListWidgetItem):
         else:
             self.label = QLabel(self._make_display_name())
         self.label.setFont(QFont("Arial", 18))
-        self.label.setStyleSheet("""QLabel{border: 1px solid red}""")
 
         self.layout.addWidget(self.label, stretch=15)
 
         self.check = QCheckBox()
+        self.check.setToolTip("Check box to select this image for deletion.")
         self.check.setCheckState(False)
-        self.check.setCheckable(not hidden)
-        self.label.setStyleSheet("""QLabel{border: 1px solid green}""")
+        if hidden:
+            self.check.hide()
         self.layout.addWidget(self.check, stretch=1)
         self.layout.addStretch()
         self.layout.setContentsMargins(2, 2, 0, 5)
-        self.label.setStyleSheet(
-            """
-                QLabel{
-                    border: 0px solid; 
-                }
-        """
-        )
+
         self.layout.setSizeConstraint(QLayout.SetMinimumSize)
         self.widget.setLayout(self.layout)
 
@@ -74,7 +68,7 @@ class FileItem(QListWidgetItem):
     def unhide(self):
         """Display the file name instead of hidden name."""
         self.label.setText(self._make_display_name())
-        self.check.setCheckable(True)
+        self.check.show()
 
     def hide_check(self):
         """Hide the delete checkbox when annotating."""
