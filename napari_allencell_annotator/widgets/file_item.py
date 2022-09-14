@@ -39,7 +39,7 @@ class FileItem(QListWidgetItem):
             self.label = QLabel(self._make_display_name())
         self.label.setFont(QFont("Arial", 18))
 
-        self.layout.addWidget(self.label, stretch=19)
+        self.layout.addWidget(self.label, stretch=15)
 
         self.check = QCheckBox()
         self.check.setCheckState(False)
