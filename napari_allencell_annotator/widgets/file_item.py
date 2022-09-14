@@ -38,12 +38,14 @@ class FileItem(QListWidgetItem):
         else:
             self.label = QLabel(self._make_display_name())
         self.label.setFont(QFont("Arial", 18))
+        self.label.setStyleSheet("""QLabel{border: 1px solid red}""")
 
         self.layout.addWidget(self.label, stretch=15)
 
         self.check = QCheckBox()
         self.check.setCheckState(False)
         self.check.setCheckable(not hidden)
+        self.label.setStyleSheet("""QLabel{border: 1px solid green}""")
         self.layout.addWidget(self.check, stretch=1)
         self.layout.addStretch()
         self.layout.setContentsMargins(2, 2, 0, 5)
