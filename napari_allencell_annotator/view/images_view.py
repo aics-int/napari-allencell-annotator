@@ -1,5 +1,6 @@
 from typing import Set
 
+from qtpy import QtCore
 from qtpy.QtWidgets import QFrame
 from qtpy.QtCore import Qt
 
