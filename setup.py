@@ -21,7 +21,7 @@ requirements = [
     "aicspylibczi >= 3.0.5",
     "fsspec >= 2022.8.2",
     "aicsimageio[base-imageio]",
-    "bioformats_jar",
+    "bioformats-jar",
     "bfio"
 ]
 
