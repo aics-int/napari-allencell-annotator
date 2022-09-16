@@ -125,7 +125,8 @@ class MainController(QFrame):
 
             elif Path(file_path).suffix == ".csv":
                 use_annots = Popup.make_popup(
-                    "Would you like to use the images and annotation values from this csv in addition to the annotation template?\n\n "
+                    "Would you like to use the images and annotation values from "
+                    "this csv in addition to the annotation template?\n\n "
                     "\n Note: any currently listed images will be cleared."
                 )
                 file = open(file_path)
