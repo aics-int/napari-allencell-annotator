@@ -22,7 +22,8 @@ requirements = [
     "fsspec >= 2022.8.2",
     "aicsimageio[base-imageio]",
     "bioformats-jar",
-    "bfio"
+    "bfio",
+    "qtpy"
 ]
 
 test_requirements = [

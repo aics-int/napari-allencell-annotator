@@ -57,7 +57,7 @@ class AnnotationItem(QListWidgetItem):
         self.default_check.addItems(["checked", "unchecked"])
         self.default_options_label = QLabel("Options:")
         self.default_options = QLineEdit()
-        self.default_options.setPlaceholderText("Enter a comma separated list of options")
+        self.default_options.setPlaceholderText("Enter a comma separated list")
 
         self.default_options.setSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored, QtWidgets.QSizePolicy.Policy.Preferred)
         self.default_options.setMinimumWidth(300)

@@ -211,6 +211,3 @@ class ImagesView(QFrame):
                 current.highlight()
             except exceptions.UnsupportedFileFormatError:
                 self.alert("AICS Unsupported File Type")
-            except FileNotFoundError:
-                self.alert("File Not Found")
-                self.file_widget.remove_item(current)
