@@ -20,7 +20,6 @@ requirements = [
     "magicgui >= 0.3.7",  # psygnal 0.3.0
     "aicspylibczi >= 3.0.5",
     "fsspec >= 2022.8.2",
-    "aicsimageio[base-imageio]",
     "bioformats-jar",
     "bfio",
     "qtpy",

@@ -7,7 +7,7 @@
 [![codecov](https://codecov.io/gh/bbridge0200/napari-allencell-annotator/branch/main/graph/badge.svg)](https://codecov.io/gh/bbridge0200/napari-allencell-annotator)
 [![napari hub](https://img.shields.io/endpoint?url=https://api.napari-hub.org/shields/napari-allencell-annotator)](https://napari-hub.org/plugins/napari-allencell-annotator)
 
-A plugin that enables large image set annotating and writes annotations to a .csv file. 
+A plugin that enables image annotation/scoring and writes annotations to a .csv file. 
 Plugin provided by the Allen Institute for Cell Science.
 
 The Allen Cell Image Annotator plugin for napari provides an intuitive
@@ -17,13 +17,11 @@ The Allen Cell Image Annotator is a Python-based open source toolkit
 developed at the Allen Institute for Cell Science for both blind, unbiased and un-blind 
 microscope image annotating. This toolkit supports easy image set selection
 from a file finder and creation of annotation templates (text, checkbox, drop-down, and spinbox).
-With napari's multi-dimensional image viewing capabilities and AICSImageIO's
-image reading and metadata conversion, the plugin seamlessly allows users to
-view each image in a set and annotate according to the selected template.
+With napari's multi-dimensional image viewing capabilities, the plugin seamlessly allows users to
+view each image and write annotations into the custom template.
 Annotation templates can be written to a json file for sharing or re-using. After annotating,
-both annotation template data and the annotations written for the image set 
-are saved to csv file, which can be re-opened for further annotating and conveniently
-stores annotations.
+the annotation template, image file list, and the annotation values 
+are conveniently saved to csv file, which can be re-opened for further annotating. 
 
 -   Supports the following image types:
     - `OME-TIFF`
@@ -68,6 +66,8 @@ Click the link corresponding to your OS.
     - python -m pip install "napari[all]"
     - python -m pip install napari-allencell-annotator
     - napari
+  - **Still not working?** Try using conda forge instead of pip. 
+    - Ex: conda install -c conda-forge napari instead of python -m pip install "napari[all]"
 #### [MacOS/Unix](https://alleninstitute-my.sharepoint.com/:u:/g/personal/beatrice_bridge_alleninstitute_org/EaeV_RPXZz9DijxYy7qfoeMB3Hbq4vMpmJERqDyhL97KAg?e=HuKY2k)
 - From the link above, download the file. 
 - Open terminal. 
