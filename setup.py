@@ -23,7 +23,7 @@ requirements = [
     "aicsimageio[base-imageio]",
     "bioformats-jar",
     "bfio",
-    "qtpy"
+    "qtpy",
 ]
 
 test_requirements = [
