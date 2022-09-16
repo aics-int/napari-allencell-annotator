@@ -75,6 +75,7 @@ class ImagesView(QFrame):
         self.scroll = QScrollArea()
         self.scroll.setWidget(self.file_widget)
         self.scroll.setWidgetResizable(True)
+        self.scroll.horizontalScrollBar().setEnabled(False)
         self.layout.addWidget(self.scroll, 2, 0, 10, 4)
 
         self.shuffle = QPushButton("Shuffle and Hide")
@@ -209,6 +210,3 @@ class ImagesView(QFrame):
                 current.highlight()
             except exceptions.UnsupportedFileFormatError:
                 self.alert("AICS Unsupported File Type")
-            except FileNotFoundError:
-                self.alert("File Not Found")
-                self.file_widget.remove_item(current)

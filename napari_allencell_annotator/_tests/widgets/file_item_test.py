@@ -23,7 +23,7 @@ class TestFileItem:
         self._widget.check = create_autospec(QCheckBox)
         self._widget.unhide()
         self._widget.label.setText.assert_called_once_with(self._widget._make_display_name())
-        self._widget.check.setCheckable.assert_called_once_with(True)
+        self._widget.check.show.assert_called_once_with()
 
     def test_hide_check(self):
         self._widget.check = create_autospec(QCheckBox)

@@ -18,6 +18,11 @@ requirements = [
     "aicsimageio >= 4.9.1",
     "xarray >= 2022.6.0",
     "magicgui >= 0.3.7",  # psygnal 0.3.0
+    "aicspylibczi >= 3.0.5",
+    "fsspec >= 2022.8.2",
+    "bioformats-jar",
+    "bfio",
+    "qtpy",
 ]
 
 test_requirements = [
@@ -102,6 +107,6 @@ setup(
     ],
     # Do not edit this string manually, always use bumpversion
     # Details in CONTRIBUTING.rst
-    version="1.0.6",
+    version="1.0.7",
     zip_safe=False,
 )

@@ -254,27 +254,3 @@ class TestImagesView:
             curr.highlight.assert_not_called()
             prev.unhighlight.assert_called_once_with()
             self._view.alert.assert_called_once_with("AICS Unsupported File Type")
-
-    def test_display_img_file_not_found(self):
-        # current item none
-        self._view.viewer.layers = MagicMock()
-        self._view.viewer.layers.clear = MagicMock()
-        prev = create_autospec(FileItem)
-        prev.unhighlight = MagicMock()
-        curr = create_autospec(FileItem)
-        curr.file_path = MagicMock(return_value="path")
-        curr.highlight = MagicMock()
-        self._view.file_widget = create_autospec(FilesWidget)
-
-        self._view.viewer.add_image = MagicMock()
-        AICSImage.__init__ = MagicMock(side_effect=FileNotFoundError)
-        AICSImage.data = "data"
-        self._view.alert = MagicMock()
-        self._view._display_img(curr, prev)
-
-        self._view.file_widget.remove_item.assert_called_once_with(curr)
-        self._view.viewer.layers.clear.assert_called_once_with()
-        self._view.viewer.add_image.assert_not_called()
-        curr.highlight.assert_not_called()
-        prev.unhighlight.assert_called_once_with()
-        self._view.alert.assert_called_once_with("File Not Found")
