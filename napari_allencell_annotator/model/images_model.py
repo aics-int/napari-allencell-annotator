@@ -28,6 +28,7 @@ class ImagesModel:
     get_name(file: str) -> str
         Returns the basename of a file.
     """
+
     def __init__(self):
         self._files_dict: Dict[str, List[str]] = {}
 
