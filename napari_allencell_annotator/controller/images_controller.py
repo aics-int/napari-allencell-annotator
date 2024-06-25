@@ -1,9 +1,9 @@
 import os
 from pathlib import Path
-from typing import List, Dict, Set, Optional
+from typing import List, Dict, Optional
 import random
 
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QListWidgetItem
 
 import napari
 
@@ -217,7 +217,7 @@ class ImagesController:
         """Set current item to the one at row."""
         count: int = self.view.file_widget.count()
         for x in range(count):
-            file_item: FileItem = self.view.file_widget.item(x)
+            file_item: Optional[QListWidgetItem] = self.view.file_widget.item(x)
             file_item.hide_check()
         if count > 0:
             self.view.file_widget.setCurrentItem(self.view.file_widget.item(row))
@@ -240,7 +240,7 @@ class ImagesController:
         Dict[str,str]
             dictionary of file name and row attributes.
         """
-        item: FileItem = self.view.file_widget.currentItem()
+        item: Optional[QListWidgetItem] = self.view.file_widget.currentItem()
         info: Dict[str, str] = {
             "File Path": item.file_path,
             "Row": str(self.view.file_widget.get_curr_row()),
