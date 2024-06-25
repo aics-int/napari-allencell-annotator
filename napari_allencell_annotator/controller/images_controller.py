@@ -254,7 +254,7 @@ class ImagesController:
             if self.model.get_num_files() == 0:
                 self.view.file_widgetfiles_added.emit(False)
 
-            self.view.update_num_files_label(self.get_num_files())
+            self.view.update_num_files_label(self.model.get_num_files())
 
     def delete_checked(self):
         for item in self.view.file_widget.checked:
@@ -267,7 +267,7 @@ class ImagesController:
         self.model.set_files_dict(files_dict={})
         self.view.file_widget.clear_all()
 
-        self.view.update_num_files_label(self.get_num_files())
+        self.view.update_num_files_label(self.model.get_num_files())
 
     def add_new_item(self, file: str, hidden: Optional[bool] = False):
         if file not in self.model.get_files_dict().keys():
