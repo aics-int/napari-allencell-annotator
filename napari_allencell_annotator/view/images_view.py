@@ -39,6 +39,8 @@ class ImagesView(QFrame):
     -------
     alert(alert:str)
         Displays the alert message on the napari viewer
+    update_num_files_label(num_files:int)
+        Updates num_files_label to show the current number of image files
     """
 
     def __init__(self, viewer: napari.Viewer):
@@ -78,7 +80,7 @@ class ImagesView(QFrame):
         self.scroll.horizontalScrollBar().setEnabled(False)
         self.layout.addWidget(self.scroll, 2, 0, 10, 4)
 
-        self.num_files_label = QLabel("Loaded files:")
+        self.num_files_label: QLabel = QLabel("Image files:")
         self.layout.addWidget(self.num_files_label, 13, 0, 1, 4)
 
         self.shuffle = QPushButton("Shuffle and Hide")
@@ -216,5 +218,6 @@ class ImagesView(QFrame):
             except exceptions.UnsupportedFileFormatError:
                 self.alert("AICS Unsupported File Type")
 
-    def update_num_files_label(self, num_files):
+    def update_num_files_label(self, num_files: int) -> None:
+        """Update num_files_label to show the current number of image files"""
         self.num_files_label.setText(f"Loaded files: {num_files}")
