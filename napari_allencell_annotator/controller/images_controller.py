@@ -338,7 +338,8 @@ class ImagesController:
         If at least one file is checked, delete only selected files. Otherwise, delete all files.
         """
         if len(self.view.file_widget.checked) > 0:
-            proceed: bool = FileScrollablePopup.make_popup("Delete these files from the list?", self.view.file_widget.checked)
+            proceed: bool = FileScrollablePopup.make_popup("Delete these files from the list?",
+                                                           self.view.file_widget.checked)
             if proceed:
                 self.delete_checked()
         else:
