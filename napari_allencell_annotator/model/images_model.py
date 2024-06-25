@@ -1,4 +1,6 @@
 from typing import Dict, List
+from napari_allencell_annotator.widgets.file_item import FileItem
+from pathlib import Path
 
 
 class ImagesModel:
@@ -12,4 +14,14 @@ class ImagesModel:
         self._files_dict = files_dict
 
     def get_num_files(self) -> int:
-        return len(self.get_files_dict())
+        return len(self._files_dict)
+
+    def remove_item(self, item: FileItem):
+        del self._files_dict[item.file_path]
+
+    def add_item(self, file):
+        self._files_dict[file] = [self.get_name(file), ""]
+
+    def get_name(self, file):
+        """Return basename"""
+        return Path(file).stem

@@ -76,15 +76,14 @@ class ImagesController:
         shuffled: bool
             true if files are shuffled.
         """
-        self.view.file_widget.clear_all()  # sets shuffled to false
+        self.clear_all()  # sets shuffled to false
         for name in files:
-            self.view.file_widget.add_new_item(name, shuffled)
+            self.add_new_item(name, shuffled)
         if shuffled:
             self.view.file_widget.set_shuffled(True)
             self.view.toggle_add(False)
 
         self.view.shuffle.setChecked(shuffled)
-        self.view.update_num_files_label(self.get_num_files())
 
     def get_files_dict(self) -> (Dict[str, List[str]], bool):
         """
@@ -95,7 +94,7 @@ class ImagesController:
         Dict[str,List[str]], bool
             dictionary of file info. keys in order. a boolean shuffled.
         """
-        return self.view.file_widget.files_dict, self.view.file_widget.shuffled
+        return self.model.get_files_dict(), self.view.file_widget.shuffled
 
     def _shuffle_clicked(self, checked: bool):
         """
@@ -110,15 +109,16 @@ class ImagesController:
             Toggle state of the shuffle button.
         """
         if checked:
-            files: Dict[str, List[str]] = self.view.file_widget.clear_for_shuff()
+            self.view.file_widget.clear_for_shuff()
+            files: Dict[str, List[str]] = self.model.get_files_dict()
             if len(files) > 0:
                 self.view.toggle_add(False)
                 keys = list(files.keys())
-                self.view.file_widget.files_dict = {}
+                self.model.set_files_dict({})
                 random.shuffle(keys)
                 for k in keys:
                     # add new item will recreate files_dict in new order
-                    self.view.file_widget.add_new_item(k, hidden=True)
+                    self.add_new_item(k, hidden=True)
 
         else:
             self.view.toggle_add(True)
@@ -169,11 +169,10 @@ class ImagesController:
 
                     file = d + "/" + file
                     if self.is_supported(file):
-                        self.view.file_widget.add_new_item(file)
+                        self.add_new_item(file)
                     else:
                         self.view.alert("Unsupported file type(s)")
 
-                self.view.update_num_files_label(self.get_num_files())
         else:
             self.view.alert("No selection provided")
 
@@ -191,10 +190,9 @@ class ImagesController:
         else:
             for file in file_list:
                 if self.is_supported(file):
-                    self.view.file_widget.add_new_item(file)
+                    self.add_new_item(file)
                 else:
                     self.view.alert("Unsupported file type(s)")
-            self.view.update_num_files_label(self.get_num_files())
 
     def start_annotating(self, row: Optional[int] = 0):
         """Set current item to the one at row."""
@@ -251,3 +249,30 @@ class ImagesController:
             number of files.
         """
         return self.view.file_widget.count()
+
+    def delete_checked(self):
+        for item in self.view.file_widget.checked:
+            if item.file_path in self.model.get_files_dict().keys():
+                if item == self.view.file_widget.currentItem():
+                    self.view.file_widget.setCurrentItem(None)
+                self.view.file_widget.takeItem(self.view.file_widget.row(item))
+                self.model.remove_item(item)
+                if self.model.get_num_files() == 0:
+                    self.view.file_widgetfiles_added.emit(False)
+
+        self.view.file_widget.checked.clear()
+        self.view.file_widget.files_selected.emit(False)
+
+    def clear_all(self):
+        self.view.file_widget.clear_all()
+        self.model.set_files_dict(files_dict={})
+
+    def add_new_item(self, file: str, hidden: Optional[bool] = False):
+        if file not in self.model.get_files_dict().keys():
+            self.view.file_widget.add_new_item(file, hidden)
+            self.model.add_item(file)
+            if self.model.get_num_files() == 1:
+                self.view.file_widget.files_added.emit(True)
+            self.view.update_num_files_label(self.model.get_num_files())
+
+

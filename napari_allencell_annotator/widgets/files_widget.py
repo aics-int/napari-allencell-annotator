@@ -48,7 +48,6 @@ class FilesWidget(QListWidget):
         self.checked: Set[FileItem] = set()
         # files_dict holds all image info file path -> [file name, FMS]
         # also holds the original insertion order in .keys()
-        self.files_dict: Dict[str, List[str]] = {}
         self.setCurrentItem(None)
         self._shuffled: bool = False
 
@@ -97,12 +96,11 @@ class FilesWidget(QListWidget):
         """Clear all image data."""
         self._shuffled = False
         self.checked = set()
-        self.files_dict = {}
 
         self.setCurrentItem(None)
         self.clear()
 
-    def clear_for_shuff(self) -> Dict[str, List[str]]:
+    def clear_for_shuff(self) -> None:
         """
         Clear the list display and return the files_dict.
 
@@ -117,7 +115,6 @@ class FilesWidget(QListWidget):
         self.setCurrentItem(None)
         self.checked = set()
         self.clear()
-        return self.files_dict
 
     def add_new_item(self, file: str, hidden: Optional[bool] = False):
         """
@@ -132,12 +129,8 @@ class FilesWidget(QListWidget):
         hidden : Optional[bool]
             a boolean if true file path hidden in list.
         """
-        if file not in self.files_dict.keys():
-            item = FileItem(file, self, hidden)
-            item.check.stateChanged.connect(lambda: self._check_evt(item))
-            self.files_dict[file] = [item.get_name(), ""]
-            if len(self.files_dict) == 1:
-                self.files_added.emit(True)
+        item = FileItem(file, self, hidden)
+        item.check.stateChanged.connect(lambda: self._check_evt(item))
 
     def add_item(self, file: str, hidden: bool = False):
         """
@@ -155,35 +148,35 @@ class FilesWidget(QListWidget):
         item = FileItem(file, self, hidden)
         item.check.stateChanged.connect(lambda: self._check_evt(item))
 
-    def remove_item(self, item: FileItem):
-        """
-        Remove the item from all attributes.
-
-        This function emits a files_added signal when the item to remove is the only item.
-
-        Params
-        -------
-        item: FileItem
-            an item to remove.
-        """
-        if item.file_path in self.files_dict.keys():
-            if item == self.currentItem():
-                self.setCurrentItem(None)
-            self.takeItem(self.row(item))
-            del self.files_dict[item.file_path]
-            if len(self.files_dict) == 0:
-                self.files_added.emit(False)
-
-    def delete_checked(self):
-        """
-        Delete the checked items.
-
-        This function emits a files_selected signal.
-        """
-        for item in self.checked:
-            self.remove_item(item)
-        self.checked.clear()
-        self.files_selected.emit(False)
+    # def remove_item(self, item: FileItem):
+    #     """
+    #     Remove the item from all attributes.
+    #
+    #     This function emits a files_added signal when the item to remove is the only item.
+    #
+    #     Params
+    #     -------
+    #     item: FileItem
+    #         an item to remove.
+    #     """
+    #     if item.file_path in self.files_dict.keys():
+    #         if item == self.currentItem():
+    #             self.setCurrentItem(None)
+    #         self.takeItem(self.row(item))
+    #         del self.files_dict[item.file_path]
+    #         if len(self.files_dict) == 0:
+    #             self.files_added.emit(False)
+    #
+    # def delete_checked(self):
+    #     """
+    #     Delete the checked items.
+    #
+    #     This function emits a files_selected signal.
+    #     """
+    #     for item in self.checked:
+    #         self.remove_item(item)
+    #     self.checked.clear()
+    #     self.files_selected.emit(False)
 
     def _check_evt(self, item: FileItem):
         """
