@@ -133,24 +133,6 @@ class ImagesView(QFrame):
         self._toggle_shuffle(False)
         self.toggle_add(True)
 
-    # def _delete_clicked(self):
-    #     """Ask user to approve a list of files to delete from the file list."""
-    #     if len(self.file_widget.checked) > 0:
-    #         msg: str = "Delete these files from the list?"
-    #         names: Set[str] = set()
-    #         for item in self.file_widget.checked:
-    #             names.add("--- " + item.file_path)
-    #         msg_box = ScrollablePopup(msg, names)
-    #         if msg_box.exec() == QDialog.Accepted:
-    #             self.file_widget.delete_checked()
-    #     else:
-    #         proceed: bool = Popup.make_popup("Remove all images?")
-    #         if proceed:
-    #             self.file_widget.clear_all()
-    #             self.reset_buttons()
-    #
-    #     self.update_num_files_label(self.file_widget.count())
-
     def alert(self, alert_msg: str):
         """
         Displays an error alert on the napari viewer.

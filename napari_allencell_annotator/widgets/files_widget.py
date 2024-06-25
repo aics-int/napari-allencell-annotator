@@ -116,22 +116,6 @@ class FilesWidget(QListWidget):
         self.checked = set()
         self.clear()
 
-    def add_new_item(self, file: str, hidden: Optional[bool] = False):
-        """
-        Adds a new file to the list and files_dict.
-
-        This function emits a files_added signal when this is the first file added.
-
-        Params
-        -------
-        file: str
-            a file path.
-        hidden : Optional[bool]
-            a boolean if true file path hidden in list.
-        """
-        item = FileItem(file, self, hidden)
-        item.check.stateChanged.connect(lambda: self._check_evt(item))
-
     def add_item(self, file: str, hidden: bool = False):
         """
         Add a file to the list, but not to the files_dict.
@@ -148,35 +132,20 @@ class FilesWidget(QListWidget):
         item = FileItem(file, self, hidden)
         item.check.stateChanged.connect(lambda: self._check_evt(item))
 
-    # def remove_item(self, item: FileItem):
-    #     """
-    #     Remove the item from all attributes.
-    #
-    #     This function emits a files_added signal when the item to remove is the only item.
-    #
-    #     Params
-    #     -------
-    #     item: FileItem
-    #         an item to remove.
-    #     """
-    #     if item.file_path in self.files_dict.keys():
-    #         if item == self.currentItem():
-    #             self.setCurrentItem(None)
-    #         self.takeItem(self.row(item))
-    #         del self.files_dict[item.file_path]
-    #         if len(self.files_dict) == 0:
-    #             self.files_added.emit(False)
-    #
-    # def delete_checked(self):
-    #     """
-    #     Delete the checked items.
-    #
-    #     This function emits a files_selected signal.
-    #     """
-    #     for item in self.checked:
-    #         self.remove_item(item)
-    #     self.checked.clear()
-    #     self.files_selected.emit(False)
+    def remove_item(self, item: FileItem):
+        """
+        Remove the item from all attributes.
+
+        This function emits a files_added signal when the item to remove is the only item.
+
+        Params
+        -------
+        item: FileItem
+            an item to remove.
+        """
+        if item == self.currentItem():
+            self.setCurrentItem(None)
+        self.takeItem(self.row(item))
 
     def _check_evt(self, item: FileItem):
         """
