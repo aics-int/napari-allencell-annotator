@@ -213,7 +213,7 @@ class ImagesController:
 
     def stop_annotating(self):
         """Clear file widget and reset buttons."""
-        self.view.clear_all()
+        self.clear_all()
         self.view.reset_buttons()
 
     def curr_img_dict(self) -> Dict[str, str]:
