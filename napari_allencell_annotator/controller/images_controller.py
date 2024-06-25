@@ -6,6 +6,7 @@ import random
 import napari
 
 from napari_allencell_annotator.view.images_view import ImagesView
+from napari_allencell_annotator.model.images_model import ImagesModel
 from napari_allencell_annotator.constants.constants import SUPPORTED_FILE_TYPES
 from napari_allencell_annotator.widgets.file_item import FileItem
 
@@ -53,6 +54,8 @@ class ImagesController:
         self.view: ImagesView = ImagesView(viewer)
         self.view.show()
         self._connect_slots()
+
+        self.model: ImagesModel = ImagesModel()
 
     def _connect_slots(self):
         """Connects signals to slots."""
