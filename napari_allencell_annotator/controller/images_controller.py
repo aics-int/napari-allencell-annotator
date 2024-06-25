@@ -81,6 +81,7 @@ class ImagesController:
             self.view.toggle_add(False)
 
         self.view.shuffle.setChecked(shuffled)
+        self.view.update_num_files_label(self.get_num_files())
 
     def get_files_dict(self) -> (Dict[str, List[str]], bool):
         """

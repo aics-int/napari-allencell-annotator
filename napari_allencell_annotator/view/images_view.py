@@ -78,8 +78,8 @@ class ImagesView(QFrame):
         self.scroll.horizontalScrollBar().setEnabled(False)
         self.layout.addWidget(self.scroll, 2, 0, 10, 4)
 
-        self.num_files = QLabel("Loaded files:")
-        self.layout.addWidget(self.num_files, 13, 0, 1, 4)
+        self.num_files_label = QLabel("Loaded files:")
+        self.layout.addWidget(self.num_files_label, 13, 0, 1, 4)
 
         self.shuffle = QPushButton("Shuffle and Hide")
         self.shuffle.setCheckable(True)
@@ -217,4 +217,4 @@ class ImagesView(QFrame):
                 self.alert("AICS Unsupported File Type")
 
     def update_num_files_label(self, num_files):
-        self.num_files.setText(f"Loaded files: {num_files}")
+        self.num_files_label.setText(f"Loaded files: {num_files}")
