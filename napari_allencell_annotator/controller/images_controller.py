@@ -246,22 +246,15 @@ class ImagesController:
         if self.view.file_widget.get_curr_row() > 0:
             self.view.file_widget.setCurrentItem(self.view.file_widget.item(self.view.file_widget.get_curr_row() - 1))
 
-    def get_num_files(self) -> int:
-        """
-        Returns
-        ----------
-        int
-            number of files.
-        """
-        return self.view.file_widget.count()
-
     def remove_item(self, item):
         if item.file_path in self.model.get_files_dict().keys():
             self.model.remove_item(item)
             self.view.file_widget.remove_item(item)
-            self.view.update_num_files_label(self.get_num_files())
+
             if self.model.get_num_files() == 0:
                 self.view.file_widgetfiles_added.emit(False)
+
+            self.view.update_num_files_label(self.get_num_files())
 
     def delete_checked(self):
         for item in self.view.file_widget.checked:
@@ -273,14 +266,17 @@ class ImagesController:
     def clear_all(self):
         self.model.set_files_dict(files_dict={})
         self.view.file_widget.clear_all()
+
         self.view.update_num_files_label(self.get_num_files())
 
     def add_new_item(self, file: str, hidden: Optional[bool] = False):
         if file not in self.model.get_files_dict().keys():
-            self.view.file_widget.add_item(file, hidden)
             self.model.add_item(file)
+            self.view.file_widget.add_item(file, hidden)
+
             if self.model.get_num_files() == 1:
                 self.view.file_widget.files_added.emit(True)
+
             self.view.update_num_files_label(self.model.get_num_files())
 
     def _delete_clicked(self):
