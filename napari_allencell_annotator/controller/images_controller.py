@@ -174,7 +174,6 @@ class ImagesController:
         else:
             self.view.alert("No selection provided")
 
-
     def _file_selected_evt(self, file_list: List[str]):
         """
         Adds all selected files to the GUI.
