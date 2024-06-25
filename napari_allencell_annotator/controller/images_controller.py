@@ -1,7 +1,9 @@
 import os
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import List, Dict, Set, Optional
 import random
+
+from PyQt5.QtWidgets import QDialog
 
 import napari
 
@@ -9,6 +11,8 @@ from napari_allencell_annotator.view.images_view import ImagesView
 from napari_allencell_annotator.model.images_model import ImagesModel
 from napari_allencell_annotator.constants.constants import SUPPORTED_FILE_TYPES
 from napari_allencell_annotator.widgets.file_item import FileItem
+from napari_allencell_annotator.widgets.scrollable_popup import ScrollablePopup
+from napari_allencell_annotator.widgets.popup import Popup
 
 
 class ImagesController:
@@ -62,6 +66,7 @@ class ImagesController:
         self.view.input_dir.file_selected.connect(self._dir_selected_evt)
         self.view.input_file.file_selected.connect(self._file_selected_evt)
         self.view.shuffle.clicked.connect(self._shuffle_clicked)
+        self.view.delete.clicked.connect(self._delete_clicked)
 
     def load_from_csv(self, files: List[str], shuffled: bool):
         """
@@ -257,6 +262,7 @@ class ImagesController:
                     self.view.file_widget.setCurrentItem(None)
                 self.view.file_widget.takeItem(self.view.file_widget.row(item))
                 self.model.remove_item(item)
+                self.view.update_num_files_label(self.get_num_files())
                 if self.model.get_num_files() == 0:
                     self.view.file_widgetfiles_added.emit(False)
 
@@ -266,6 +272,7 @@ class ImagesController:
     def clear_all(self):
         self.view.file_widget.clear_all()
         self.model.set_files_dict(files_dict={})
+        self.view.update_num_files_label(self.get_num_files())
 
     def add_new_item(self, file: str, hidden: Optional[bool] = False):
         if file not in self.model.get_files_dict().keys():
@@ -274,5 +281,20 @@ class ImagesController:
             if self.model.get_num_files() == 1:
                 self.view.file_widget.files_added.emit(True)
             self.view.update_num_files_label(self.model.get_num_files())
+
+    def _delete_clicked(self):
+        if len(self.view.file_widget.checked) > 0:
+            msg: str = "Delete these files from the list?"
+            names: Set[str] = set()
+            for item in self.view.file_widget.checked:
+                names.add("--- " + item.file_path)
+            msg_box = ScrollablePopup(msg, names)
+            if msg_box.exec() == QDialog.Accepted:
+                self.delete_checked()
+        else:
+            proceed: bool = Popup.make_popup("Remove all images?")
+            if proceed:
+                self.clear_all()
+                self.view.reset_buttons()
 
 
