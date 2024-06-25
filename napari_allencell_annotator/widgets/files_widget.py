@@ -1,6 +1,5 @@
+from typing import Set, List, Dict
 from qtpy.QtWidgets import QListWidget
-from typing import Set, List, Optional, Dict
-
 from qtpy.QtCore import Signal
 
 from napari_allencell_annotator.widgets.file_item import FileItem
@@ -24,24 +23,22 @@ class FilesWidget(QListWidget):
     -------
     set_shuffled(shuffled : bool)
         Sets the list shuffled property.
+    unhide_all()
+        Displays the file names on all files in the list.
     clear_all()
-        Clears all image data.
+        Clears all image data in the file widget.
     clear_for_shuff() -> List[str]
-        Clears the list display and returns the file_order.
+        Clears the list display.
     get_curr_row() -> int
         Returns current image row.
-    add_new_item(file:str)
-        Adds a new file to the list and file_order.
     add_item(file: str, hidden: bool)
-        Adds a file to the list, but not to the file_order.
+        Adds a file to the file widget.
     remove_item(item: ListItem)
-        Removes the item from all attributes.
-    delete_checked()
-        Removes all items in checked.
+        Removes the item from the file widget.
     """
 
-    files_selected = Signal(bool)
-    files_added = Signal(bool)
+    files_selected: Signal = Signal(bool)
+    files_added: Signal = Signal(bool)
 
     def __init__(self):
         QListWidget.__init__(self)
@@ -63,7 +60,7 @@ class FilesWidget(QListWidget):
         """
         return self._shuffled
 
-    def set_shuffled(self, shuffled: bool):
+    def set_shuffled(self, shuffled: bool) -> None:
         """
         Set the shuffled property to shuffled or unshuffled.
 
@@ -73,7 +70,7 @@ class FilesWidget(QListWidget):
         """
         self._shuffled = shuffled
 
-    def unhide_all(self):
+    def unhide_all(self) -> None:
         """Display the file names on all files in the list."""
         for i in range(self.count()):
             self.item(i).unhide()
@@ -92,8 +89,8 @@ class FilesWidget(QListWidget):
         else:
             return -1
 
-    def clear_all(self):
-        """Clear all image data."""
+    def clear_all(self) -> None:
+        """Clear all image data in the file widget."""
         self._shuffled = False
         self.checked = set()
 
@@ -102,7 +99,7 @@ class FilesWidget(QListWidget):
 
     def clear_for_shuff(self) -> None:
         """
-        Clear the list display and return the files_dict.
+        Clear the list display.
 
         This function clears all displayed, checked, and current items, but keeps the files_dict.
 
@@ -116,9 +113,9 @@ class FilesWidget(QListWidget):
         self.checked = set()
         self.clear()
 
-    def add_item(self, file: str, hidden: bool = False):
+    def add_item(self, file: str, hidden: bool = False) -> None:
         """
-        Add a file to the list, but not to the files_dict.
+        Add a file to the file widget.
 
         Optional hidden parameter toggles file name visibility.
 
@@ -129,14 +126,12 @@ class FilesWidget(QListWidget):
         hidden: bool
             file name visibility.
         """
-        item = FileItem(file, self, hidden)
+        item: FileItem = FileItem(file, self, hidden)
         item.check.stateChanged.connect(lambda: self._check_evt(item))
 
-    def remove_item(self, item: FileItem):
+    def remove_item(self, item: FileItem) -> None:
         """
-        Remove the item from all attributes.
-
-        This function emits a files_added signal when the item to remove is the only item.
+        Remove the item from the file widget.
 
         Params
         -------
@@ -147,7 +142,7 @@ class FilesWidget(QListWidget):
             self.setCurrentItem(None)
         self.takeItem(self.row(item))
 
-    def _check_evt(self, item: FileItem):
+    def _check_evt(self, item: FileItem) -> None:
         """
         Update checked set and emit files_selected signal.
 
