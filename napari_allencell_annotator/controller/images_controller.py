@@ -11,8 +11,8 @@ from napari_allencell_annotator.view.images_view import ImagesView
 from napari_allencell_annotator.model.images_model import ImagesModel
 from napari_allencell_annotator.constants.constants import SUPPORTED_FILE_TYPES
 from napari_allencell_annotator.widgets.file_item import FileItem
-from napari_allencell_annotator.widgets.scrollable_popup import ScrollablePopup
 from napari_allencell_annotator.widgets.popup import Popup
+from napari_allencell_annotator.widgets.file_scrollable_popup import FileScrollablePopup
 
 
 class ImagesController:
@@ -284,12 +284,8 @@ class ImagesController:
 
     def _delete_clicked(self):
         if len(self.view.file_widget.checked) > 0:
-            msg: str = "Delete these files from the list?"
-            names: Set[str] = set()
-            for item in self.view.file_widget.checked:
-                names.add("--- " + item.file_path)
-            msg_box = ScrollablePopup(msg, names)
-            if msg_box.exec() == QDialog.Accepted:
+            proceed: bool = FileScrollablePopup.make_popup("Delete these files from the list?", self.view.file_widget.checked)
+            if proceed:
                 self.delete_checked()
         else:
             proceed: bool = Popup.make_popup("Remove all images?")
