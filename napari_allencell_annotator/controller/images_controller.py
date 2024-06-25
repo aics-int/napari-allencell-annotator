@@ -246,6 +246,15 @@ class ImagesController:
         if self.view.file_widget.get_curr_row() > 0:
             self.view.file_widget.setCurrentItem(self.view.file_widget.item(self.view.file_widget.get_curr_row() - 1))
 
+    def get_num_files(self) -> int:
+        """
+        Returns
+        ----------
+        int
+            number of files.
+        """
+        return self.model.get_num_files()
+
     def remove_item(self, item):
         if item.file_path in self.model.get_files_dict().keys():
             self.model.remove_item(item)
