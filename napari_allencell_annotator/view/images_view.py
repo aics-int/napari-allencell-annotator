@@ -78,6 +78,9 @@ class ImagesView(QFrame):
         self.scroll.horizontalScrollBar().setEnabled(False)
         self.layout.addWidget(self.scroll, 2, 0, 10, 4)
 
+        self.num_files = QLabel("Loaded files:")
+        self.layout.addWidget(self.num_files, 13, 0, 1, 4)
+
         self.shuffle = QPushButton("Shuffle and Hide")
         self.shuffle.setCheckable(True)
 
@@ -86,8 +89,8 @@ class ImagesView(QFrame):
         self.delete = QPushButton("Delete All")
         self.delete.setEnabled(False)
 
-        self.layout.addWidget(self.shuffle, 13, 0, 1, 3)
-        self.layout.addWidget(self.delete, 13, 3, 1, 1)
+        self.layout.addWidget(self.shuffle, 14, 0, 1, 3)
+        self.layout.addWidget(self.delete, 14, 3, 1, 1)
 
         self.setLayout(self.layout)
 
@@ -143,6 +146,8 @@ class ImagesView(QFrame):
             if proceed:
                 self.file_widget.clear_all()
                 self.reset_buttons()
+
+        self.update_num_files_label(self.file_widget.count())
 
     def alert(self, alert_msg: str):
         """
@@ -210,3 +215,6 @@ class ImagesView(QFrame):
                 current.highlight()
             except exceptions.UnsupportedFileFormatError:
                 self.alert("AICS Unsupported File Type")
+
+    def update_num_files_label(self, num_files):
+        self.num_files.setText(f"Loaded files: {num_files}")

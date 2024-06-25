@@ -168,8 +168,11 @@ class ImagesController:
                         self.view.file_widget.add_new_item(file)
                     else:
                         self.view.alert("Unsupported file type(s)")
+
+                self.view.update_num_files_label(self.get_num_files())
         else:
             self.view.alert("No selection provided")
+
 
     def _file_selected_evt(self, file_list: List[str]):
         """
@@ -188,6 +191,7 @@ class ImagesController:
                     self.view.file_widget.add_new_item(file)
                 else:
                     self.view.alert("Unsupported file type(s)")
+            self.view.update_num_files_label(self.get_num_files())
 
     def start_annotating(self, row: Optional[int] = 0):
         """Set current item to the one at row."""
