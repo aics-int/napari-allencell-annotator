@@ -4,6 +4,7 @@ from qtpy.QtWidgets import QPushButton
 from qtpy.QtWidgets import QHBoxLayout, QWidget, QFileDialog
 from qtpy.QtCore import Signal
 from typing import List
+from pathlib import Path
 
 
 class FileInputMode(Enum):
@@ -63,12 +64,12 @@ class FileInput(QWidget):
 
     def _select_file(self):  # pragma: no-cover
         if self._mode == FileInputMode.FILE:
-
             file_path, _ = QFileDialog.getOpenFileNames(
                 self,
                 "Select a file",
                 options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
             )
+
         elif self._mode == FileInputMode.DIRECTORY:
             file_path = QFileDialog.getExistingDirectory(
                 self,
@@ -117,3 +118,6 @@ class FileInput(QWidget):
         if file_path:
             self.selected_file = file_path
             self.file_selected.emit(file_path)
+
+    def convert_to_path_object(self, path_str):
+        return list(map(lambda x: Path(x), path_str))
