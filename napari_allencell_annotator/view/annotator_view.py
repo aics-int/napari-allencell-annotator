@@ -233,7 +233,7 @@ class AnnotatorView(QFrame):
             the values for the annotations.
         """
         first_item = self.annot_list.items[0]
-        for (item, val) in zip(self.annot_list.items, vals):
+        for item, val in zip(self.annot_list.items, vals):
             if val is None or val == "":
                 item.set_default_value()
             else:
