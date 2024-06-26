@@ -28,11 +28,13 @@ class FileItem(QListWidgetItem):
         shows the file name in label.
     """
 
-    def __init__(self, file_path: str, parent: QListWidget, hidden: bool = False):
+    def __init__(self, file_path: Path, parent: QListWidget, hidden: bool = False):
         QListWidgetItem.__init__(self, parent)
-        self._file_path = file_path
-        self.widget = QWidget()
-        self.layout = QHBoxLayout()
+        self._file_path: Path = file_path
+        self.widget: QWidget = QWidget()
+        self.layout: QHBoxLayout = QHBoxLayout()
+
+        self.label: QLabel
         if hidden:
             self.label = QLabel("Image " + str(parent.row(self) + 1))
         else:
@@ -41,7 +43,7 @@ class FileItem(QListWidgetItem):
 
         self.layout.addWidget(self.label, stretch=15)
 
-        self.check = QCheckBox()
+        self.check: QCheckBox = QCheckBox()
         self.check.setToolTip("Check box to select this image for deletion.")
         self.check.setCheckState(False)
         if hidden:
@@ -58,19 +60,22 @@ class FileItem(QListWidgetItem):
             parent.setItemWidget(self, self.widget)
 
     @property
-    def file_path(self) -> str:
+    def file_path(self) -> Path:
         return self._file_path
 
-    def get_name(self):
-        """Return basename"""
-        return Path(self._file_path).stem
+    def get_file_path_str(self) -> str:
+        return str(self._file_path)
 
-    def unhide(self):
+    def get_name(self) -> str:
+        """Return basename"""
+        return self._file_path.stem
+
+    def unhide(self) -> None:
         """Display the file name instead of hidden name."""
         self.label.setText(self._make_display_name())
         self.check.show()
 
-    def hide_check(self):
+    def hide_check(self) -> None:
         """Hide the delete checkbox when annotating."""
         self.check.hide()
 

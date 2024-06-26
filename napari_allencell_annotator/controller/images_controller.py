@@ -26,13 +26,13 @@ class ImagesController:
 
     Methods
     -------
-    load_from_csv(files : List[str], shuffled: bool)
+    load_from_csv(files : List[Path], shuffled: bool)
         Adds files to file list from a csv list of file paths.
 
-    get_files_dict() -> Dict[str,List[str]], bool
+    get_files_dict() -> Dict[Path,List[str]], bool
         Returns the file dictionary that has the current file order and boolean shuffled.
 
-    is_supported(file_path:str) -> bool
+    is_supported(file_path:Path) -> bool
         Returns True if a file is a supported file type.
 
     start_annotating(row: Optional[int] = 0)
@@ -62,7 +62,7 @@ class ImagesController:
     clear_all()
         Clears all image data from the model and the file widget.
 
-    add_new_item(file: str, hidden: Optional[bool] = False)
+    add_new_item(file: Path, hidden: Optional[bool] = False)
         Adds a new image to the model and the file widget.
 
     delete_clicked()
@@ -82,7 +82,7 @@ class ImagesController:
         self.view.shuffle.clicked.connect(self._shuffle_clicked)
         self.view.delete.clicked.connect(self._delete_clicked)
 
-    def load_from_csv(self, files: List[str], shuffled: bool) -> None:
+    def load_from_csv(self, files: List[Path], shuffled: bool) -> None:
         """
         Clear current file list and add file list from csv with its shuffle state.
 
@@ -90,7 +90,7 @@ class ImagesController:
 
         Parameters
         __________
-        files : List[str]
+        files : List[Path]
             a list of file paths.
         shuffled: bool
             true if files are shuffled.
@@ -104,13 +104,13 @@ class ImagesController:
 
         self.view.shuffle.setChecked(shuffled)
 
-    def get_files_dict(self) -> (Dict[str, List[str]], bool):
+    def get_files_dict(self) -> (Dict[Path, List[str]], bool):
         """
         Return the file dictionary and the shuffle state of file_widget.
 
         Returns
         ----------
-        Dict[str,List[str]], bool
+        Dict[Path,List[str]], bool
             dictionary of file info. keys in order. a boolean shuffled.
         """
         return self.model.get_files_dict(), self.view.file_widget.shuffled
@@ -129,7 +129,7 @@ class ImagesController:
         """
         if checked:
             self.view.file_widget.clear_for_shuff()
-            files: Dict[str, List[str]] = self.model.get_files_dict()
+            files: Dict[Path, List[str]] = self.model.get_files_dict()
             if len(files) > 0:
                 self.view.toggle_add(False)
                 keys: List = list(files.keys())
@@ -145,7 +145,7 @@ class ImagesController:
             self.view.file_widget.unhide_all()
 
     @staticmethod
-    def is_supported(file_path: str) -> bool:
+    def is_supported(file_path: Path) -> bool:
         """
         Check if the provided file name is a supported file.
 
@@ -154,7 +154,7 @@ class ImagesController:
 
         Parameters
         ----------
-        file_path : str
+        file_path : Path
             Name of the file to check.
 
         Returns
@@ -164,44 +164,44 @@ class ImagesController:
         """
         if file_path is None:
             return False
-        extension: str = Path(file_path).suffix
+        extension: str = file_path.suffix
         if extension in SUPPORTED_FILE_TYPES:
             return True
         else:
             return False
 
-    def _dir_selected_evt(self, dir_list: List[str]) -> None:
+    def _dir_selected_evt(self, dir_list: List[Path]) -> None:
         """
         Adds all files in a directory to the GUI.
 
         Parameters
         ----------
-        dir_list : List[str]
+        dir_list : List[Path]
             The input list with dir[0] holding directory name.
         """
         if dir_list is not None and len(dir_list) > 0:
-            d: str = dir_list[0]
+            d: Path = dir_list[0]
             if len(os.listdir(d)) < 1:
                 self.view.alert("Folder is empty")
             else:
-                for file in [file for file in os.listdir(d) if not file.startswith(".")]:
+                for filename in [filename for filename in os.listdir(d) if not filename.startswith(".")]:
 
-                    file = d + "/" + file
-                    if self.is_supported(file):
-                        self.add_new_item(file)
+                    file_path: Path = d / filename
+                    if self.is_supported(file_path):
+                        self.add_new_item(file_path)
                     else:
                         self.view.alert("Unsupported file type(s)")
 
         else:
             self.view.alert("No selection provided")
 
-    def _file_selected_evt(self, file_list: List[str]) -> None:
+    def _file_selected_evt(self, file_list: List[Path]) -> None:
         """
         Adds all selected files to the GUI.
 
         Parameters
         ----------
-        file_list : List[str]
+        file_list : List[Path]
             The list of files
         """
         if file_list is None or len(file_list) < 1:
@@ -242,7 +242,7 @@ class ImagesController:
         """
         item: Optional[QListWidgetItem] = self.view.file_widget.currentItem()
         info: Dict[str, str] = {
-            "File Path": item.file_path,
+            "File Path": item.get_file_path_str(),
             "Row": str(self.view.file_widget.get_curr_row()),
         }
         return info
@@ -308,7 +308,7 @@ class ImagesController:
 
         self.view.update_num_files_label(self.model.get_num_files())
 
-    def add_new_item(self, file: str, hidden: Optional[bool] = False) -> None:
+    def add_new_item(self, file: Path, hidden: Optional[bool] = False) -> None:
         """
         Add a new image to the model and the file widget.
 
@@ -317,7 +317,7 @@ class ImagesController:
 
         Parameters
         ----------
-        file: str
+        file: Path
             The file path of a new image to be added
         hidden : Optional[bool]
             File name visibility

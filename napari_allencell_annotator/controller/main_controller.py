@@ -162,7 +162,13 @@ class MainController(QFrame):
                     if row_num == len(self.csv_annotation_values):
                         # all images have all annotations filled in, start annotating at last image
                         self.starting_row = row_num - 1
-                    self.images.load_from_csv(self.csv_annotation_values.keys(), shuffled)
+
+                    # original
+                    # self.images.load_from_csv(self.csv_annotation_values.keys(), shuffled)
+
+                    # temporary until refactoring path for annotation controller
+                    self.images.load_from_csv(list(map(lambda x: Path(x), self.csv_annotation_values.keys())), shuffled)
+
                     # keep track of if images are shuffled from now on:
                     self.images.view.shuffle.toggled.connect(self._shuffle_toggled)
                 # start at row 0 if annotation data was not used from csv
@@ -285,7 +291,13 @@ class MainController(QFrame):
         """
         self.annotating_shortcuts_on()
 
-        dct, shuffled = self.images.get_files_dict()
+        path_dct, shuffled = self.images.get_files_dict()
+
+        # temporary until refactoring path for annotation controller
+        dct = {}
+        for path in path_dct:
+            dct[str(path)] = path_dct[path]
+
         # dct is a dictionary file path -> [filename, fms]
         if shuffled:
             # remove file list if blind annotation
