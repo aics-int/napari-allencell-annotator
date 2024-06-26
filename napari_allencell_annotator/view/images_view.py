@@ -180,7 +180,17 @@ class ImagesView(QFrame):
             self.delete.setEnabled(False)
 
     def _display_img(self, current: FileItem, previous: FileItem) -> None:
-        """Display the current image in napari."""
+        """
+        Display the current image in napari.
+
+        Parameters
+        ----------
+        current: FileItem
+            Current file
+
+        previous: FileItem
+            Previous file
+        """
         self.viewer.layers.clear()
         if previous is not None:
             previous.unhighlight()
@@ -193,5 +203,12 @@ class ImagesView(QFrame):
                 self.alert("AICS Unsupported File Type")
 
     def update_num_files_label(self, num_files: int) -> None:
-        """Update num_files_label to show the current number of image files"""
+        """
+        Update num_files_label to show the number of image files
+
+        Parameters
+        ----------
+        num_files: int
+            The number of image files
+        """
         self.num_files_label.setText(f"Image files: {num_files}")
