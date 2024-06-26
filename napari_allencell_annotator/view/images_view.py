@@ -1,5 +1,3 @@
-from typing import Set
-
 from qtpy.QtWidgets import QFrame
 from qtpy.QtCore import Qt
 
@@ -8,7 +6,6 @@ from qtpy.QtWidgets import (
     QScrollArea,
     QGridLayout,
     QPushButton,
-    QDialog,
 )
 import napari
 from aicsimageio import AICSImage, exceptions
@@ -18,10 +15,8 @@ from napari_allencell_annotator.widgets.file_input import (
     FileInput,
     FileInputMode,
 )
-from napari_allencell_annotator.widgets.scrollable_popup import ScrollablePopup
 from napari_allencell_annotator.widgets.files_widget import FilesWidget, FileItem
 from napari_allencell_annotator._style import Style
-from napari_allencell_annotator.widgets.popup import Popup
 
 
 class ImagesView(QFrame):
@@ -39,6 +34,8 @@ class ImagesView(QFrame):
     -------
     alert(alert:str)
         Displays the alert message on the napari viewer
+    update_num_files_label(num_files:int)
+        Updates num_files_label to show the current number of image files
     """
 
     def __init__(self, viewer: napari.Viewer):
@@ -47,18 +44,16 @@ class ImagesView(QFrame):
         ----------
         viewer : napari.Viewer
             The napari viewer for the plugin
-        ctrl : ImagesController
-            The images controller
         """
         super().__init__()
 
         self.setStyleSheet(Style.get_stylesheet("main.qss"))
 
-        self.label = QLabel()
+        self.label: QLabel = QLabel()
         self.label.setAlignment(Qt.AlignCenter)
         self.label.setText("Images")
 
-        self.layout = QGridLayout()
+        self.layout: QGridLayout = QGridLayout()
         self.layout.addWidget(self.label, 0, 0, 1, 4)
 
         self.input_dir: FileInput
@@ -70,40 +65,42 @@ class ImagesView(QFrame):
         self.layout.addWidget(self.input_dir, 1, 0, 1, 2)
         self.layout.addWidget(self.input_file, 1, 2, 1, 2)
 
-        self.file_widget = FilesWidget()
+        self.file_widget: FilesWidget = FilesWidget()
 
-        self.scroll = QScrollArea()
+        self.scroll: QScrollArea = QScrollArea()
         self.scroll.setWidget(self.file_widget)
         self.scroll.setWidgetResizable(True)
         self.scroll.horizontalScrollBar().setEnabled(False)
         self.layout.addWidget(self.scroll, 2, 0, 10, 4)
 
-        self.shuffle = QPushButton("Shuffle and Hide")
+        self.num_files_label: QLabel = QLabel("Image files:")
+        self.layout.addWidget(self.num_files_label, 13, 0, 1, 4)
+
+        self.shuffle: QPushButton = QPushButton("Shuffle and Hide")
         self.shuffle.setCheckable(True)
 
         self.shuffle.setEnabled(False)
 
-        self.delete = QPushButton("Delete All")
+        self.delete: QPushButton = QPushButton("Delete All")
         self.delete.setEnabled(False)
 
-        self.layout.addWidget(self.shuffle, 13, 0, 1, 3)
-        self.layout.addWidget(self.delete, 13, 3, 1, 1)
+        self.layout.addWidget(self.shuffle, 14, 0, 1, 3)
+        self.layout.addWidget(self.delete, 14, 3, 1, 1)
 
         self.setLayout(self.layout)
 
-        self.viewer = viewer
+        self.viewer: napari.viewer = viewer
         self._connect_slots()
 
-    def _connect_slots(self):
+    def _connect_slots(self) -> None:
         """Connect signals to slots."""
         self.file_widget.files_selected.connect(self._toggle_delete)
         self.file_widget.files_added.connect(self._toggle_shuffle)
 
         self.shuffle.toggled.connect(self._update_shuff_text)
-        self.delete.clicked.connect(self._delete_clicked)
         self.file_widget.currentItemChanged.connect(self._display_img)
 
-    def _update_shuff_text(self, checked: bool):
+    def _update_shuff_text(self, checked: bool) -> None:
         """
         Update shuffle button text to reflect toggle state.
 
@@ -117,7 +114,7 @@ class ImagesView(QFrame):
         else:
             self.shuffle.setText("Shuffle and Hide")
 
-    def reset_buttons(self):
+    def reset_buttons(self) -> None:
         """
         Reset buttons to pre-annotation settings
 
@@ -128,23 +125,7 @@ class ImagesView(QFrame):
         self._toggle_shuffle(False)
         self.toggle_add(True)
 
-    def _delete_clicked(self):
-        """Ask user to approve a list of files to delete from the file list."""
-        if len(self.file_widget.checked) > 0:
-            msg: str = "Delete these files from the list?"
-            names: Set[str] = set()
-            for item in self.file_widget.checked:
-                names.add("--- " + item.file_path)
-            msg_box = ScrollablePopup(msg, names)
-            if msg_box.exec() == QDialog.Accepted:
-                self.file_widget.delete_checked()
-        else:
-            proceed: bool = Popup.make_popup("Remove all images?")
-            if proceed:
-                self.file_widget.clear_all()
-                self.reset_buttons()
-
-    def alert(self, alert_msg: str):
+    def alert(self, alert_msg: str) -> None:
         """
         Displays an error alert on the napari viewer.
 
@@ -155,7 +136,7 @@ class ImagesView(QFrame):
         """
         show_info(alert_msg)
 
-    def toggle_add(self, enable: bool):
+    def toggle_add(self, enable: bool) -> None:
         """
         Enables add file and add directory buttons.
 
@@ -167,7 +148,7 @@ class ImagesView(QFrame):
         self.input_dir.toggle(enable)
         self.input_file.toggle(enable)
 
-    def _toggle_delete(self, checked: bool):
+    def _toggle_delete(self, checked: bool) -> None:
         """
         Enable delete button when files are checked.
 
@@ -180,7 +161,7 @@ class ImagesView(QFrame):
         elif not checked:
             self.delete.setText("Delete All")
 
-    def _toggle_shuffle(self, files_added: bool):
+    def _toggle_shuffle(self, files_added: bool) -> None:
         """
         Enable shuffle button when files are added.
 
@@ -198,15 +179,35 @@ class ImagesView(QFrame):
             self.shuffle.setEnabled(False)
             self.delete.setEnabled(False)
 
-    def _display_img(self, current: FileItem, previous: FileItem):
-        """Display the current image in napari."""
+    def _display_img(self, current: FileItem, previous: FileItem) -> None:
+        """
+        Display the current image in napari.
+
+        Parameters
+        ----------
+        current: FileItem
+            Current file
+        previous: FileItem
+            Previous file
+        """
         self.viewer.layers.clear()
         if previous is not None:
             previous.unhighlight()
         if current is not None:
             try:
-                img = AICSImage(current.file_path)
+                img: AICSImage = AICSImage(current.file_path)
                 self.viewer.add_image(img.data)
                 current.highlight()
             except exceptions.UnsupportedFileFormatError:
                 self.alert("AICS Unsupported File Type")
+
+    def update_num_files_label(self, num_files: int) -> None:
+        """
+        Update num_files_label to show the number of image files
+
+        Parameters
+        ----------
+        num_files: int
+            The number of image files
+        """
+        self.num_files_label.setText(f"Image files: {num_files}")

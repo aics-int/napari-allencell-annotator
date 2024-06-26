@@ -521,6 +521,8 @@ class MainController(QFrame):
         if proceed:
             self._stop_annotating()
 
+        self.images.view.update_num_files_label(self.images.get_num_files())
+
     def _save(self):
         """Save and write current annotations."""
         self.annots.save_annotations()
