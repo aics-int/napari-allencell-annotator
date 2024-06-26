@@ -1,4 +1,4 @@
-from typing import Set, List, Dict
+from typing import Set, Dict
 from qtpy.QtWidgets import QListWidget
 from qtpy.QtCore import Signal
 

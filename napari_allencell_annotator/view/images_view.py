@@ -187,7 +187,6 @@ class ImagesView(QFrame):
         ----------
         current: FileItem
             Current file
-
         previous: FileItem
             Previous file
         """
