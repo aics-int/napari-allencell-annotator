@@ -12,7 +12,7 @@ from qtpy.QtWidgets import (
     QScrollArea,
     QHBoxLayout,
 )
-from psygnal._signal import Signal
+from qtpy.QtCore import Signal
 
 from napari_allencell_annotator.widgets.annotation_widget import AnnotationWidget
 

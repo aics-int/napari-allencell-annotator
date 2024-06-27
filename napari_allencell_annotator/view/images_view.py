@@ -1,3 +1,11 @@
+from pathlib import Path
+from random import random
+from typing import Optional
+
+from napari_allencell_annotator.constants.constants import SUPPORTED_FILE_TYPES
+
+from napari_allencell_annotator.widgets.file_scrollable_popup import FileScrollablePopup
+from napari_allencell_annotator.widgets.popup import Popup
 from qtpy.QtWidgets import QFrame
 from qtpy.QtCore import Qt
 
@@ -17,6 +25,7 @@ from napari_allencell_annotator.widgets.file_input import (
 )
 from napari_allencell_annotator.widgets.files_widget import FilesWidget, FileItem
 from napari_allencell_annotator._style import Style
+from napari_allencell_annotator.model.annotator_model import AnnotatorModel
 
 
 class ImagesView(QFrame):
@@ -38,14 +47,14 @@ class ImagesView(QFrame):
         Updates num_files_label to show the current number of image files
     """
 
-    def __init__(self, images_controller: ImagesController):
+    def __init__(self, annotator_model: AnnotatorModel, viewer: napari.Viewer):
         """
         Parameters
         ----------
         viewer : napari.Viewer
             The napari viewer for the plugin
         """
-        self._controller: ImagesController = images_controller
+        self._model = annotator_model
         super().__init__()
 
         self.setStyleSheet(Style.get_stylesheet("main.qss"))
@@ -96,10 +105,10 @@ class ImagesView(QFrame):
     def _connect_slots(self) -> None:
         """Connect signals to slots."""
 
-        self.input_dir.file_selected.connect(self._dir_selected)
-        self.input_file.file_selected.connect(self._controller.file_selected)
-        self.shuffle.clicked.connect(self._controller.shuffle_clicked)
-        self.delete.clicked.connect(self.controller.delete_clicked)
+        self.input_dir.dir_selected.connect(self._add_selected_dir_to_ui)
+        self.input_file.files_selected.connect(self._add_selected_files_to_ui)
+        self.shuffle.clicked.connect(self._handle_shuffle_clicked)
+        self.delete.clicked.connect(self._handle_delete_clicked)
         self.file_widget.files_selected.connect(self._toggle_delete)
         self.file_widget.files_added.connect(self._toggle_shuffle)
 
@@ -218,7 +227,7 @@ class ImagesView(QFrame):
         """
         self.num_files_label.setText(f"Image files: {num_files}")
 
-    def _dir_selected(self, dir_list: List[Path]) -> None:
+    def _add_selected_dir_to_ui(self, dir: Path) -> None:
         """
         Adds all files in a directory to the GUI.
 
@@ -227,18 +236,163 @@ class ImagesView(QFrame):
         dir_list : List[Path]
             The input list with dir[0] holding directory name.
         """
-        if dir_list is not None and len(dir_list) > 0:
-            d: Path = dir_list[0]
-            if len(os.listdir(d)) < 1:
-                self.view.alert("Folder is empty")
-            else:
-                for filename in [filename for filename in os.listdir(d) if not filename.startswith(".")]:
-
-                    file_path: Path = d / filename
-                    if self.is_supported(file_path):
-                        self.add_new_item(file_path)
-                    else:
-                        self.view.alert("Unsupported file type(s)")
-
+        all_files_in_dir: list[Path] = list(dir.glob('*.*'))
+        if len(all_files_in_dir) < 1:
+            self.alert("Folder is empty")
         else:
-            self.view.alert("No selection provided")
+            self._add_selected_files_to_ui(all_files_in_dir)
+
+    def add_new_item(self, file: Path, hidden: Optional[bool] = False) -> None:
+        """
+        Add a new image to the model and the file widget.
+
+        Optional hidden parameter toggles file name visibility. This function emits a files_added signal when this is
+        the first file added and updates num_files_label.
+
+        Parameters
+        ----------
+        file: Path
+            The file path of a new image to be added
+        hidden : Optional[bool]
+            File name visibility
+        """
+        self.file_widget.add_item(file, hidden)
+
+        if self._model.get_num_images() == 1: # TODO: WHY DO WE NEED THIS?
+            self.file_widget.files_added.emit(True)
+
+        self.update_num_files_label(self._model.get_num_images())
+
+    def _add_selected_files_to_ui(self, file_list: list[Path]) -> None:
+        """
+        Adds all selected files to the GUI.
+
+        Parameters
+        ----------
+        file_list : List[Path]
+            The list of files
+        """
+        # ignore hidden files and directories
+        for file_path in [file for file in file_list if not file.name.startswith(".") and file.is_file()]:
+            if self.is_supported(file_path):
+                if file_path not in self._model.get_all_images():
+                    self.add_new_item(file_path)
+            else:
+                self.alert("Unsupported file type(s)")
+
+    def _handle_shuffle_clicked(self, checked: bool) -> None:
+        """
+       Shuffle file order and hide file names if checked.
+       Return files to original order and names if unchecked.
+
+       Side effect: set file_widget.shuffled_files_dict to a new order dict or {} if list is unshuffled.
+
+       Parameters
+       ----------
+       checked : bool
+           Toggle state of the shuffle button.
+       """
+        if checked:
+            self._shuffle_file_order()
+        else:
+            self.toggle_add(True)
+            self.file_widget.set_shuffled(False)
+            self.view.file_widget.unhide_all()
+
+    def _shuffle_file_order(self):
+        files: list[Path] = self._model.get_all_images()
+        if len(files) > 0:
+            self.toggle_add(False)
+            self.set_shuffled(True)
+            # clear file widget
+            self.file_widget.clear_for_shuff()
+            self._model.set_all_images(random.shuffle(files))
+            for file in self._model.get_all_images():
+                # add with shuffled order
+                self.add_new_item(file, hidden=True)
+
+    def _handle_delete_clicked(self) -> None:
+        """
+        Ask user to approve a list of files to delete and remove image files from the model and the file widget.
+
+        If at least one file is checked, delete only selected files. Otherwise, delete all files.
+        """
+        if len(self.file_widget.checked) > 0:
+            proceed: bool = FileScrollablePopup.make_popup(
+                "Delete these files from the list?", self.file_widget.checked
+            )
+            if proceed:
+                self.delete_checked()
+        else:
+            proceed: bool = Popup.make_popup("Remove all images?")
+            if proceed:
+                self.clear_all()
+                self.reset_buttons()
+
+
+    def delete_checked(self) -> None:
+        """
+        Delete the checked items from the model and the file widget.
+        """
+        for item in self.file_widget.checked:
+            self.remove_image(item)
+
+        self.view.file_widget.checked.clear()
+        self.view.file_widget.files_selected.emit(False) # TODO why is this emitted
+
+    def remove_image(self, item: FileItem) -> None:
+        """
+        Remove an image file from the model and the file widget.
+
+        This function emits a files_added signal when the item to remove is the only item and updates num_files_label.
+
+        Parameters
+        ----------
+        item: FileItem
+            An item to be removed.
+        """
+        if item.file_path in self._model.get_all_images():
+            self._model.remove_image(item)
+            self.file_widget.remove_item(item)
+
+            if self._model.get_num_images() == 0:
+                self.file_widget.files_added.emit(False)# TODO why is this emitted again here
+
+            self.view.update_num_files_label(self._model.get_num_images())
+
+    def clear_all(self) -> None:
+        """
+        Clear all image data from the model and the file widget.
+        """
+        self._model.set_all_images([]) # clear model
+        self.file_widget.clear_all() # clear widget
+        self.view.update_num_files_label(self._model.get_num_files()) # update label
+
+    @staticmethod
+    def is_supported(file_path: Path) -> bool:
+        """
+        Check if the provided file name is a supported file.
+
+        This function checks if the file name extension is in
+        the supported file types files.
+
+        Parameters
+        ----------
+        file_path : Path
+            Name of the file to check.
+
+        Returns
+        -------
+        bool
+            True if the file is supported.
+        """
+        if file_path is None:
+            return False
+        extension: str = file_path.suffix
+        if extension in SUPPORTED_FILE_TYPES:
+            return True
+        else:
+            return False
+
+
+

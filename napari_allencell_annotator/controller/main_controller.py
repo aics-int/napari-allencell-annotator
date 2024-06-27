@@ -2,14 +2,16 @@ import csv
 import itertools
 from pathlib import Path
 
+from napari_allencell_annotator.constants.constants import SUPPORTED_FILE_TYPES
+
+from napari_allencell_annotator.view.images_view import ImagesView
 from qtpy import QtCore
 from qtpy.QtWidgets import QFrame, QShortcut
 from qtpy.QtWidgets import QVBoxLayout, QDialog
 from qtpy.QtGui import QKeySequence
 
-from napari_allencell_annotator.controller.images_controller import ImagesController
-
 from napari_allencell_annotator.controller.annotator_controller import AnnotatorController
+from napari_allencell_annotator.model.annotator_model import AnnotatorModel
 from napari_allencell_annotator.widgets.create_dialog import CreateDialog
 from napari_allencell_annotator.widgets.template_item import ItemType, TemplateItem
 from napari_allencell_annotator.widgets.popup import Popup
@@ -40,11 +42,10 @@ class MainView(QFrame):
         self._model = AnnotatorModel()
 
         # ImagesView and Controller
-        self._images_controller = ImagesController(viewer, self._model)
-        self._images_view = ImagesView(self._images_controller)
+        self._images_view = ImagesView(self._model, self.napari)
         self._images_view.show()
 
-        self.annots = AnnotatorController(self.napari, self._model)
+        self.annots = AnnotatorController(self.napari)
 
         # set layout and add sub views
         self.setLayout(QVBoxLayout())
@@ -255,7 +256,7 @@ class MainView(QFrame):
 
         Alert user if there are no files added.
         """
-        if self.images.get_num_files() is None or self.images.get_num_files() < 1:
+        if self.images.get_num_images() is None or self.images.get_num_images() < 1:
             self.images.view.alert("Can't Annotate Without Adding Images")
         else:
             proceed: bool = Popup.make_popup(
@@ -315,12 +316,12 @@ class MainView(QFrame):
             for key in self.csv_annotation_values:
                 temp_csv_annotation_values[Path(key)] = self.csv_annotation_values[key]
 
-            self.annots.start_annotating(self.images.get_num_files(), temp_csv_annotation_values, shuffled)
+            self.annots.start_annotating(self.images.get_num_images(), temp_csv_annotation_values, shuffled)
 
         else:
             # start annotating from beginning with just file info
             self.images.start_annotating()
-            self.annots.start_annotating(self.images.get_num_files(), dct, shuffled)
+            self.annots.start_annotating(self.images.get_num_images(), dct, shuffled)
 
         # remove this
         self.annots.set_curr_img(self.images.curr_img_dict())
@@ -546,7 +547,7 @@ class MainView(QFrame):
         if proceed:
             self._stop_annotating()
 
-        self.images.view.update_num_files_label(self.images.get_num_files())
+        self.images.view.update_num_files_label(self.images.get_num_images())
 
     def _save(self):
         """Save and write current annotations."""
@@ -569,3 +570,4 @@ class MainView(QFrame):
                 if item is None or item == "":
                     return True
         return False
+

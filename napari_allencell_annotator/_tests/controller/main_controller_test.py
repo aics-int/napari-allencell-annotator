@@ -300,33 +300,33 @@ class TestMainController:
         self._controller.images.view.alert.assert_not_called()
 
     def test_start_annotating_clicked_none(self):
-        self._controller.images.get_num_files = MagicMock(return_value=None)
+        self._controller.images.get_num_images = MagicMock(return_value=None)
 
         self._controller._start_annotating_clicked()
-        self._controller.images.get_num_files.assert_called_once()
+        self._controller.images.get_num_images.assert_called_once()
         self._controller.images.view.alert.assert_called_once_with("Can't Annotate Without Adding Images")
 
     def test_start_annotating_clicked_zero(self):
-        self._controller.images.get_num_files = MagicMock(return_value=0)
+        self._controller.images.get_num_images = MagicMock(return_value=0)
 
         self._controller._start_annotating_clicked()
-        assert len(self._controller.images.get_num_files.mock_calls) == 2
+        assert len(self._controller.images.get_num_images.mock_calls) == 2
         self._controller.images.view.alert.assert_called_once_with("Can't Annotate Without Adding Images")
 
     def test_start_annotating_clicked_true(self):
-        self._controller.images.get_num_files = MagicMock(return_value=1)
+        self._controller.images.get_num_images = MagicMock(return_value=1)
 
         Popup.make_popup.return_value = True
         self._controller._start_annotating_clicked()
-        assert len(self._controller.images.get_num_files.mock_calls) == 2
+        assert len(self._controller.images.get_num_images.mock_calls) == 2
         self._controller.images.view.alert.assert_not_called()
         self._controller.annots.view.csv_input.simulate_click.assert_called_once_with()
 
     def test_start_annotating_clicked_false(self):
-        self._controller.images.get_num_files.return_value = 1
+        self._controller.images.get_num_images.return_value = 1
         Popup.make_popup.return_value = False
         self._controller._start_annotating_clicked()
-        assert len(self._controller.images.get_num_files.mock_calls) == 2
+        assert len(self._controller.images.get_num_images.mock_calls) == 2
         self._controller.images.view.alert.assert_not_called()
         self._controller.annots.view.csv_input.simulate_click.assert_not_called()
 
@@ -467,7 +467,7 @@ class TestMainController:
         self._controller._fix_csv_annotations.assert_called_once_with({"filepath.png": ["filepath", ""]})
         self._controller.images.start_annotating.assert_called_once_with(0)
         self._controller.annots.start_annotating.assert_called_once_with(
-            self._controller.images.get_num_files(), self._controller.csv_annotation_values, True
+            self._controller.images.get_num_images(), self._controller.csv_annotation_values, True
         )
         self._controller.annots.set_curr_img.assert_called_once_with(self._controller.images.curr_img_dict())
         self._controller.images.view.file_widget.currentItemChanged.connect.assert_not_called()
@@ -487,7 +487,7 @@ class TestMainController:
         self._controller.images.start_annotating.assert_called_once_with()
 
         self._controller.annots.start_annotating.assert_called_once_with(
-            self._controller.images.get_num_files(), {"filepath.png": ["filepath", ""]}, False
+            self._controller.images.get_num_images(), {"filepath.png": ["filepath", ""]}, False
         )
         self._controller.annots.set_curr_img.assert_called_once_with(self._controller.images.curr_img_dict())
         self._controller.images.view.file_widget.currentItemChanged.connect.assert_called_once()

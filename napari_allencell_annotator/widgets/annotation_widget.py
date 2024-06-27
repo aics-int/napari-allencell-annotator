@@ -1,7 +1,7 @@
 from typing import Dict, Any
 
 from qtpy.QtWidgets import QListWidget, QAbstractItemView
-from psygnal._signal import Signal
+from qtpy.QtCore import Signal
 
 from napari_allencell_annotator.widgets.annotation_item import AnnotationItem
 from napari_allencell_annotator._style import Style

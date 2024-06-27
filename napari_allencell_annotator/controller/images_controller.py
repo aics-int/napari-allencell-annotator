@@ -300,28 +300,6 @@ class ImagesController:
 
         self.view.update_num_files_label(self.model.get_num_files())
 
-    def add_new_item(self, file: Path, hidden: Optional[bool] = False) -> None:
-        """
-        Add a new image to the model and the file widget.
-
-        Optional hidden parameter toggles file name visibility. This function emits a files_added signal when this is
-        the first file added and updates num_files_label.
-
-        Parameters
-        ----------
-        file: Path
-            The file path of a new image to be added
-        hidden : Optional[bool]
-            File name visibility
-        """
-        if file not in self.model.get_files_dict().keys():
-            self.model.add_item(file)
-            self.view.file_widget.add_item(file, hidden)
-
-            if self.model.get_num_files() == 1:
-                self.view.file_widget.files_added.emit(True)
-
-            self.view.update_num_files_label(self.model.get_num_files())
 
     def delete_clicked(self) -> None:
         """
