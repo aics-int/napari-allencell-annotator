@@ -1,5 +1,5 @@
 from pathlib import Path
-from random import random
+import random
 from typing import Optional
 
 from napari_allencell_annotator.constants.constants import SUPPORTED_FILE_TYPES
@@ -257,6 +257,7 @@ class ImagesView(QFrame):
             File name visibility
         """
         self.file_widget.add_item(file, hidden)
+        self._model.add_image(file)
 
         if self._model.get_num_images() == 1: # TODO: WHY DO WE NEED THIS?
             self.file_widget.files_added.emit(True)
@@ -297,19 +298,19 @@ class ImagesView(QFrame):
         else:
             self.toggle_add(True)
             self.file_widget.set_shuffled(False)
-            self.view.file_widget.unhide_all()
+            self.file_widget.unhide_all()
 
     def _shuffle_file_order(self):
         files: list[Path] = self._model.get_all_images()
         if len(files) > 0:
             self.toggle_add(False)
-            self.set_shuffled(True)
             # clear file widget
             self.file_widget.clear_for_shuff()
-            self._model.set_all_images(random.shuffle(files))
+            random.shuffle(files)
+            self._model.set_all_images(files)
             for file in self._model.get_all_images():
                 # add with shuffled order
-                self.add_new_item(file, hidden=True)
+                self.file_widget.add_item(file)
 
     def _handle_delete_clicked(self) -> None:
         """
@@ -337,8 +338,8 @@ class ImagesView(QFrame):
         for item in self.file_widget.checked:
             self.remove_image(item)
 
-        self.view.file_widget.checked.clear()
-        self.view.file_widget.files_selected.emit(False) # TODO why is this emitted
+        self.file_widget.checked.clear()
+        self.file_widget.files_selected.emit(False) # TODO why is this emitted
 
     def remove_image(self, item: FileItem) -> None:
         """
@@ -352,13 +353,13 @@ class ImagesView(QFrame):
             An item to be removed.
         """
         if item.file_path in self._model.get_all_images():
-            self._model.remove_image(item)
+            self._model.remove_image(item.file_path)
             self.file_widget.remove_item(item)
 
             if self._model.get_num_images() == 0:
                 self.file_widget.files_added.emit(False)# TODO why is this emitted again here
 
-            self.view.update_num_files_label(self._model.get_num_images())
+            self.update_num_files_label(self._model.get_num_images())
 
     def clear_all(self) -> None:
         """
@@ -366,7 +367,7 @@ class ImagesView(QFrame):
         """
         self._model.set_all_images([]) # clear model
         self.file_widget.clear_all() # clear widget
-        self.view.update_num_files_label(self._model.get_num_files()) # update label
+        self.update_num_files_label(self._model.get_num_images()) # update label
 
     @staticmethod
     def is_supported(file_path: Path) -> bool:

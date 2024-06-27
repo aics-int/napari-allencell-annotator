@@ -25,7 +25,7 @@ class FileScrollablePopup:
         """
         names: Set[str] = set()
         for item in checked_files:
-            names.add("--- " + item.get_file_path_str())
+            names.add(item.file_path.name)
         msg_box: ScrollablePopup = ScrollablePopup(msg, names)
         return_value: int = msg_box.exec()
         if return_value == QDialog.Accepted:

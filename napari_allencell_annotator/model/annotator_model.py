@@ -5,8 +5,6 @@ class AnnotatorModel:
         # Stores annotations, dictionary of Path -> dict of annotations key/value
         self._annotations: dict[Path, dict[str|any]] = dict()
         self._added_images: list[Path] = [] # list of paths of added images
-        self._shuffled_images: list[Path] = []
-
     def add_image(self, file_item: Path) -> None:
         self._added_images.append(file_item)
 
