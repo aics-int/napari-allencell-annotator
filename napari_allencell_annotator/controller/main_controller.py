@@ -41,7 +41,7 @@ class MainView(QFrame):
         self.annots = AnnotatorController(self.napari)
 
         # set layout and add sub views
-        self.setLayout(QVBoxLayout)
+        self.setLayout(QVBoxLayout())
         self.layout().addWidget(self.images.view, stretch=1)
         self.layout().addWidget(self.annots.view, stretch=1)
 
@@ -271,8 +271,8 @@ class MainView(QFrame):
             self.has_new_shuffled_order = None
         if not self.images.view.file_widget.shuffled:
             self.images.view.file_widget.currentItemChanged.disconnect(self._image_selected)
-        self.layout.addWidget(self.images.view, stretch=1)
-        self.layout.addWidget(self.annots.view, stretch=1)
+        self.layout().addWidget(self.images.view, stretch=1)
+        self.layout().addWidget(self.annots.view, stretch=1)
         self.images.view.show()
         self.annots.stop_annotating()
         self.images.stop_annotating()
@@ -294,7 +294,7 @@ class MainView(QFrame):
         # dct is a dictionary file path -> [filename, fms]
         if shuffled:
             # remove file list if blind annotation
-            self.layout.removeWidget(self.images.view)
+            self.layout().removeWidget(self.images.view)
             self.images.view.hide()
 
         if self.csv_annotation_values is not None and len(self.csv_annotation_values) > 0:
