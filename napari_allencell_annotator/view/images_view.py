@@ -96,7 +96,7 @@ class ImagesView(QFrame):
     def _connect_slots(self) -> None:
         """Connect signals to slots."""
 
-        self.input_dir.file_selected.connect(self._controller.dir_selected)
+        self.input_dir.file_selected.connect(self._dir_selected)
         self.input_file.file_selected.connect(self._controller.file_selected)
         self.shuffle.clicked.connect(self._controller.shuffle_clicked)
         self.delete.clicked.connect(self.controller.delete_clicked)
@@ -217,3 +217,28 @@ class ImagesView(QFrame):
             The number of image files
         """
         self.num_files_label.setText(f"Image files: {num_files}")
+
+    def _dir_selected(self, dir_list: List[Path]) -> None:
+        """
+        Adds all files in a directory to the GUI.
+
+        Parameters
+        ----------
+        dir_list : List[Path]
+            The input list with dir[0] holding directory name.
+        """
+        if dir_list is not None and len(dir_list) > 0:
+            d: Path = dir_list[0]
+            if len(os.listdir(d)) < 1:
+                self.view.alert("Folder is empty")
+            else:
+                for filename in [filename for filename in os.listdir(d) if not filename.startswith(".")]:
+
+                    file_path: Path = d / filename
+                    if self.is_supported(file_path):
+                        self.add_new_item(file_path)
+                    else:
+                        self.view.alert("Unsupported file type(s)")
+
+        else:
+            self.view.alert("No selection provided")

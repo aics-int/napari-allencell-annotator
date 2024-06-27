@@ -24,8 +24,7 @@ class FileInput(QWidget):
         initial_text (str): text to display in the widget before a file has been selected
     """
 
-    file_selected: Signal = Signal(list)
-    selected_file: Optional[List[Path]] = None
+    file_selected: Signal = Signal(Path)
 
     def __init__(
         self,
@@ -63,7 +62,7 @@ class FileInput(QWidget):
         self._input_btn.setEnabled(enabled)
 
     def _select_file(self) -> None:  # pragma: no-cover
-        file_path: Optional[List[str]]
+        file_path: Optional[Path] = None
         if self._mode == FileInputMode.FILE:
             file_path, _ = QFileDialog.getOpenFileNames(
                 self,
@@ -76,10 +75,6 @@ class FileInput(QWidget):
                 "Select a directory",
                 options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
             )
-            if len(dir_path_str) > 0:
-                file_path = [dir_path_str]
-            else:
-                file_path = None
         elif self._mode == FileInputMode.CSV:
             file_path_str: str
             file_path_str, _ = QFileDialog.getSaveFileName(
@@ -88,10 +83,6 @@ class FileInput(QWidget):
                 filter="CSV Files (*.csv)",
                 options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
             )
-            if file_path_str is None or file_path_str == "":
-                file_path = None
-            else:
-                file_path = [file_path_str]
         elif self._mode == FileInputMode.JSON:
             file_path_str: str
             file_path_str, _ = QFileDialog.getSaveFileName(
@@ -100,10 +91,6 @@ class FileInput(QWidget):
                 filter="JSON Files (*.json)",
                 options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
             )
-            if file_path_str is None or file_path_str == "":
-                file_path = None
-            else:
-                file_path = [file_path_str]
         else:
             # JSONCSV
             file_path_str: str
@@ -114,15 +101,7 @@ class FileInput(QWidget):
                 options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
             )
 
-            if file_path_str is None or file_path_str == "":
-                file_path = None
-            else:
-                file_path = [file_path_str]
-
         if file_path:
-            file_path_obj: List[Path] = self.convert_to_path_object(file_path)
-            self.selected_file = file_path_obj
-            self.file_selected.emit(file_path_obj)
-
-    def convert_to_path_object(self, file_path_str: List[str]) -> List[Path]:
-        return list(map(lambda x: Path(x), file_path_str))
+            # file_path_obj: List[Path] = self.convert_to_path_object(file_path)
+            # self.selected_file = file_path_obj
+            self.file_selected.emit(Path(file_path))
