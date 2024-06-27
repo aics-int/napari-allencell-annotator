@@ -38,13 +38,14 @@ class ImagesView(QFrame):
         Updates num_files_label to show the current number of image files
     """
 
-    def __init__(self, viewer: napari.Viewer):
+    def __init__(self, images_controller: ImagesController):
         """
         Parameters
         ----------
         viewer : napari.Viewer
             The napari viewer for the plugin
         """
+        self._controller: ImagesController = images_controller
         super().__init__()
 
         self.setStyleSheet(Style.get_stylesheet("main.qss"))
@@ -94,6 +95,11 @@ class ImagesView(QFrame):
 
     def _connect_slots(self) -> None:
         """Connect signals to slots."""
+
+        self.input_dir.file_selected.connect(self._controller.dir_selected)
+        self.input_file.file_selected.connect(self._controller.file_selected)
+        self.shuffle.clicked.connect(self._controller.shuffle_clicked)
+        self.delete.clicked.connect(self.controller.delete_clicked)
         self.file_widget.files_selected.connect(self._toggle_delete)
         self.file_widget.files_added.connect(self._toggle_shuffle)
 

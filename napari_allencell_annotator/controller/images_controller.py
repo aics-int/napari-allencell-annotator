@@ -69,18 +69,10 @@ class ImagesController:
         Asks user to approve a list of files to delete and removes image files from the model and the file widget.
     """
 
-    def __init__(self, viewer: napari.Viewer):
-        self.view: ImagesView = ImagesView(viewer)
-        self.view.show()
-        self._connect_slots()
+    def __init__(self, viewer: napari.Viewer, model: AnnotatorModel):
+        self._model = model
         self.model: ImagesModel = ImagesModel()
-
-    def _connect_slots(self) -> None:
-        """Connects signals to slots."""
-        self.view.input_dir.file_selected.connect(self._dir_selected_evt)
-        self.view.input_file.file_selected.connect(self._file_selected_evt)
-        self.view.shuffle.clicked.connect(self._shuffle_clicked)
-        self.view.delete.clicked.connect(self._delete_clicked)
+        self._connect_slots()
 
     def load_from_csv(self, files: List[Path], shuffled: bool) -> None:
         """
@@ -115,7 +107,7 @@ class ImagesController:
         """
         return self.model.get_files_dict(), self.view.file_widget.shuffled
 
-    def _shuffle_clicked(self, checked: bool) -> None:
+    def shuffle_clicked(self, checked: bool) -> None:
         """
         Shuffle file order and hide file names if checked.
         Return files to original order and names if unchecked.
@@ -170,7 +162,7 @@ class ImagesController:
         else:
             return False
 
-    def _dir_selected_evt(self, dir_list: List[Path]) -> None:
+    def dir_selected(self, dir_list: List[Path]) -> None:
         """
         Adds all files in a directory to the GUI.
 
@@ -195,7 +187,7 @@ class ImagesController:
         else:
             self.view.alert("No selection provided")
 
-    def _file_selected_evt(self, file_list: List[Path]) -> None:
+    def file_selected(self, file_list: List[Path]) -> None:
         """
         Adds all selected files to the GUI.
 
@@ -331,7 +323,7 @@ class ImagesController:
 
             self.view.update_num_files_label(self.model.get_num_files())
 
-    def _delete_clicked(self) -> None:
+    def delete_clicked(self) -> None:
         """
         Ask user to approve a list of files to delete and remove image files from the model and the file widget.
 

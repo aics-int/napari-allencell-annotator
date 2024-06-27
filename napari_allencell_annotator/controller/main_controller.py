@@ -37,12 +37,18 @@ class MainView(QFrame):
         super().__init__()
         # init viewer and parts of the plugin
         self.napari = napari_viewer
-        self.images = ImagesController(self.napari)
-        self.annots = AnnotatorController(self.napari)
+        self._model = AnnotatorModel()
+
+        # ImagesView and Controller
+        self._images_controller = ImagesController(viewer, self._model)
+        self._images_view = ImagesView(self._images_controller)
+        self._images_view.show()
+
+        self.annots = AnnotatorController(self.napari, self._model)
 
         # set layout and add sub views
         self.setLayout(QVBoxLayout())
-        self.layout().addWidget(self.images.view, stretch=1)
+        self.layout().addWidget(self._images_view, stretch=1)
         self.layout().addWidget(self.annots.view, stretch=1)
 
         # key shortcuts
