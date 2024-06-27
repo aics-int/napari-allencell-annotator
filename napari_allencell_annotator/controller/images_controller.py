@@ -242,7 +242,7 @@ class ImagesController:
         """
         item: Optional[QListWidgetItem] = self.view.file_widget.currentItem()
         info: Dict[str, str] = {
-            "File Path": item.get_file_path_str(),
+            "File Path": item.file_path,
             "Row": str(self.view.file_widget.get_curr_row()),
         }
         return info
