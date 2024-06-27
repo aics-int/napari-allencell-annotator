@@ -162,7 +162,8 @@ class MainController(QFrame):
                     if row_num == len(self.csv_annotation_values):
                         # all images have all annotations filled in, start annotating at last image
                         self.starting_row = row_num - 1
-                    self.images.load_from_csv(self.csv_annotation_values.keys(), shuffled)
+                    # remove this
+                    self.images.load_from_csv(list(map(lambda x: Path(x), self.csv_annotation_values.keys())), shuffled)
                     # keep track of if images are shuffled from now on:
                     self.images.view.shuffle.toggled.connect(self._shuffle_toggled)
                 # start at row 0 if annotation data was not used from csv
@@ -234,7 +235,8 @@ class MainController(QFrame):
             extension = file_path.suffix
             if extension != ".csv":
                 file_path = file_path.with_suffix(".csv")
-            self.annots.set_csv_path(file_path)
+            # remove this
+            self.annots.set_csv_path(str(file_path))
             self._setup_annotating()
 
     def _start_annotating_clicked(self):
@@ -299,12 +301,19 @@ class MainController(QFrame):
 
             self.images.start_annotating(self.starting_row)
 
-            self.annots.start_annotating(self.images.get_num_files(), self.csv_annotation_values, shuffled)
+            # remove this
+            temp_csv_annotation_values = {}
+            for key in self.csv_annotation_values:
+                temp_csv_annotation_values[Path(key)] = self.csv_annotation_values[key]
+
+            self.annots.start_annotating(self.images.get_num_files(), temp_csv_annotation_values, shuffled)
 
         else:
             # start annotating from beginning with just file info
             self.images.start_annotating()
             self.annots.start_annotating(self.images.get_num_files(), dct, shuffled)
+
+        # remove this
         self.annots.set_curr_img(self.images.curr_img_dict())
         if not shuffled:
             # alter images view to fit annotation mode
@@ -411,7 +420,7 @@ class MainController(QFrame):
                 new_starting_row_found = True
             for file in list(dct_keys)[len(new_csv_annotations) : :]:
                 # remove this
-                new_csv_annotations[str(file)] = dct[file]
+                new_csv_annotations[file] = dct[file]
 
         if not new_starting_row_found:
             self.starting_row = len(new_csv_annotations) - 1
@@ -446,7 +455,8 @@ class MainController(QFrame):
             if new_file not in alr_anntd_keys:
                 # only possible to encounter a new file in middle when shuffling has happened
                 # file added to dct
-                new_csv_annotations[new_file] = dct[new_file]
+                # remove this
+                new_csv_annotations[new_file] = dct[Path(new_file)]
 
                 if not new_starting_row_found:
                     # just added a new, unannotated file
