@@ -104,9 +104,8 @@ class ImagesView(QFrame):
 
     def _connect_slots(self) -> None:
         """Connect signals to slots."""
-
         self.input_dir.dir_selected.connect(self._add_selected_dir_to_ui)
-        self.input_file.files_selected.connect(self._add_selected_files_to_ui)
+        self.input_file.files_selected.connect(self._add_selected_files)
         self.shuffle.clicked.connect(self._handle_shuffle_clicked)
         self.delete.clicked.connect(self._handle_delete_clicked)
         self.file_widget.files_selected.connect(self._toggle_delete)
@@ -152,6 +151,7 @@ class ImagesView(QFrame):
         show_info(alert_msg)
 
     def toggle_add(self, enable: bool) -> None:
+        # TODO create function enable_add_buttons
         """
         Enables add file and add directory buttons.
 
@@ -205,12 +205,13 @@ class ImagesView(QFrame):
         previous: FileItem
             Previous file
         """
+        # TODO: viewer code, move to viewer, create a fake viewer
         self.viewer.layers.clear()
         if previous is not None:
             previous.unhighlight()
         if current is not None:
             try:
-                img: AICSImage = AICSImage(current.file_path)
+                img: AICSImage = AICSImage(current.file_path) #TODO update to bioio
                 self.viewer.add_image(img.data)
                 current.highlight()
             except exceptions.UnsupportedFileFormatError:
@@ -236,11 +237,12 @@ class ImagesView(QFrame):
         dir_list : List[Path]
             The input list with dir[0] holding directory name.
         """
+        # TODO file editing code: create file utility to do this
         all_files_in_dir: list[Path] = list(dir.glob('*.*'))
         if len(all_files_in_dir) < 1:
             self.alert("Folder is empty")
         else:
-            self._add_selected_files_to_ui(all_files_in_dir)
+            self._add_selected_files(all_files_in_dir)
 
     def add_new_item(self, file: Path, hidden: Optional[bool] = False) -> None:
         """
@@ -257,16 +259,15 @@ class ImagesView(QFrame):
             File name visibility
         """
         self.file_widget.add_item(file, hidden)
-        self._model.add_image(file)
-
-        if self._model.get_num_images() == 1: # TODO: WHY DO WE NEED THIS?
+        self._model.add_image(file) # update model
+        if self._model.get_num_images() == 1: # TODO: WHY DO WE NEED THIS?, rethink signal organization so we fire from model and have UI react to it
             self.file_widget.files_added.emit(True)
 
         self.update_num_files_label(self._model.get_num_images())
 
-    def _add_selected_files_to_ui(self, file_list: list[Path]) -> None:
+    def _add_selected_files(self, file_list: list[Path]) -> None:
         """
-        Adds all selected files to the GUI.
+        Adds all selected files to the GUI and update state
 
         Parameters
         ----------
@@ -274,6 +275,7 @@ class ImagesView(QFrame):
             The list of files
         """
         # ignore hidden files and directories
+        # TODO: put list comprehension into a file utility class
         for file_path in [file for file in file_list if not file.name.startswith(".") and file.is_file()]:
             if self.is_supported(file_path):
                 if file_path not in self._model.get_all_images():
@@ -301,6 +303,7 @@ class ImagesView(QFrame):
             self.file_widget.unhide_all()
 
     def _shuffle_file_order(self):
+        # TODO: set shuffled state in model, file widget clears and repopulates on its own.
         files: list[Path] = self._model.get_all_images()
         if len(files) > 0:
             self.toggle_add(False)
@@ -318,6 +321,7 @@ class ImagesView(QFrame):
 
         If at least one file is checked, delete only selected files. Otherwise, delete all files.
         """
+        # TODO can we do this with signals instead?
         if len(self.file_widget.checked) > 0:
             proceed: bool = FileScrollablePopup.make_popup(
                 "Delete these files from the list?", self.file_widget.checked
@@ -352,6 +356,8 @@ class ImagesView(QFrame):
         item: FileItem
             An item to be removed.
         """
+        #TODO when we delete from the model, connect file widget so that it deletes that entry itself without
+        # us explicitly calling remove_item on it
         if item.file_path in self._model.get_all_images():
             self._model.remove_image(item.file_path)
             self.file_widget.remove_item(item)
