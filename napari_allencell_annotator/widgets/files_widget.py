@@ -1,7 +1,7 @@
 from typing import Set
 from qtpy.QtWidgets import QListWidget
 from qtpy.QtCore import Signal
-
+from pathlib import Path
 from napari_allencell_annotator.widgets.file_item import FileItem
 
 
@@ -15,9 +15,6 @@ class FilesWidget(QListWidget):
         a boolean, True if list is currently shuffled
     checked : Set[FileItem]
         a set of items that are currently checked
-    files_dict : Dict[str , List[str]]
-        a dictionary of file path -> [File Name, FMS]
-        stores file order in insertion order of keys
 
     Methods
     -------
@@ -27,11 +24,11 @@ class FilesWidget(QListWidget):
         Displays the file names on all files in the list.
     clear_all()
         Clears all image data in the file widget.
-    clear_for_shuff() -> List[str]
+    clear_for_shuff()
         Clears the list display.
     get_curr_row() -> int
         Returns current image row.
-    add_item(file: str, hidden: bool)
+    add_item(file: Path, hidden: bool)
         Adds a file to the file widget.
     remove_item(item: ListItem)
         Removes the item from the file widget.
@@ -103,17 +100,13 @@ class FilesWidget(QListWidget):
 
         This function clears all displayed, checked, and current items, but keeps the files_dict.
 
-        Returns
-        -------
-         Dict[str, List[str]]
-            file dictionary file path -> [file name, fms].
         """
         self._shuffled = True
         self.setCurrentItem(None)
         self.checked = set()
         self.clear()
 
-    def add_item(self, file: str, hidden: bool = False) -> None:
+    def add_item(self, file: Path, hidden: bool = False) -> None:
         """
         Add a file to the file widget.
 
@@ -121,7 +114,7 @@ class FilesWidget(QListWidget):
 
         Params
         -------
-        file: str
+        file: Path
             a file path.
         hidden: bool
             file name visibility.

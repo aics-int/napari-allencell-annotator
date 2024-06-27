@@ -80,7 +80,7 @@ class MainController(QFrame):
             self.annots.set_annot_json_data(dlg.new_annot_dict)
             self.annots.start_viewing()
 
-    def _json_write_selected_evt(self, file_list: List[str]):
+    def _json_write_selected_evt(self, file_list: List[Path]):
         """
         Set json file name and write the annotations to the file.
 
@@ -97,13 +97,13 @@ class MainController(QFrame):
             self.images.view.alert("No selection provided")
         else:
             file_path = file_list[0]
-            extension = Path(file_path).suffix
+            extension = file_path.suffix
             if extension != ".json":
-                file_path = file_path + ".json"
+                file_path = file_path.with_suffix(".json")
             self.annots.view.save_json_btn.setEnabled(False)
             self.annots.write_json(file_path)
 
-    def _csv_json_import_selected_evt(self, file_list: List[str]):
+    def _csv_json_import_selected_evt(self, file_list: List[Path]):
         """
         Read annotations from csv or json file. Read/Save csv images and annotation data if user chooses to.
 
@@ -120,10 +120,10 @@ class MainController(QFrame):
         else:
             file_path = file_list[0]
             use_annots: bool = False
-            if Path(file_path).suffix == ".json":
+            if file_path.suffix == ".json":
                 self.annots.read_json(file_path)
 
-            elif Path(file_path).suffix == ".csv":
+            elif file_path.suffix == ".csv":
                 use_annots = Popup.make_popup(
                     "Would you like to use the images and annotation values from "
                     "this csv in addition to the annotation template?\n\n "
@@ -162,7 +162,8 @@ class MainController(QFrame):
                     if row_num == len(self.csv_annotation_values):
                         # all images have all annotations filled in, start annotating at last image
                         self.starting_row = row_num - 1
-                    self.images.load_from_csv(self.csv_annotation_values.keys(), shuffled)
+                    # remove this
+                    self.images.load_from_csv(list(map(lambda x: Path(x), self.csv_annotation_values.keys())), shuffled)
                     # keep track of if images are shuffled from now on:
                     self.images.view.shuffle.toggled.connect(self._shuffle_toggled)
                 # start at row 0 if annotation data was not used from csv
@@ -215,7 +216,7 @@ class MainController(QFrame):
         """Open file widget for importing csv/json."""
         self.annots.view.annot_input.simulate_click()
 
-    def _csv_write_selected_evt(self, file_list: List[str]):
+    def _csv_write_selected_evt(self, file_list: List[Path]):
         """
         Set csv file name for writing annotations and call _setup_annotating.
 
@@ -231,10 +232,11 @@ class MainController(QFrame):
             self.images.view.alert("No selection provided")
         else:
             file_path = file_list[0]
-            extension = Path(file_path).suffix
+            extension = file_path.suffix
             if extension != ".csv":
-                file_path = file_path + ".csv"
-            self.annots.set_csv_path(file_path)
+                file_path = file_path.with_suffix(".csv")
+            # remove this
+            self.annots.set_csv_path(str(file_path))
             self._setup_annotating()
 
     def _start_annotating_clicked(self):
@@ -299,12 +301,19 @@ class MainController(QFrame):
 
             self.images.start_annotating(self.starting_row)
 
-            self.annots.start_annotating(self.images.get_num_files(), self.csv_annotation_values, shuffled)
+            # remove this
+            temp_csv_annotation_values = {}
+            for key in self.csv_annotation_values:
+                temp_csv_annotation_values[Path(key)] = self.csv_annotation_values[key]
+
+            self.annots.start_annotating(self.images.get_num_files(), temp_csv_annotation_values, shuffled)
 
         else:
             # start annotating from beginning with just file info
             self.images.start_annotating()
             self.annots.start_annotating(self.images.get_num_files(), dct, shuffled)
+
+        # remove this
         self.annots.set_curr_img(self.images.curr_img_dict())
         if not shuffled:
             # alter images view to fit annotation mode
@@ -352,7 +361,9 @@ class MainController(QFrame):
         alr_anntd_keys = self.csv_annotation_values.keys()
         # dct_keys is the dictionary from the images list. may have been edited
         # alr_anntd_keys was read in from csv. has not been edited
-        if not dct_keys == alr_anntd_keys:
+
+        # remove this
+        if not list(map(lambda x: str(x), dct_keys)) == alr_anntd_keys:
             # if dct .keys is not equal (order not considered) to aa.keys
             # means files were either added/deleted
             if self.has_new_shuffled_order:
@@ -387,7 +398,8 @@ class MainController(QFrame):
         # need to add/delete files from already annotated and get a new starting row in case the
         # file deleted or added is now the first file with a null annotation
         for old_file, row in zip(alr_anntd_keys, range(len(alr_anntd_keys))):
-            if old_file in dct_keys:
+            # remove this
+            if old_file in list(map(lambda x: str(x), dct_keys)):
                 # old file wasn't removed from files
                 new_csv_annotations[old_file] = self.csv_annotation_values[old_file]
                 if not new_starting_row_found:
@@ -407,6 +419,7 @@ class MainController(QFrame):
                 self.starting_row = len(new_csv_annotations)
                 new_starting_row_found = True
             for file in list(dct_keys)[len(new_csv_annotations) : :]:
+                # remove this
                 new_csv_annotations[file] = dct[file]
 
         if not new_starting_row_found:
@@ -436,12 +449,14 @@ class MainController(QFrame):
         alr_anntd_keys = self.csv_annotation_values.keys()
         new_starting_row_found: bool = False
         new_csv_annotations = {}
-        for new_file, dct_index in zip(dct_keys, range(len(dct_keys))):
+        # remove this
+        for new_file, dct_index in zip(list(map(lambda x: str(x), dct_keys)), range(len(dct_keys))):
 
             if new_file not in alr_anntd_keys:
                 # only possible to encounter a new file in middle when shuffling has happened
                 # file added to dct
-                new_csv_annotations[new_file] = dct[new_file]
+                # remove this
+                new_csv_annotations[new_file] = dct[Path(new_file)]
 
                 if not new_starting_row_found:
                     # just added a new, unannotated file
@@ -471,7 +486,8 @@ class MainController(QFrame):
         dct_keys = dct.keys()
         new_starting_row_found: bool = False
         new_csv_annotations = {}
-        for new_file, dct_index in itertools.zip_longest(dct_keys, range(len(dct_keys))):
+        # remove this
+        for new_file, dct_index in itertools.zip_longest(list(map(lambda x: str(x), dct_keys)), range(len(dct_keys))):
             new_csv_annotations[new_file] = self.csv_annotation_values[new_file]
             if not new_starting_row_found:
                 if self.has_none_annotation(self.csv_annotation_values[new_file][2::]):
