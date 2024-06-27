@@ -283,6 +283,7 @@ class AnnotatorView(QFrame):
             The dictionary of annotation names -> a dictionary of types, defaults, and options.
         """
         self.annot_list.clear_all()
+        self.annots_order.clear()
         for name in data.keys():
             self._create_annot(name, data[name])
         self.scroll.setMaximumHeight(self.annot_list.height)
@@ -298,6 +299,5 @@ class AnnotatorView(QFrame):
         dct : Dict[str, Any]
             annotation type, default, and options.
         """
-
         self.annots_order.append(name)
         self.annot_list.add_item(name, dct)
