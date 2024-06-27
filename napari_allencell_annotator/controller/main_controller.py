@@ -17,9 +17,9 @@ import napari
 from typing import List, Dict, Union
 
 
-class MainController(QFrame):
+class MainView(QFrame):
     """
-    A class used to combine/communicate between AnnotatorController and ViewController.
+    Main plugin view displayed.
 
     Methods
     -------
@@ -35,26 +35,29 @@ class MainController(QFrame):
 
     def __init__(self, napari_viewer: napari.Viewer):
         super().__init__()
+        # init viewer and parts of the plugin
         self.napari = napari_viewer
-        self.layout = QVBoxLayout()
         self.images = ImagesController(self.napari)
         self.annots = AnnotatorController(self.napari)
-        self.layout.addWidget(self.images.view, stretch=1)
-        self.layout.addWidget(self.annots.view, stretch=1)
 
-        self.next_sc = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_Greater), self)
-        self.prev_sc = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_Less), self)
-        self.down_sc = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_Return), self)
-        self.up_sc = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.SHIFT + QtCore.Qt.Key_Return), self)
-        self.check_sc = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.SHIFT + QtCore.Qt.Key_Space), self)
+        # set layout and add sub views
+        self.setLayout(QVBoxLayout)
+        self.layout().addWidget(self.images.view, stretch=1)
+        self.layout().addWidget(self.annots.view, stretch=1)
 
-        self.setLayout(self.layout)
-        self.show()
+        # key shortcuts
+        self._shortcut_key_next = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_Greater), self)
+        self._shortcut_key_prev = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_Less), self)
+        self._shortcut_key_down = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_Return), self)
+        self._shortcut_key_up = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.SHIFT + QtCore.Qt.Key_Return), self)
+        self._shortcut_key_check = QShortcut(QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.SHIFT + QtCore.Qt.Key_Space), self)
 
         self._connect_slots()
         self.csv_annotation_values: Dict[str, List] = None
         self.starting_row: int = -1
         self.has_new_shuffled_order = None
+
+        self.show()
 
     def _connect_slots(self):
         """Connects annotator view buttons to slots"""
@@ -326,19 +329,19 @@ class MainController(QFrame):
     def annotating_shortcuts_on(self):
         """Create annotation keyboard shortcuts and connect them to slots."""
 
-        self.next_sc.activated.connect(self._next_image_clicked)
-        self.prev_sc.activated.connect(self._prev_image_clicked)
-        self.down_sc.activated.connect(self.annots.view.annot_list.next_item)
-        self.up_sc.activated.connect(self.annots.view.annot_list.prev_item)
-        self.check_sc.activated.connect(self._toggle_check)
+        self._shortcut_key_next.activated.connect(self._next_image_clicked)
+        self._shortcut_key_prev.activated.connect(self._prev_image_clicked)
+        self._shortcut_key_down.activated.connect(self.annots.view.annot_list.next_item)
+        self._shortcut_key_up.activated.connect(self.annots.view.annot_list.prev_item)
+        self._shortcut_key_check.activated.connect(self._toggle_check)
 
     def annotating_shortcuts_off(self):
         """Disconnect signals and slots for annotation shortcuts"""
-        self.next_sc.activated.disconnect(self._next_image_clicked)
-        self.prev_sc.activated.disconnect(self._prev_image_clicked)
-        self.down_sc.activated.disconnect(self.annots.view.annot_list.next_item)
-        self.up_sc.activated.disconnect(self.annots.view.annot_list.prev_item)
-        self.check_sc.activated.disconnect(self._toggle_check)
+        self._shortcut_key_next.activated.disconnect(self._next_image_clicked)
+        self._shortcut_key_prev.activated.disconnect(self._prev_image_clicked)
+        self._shortcut_key_down.activated.disconnect(self.annots.view.annot_list.next_item)
+        self._shortcut_key_up.activated.disconnect(self.annots.view.annot_list.prev_item)
+        self._shortcut_key_check.activated.disconnect(self._toggle_check)
 
     def _toggle_check(self):
         """Toggle the checkbox state if the current annotation is a checkbox."""

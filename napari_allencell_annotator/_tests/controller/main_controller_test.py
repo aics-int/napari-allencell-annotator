@@ -500,23 +500,23 @@ class TestMainController:
         self._controller._next_image_clicked = MagicMock()
         self._controller._prev_image_clicked = MagicMock()
         self._controller._toggle_check = MagicMock()
-        self._controller.next_sc = create_autospec(QShortcut)
-        self._controller.prev_sc = create_autospec(QShortcut)
-        self._controller.down_sc = create_autospec(QShortcut)
-        self._controller.up_sc = create_autospec(QShortcut)
-        self._controller.check_sc = create_autospec(QShortcut)
+        self._controller._shortcut_key_next = create_autospec(QShortcut)
+        self._controller._shortcut_key_prev = create_autospec(QShortcut)
+        self._controller._shortcut_key_down = create_autospec(QShortcut)
+        self._controller._shortcut_key_up = create_autospec(QShortcut)
+        self._controller._shortcut_key_check = create_autospec(QShortcut)
 
         self._controller.annotating_shortcuts_on()
 
-        self._controller.next_sc.activated.connect.assert_called_once_with(self._controller._next_image_clicked)
-        self._controller.prev_sc.activated.connect.assert_called_once_with(self._controller._prev_image_clicked)
-        self._controller.down_sc.activated.connect.assert_called_once_with(
+        self._controller._shortcut_key_next.activated.connect.assert_called_once_with(self._controller._next_image_clicked)
+        self._controller._shortcut_key_prev.activated.connect.assert_called_once_with(self._controller._prev_image_clicked)
+        self._controller._shortcut_key_down.activated.connect.assert_called_once_with(
             self._controller.annots.view.annot_list.next_item
         )
-        self._controller.up_sc.activated.connect.assert_called_once_with(
+        self._controller._shortcut_key_up.activated.connect.assert_called_once_with(
             self._controller.annots.view.annot_list.prev_item
         )
-        self._controller.check_sc.activated.connect.assert_called_once_with(self._controller._toggle_check)
+        self._controller._shortcut_key_check.activated.connect.assert_called_once_with(self._controller._toggle_check)
 
     def test_annotating_shortcuts_off(self):
         QShortcut.activated = MagicMock()
@@ -524,23 +524,23 @@ class TestMainController:
         self._controller._next_image_clicked = MagicMock()
         self._controller._prev_image_clicked = MagicMock()
         self._controller._toggle_check = MagicMock()
-        self._controller.next_sc = create_autospec(QShortcut)
-        self._controller.prev_sc = create_autospec(QShortcut)
-        self._controller.down_sc = create_autospec(QShortcut)
-        self._controller.up_sc = create_autospec(QShortcut)
-        self._controller.check_sc = create_autospec(QShortcut)
+        self._controller._shortcut_key_next = create_autospec(QShortcut)
+        self._controller._shortcut_key_prev = create_autospec(QShortcut)
+        self._controller._shortcut_key_down = create_autospec(QShortcut)
+        self._controller._shortcut_key_up = create_autospec(QShortcut)
+        self._controller._shortcut_key_check = create_autospec(QShortcut)
 
         self._controller.annotating_shortcuts_off()
 
-        self._controller.next_sc.activated.disconnect.assert_called_once_with(self._controller._next_image_clicked)
-        self._controller.prev_sc.activated.disconnect.assert_called_once_with(self._controller._prev_image_clicked)
-        self._controller.down_sc.activated.disconnect.assert_called_once_with(
+        self._controller._shortcut_key_next.activated.disconnect.assert_called_once_with(self._controller._next_image_clicked)
+        self._controller._shortcut_key_prev.activated.disconnect.assert_called_once_with(self._controller._prev_image_clicked)
+        self._controller._shortcut_key_down.activated.disconnect.assert_called_once_with(
             self._controller.annots.view.annot_list.next_item
         )
-        self._controller.up_sc.activated.disconnect.assert_called_once_with(
+        self._controller._shortcut_key_up.activated.disconnect.assert_called_once_with(
             self._controller.annots.view.annot_list.prev_item
         )
-        self._controller.check_sc.activated.disconnect.assert_called_once_with(self._controller._toggle_check)
+        self._controller._shortcut_key_check.activated.disconnect.assert_called_once_with(self._controller._toggle_check)
 
     def test_toggle_check_none(self):
         item = None
