@@ -310,7 +310,7 @@ class ImagesView(QFrame):
             self._model.set_all_images(files)
             for file in self._model.get_all_images():
                 # add with shuffled order
-                self.file_widget.add_item(file)
+                self.file_widget.add_item(file, hidden=True)
 
     def _handle_delete_clicked(self) -> None:
         """
