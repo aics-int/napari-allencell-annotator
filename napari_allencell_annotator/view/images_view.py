@@ -164,6 +164,7 @@ class ImagesView(QFrame):
         self.input_file.toggle(enable)
 
     def _toggle_delete(self, checked: bool) -> None:
+        # TODO change to toggle delete button text
         """
         Enable delete button when files are checked.
 
@@ -177,6 +178,7 @@ class ImagesView(QFrame):
             self.delete.setText("Delete All")
 
     def _toggle_shuffle(self, files_added: bool) -> None:
+        # TODO create separate enable/disable buttons
         """
         Enable shuffle button when files are added.
 
@@ -377,6 +379,7 @@ class ImagesView(QFrame):
 
     @staticmethod
     def is_supported(file_path: Path) -> bool:
+        #TODO move to file utility class
         """
         Check if the provided file name is a supported file.
 

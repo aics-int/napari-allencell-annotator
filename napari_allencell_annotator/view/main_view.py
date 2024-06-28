@@ -1,9 +1,6 @@
 import csv
 import itertools
 from pathlib import Path
-
-from napari_allencell_annotator.constants.constants import SUPPORTED_FILE_TYPES
-
 from napari_allencell_annotator.view.images_view import ImagesView
 from qtpy import QtCore
 from qtpy.QtWidgets import QFrame, QShortcut
