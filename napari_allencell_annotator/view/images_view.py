@@ -109,7 +109,7 @@ class ImagesView(QFrame):
         self.shuffle.clicked.connect(self._handle_shuffle_clicked)
         self.delete.clicked.connect(self._handle_delete_clicked)
         self.file_widget.files_selected.connect(self._toggle_delete_button_text)
-        self.file_widget.files_added.connect(self._toggle_delete_and_shuffle)
+        self.file_widget.files_added.connect(self._handle_files_added)
 
         self.shuffle.toggled.connect(self._update_shuff_text)
         self.file_widget.currentItemChanged.connect(self._display_img)
@@ -136,7 +136,7 @@ class ImagesView(QFrame):
         """
         self._toggle_delete_button_text(False)
         self.shuffle.setChecked(False)
-        self._toggle_delete_and_shuffle(False)
+        self._handle_files_added(False)
         self.enable_add_buttons()
 
     def alert(self, alert_msg: str) -> None:
@@ -186,7 +186,7 @@ class ImagesView(QFrame):
         self.delete.setEnabled(False)
         self.shuffle.setEnabled(False)
 
-    def _toggle_delete_and_shuffle(self, files_added: bool) -> None:
+    def _handle_files_added(self, files_added: bool) -> None:
         """
         Enable or disable delete and shuffle buttons when files are added.
 
