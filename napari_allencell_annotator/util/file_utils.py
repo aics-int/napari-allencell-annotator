@@ -6,6 +6,7 @@ class FileUtils:
     """
     Handles file and directory related functions.
     """
+
     @staticmethod
     def select_only_valid_files(file_list: list[Path]) -> list[Path]:
         """
@@ -54,4 +55,4 @@ class FileUtils:
         dir_path: list[Path]
             The path to a directory
         """
-        return list(dir_path.glob('*.*'))
+        return list(dir_path.glob("*.*"))
