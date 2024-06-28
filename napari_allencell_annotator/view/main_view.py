@@ -567,4 +567,3 @@ class MainView(QFrame):
                 if item is None or item == "":
                     return True
         return False
-

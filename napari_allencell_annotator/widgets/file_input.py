@@ -24,9 +24,9 @@ class FileInput(QWidget):
         initial_text (str): text to display in the widget before a file has been selected
     """
 
-    files_selected: Signal = Signal(list) # signal for multiple files
-    dir_selected: Signal = Signal(Path) # signal for dir selection
-    file_selected: Signal = Signal(Path) # TODO remove this once I refactor
+    files_selected: Signal = Signal(list)  # signal for multiple files
+    dir_selected: Signal = Signal(Path)  # signal for dir selection
+    file_selected: Signal = Signal(Path)  # TODO remove this once I refactor
 
     def __init__(
         self,

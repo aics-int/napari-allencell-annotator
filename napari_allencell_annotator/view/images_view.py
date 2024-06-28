@@ -108,8 +108,8 @@ class ImagesView(QFrame):
         self.input_file.files_selected.connect(self._add_selected_files)
         self.shuffle.clicked.connect(self._handle_shuffle_clicked)
         self.delete.clicked.connect(self._handle_delete_clicked)
-        self.file_widget.files_selected.connect(self._toggle_delete)
-        self.file_widget.files_added.connect(self._toggle_shuffle)
+        self.file_widget.files_selected.connect(self._toggle_delete_button_text)
+        self.file_widget.files_added.connect(self._handle_files_added)
 
         self.shuffle.toggled.connect(self._update_shuff_text)
         self.file_widget.currentItemChanged.connect(self._display_img)
@@ -134,10 +134,11 @@ class ImagesView(QFrame):
 
         Disable delete, add, and shuffle buttons.
         """
-        self._toggle_delete(False)
+        self._toggle_delete_button_text(False)
         self.shuffle.setChecked(False)
-        self._toggle_shuffle(False)
-        self.toggle_add(True)
+        self._disable_delete_button()
+        self._disable_shuffle_button()
+        self.enable_add_buttons()
 
     def alert(self, alert_msg: str) -> None:
         """
@@ -150,21 +151,17 @@ class ImagesView(QFrame):
         """
         show_info(alert_msg)
 
-    def toggle_add(self, enable: bool) -> None:
-        # TODO create function enable_add_buttons
-        """
-        Enables add file and add directory buttons.
+    def enable_add_buttons(self) -> None:
+        """Enables add file and add directory buttons."""
+        self.input_dir.toggle(True)
+        self.input_file.toggle(True)
 
-        Parameters
-        ----------
-        enable : bool
-            The enable state
-        """
-        self.input_dir.toggle(enable)
-        self.input_file.toggle(enable)
+    def disable_add_buttons(self) -> None:
+        """Disables add file and add directory buttons."""
+        self.input_dir.toggle(False)
+        self.input_file.toggle(False)
 
-    def _toggle_delete(self, checked: bool) -> None:
-        # TODO change to toggle delete button text
+    def _toggle_delete_button_text(self, checked: bool) -> None:
         """
         Enable delete button when files are checked.
 
@@ -177,24 +174,39 @@ class ImagesView(QFrame):
         elif not checked:
             self.delete.setText("Delete All")
 
-    def _toggle_shuffle(self, files_added: bool) -> None:
-        # TODO create separate enable/disable buttons
+    def _enable_delete_button(self) -> None:
+        """Enable delete button"""
+        self.delete.setToolTip("Check box on the right \n to select files for deletion")
+        self.delete.setText("Delete All")
+        self.delete.setEnabled(True)
+
+    def _disable_delete_button(self) -> None:
+        """Disable delete button"""
+        self.delete.setToolTip(None)
+        self.delete.setEnabled(False)
+
+    def _enable_shuffle_button(self) -> None:
+        """Enable shuffle button"""
+        self.shuffle.setEnabled(True)
+
+    def _disable_shuffle_button(self) -> None:
+        """Disable shuffle button"""
+        self.shuffle.setEnabled(False)
+
+    def _handle_files_added(self, files_added: bool) -> None:
         """
-        Enable shuffle button when files are added.
+        Enable or disable delete and shuffle buttons when files are added.
 
         Parameters
         ----------
         files_added : bool
         """
         if files_added:
-            self.delete.setToolTip("Check box on the right \n to select files for deletion")
-            self.delete.setText("Delete All")
-            self.shuffle.setEnabled(True)
-            self.delete.setEnabled(True)
+            self._enable_delete_button()
+            self._enable_shuffle_button()
         elif not files_added:
-            self.delete.setToolTip(None)
-            self.shuffle.setEnabled(False)
-            self.delete.setEnabled(False)
+            self._disable_delete_button()
+            self._disable_shuffle_button()
 
     def _display_img(self, current: FileItem, previous: FileItem) -> None:
         """
@@ -213,7 +225,7 @@ class ImagesView(QFrame):
             previous.unhighlight()
         if current is not None:
             try:
-                img: AICSImage = AICSImage(current.file_path) #TODO update to bioio
+                img: AICSImage = AICSImage(current.file_path)  # TODO update to bioio
                 self.viewer.add_image(img.data)
                 current.highlight()
             except exceptions.UnsupportedFileFormatError:
@@ -240,7 +252,7 @@ class ImagesView(QFrame):
             The input list with dir[0] holding directory name.
         """
         # TODO file editing code: create file utility to do this
-        all_files_in_dir: list[Path] = list(dir.glob('*.*'))
+        all_files_in_dir: list[Path] = list(dir.glob("*.*"))
         if len(all_files_in_dir) < 1:
             self.alert("Folder is empty")
         else:
@@ -261,8 +273,10 @@ class ImagesView(QFrame):
             File name visibility
         """
         self.file_widget.add_item(file, hidden)
-        self._model.add_image(file) # update model
-        if self._model.get_num_images() == 1: # TODO: WHY DO WE NEED THIS?, rethink signal organization so we fire from model and have UI react to it
+        self._model.add_image(file)  # update model
+        if (
+            self._model.get_num_images() == 1
+        ):  # TODO: WHY DO WE NEED THIS?, rethink signal organization so we fire from model and have UI react to it
             self.file_widget.files_added.emit(True)
 
         self.update_num_files_label(self._model.get_num_images())
@@ -287,20 +301,20 @@ class ImagesView(QFrame):
 
     def _handle_shuffle_clicked(self, checked: bool) -> None:
         """
-       Shuffle file order and hide file names if checked.
-       Return files to original order and names if unchecked.
+        Shuffle file order and hide file names if checked.
+        Return files to original order and names if unchecked.
 
-       Side effect: set file_widget.shuffled_files_dict to a new order dict or {} if list is unshuffled.
+        Side effect: set file_widget.shuffled_files_dict to a new order dict or {} if list is unshuffled.
 
-       Parameters
-       ----------
-       checked : bool
-           Toggle state of the shuffle button.
-       """
+        Parameters
+        ----------
+        checked : bool
+            Toggle state of the shuffle button.
+        """
         if checked:
             self._shuffle_file_order()
         else:
-            self.toggle_add(True)
+            self.enable_add_buttons()
             self.file_widget.set_shuffled(False)
             self.file_widget.unhide_all()
 
@@ -308,7 +322,7 @@ class ImagesView(QFrame):
         # TODO: set shuffled state in model, file widget clears and repopulates on its own.
         files: list[Path] = self._model.get_all_images()
         if len(files) > 0:
-            self.toggle_add(False)
+            self.disable_add_buttons()
             # clear file widget
             self.file_widget.clear_for_shuff()
             random.shuffle(files)
@@ -336,7 +350,6 @@ class ImagesView(QFrame):
                 self.clear_all()
                 self.reset_buttons()
 
-
     def delete_checked(self) -> None:
         """
         Delete the checked items from the model and the file widget.
@@ -345,7 +358,7 @@ class ImagesView(QFrame):
             self.remove_image(item)
 
         self.file_widget.checked.clear()
-        self.file_widget.files_selected.emit(False) # TODO why is this emitted
+        self.file_widget.files_selected.emit(False)  # TODO why is this emitted
 
     def remove_image(self, item: FileItem) -> None:
         """
@@ -358,14 +371,14 @@ class ImagesView(QFrame):
         item: FileItem
             An item to be removed.
         """
-        #TODO when we delete from the model, connect file widget so that it deletes that entry itself without
+        # TODO when we delete from the model, connect file widget so that it deletes that entry itself without
         # us explicitly calling remove_item on it
         if item.file_path in self._model.get_all_images():
             self._model.remove_image(item.file_path)
             self.file_widget.remove_item(item)
 
             if self._model.get_num_images() == 0:
-                self.file_widget.files_added.emit(False)# TODO why is this emitted again here
+                self.file_widget.files_added.emit(False)  # TODO why is this emitted again here
 
             self.update_num_files_label(self._model.get_num_images())
 
@@ -373,13 +386,13 @@ class ImagesView(QFrame):
         """
         Clear all image data from the model and the file widget.
         """
-        self._model.set_all_images([]) # clear model
-        self.file_widget.clear_all() # clear widget
-        self.update_num_files_label(self._model.get_num_images()) # update label
+        self._model.set_all_images([])  # clear model
+        self.file_widget.clear_all()  # clear widget
+        self.update_num_files_label(self._model.get_num_images())  # update label
 
     @staticmethod
     def is_supported(file_path: Path) -> bool:
-        #TODO move to file utility class
+        # TODO move to file utility class
         """
         Check if the provided file name is a supported file.
 
@@ -403,6 +416,3 @@ class ImagesView(QFrame):
             return True
         else:
             return False
-
-
-
