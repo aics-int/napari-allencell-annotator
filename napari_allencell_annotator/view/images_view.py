@@ -99,7 +99,7 @@ class ImagesView(QFrame):
 
         self.setLayout(self.layout)
 
-        self.viewer: napari.viewer = viewer
+        self.viewer: napari.Viewer = viewer
         self._connect_slots()
 
     def _connect_slots(self) -> None:
@@ -220,7 +220,7 @@ class ImagesView(QFrame):
             Previous file
         """
         # TODO: viewer code, move to viewer, create a fake viewer
-        self.viewer.layers.clear()
+        self.viewer.clear_layers()
         if previous is not None:
             previous.unhighlight()
         if current is not None:

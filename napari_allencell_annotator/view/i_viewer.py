@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import numpy as np
 
+
 class IViewer(ABC):
     def __init__(self):
         super().__init__()
@@ -12,4 +13,3 @@ class IViewer(ABC):
     @abstractmethod
     def clear_layers(self) -> None:
         pass
-    
