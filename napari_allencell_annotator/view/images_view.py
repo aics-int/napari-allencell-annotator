@@ -2,8 +2,6 @@ from pathlib import Path
 import random
 from typing import Optional
 
-from napari_allencell_annotator.constants.constants import SUPPORTED_FILE_TYPES
-
 from napari_allencell_annotator.widgets.file_scrollable_popup import FileScrollablePopup
 from napari_allencell_annotator.widgets.popup import Popup
 from qtpy.QtWidgets import QFrame
@@ -280,7 +278,7 @@ class ImagesView(QFrame):
         # ignore hidden files and directories
         # TODO: put list comprehension into a file utility class
         for file_path in FileUtils.select_only_valid_files(file_list=file_list):
-            if self.is_supported(file_path):
+            if FileUtils.is_supported(file_path):
                 if file_path not in self._model.get_all_images():
                     self.add_new_item(file_path)
             else:
@@ -378,32 +376,6 @@ class ImagesView(QFrame):
         self.file_widget.clear_all() # clear widget
         self.update_num_files_label(self._model.get_num_images()) # update label
 
-    @staticmethod
-    def is_supported(file_path: Path) -> bool:
-        #TODO move to file utility class
-        """
-        Check if the provided file name is a supported file.
-
-        This function checks if the file name extension is in
-        the supported file types files.
-
-        Parameters
-        ----------
-        file_path : Path
-            Name of the file to check.
-
-        Returns
-        -------
-        bool
-            True if the file is supported.
-        """
-        if file_path is None:
-            return False
-        extension: str = file_path.suffix
-        if extension in SUPPORTED_FILE_TYPES:
-            return True
-        else:
-            return False
 
 
 
