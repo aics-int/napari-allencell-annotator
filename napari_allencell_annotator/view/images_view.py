@@ -137,7 +137,7 @@ class ImagesView(QFrame):
         self._toggle_delete(False)
         self.shuffle.setChecked(False)
         self._toggle_shuffle(False)
-        self.toggle_add(True)
+        self.enable_add_buttons()
 
     def alert(self, alert_msg: str) -> None:
         """
@@ -150,18 +150,15 @@ class ImagesView(QFrame):
         """
         show_info(alert_msg)
 
-    def toggle_add(self, enable: bool) -> None:
-        # TODO create function enable_add_buttons
-        """
-        Enables add file and add directory buttons.
+    def enable_add_buttons(self) -> None:
+        """Enables add file and add directory buttons."""
+        self.input_dir.toggle(True)
+        self.input_file.toggle(True)
 
-        Parameters
-        ----------
-        enable : bool
-            The enable state
-        """
-        self.input_dir.toggle(enable)
-        self.input_file.toggle(enable)
+    def disable_add_buttons(self) -> None:
+        """Disables add file and add directory buttons."""
+        self.input_dir.toggle(False)
+        self.input_file.toggle(False)
 
     def _toggle_delete(self, checked: bool) -> None:
         # TODO change to toggle delete button text
@@ -300,7 +297,7 @@ class ImagesView(QFrame):
         if checked:
             self._shuffle_file_order()
         else:
-            self.toggle_add(True)
+            self.enable_add_buttons()
             self.file_widget.set_shuffled(False)
             self.file_widget.unhide_all()
 
@@ -308,7 +305,7 @@ class ImagesView(QFrame):
         # TODO: set shuffled state in model, file widget clears and repopulates on its own.
         files: list[Path] = self._model.get_all_images()
         if len(files) > 0:
-            self.toggle_add(False)
+            self.disable_add_buttons()
             # clear file widget
             self.file_widget.clear_for_shuff()
             random.shuffle(files)
