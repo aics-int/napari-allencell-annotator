@@ -109,7 +109,7 @@ class ImagesView(QFrame):
         self.shuffle.clicked.connect(self._handle_shuffle_clicked)
         self.delete.clicked.connect(self._handle_delete_clicked)
         self.file_widget.files_selected.connect(self._toggle_delete_button_text)
-        self.file_widget.files_added.connect(self._toggle_shuffle)
+        self.file_widget.files_added.connect(self._toggle_delete_and_shuffle)
 
         self.shuffle.toggled.connect(self._update_shuff_text)
         self.file_widget.currentItemChanged.connect(self._display_img)
@@ -136,7 +136,7 @@ class ImagesView(QFrame):
         """
         self._toggle_delete_button_text(False)
         self.shuffle.setChecked(False)
-        self._toggle_shuffle(False)
+        self._toggle_delete_and_shuffle(False)
         self.enable_add_buttons()
 
     def alert(self, alert_msg: str) -> None:
@@ -173,8 +173,18 @@ class ImagesView(QFrame):
         elif not checked:
             self.delete.setText("Delete All")
 
-    def _toggle_shuffle(self, files_added: bool) -> None:
-        # TODO create separate enable/disable buttons
+    def _enable_delete_and_shuffle(self) -> None:
+        self.delete.setToolTip("Check box on the right \n to select files for deletion")
+        self.delete.setText("Delete All")
+        self.shuffle.setEnabled(True)
+        self.delete.setEnabled(True)
+
+    def _disable_delete_and_shuffle(self) -> None:
+        self.delete.setToolTip(None)
+        self.shuffle.setEnabled(False)
+        self.delete.setEnabled(False)
+
+    def _toggle_delete_and_shuffle(self, files_added: bool) -> None:
         """
         Enable shuffle button when files are added.
 
@@ -183,14 +193,9 @@ class ImagesView(QFrame):
         files_added : bool
         """
         if files_added:
-            self.delete.setToolTip("Check box on the right \n to select files for deletion")
-            self.delete.setText("Delete All")
-            self.shuffle.setEnabled(True)
-            self.delete.setEnabled(True)
+            self._enable_delete_and_shuffle()
         elif not files_added:
-            self.delete.setToolTip(None)
-            self.shuffle.setEnabled(False)
-            self.delete.setEnabled(False)
+            self._disable_delete_and_shuffle()
 
     def _display_img(self, current: FileItem, previous: FileItem) -> None:
         """

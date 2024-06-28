@@ -30,7 +30,7 @@ class TestImagesView:
         self._view._toggle_delete_button_text = MagicMock()
 
         self._view.file_widget.files_added.connect = MagicMock()
-        self._view._toggle_shuffle = MagicMock()
+        self._view._toggle_delete_and_shuffle = MagicMock()
 
         self._view.shuffle = create_autospec(QPushButton)
         self._view.shuffle.toggled.connect = MagicMock()
@@ -46,7 +46,7 @@ class TestImagesView:
         self._view._connect_slots()
 
         self._view.file_widget.files_selected.connect.assert_called_once_with(self._view._toggle_delete_button_text)
-        self._view.file_widget.files_added.connect.assert_called_once_with(self._view._toggle_shuffle)
+        self._view.file_widget.files_added.connect.assert_called_once_with(self._view._toggle_delete_and_shuffle)
         self._view.shuffle.toggled.connect.assert_called_once_with(self._view._update_shuff_text)
         self._view.delete.clicked.connect.assert_called_once_with(self._view._delete_clicked)
         self._view.file_widget.currentItemChanged.connect.assert_called_once_with(self._view._display_img)
@@ -64,14 +64,14 @@ class TestImagesView:
 
     def test_reset_buttons(self):
         self._view._toggle_delete_button_text = MagicMock()
-        self._view._toggle_shuffle = MagicMock()
+        self._view._toggle_delete_and_shuffle = MagicMock()
         self._view.shuffle = MagicMock()
         self._view.toggle_add = MagicMock()
 
         self._view.reset_buttons()
         self._view._toggle_delete_button_text.assert_called_once_with(False)
         self._view.shuffle.setChecked.assert_called_once_with(False)
-        self._view._toggle_shuffle.assert_called_once_with(False)
+        self._view._toggle_delete_and_shuffle.assert_called_once_with(False)
 
         self._view.toggle_add.assert_called_once_with(True)
 
@@ -173,7 +173,7 @@ class TestImagesView:
         self._view.shuffle = MagicMock()
         self._view.delete = create_autospec(QPushButton)
         self._view.shuffle.setEnabled = MagicMock()
-        self._view._toggle_shuffle(True)
+        self._view._toggle_delete_and_shuffle(True)
         self._view.delete.setToolTip.assert_called_once_with("Check box on the right \n to select files for deletion")
         self._view.shuffle.setEnabled.assert_called_once_with(True)
         self._view.delete.setText.assert_called_once_with("Delete All")
@@ -183,7 +183,7 @@ class TestImagesView:
         self._view.shuffle = MagicMock()
         self._view.delete = create_autospec(QPushButton)
         self._view.shuffle.setEnabled = MagicMock()
-        self._view._toggle_shuffle(False)
+        self._view._toggle_delete_and_shuffle(False)
         self._view.delete.setToolTip.assert_called_once_with(None)
         self._view.shuffle.setEnabled.assert_called_once_with(False)
         self._view.delete.setEnabled.assert_called_once_with(False)
