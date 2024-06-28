@@ -136,7 +136,8 @@ class ImagesView(QFrame):
         """
         self._toggle_delete_button_text(False)
         self.shuffle.setChecked(False)
-        self._handle_files_added(False)
+        self._disable_delete_button()
+        self._disable_shuffle_button()
         self.enable_add_buttons()
 
     def alert(self, alert_msg: str) -> None:
