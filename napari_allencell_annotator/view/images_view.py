@@ -276,7 +276,6 @@ class ImagesView(QFrame):
             The list of files
         """
         # ignore hidden files and directories
-        # TODO: put list comprehension into a file utility class
         for file_path in FileUtils.select_only_valid_files(file_list=file_list):
             if FileUtils.is_supported(file_path):
                 if file_path not in self._model.get_all_images():
