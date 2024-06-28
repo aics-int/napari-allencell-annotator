@@ -33,3 +33,7 @@ class FileUtils:
             return True
         else:
             return False
+
+    @staticmethod
+    def get_files_in_dir(dir_path: Path) -> list[Path]:
+        return list(dir_path.glob('*.*'))

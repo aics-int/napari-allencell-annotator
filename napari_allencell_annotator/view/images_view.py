@@ -229,7 +229,7 @@ class ImagesView(QFrame):
         """
         self.num_files_label.setText(f"Image files: {num_files}")
 
-    def _add_selected_dir_to_ui(self, dir: Path) -> None:
+    def _add_selected_dir_to_ui(self, dir_path: Path) -> None:
         """
         Adds all files in a directory to the GUI.
 
@@ -238,8 +238,7 @@ class ImagesView(QFrame):
         dir_list : List[Path]
             The input list with dir[0] holding directory name.
         """
-        # TODO file editing code: create file utility to do this
-        all_files_in_dir: list[Path] = list(dir.glob('*.*'))
+        all_files_in_dir: list[Path] = FileUtils.get_files_in_dir(dir_path)
         if len(all_files_in_dir) < 1:
             self.alert("Folder is empty")
         else:
