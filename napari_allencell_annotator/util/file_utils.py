@@ -37,8 +37,6 @@ class FileUtils:
         bool
             True if the file is supported.
         """
-        if file_path is None:
-            return False
         extension: str = file_path.suffix
         if extension in SUPPORTED_FILE_TYPES:
             return True
