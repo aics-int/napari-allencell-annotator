@@ -24,6 +24,7 @@ from napari_allencell_annotator.widgets.file_input import (
     FileInputMode,
 )
 from napari_allencell_annotator.widgets.files_widget import FilesWidget, FileItem
+from napari_allencell_annotator.util.file_utils import FileUtils
 from napari_allencell_annotator._style import Style
 from napari_allencell_annotator.model.annotator_model import AnnotatorModel
 
@@ -278,7 +279,7 @@ class ImagesView(QFrame):
         """
         # ignore hidden files and directories
         # TODO: put list comprehension into a file utility class
-        for file_path in [file for file in file_list if not file.name.startswith(".") and file.is_file()]:
+        for file_path in FileUtils.select_only_valid_files(file_list=file_list):
             if self.is_supported(file_path):
                 if file_path not in self._model.get_all_images():
                     self.add_new_item(file_path)
