@@ -219,7 +219,6 @@ class ImagesView(QFrame):
         previous: FileItem
             Previous file
         """
-        # TODO: viewer code, move to viewer, create a fake viewer
         self.viewer.clear_layers()
         if previous is not None:
             previous.unhighlight()
