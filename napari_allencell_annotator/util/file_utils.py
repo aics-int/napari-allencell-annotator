@@ -38,10 +38,7 @@ class FileUtils:
             True if the file is supported.
         """
         extension: str = file_path.suffix
-        if extension in SUPPORTED_FILE_TYPES:
-            return True
-        else:
-            return False
+        return extension in SUPPORTED_FILE_TYPES
 
     @staticmethod
     def get_files_in_dir(dir_path: Path) -> list[Path]:
