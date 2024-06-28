@@ -173,17 +173,21 @@ class ImagesView(QFrame):
         elif not checked:
             self.delete.setText("Delete All")
 
-    def _enable_delete_and_shuffle(self) -> None:
-        """Enable delete and shuffle buttons when files are added."""
+    def _enable_delete_button(self) -> None:
         self.delete.setToolTip("Check box on the right \n to select files for deletion")
         self.delete.setText("Delete All")
         self.delete.setEnabled(True)
-        self.shuffle.setEnabled(True)
 
-    def _disable_delete_and_shuffle(self) -> None:
-        """Enable delete and shuffle buttons when files are added."""
+    def _disable_delete_button(self) -> None:
         self.delete.setToolTip(None)
         self.delete.setEnabled(False)
+
+    def _enable_shuffle_button(self) -> None:
+        """Enable delete and shuffle buttons when files are added."""
+        self.shuffle.setEnabled(True)
+
+    def _disable_shuffle_button(self) -> None:
+        """Enable delete and shuffle buttons when files are added."""
         self.shuffle.setEnabled(False)
 
     def _handle_files_added(self, files_added: bool) -> None:
@@ -195,9 +199,11 @@ class ImagesView(QFrame):
         files_added : bool
         """
         if files_added:
-            self._enable_delete_and_shuffle()
+            self._enable_delete_button()
+            self._enable_shuffle_button()
         elif not files_added:
-            self._disable_delete_and_shuffle()
+            self._disable_delete_button()
+            self._disable_shuffle_button()
 
     def _display_img(self, current: FileItem, previous: FileItem) -> None:
         """
