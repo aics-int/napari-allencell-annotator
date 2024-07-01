@@ -14,7 +14,6 @@ from qtpy.QtWidgets import (
     QGridLayout,
     QPushButton,
 )
-import napari
 from aicsimageio import AICSImage, exceptions
 from napari.utils.notifications import show_info
 
