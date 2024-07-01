@@ -14,7 +14,6 @@ from qtpy.QtWidgets import (
     QPushButton,
 )
 import napari
-from aicsimageio import AICSImage, exceptions
 from napari.utils.notifications import show_info
 
 from napari_allencell_annotator.widgets.file_input import (
