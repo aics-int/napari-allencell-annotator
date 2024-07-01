@@ -26,6 +26,9 @@ from napari_allencell_annotator.util.file_utils import FileUtils
 from napari_allencell_annotator._style import Style
 from napari_allencell_annotator.model.annotator_model import AnnotatorModel
 
+from bioio import BioImage
+import bioio_ome_tiff
+
 
 class ImagesView(QFrame):
     """
@@ -224,7 +227,7 @@ class ImagesView(QFrame):
             previous.unhighlight()
         if current is not None:
             try:
-                img: AICSImage = AICSImage(current.file_path)  # TODO update to bioio
+                img: BioImage = BioImage(current.file_path, reader=bioio_ome_tiff.Reader)
                 self.viewer.add_image(img.data)
                 current.highlight()
             except exceptions.UnsupportedFileFormatError:
