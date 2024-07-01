@@ -63,9 +63,6 @@ class AnnotatorController:
     def __init__(self, viewer: napari.Viewer):
 
         self._annotation_model = AnnotationModel()
-
-        # dictionary of json info:
-        self.annot_json_data: Dict[str, Dict[str, Any]] = None
         # open in view mode
         self.view: AnnotatorView = AnnotatorView(viewer)
 
@@ -249,11 +246,11 @@ class AnnotatorController:
         file_path : str
             file path to json file to read from
         """
-        # todo file not found
         json_dict: dict[str, Key] = JSONUtils.json_dump_to_dict(JSONUtils.get_json_data(Path(file_path)))
         self._annotation_model.set_annotation_keys(json_dict)
 
     def get_annotations_csv(self, annotations: str):
+        # TODO change param to path
         """
         Read the first line of a csv file into a dictionary and set annot_json_data.
 
@@ -266,6 +263,7 @@ class AnnotatorController:
         self._annotation_model.set_annotation_keys(json_dict)
 
     def write_csv(self):
+        # TODO put into csv utils class
         """write headers and file info"""
         file = open(self.csv_path, "w")
         writer = csv.writer(file)
