@@ -35,7 +35,7 @@ class ImagesView(QFrame):
 
     Attributes
     ----------
-    viewer : napari.Viewer
+    viewer : IViewer
         a napari viewer where the plugin will be used
     ctrl : ImagesController
         a controller for the view
@@ -52,7 +52,7 @@ class ImagesView(QFrame):
         """
         Parameters
         ----------
-        viewer : napari.Viewer
+        viewer : IViewer
             The napari viewer for the plugin
         """
         self._model = annotator_model
