@@ -3,6 +3,7 @@ import random
 from typing import Optional
 
 from napari_allencell_annotator.constants.constants import SUPPORTED_FILE_TYPES
+from napari_allencell_annotator.view.i_viewer import IViewer
 
 from napari_allencell_annotator.widgets.file_scrollable_popup import FileScrollablePopup
 from napari_allencell_annotator.widgets.popup import Popup
@@ -47,7 +48,7 @@ class ImagesView(QFrame):
         Updates num_files_label to show the current number of image files
     """
 
-    def __init__(self, annotator_model: AnnotatorModel, viewer: napari.Viewer):
+    def __init__(self, annotator_model: AnnotatorModel, viewer: IViewer):
         """
         Parameters
         ----------
@@ -99,7 +100,7 @@ class ImagesView(QFrame):
 
         self.setLayout(self.layout)
 
-        self.viewer: napari.Viewer = viewer
+        self.viewer: IViewer = viewer
         self._connect_slots()
 
     def _connect_slots(self) -> None:
