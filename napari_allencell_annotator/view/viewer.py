@@ -5,6 +5,7 @@ import napari
 
 
 class Viewer(IViewer):
+    """Handles actions related to napari viewer"""
     def __init__(self, viewer: napari.Viewer):
         super().__init__()
         self.viewer: napari.Viewer = viewer
