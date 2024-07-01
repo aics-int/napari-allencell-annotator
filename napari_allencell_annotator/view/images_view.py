@@ -387,7 +387,3 @@ class ImagesView(QFrame):
         self._model.set_all_images([])  # clear model
         self.file_widget.clear_all()  # clear widget
         self.update_num_files_label(self._model.get_num_images())  # update label
-<<<<<<< HEAD
-=======
-
->>>>>>> refactor-base
