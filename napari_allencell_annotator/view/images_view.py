@@ -36,7 +36,7 @@ class ImagesView(QFrame):
     Attributes
     ----------
     viewer : IViewer
-        a napari viewer where the plugin will be used
+        a viewer where the plugin will be used
     ctrl : ImagesController
         a controller for the view
 
@@ -53,7 +53,7 @@ class ImagesView(QFrame):
         Parameters
         ----------
         viewer : IViewer
-            The napari viewer for the plugin
+            The viewer for the plugin
         """
         self._model = annotator_model
         super().__init__()
@@ -143,7 +143,7 @@ class ImagesView(QFrame):
 
     def alert(self, alert_msg: str) -> None:
         """
-        Displays an error alert on the napari viewer.
+        Displays an error alert on the viewer.
 
         Parameters
         ----------
@@ -389,30 +389,3 @@ class ImagesView(QFrame):
         self._model.set_all_images([])  # clear model
         self.file_widget.clear_all()  # clear widget
         self.update_num_files_label(self._model.get_num_images())  # update label
-
-    @staticmethod
-    def is_supported(file_path: Path) -> bool:
-        # TODO move to file utility class
-        """
-        Check if the provided file name is a supported file.
-
-        This function checks if the file name extension is in
-        the supported file types files.
-
-        Parameters
-        ----------
-        file_path : Path
-            Name of the file to check.
-
-        Returns
-        -------
-        bool
-            True if the file is supported.
-        """
-        if file_path is None:
-            return False
-        extension: str = file_path.suffix
-        if extension in SUPPORTED_FILE_TYPES:
-            return True
-        else:
-            return False

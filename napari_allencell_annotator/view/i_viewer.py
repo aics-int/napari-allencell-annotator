@@ -4,7 +4,7 @@ import numpy as np
 
 class IViewer(ABC):
     def __init__(self):
-        """Base abstract class for napari """
+        """Base abstract class for the viewer"""
         super().__init__()
 
     @abstractmethod

@@ -11,7 +11,18 @@ class Viewer(IViewer):
         self.viewer: napari.Viewer = viewer
 
     def add_image(self, image: np.ndarray) -> None:
+        """
+        Add an image to the napari viewer
+
+        Parameters
+        ----------
+        image: np.ndarray
+            An image to be added
+        """
         self.viewer.add_image(image)
 
     def clear_layers(self) -> None:
+        """
+        Clear all images from the napari viewer
+        """
         self.viewer.layers.clear()
