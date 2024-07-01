@@ -3,6 +3,8 @@ from typing import Dict, Any
 from qtpy.QtWidgets import QListWidget, QAbstractItemView
 from qtpy.QtCore import Signal
 
+from napari_allencell_annotator.model.combo_key import ComboKey
+from napari_allencell_annotator.model.key import Key
 from napari_allencell_annotator.widgets.annotation_item import AnnotationItem
 from napari_allencell_annotator._style import Style
 
@@ -30,7 +32,7 @@ class AnnotationWidget(QListWidget):
         self.num_checked = 0
         self.clear()
 
-    def add_existing_item(self, name: str, dct: Dict[str, Any]):
+    def add_existing_item(self, name: str, key_info: Key | ComboKey):
         """
         Add a previously created annotation item to the list for editing.
 
@@ -41,16 +43,17 @@ class AnnotationWidget(QListWidget):
         dct: Dict[str, Any]
             a dictionary containing type, default, options
         """
+        # TODO support float?
         item: AnnotationItem = self.add_new_item()
-        annot_type: str = dct["type"]
-        if annot_type == "string":
-            item.fill_vals_text(name, dct["default"])
-        elif annot_type == "number":
-            item.fill_vals_number(name, dct["default"])
+        annot_type: str = str(key_info.get_type())
+        if annot_type == "str":
+            item.fill_vals_text(name, key_info.get_default_value())
+        elif annot_type == "int":
+            item.fill_vals_number(name, key_info.get_default_value())
         elif annot_type == "bool":
-            item.fill_vals_check(name, dct["default"])
+            item.fill_vals_check(name, key_info.get_default_value())
         elif annot_type == "list":
-            item.fill_vals_list(name, dct["default"], dct["options"])
+            item.fill_vals_list(name, key_info.get_default_value(), key_info.get_options())
 
     def add_new_item(self) -> AnnotationItem:
         """

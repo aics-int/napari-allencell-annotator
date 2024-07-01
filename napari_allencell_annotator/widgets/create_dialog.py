@@ -14,6 +14,7 @@ from qtpy.QtWidgets import (
 )
 from qtpy.QtCore import Signal
 
+from napari_allencell_annotator.model.annotation_model import AnnotationModel
 from napari_allencell_annotator.widgets.annotation_widget import AnnotationWidget
 
 
@@ -32,8 +33,9 @@ class CreateDialog(QDialog):
     # signal emitted when all annotations created are valid
     valid_annots_made = Signal()
 
-    def __init__(self, parent=None, existing_annots: Optional[Dict[str, Dict[str, Any]]] = None):
+    def __init__(self, model: AnnotationModel, parent=None):
         super().__init__(parent)
+        self._annotation_model = model
         self.setStyleSheet(Style.get_stylesheet("main.qss"))
 
         self.setWindowTitle("Create Annotations")
@@ -42,8 +44,7 @@ class CreateDialog(QDialog):
         self.list = AnnotationWidget()
 
         self.layout = QVBoxLayout()
-        self.existing_annots = existing_annots
-        if self.existing_annots is None:
+        if len(self.model.get_annotation_keys()) > 0:
             self.list.add_new_item()
             label = QLabel("Create Annotations")
             label.setAlignment(Qt.AlignCenter)
@@ -82,7 +83,7 @@ class CreateDialog(QDialog):
 
         self.setLayout(self.layout)
 
-        if self.existing_annots:
+        if len(self.model.get_annotation_keys()) > 0:
             self.render_annotations()
         self._connect_slots()
 
@@ -108,8 +109,8 @@ class CreateDialog(QDialog):
 
     def render_annotations(self):
         """Display the types and defaults for each existing annotation."""
-        for name, dct in self.existing_annots.items():
-            self.list.add_existing_item(name, dct)
+        for key_name, key_info in self._annotation_model.get_annotation_keys():
+            self.list.add_existing_item(key_name, key_info)
 
     def _delete_clicked(self):
         """Delete checked items if there is at least one item checked."""

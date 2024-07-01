@@ -1,4 +1,4 @@
-from typing import Tuple, Dict, List
+from typing import Tuple, Dict, List, Optional, Any
 
 from qtpy.QtWidgets import QLayout
 from qtpy import QtWidgets
@@ -14,6 +14,9 @@ from qtpy.QtWidgets import (
     QGridLayout,
     QCheckBox,
 )
+
+from napari_allencell_annotator.model.combo_key import ComboKey
+from napari_allencell_annotator.model.key import Key
 
 
 class AnnotationItem(QListWidgetItem):
@@ -31,10 +34,10 @@ class AnnotationItem(QListWidgetItem):
         self.name.setPlaceholderText("Enter name")
 
         type_label = QLabel("Type:")
-        self.type = QComboBox()
-        self.type.addItems(["text", "number", "checkbox", "dropdown"])
+        self.type_selection_combo = QComboBox()
+        self.type_selection_combo.addItems(["text", "number", "checkbox", "dropdown"])
         self.name.setWhatsThis("name")
-        self.type.setWhatsThis("type")
+        self.type_selection_combo.setWhatsThis("type")
         self.name_widget = QWidget()
         self.name_layout = QHBoxLayout()
         self.check = QCheckBox()
@@ -47,7 +50,7 @@ class AnnotationItem(QListWidgetItem):
         self.layout.addWidget(self.name_widget, 0, 0, 1, 1)
         self.layout.addWidget(self.name, 0, 1, 1, 2)
         self.layout.addWidget(type_label, 0, 3, 1, 1)
-        self.layout.addWidget(self.type, 0, 4, 1, 2)
+        self.layout.addWidget(self.type_selection_combo, 0, 4, 1, 2)
         default_label = QLabel("Default:")
         self.default_text = QLineEdit()
         self.default_text.setPlaceholderText("Optional: Default Text")
@@ -81,7 +84,7 @@ class AnnotationItem(QListWidgetItem):
         if parent is not None:
             parent.setItemWidget(self, self.widget)
 
-        self.type.currentTextChanged.connect(self._type_changed)
+        self.type_selection_combo.currentTextChanged.connect(self._type_changed)
 
     def fill_vals_text(self, name: str, default: str):
         """
@@ -94,7 +97,7 @@ class AnnotationItem(QListWidgetItem):
         default: str
             a default text value
         """
-        self.type.setCurrentText("text")
+        self.type_selection_combo.setCurrentText("text")
         self.name.setText(name)
         self.default_text.setText(default)
 
@@ -109,7 +112,7 @@ class AnnotationItem(QListWidgetItem):
         default: int
             a default number value
         """
-        self.type.setCurrentText("number")
+        self.type_selection_combo.setCurrentText("number")
         self.name.setText(name)
         self.default_num.setValue(default)
 
@@ -124,7 +127,7 @@ class AnnotationItem(QListWidgetItem):
         default: bool
             a bool default (True -> checked)
         """
-        self.type.setCurrentText("checkbox")
+        self.type_selection_combo.setCurrentText("checkbox")
         self.name.setText(name)
         if default:
             self.default_check.setCurrentText("checked")
@@ -144,7 +147,7 @@ class AnnotationItem(QListWidgetItem):
         options : List[str]
             a list of dropdown options
         """
-        self.type.setCurrentText("dropdown")
+        self.type_selection_combo.setCurrentText("dropdown")
         self.name.setText(name)
         self.default_text.setText(default)
         self.default_options.setText(", ".join(options))
@@ -181,7 +184,7 @@ class AnnotationItem(QListWidgetItem):
             self.default_options_label.show()
             self.layout.addWidget(self.default_text, 0, 7, 1, 2)
 
-    def get_data(self) -> Tuple[bool, str, Dict, str]:
+    def get_data(self) -> Tuple[bool, str, Key, str]:
         """
         Highlight any invalid entries and return the data.
 
@@ -209,21 +212,23 @@ class AnnotationItem(QListWidgetItem):
             self.highlight(self.name)
             error = " Invalid Name. "
 
-        type: str = self.type.currentText()
-        # dictionary of annotation type, default, options
-        dct: Dict = {}
+        key: Optional[Key] = None
+        type: str = self.type_selection_combo.currentText()
+        # dictionary of annotation type, to annotation keys
+        default: Optional[Any] = None
+        options: list[str] = []
 
         if type == "text" or type == "dropdown":
             # grab default text entry
             default = self.default_text.text()
             if default is None or len(default) == 0 or default.isspace():
-                dct["default"] = ""
+                default = None
             else:
                 default = default.strip()
                 # default text exists
-                dct["default"] = default
+                default = default
             if type == "text":
-                dct["type"] = "string"
+                default = "string"
             else:
                 # type is options
                 # comma separate list of options
@@ -238,7 +243,7 @@ class AnnotationItem(QListWidgetItem):
                 else:
                     txt2 = [word.strip() for word in txt2.split(",")]
                     contained: bool = False
-                    if dct["default"] == "":
+                    if default == "":
                         contained = True
                     for item in txt2:
                         # check each item in options
@@ -248,24 +253,26 @@ class AnnotationItem(QListWidgetItem):
                             error = error + " Invalid options for dropdown. "
                             break
                         else:
-                            if not contained and item == dct["default"]:
+                            if not contained and item == default:
                                 contained = True
                     if not contained:
                         txt2.append(default)
-                    dct["options"] = txt2
-                    dct["type"] = "list"
-        elif type == "number":
+                    options = txt2
+                    key = ComboKey("list", options, default)
+        elif type == "int":
             # number defaults are required by spinbox, always valid
-            dct["type"] = "number"
-            dct["default"] = self.default_num.value()
+            type = "int"
+            default = self.default_num.value()
         else:
             # checkbox type default required by the drop down, always valid
-            dct["type"] = "bool"
+            type = "bool"
             if self.default_check.currentText() == "checked":
-                dct["default"] = True
+                default = True
             else:
-                dct["default"] = False
-        return valid, name, dct, error
+                default = False
+
+        key = Key(eval(type), default)
+        return valid, name, key, error
 
     def highlight(self, objct: QWidget):
         objct.setStyleSheet("""QLineEdit{border: 1px solid red}""")

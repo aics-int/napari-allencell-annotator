@@ -559,13 +559,13 @@ class TestMainController:
 
     def test_toggle_check_wrong_type(self):
         item = create_autospec(TemplateItem)
-        item.type = ItemType.STRING
+        item.type_selection_combo = ItemType.STRING
         self._controller.annots.view.annot_list.currentItem = MagicMock(return_value=item)
         self._controller._toggle_check()
 
     def test_toggle_check(self):
         item = create_autospec(TemplateItem)
-        item.type = ItemType.BOOL
+        item.type_selection_combo = ItemType.BOOL
         item.editable_widget = create_autospec(QCheckBox)
         item.get_value = MagicMock(return_value=True)
         item.editable_widget.setChecked = MagicMock()
