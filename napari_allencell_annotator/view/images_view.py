@@ -26,7 +26,6 @@ from napari_allencell_annotator._style import Style
 from napari_allencell_annotator.model.annotator_model import AnnotatorModel
 
 from napari_allencell_annotator.util.image_utils import ImageUtils
-from aicsimageio import exceptions
 
 
 class ImagesView(QFrame):
@@ -225,12 +224,10 @@ class ImagesView(QFrame):
         if previous is not None:
             previous.unhighlight()
         if current is not None:
-            try:
-                img: ImageUtils = ImageUtils(current.file_path)
-                img.add_image(viewer=self.viewer)
-                current.highlight()
-            except exceptions.UnsupportedFileFormatError:
-                self.alert("AICS Unsupported File Type")
+            img: ImageUtils = ImageUtils(current.file_path)
+            img.add_image(viewer=self.viewer)
+            current.highlight()
+
 
     def update_num_files_label(self, num_files: int) -> None:
         """
