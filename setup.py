@@ -25,7 +25,8 @@ requirements = [
     "bioio",
     "bioio-ome-tiff",
     "bioio-czi",
-    "tifffile>=2021.8.30"
+    "tifffile>=2021.8.30",
+    "bioio-imageio"
 ]
 
 test_requirements = [
