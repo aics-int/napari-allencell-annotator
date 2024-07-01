@@ -132,7 +132,7 @@ class CreateDialog(QDialog):
 
         """
 
-        dct: Dict[str, Dict] = {}
+        dct: Dict[str, Key] = {}
         valid = True
         error = ""
         # grab all items from list of annotations
@@ -143,13 +143,13 @@ class CreateDialog(QDialog):
             error = " Must provide at least one annotation. "
 
         for i in items:
-            item_valid, name, sub_dct, item_error = i.get_data()
+            item_valid, name, key, item_error = i.get_data()
             # sub_dct is annotation data (type,default, options)
             if name in dct.keys():
                 valid = False
                 i.highlight(i.name)
                 error = error + " No duplicate names allowed. "
-            dct[name] = sub_dct
+            dct[name] = key
             if not item_valid:
                 valid = False
                 error = error + " " + item_error
@@ -158,7 +158,7 @@ class CreateDialog(QDialog):
         # if all values were valid emit signal and set new_annot_dict
         self.error.setText(error)
         if valid:
-            self.new_annot_dict = dct
+            self._annotation_model.set_annotation_keys(dct)
             self.valid_annots_made.emit()
         else:
-            self.new_annot_dict = None
+            self._annotation_model.clear_annotation_keys()
