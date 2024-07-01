@@ -7,7 +7,22 @@ import napari
 
 
 class ImageUtils:
+    """
+    Handles image display with BioImage
+
+    Attributes
+    ----------
+    _image: BioImage
+        An image to be displayed
+
+    Methods
+    -------
+    add_image(self, viewer: napari.Viewer) -> None
+        Shows the image in the viewer
+    """
+
     def __init__(self, filepath: Path):
+
         extension: str = filepath.suffix
 
         self._image: BioImage
@@ -18,7 +33,15 @@ class ImageUtils:
         else:
             self._image = BioImage(filepath, reader=bioio_imageio.Reader)
 
-    def add_image(self, viewer: napari.viewer):
+    def add_image(self, viewer: napari.Viewer) -> None:
+        """
+        Shows the image in the viewer
+
+        Parameters
+        ----------
+        viewer: napari.Viewer
+                The viewer where the image will be added to
+        """
         viewer.add_image(self._image.data)
 
 
