@@ -1,6 +1,7 @@
 import numpy as np
 
 from napari_allencell_annotator.view.i_viewer import IViewer
+from napari.utils.notifications import show_info
 import napari
 
 
@@ -27,3 +28,14 @@ class Viewer(IViewer):
         Clear all images from the napari viewer
         """
         self.viewer.layers.clear()
+
+    def alert(self, alert_msg: str) -> None:
+        """
+        Displays an error alert on the viewer.
+
+        Parameters
+        ----------
+        alert_msg : str
+            The message to be displayed
+        """
+        show_info(alert_msg)

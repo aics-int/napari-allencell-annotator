@@ -14,3 +14,7 @@ class IViewer(ABC):
     @abstractmethod
     def clear_layers(self) -> None:
         pass
+
+    @abstractmethod
+    def alert(self, alert_msg: str) -> None:
+        pass

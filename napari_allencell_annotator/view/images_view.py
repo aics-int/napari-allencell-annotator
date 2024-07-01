@@ -15,7 +15,6 @@ from qtpy.QtWidgets import (
     QPushButton,
 )
 from aicsimageio import AICSImage, exceptions
-from napari.utils.notifications import show_info
 
 from napari_allencell_annotator.widgets.file_input import (
     FileInput,
@@ -139,17 +138,6 @@ class ImagesView(QFrame):
         self._disable_shuffle_button()
         self.enable_add_buttons()
 
-    def alert(self, alert_msg: str) -> None:
-        """
-        Displays an error alert on the viewer.
-
-        Parameters
-        ----------
-        alert_msg : str
-            The message to be displayed
-        """
-        show_info(alert_msg)
-
     def enable_add_buttons(self) -> None:
         """Enables add file and add directory buttons."""
         self.input_dir.toggle(True)
@@ -227,7 +215,7 @@ class ImagesView(QFrame):
                 self.viewer.add_image(img.data)
                 current.highlight()
             except exceptions.UnsupportedFileFormatError:
-                self.alert("AICS Unsupported File Type")
+                self.viewer.alert("AICS Unsupported File Type")
 
     def update_num_files_label(self, num_files: int) -> None:
         """
@@ -252,7 +240,7 @@ class ImagesView(QFrame):
         all_files_in_dir: list[Path] = FileUtils.get_files_in_dir(dir_path)
 
         if len(all_files_in_dir) < 1:
-            self.alert("Folder is empty")
+            self.viewer.alert("Folder is empty")
         else:
             self._add_selected_files(all_files_in_dir)
 
@@ -294,7 +282,7 @@ class ImagesView(QFrame):
                 if file_path not in self._model.get_all_images():
                     self.add_new_item(file_path)
             else:
-                self.alert("Unsupported file type(s)")
+                self.viewer.alert("Unsupported file type(s)")
 
     def _handle_shuffle_clicked(self, checked: bool) -> None:
         """
