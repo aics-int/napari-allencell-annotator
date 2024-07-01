@@ -26,6 +26,7 @@ from napari_allencell_annotator._style import Style
 from napari_allencell_annotator.model.annotator_model import AnnotatorModel
 
 from napari_allencell_annotator.util.image_utils import ImageUtils
+from aicsimageio import exceptions
 
 
 class ImagesView(QFrame):
