@@ -25,7 +25,6 @@ from napari_allencell_annotator.util.file_utils import FileUtils
 from napari_allencell_annotator._style import Style
 from napari_allencell_annotator.model.annotator_model import AnnotatorModel
 
-from bioio import BioImage
 from napari_allencell_annotator.util.image_utils import ImageUtils
 
 
