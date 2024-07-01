@@ -17,7 +17,7 @@ class TestAnnotationItem:
         with mock.patch.object(AnnotationItem, "__init__", lambda x: None):
             self._item = AnnotationItem()
             self._item.name = create_autospec(QLineEdit)
-            self._item.type = create_autospec(QComboBox)
+            self._item.type_selection_combo = create_autospec(QComboBox)
             self._item.default_text = create_autospec(QLineEdit)
             self._item.default_options = create_autospec(QLineEdit)
             self._item.default_num = create_autospec(QSpinBox)
@@ -26,28 +26,28 @@ class TestAnnotationItem:
     def test_fill_vals_text(self):
         self._item.fill_vals_text("name", "default")
 
-        self._item.type.setCurrentText.assert_called_once_with("text")
+        self._item.type_selection_combo.setCurrentText.assert_called_once_with("text")
         self._item.name.setText.assert_called_once_with("name")
         self._item.default_text.setText.assert_called_once_with("default")
 
     def test_fill_vals_number(self):
         self._item.fill_vals_number("name", 3)
 
-        self._item.type.setCurrentText.assert_called_once_with("number")
+        self._item.type_selection_combo.setCurrentText.assert_called_once_with("number")
         self._item.name.setText.assert_called_once_with("name")
         self._item.default_num.setValue.assert_called_once_with(3)
 
     def test_fill_vals_check(self):
         self._item.fill_vals_check("name", True)
 
-        self._item.type.setCurrentText.assert_called_once_with("checkbox")
+        self._item.type_selection_combo.setCurrentText.assert_called_once_with("checkbox")
         self._item.name.setText.assert_called_once_with("name")
         self._item.default_check.setCurrentText.assert_called_once_with("checked")
 
     def test_fill_vals_list(self):
         self._item.fill_vals_list("name", "one", ["one", "two", "three"])
 
-        self._item.type.setCurrentText.assert_called_once_with("dropdown")
+        self._item.type_selection_combo.setCurrentText.assert_called_once_with("dropdown")
         self._item.name.setText.assert_called_once_with("name")
         self._item.default_text.setText.assert_called_once_with("one")
         self._item.default_options.setText.assert_called_once_with("one, two, three")
@@ -116,7 +116,7 @@ class TestAnnotationItem:
         self._item.name.text = MagicMock(return_value=None)
         self._item._unhighlight = MagicMock()
         self._item.highlight = MagicMock()
-        self._item.type.currentText = MagicMock(return_value="text")
+        self._item.type_selection_combo.currentText = MagicMock(return_value="text")
         self._item.default_text.text = MagicMock(return_value=None)
         assert self._item.get_data() == (False, None, {"default": "", "type": "string"}, " Invalid Name. ")
         self._item._unhighlight.assert_called_once_with(self._item.name)
@@ -126,7 +126,7 @@ class TestAnnotationItem:
         self._item.name.text = MagicMock(return_value=" ")
         self._item._unhighlight = MagicMock()
         self._item.highlight = MagicMock()
-        self._item.type.currentText = MagicMock(return_value="text")
+        self._item.type_selection_combo.currentText = MagicMock(return_value="text")
         self._item.default_text.text = MagicMock(return_value=" ")
         assert self._item.get_data() == (False, " ", {"default": "", "type": "string"}, " Invalid Name. ")
         self._item._unhighlight.assert_called_once_with(self._item.name)
@@ -136,7 +136,7 @@ class TestAnnotationItem:
         self._item.name.text = MagicMock(return_value="")
         self._item._unhighlight = MagicMock()
         self._item.highlight = MagicMock()
-        self._item.type.currentText = MagicMock(return_value="text")
+        self._item.type_selection_combo.currentText = MagicMock(return_value="text")
         self._item.default_text.text = MagicMock(return_value="")
         assert self._item.get_data() == (False, "", {"default": "", "type": "string"}, " Invalid Name. ")
         self._item._unhighlight.assert_called_once_with(self._item.name)
@@ -146,7 +146,7 @@ class TestAnnotationItem:
         self._item.name.text = MagicMock(return_value="name")
         self._item._unhighlight = MagicMock()
         self._item.highlight = MagicMock()
-        self._item.type.currentText = MagicMock(return_value="text")
+        self._item.type_selection_combo.currentText = MagicMock(return_value="text")
         self._item.default_text.text = MagicMock(return_value="default")
         assert self._item.get_data() == (True, "name", {"default": "default", "type": "string"}, "")
         self._item._unhighlight.assert_called_once_with(self._item.name)
@@ -157,7 +157,7 @@ class TestAnnotationItem:
         self._item._unhighlight = MagicMock()
         self._item.highlight = MagicMock()
         self._item.default_options.text = MagicMock(return_value=None)
-        self._item.type.currentText = MagicMock(return_value="dropdown")
+        self._item.type_selection_combo.currentText = MagicMock(return_value="dropdown")
         self._item.default_text.text = MagicMock(return_value="")
         assert self._item.get_data() == (False, "name", {"default": ""}, " Must provide two dropdown options. ")
         self._item._unhighlight.assert_has_calls([mock.call(self._item.name), mock.call(self._item.default_options)])
@@ -168,7 +168,7 @@ class TestAnnotationItem:
         self._item._unhighlight = MagicMock()
         self._item.highlight = MagicMock()
         self._item.default_options.text = MagicMock(return_value="onestring")
-        self._item.type.currentText = MagicMock(return_value="dropdown")
+        self._item.type_selection_combo.currentText = MagicMock(return_value="dropdown")
         self._item.default_text.text = MagicMock(return_value="default")
         assert self._item.get_data() == (False, "name", {"default": "default"}, " Must provide two dropdown options. ")
         self._item._unhighlight.assert_has_calls([mock.call(self._item.name), mock.call(self._item.default_options)])
@@ -179,7 +179,7 @@ class TestAnnotationItem:
         self._item._unhighlight = MagicMock()
         self._item.highlight = MagicMock()
         self._item.default_options.text = MagicMock(return_value="1,2")
-        self._item.type.currentText = MagicMock(return_value="dropdown")
+        self._item.type_selection_combo.currentText = MagicMock(return_value="dropdown")
         self._item.default_text.text = MagicMock(return_value="")
         assert self._item.get_data() == (True, "name", {"default": "", "options": ["1", "2"], "type": "list"}, "")
         self._item._unhighlight.assert_has_calls([mock.call(self._item.name), mock.call(self._item.default_options)])
@@ -190,7 +190,7 @@ class TestAnnotationItem:
         self._item._unhighlight = MagicMock()
         self._item.highlight = MagicMock()
         self._item.default_options.text = MagicMock(return_value="1,2")
-        self._item.type.currentText = MagicMock(return_value="dropdown")
+        self._item.type_selection_combo.currentText = MagicMock(return_value="dropdown")
         self._item.default_text.text = MagicMock(return_value="3")
         assert self._item.get_data() == (True, "name", {"default": "3", "options": ["1", "2", "3"], "type": "list"}, "")
         self._item._unhighlight.assert_has_calls([mock.call(self._item.name), mock.call(self._item.default_options)])
@@ -201,7 +201,7 @@ class TestAnnotationItem:
         self._item._unhighlight = MagicMock()
         self._item.highlight = MagicMock()
         self._item.default_options.text = MagicMock(return_value=" 1,2,3 ")
-        self._item.type.currentText = MagicMock(return_value="dropdown")
+        self._item.type_selection_combo.currentText = MagicMock(return_value="dropdown")
         self._item.default_text.text = MagicMock(return_value=" 3")
         assert self._item.get_data() == (True, "name", {"default": "3", "options": ["1", "2", "3"], "type": "list"}, "")
         self._item._unhighlight.assert_has_calls([mock.call(self._item.name), mock.call(self._item.default_options)])
@@ -212,7 +212,7 @@ class TestAnnotationItem:
         self._item._unhighlight = MagicMock()
         self._item.highlight = MagicMock()
         self._item.default_options.text = MagicMock(return_value=" 1,2,3 ")
-        self._item.type.currentText = MagicMock(return_value="dropdown")
+        self._item.type_selection_combo.currentText = MagicMock(return_value="dropdown")
         self._item.default_text.text = MagicMock(return_value=" 4")
         assert self._item.get_data() == (
             True,
@@ -228,7 +228,7 @@ class TestAnnotationItem:
         self._item._unhighlight = MagicMock()
         self._item.highlight = MagicMock()
         self._item.default_options.text = MagicMock(return_value=" 1,2,,3 ")
-        self._item.type.currentText = MagicMock(return_value="dropdown")
+        self._item.type_selection_combo.currentText = MagicMock(return_value="dropdown")
         self._item.default_text.text = MagicMock(return_value="4")
         assert self._item.get_data() == (
             False,
@@ -244,7 +244,7 @@ class TestAnnotationItem:
         self._item._unhighlight = MagicMock()
         self._item.highlight = MagicMock()
         self._item.default_options.text = MagicMock(return_value=" 1,2, ,3 ")
-        self._item.type.currentText = MagicMock(return_value="dropdown")
+        self._item.type_selection_combo.currentText = MagicMock(return_value="dropdown")
         self._item.default_text.text = MagicMock(return_value="4")
         assert self._item.get_data() == (
             False,
@@ -260,7 +260,7 @@ class TestAnnotationItem:
         self._item._unhighlight = MagicMock()
         self._item.highlight = MagicMock()
         self._item.default_options.text = MagicMock(return_value=" 1,2,3,")
-        self._item.type.currentText = MagicMock(return_value="dropdown")
+        self._item.type_selection_combo.currentText = MagicMock(return_value="dropdown")
         self._item.default_text.text = MagicMock(return_value="4")
         assert self._item.get_data() == (
             False,
@@ -276,7 +276,7 @@ class TestAnnotationItem:
         self._item._unhighlight = MagicMock()
         self._item.highlight = MagicMock()
         self._item.default_options.text = MagicMock(return_value=" 1,2,,3 ")
-        self._item.type.currentText = MagicMock(return_value="dropdown")
+        self._item.type_selection_combo.currentText = MagicMock(return_value="dropdown")
         self._item.default_text.text = MagicMock(return_value="4")
         assert self._item.get_data() == (
             False,
@@ -292,7 +292,7 @@ class TestAnnotationItem:
         self._item._unhighlight = MagicMock()
         self._item.highlight = MagicMock()
         self._item.default_options.text = MagicMock(return_value=" 1")
-        self._item.type.currentText = MagicMock(return_value="dropdown")
+        self._item.type_selection_combo.currentText = MagicMock(return_value="dropdown")
         self._item.default_text.text = MagicMock(return_value="4")
         assert self._item.get_data() == (
             False,
@@ -307,7 +307,7 @@ class TestAnnotationItem:
         self._item.name.text = MagicMock(return_value="name")
         self._item._unhighlight = MagicMock()
         self._item.highlight = MagicMock()
-        self._item.type.currentText = MagicMock(return_value="number")
+        self._item.type_selection_combo.currentText = MagicMock(return_value="number")
         self._item.default_num = MagicMock()
         self._item.default_num.value = MagicMock(return_value=4)
         assert self._item.get_data() == (True, "name", {"default": 4, "type": "number"}, "")
@@ -317,7 +317,7 @@ class TestAnnotationItem:
     def test_get_data_checked(self):
         self._item.name.text = MagicMock(return_value="name")
         self._item._unhighlight = MagicMock()
-        self._item.type.currentText = MagicMock(return_value="checkbox")
+        self._item.type_selection_combo.currentText = MagicMock(return_value="checkbox")
         self._item.default_check = MagicMock()
         self._item.default_check.currentText = MagicMock(return_value="checked")
         assert self._item.get_data() == (True, "name", {"default": True, "type": "bool"}, "")
@@ -326,7 +326,7 @@ class TestAnnotationItem:
     def test_get_data_unchecked(self):
         self._item.name.text = MagicMock(return_value="name")
         self._item._unhighlight = MagicMock()
-        self._item.type.currentText = MagicMock(return_value="checkbox")
+        self._item.type_selection_combo.currentText = MagicMock(return_value="checkbox")
         self._item.default_check = MagicMock()
         self._item.default_check.currentText = MagicMock(return_value="unchecked")
         assert self._item.get_data() == (True, "name", {"default": False, "type": "bool"}, "")

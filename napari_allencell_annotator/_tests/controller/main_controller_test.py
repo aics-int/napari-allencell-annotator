@@ -2,7 +2,7 @@ from unittest import mock
 import pytest
 from unittest.mock import MagicMock, create_autospec, patch
 
-from napari_allencell_annotator.controller.main_controller import (
+from napari_allencell_annotator.view.main_view import (
     MainController,
     ImagesController,
     AnnotatorController,
@@ -300,33 +300,33 @@ class TestMainController:
         self._controller.images.view.alert.assert_not_called()
 
     def test_start_annotating_clicked_none(self):
-        self._controller.images.get_num_files = MagicMock(return_value=None)
+        self._controller.images.get_num_images = MagicMock(return_value=None)
 
         self._controller._start_annotating_clicked()
-        self._controller.images.get_num_files.assert_called_once()
+        self._controller.images.get_num_images.assert_called_once()
         self._controller.images.view.alert.assert_called_once_with("Can't Annotate Without Adding Images")
 
     def test_start_annotating_clicked_zero(self):
-        self._controller.images.get_num_files = MagicMock(return_value=0)
+        self._controller.images.get_num_images = MagicMock(return_value=0)
 
         self._controller._start_annotating_clicked()
-        assert len(self._controller.images.get_num_files.mock_calls) == 2
+        assert len(self._controller.images.get_num_images.mock_calls) == 2
         self._controller.images.view.alert.assert_called_once_with("Can't Annotate Without Adding Images")
 
     def test_start_annotating_clicked_true(self):
-        self._controller.images.get_num_files = MagicMock(return_value=1)
+        self._controller.images.get_num_images = MagicMock(return_value=1)
 
         Popup.make_popup.return_value = True
         self._controller._start_annotating_clicked()
-        assert len(self._controller.images.get_num_files.mock_calls) == 2
+        assert len(self._controller.images.get_num_images.mock_calls) == 2
         self._controller.images.view.alert.assert_not_called()
         self._controller.annots.view.csv_input.simulate_click.assert_called_once_with()
 
     def test_start_annotating_clicked_false(self):
-        self._controller.images.get_num_files.return_value = 1
+        self._controller.images.get_num_images.return_value = 1
         Popup.make_popup.return_value = False
         self._controller._start_annotating_clicked()
-        assert len(self._controller.images.get_num_files.mock_calls) == 2
+        assert len(self._controller.images.get_num_images.mock_calls) == 2
         self._controller.images.view.alert.assert_not_called()
         self._controller.annots.view.csv_input.simulate_click.assert_not_called()
 
@@ -467,7 +467,7 @@ class TestMainController:
         self._controller._fix_csv_annotations.assert_called_once_with({"filepath.png": ["filepath", ""]})
         self._controller.images.start_annotating.assert_called_once_with(0)
         self._controller.annots.start_annotating.assert_called_once_with(
-            self._controller.images.get_num_files(), self._controller.csv_annotation_values, True
+            self._controller.images.get_num_images(), self._controller.csv_annotation_values, True
         )
         self._controller.annots.set_curr_img.assert_called_once_with(self._controller.images.curr_img_dict())
         self._controller.images.view.file_widget.currentItemChanged.connect.assert_not_called()
@@ -487,7 +487,7 @@ class TestMainController:
         self._controller.images.start_annotating.assert_called_once_with()
 
         self._controller.annots.start_annotating.assert_called_once_with(
-            self._controller.images.get_num_files(), {"filepath.png": ["filepath", ""]}, False
+            self._controller.images.get_num_images(), {"filepath.png": ["filepath", ""]}, False
         )
         self._controller.annots.set_curr_img.assert_called_once_with(self._controller.images.curr_img_dict())
         self._controller.images.view.file_widget.currentItemChanged.connect.assert_called_once()
@@ -500,23 +500,27 @@ class TestMainController:
         self._controller._next_image_clicked = MagicMock()
         self._controller._prev_image_clicked = MagicMock()
         self._controller._toggle_check = MagicMock()
-        self._controller.next_sc = create_autospec(QShortcut)
-        self._controller.prev_sc = create_autospec(QShortcut)
-        self._controller.down_sc = create_autospec(QShortcut)
-        self._controller.up_sc = create_autospec(QShortcut)
-        self._controller.check_sc = create_autospec(QShortcut)
+        self._controller._shortcut_key_next = create_autospec(QShortcut)
+        self._controller._shortcut_key_prev = create_autospec(QShortcut)
+        self._controller._shortcut_key_down = create_autospec(QShortcut)
+        self._controller._shortcut_key_up = create_autospec(QShortcut)
+        self._controller._shortcut_key_check = create_autospec(QShortcut)
 
         self._controller.annotating_shortcuts_on()
 
-        self._controller.next_sc.activated.connect.assert_called_once_with(self._controller._next_image_clicked)
-        self._controller.prev_sc.activated.connect.assert_called_once_with(self._controller._prev_image_clicked)
-        self._controller.down_sc.activated.connect.assert_called_once_with(
+        self._controller._shortcut_key_next.activated.connect.assert_called_once_with(
+            self._controller._next_image_clicked
+        )
+        self._controller._shortcut_key_prev.activated.connect.assert_called_once_with(
+            self._controller._prev_image_clicked
+        )
+        self._controller._shortcut_key_down.activated.connect.assert_called_once_with(
             self._controller.annots.view.annot_list.next_item
         )
-        self._controller.up_sc.activated.connect.assert_called_once_with(
+        self._controller._shortcut_key_up.activated.connect.assert_called_once_with(
             self._controller.annots.view.annot_list.prev_item
         )
-        self._controller.check_sc.activated.connect.assert_called_once_with(self._controller._toggle_check)
+        self._controller._shortcut_key_check.activated.connect.assert_called_once_with(self._controller._toggle_check)
 
     def test_annotating_shortcuts_off(self):
         QShortcut.activated = MagicMock()
@@ -524,23 +528,29 @@ class TestMainController:
         self._controller._next_image_clicked = MagicMock()
         self._controller._prev_image_clicked = MagicMock()
         self._controller._toggle_check = MagicMock()
-        self._controller.next_sc = create_autospec(QShortcut)
-        self._controller.prev_sc = create_autospec(QShortcut)
-        self._controller.down_sc = create_autospec(QShortcut)
-        self._controller.up_sc = create_autospec(QShortcut)
-        self._controller.check_sc = create_autospec(QShortcut)
+        self._controller._shortcut_key_next = create_autospec(QShortcut)
+        self._controller._shortcut_key_prev = create_autospec(QShortcut)
+        self._controller._shortcut_key_down = create_autospec(QShortcut)
+        self._controller._shortcut_key_up = create_autospec(QShortcut)
+        self._controller._shortcut_key_check = create_autospec(QShortcut)
 
         self._controller.annotating_shortcuts_off()
 
-        self._controller.next_sc.activated.disconnect.assert_called_once_with(self._controller._next_image_clicked)
-        self._controller.prev_sc.activated.disconnect.assert_called_once_with(self._controller._prev_image_clicked)
-        self._controller.down_sc.activated.disconnect.assert_called_once_with(
+        self._controller._shortcut_key_next.activated.disconnect.assert_called_once_with(
+            self._controller._next_image_clicked
+        )
+        self._controller._shortcut_key_prev.activated.disconnect.assert_called_once_with(
+            self._controller._prev_image_clicked
+        )
+        self._controller._shortcut_key_down.activated.disconnect.assert_called_once_with(
             self._controller.annots.view.annot_list.next_item
         )
-        self._controller.up_sc.activated.disconnect.assert_called_once_with(
+        self._controller._shortcut_key_up.activated.disconnect.assert_called_once_with(
             self._controller.annots.view.annot_list.prev_item
         )
-        self._controller.check_sc.activated.disconnect.assert_called_once_with(self._controller._toggle_check)
+        self._controller._shortcut_key_check.activated.disconnect.assert_called_once_with(
+            self._controller._toggle_check
+        )
 
     def test_toggle_check_none(self):
         item = None
@@ -549,13 +559,13 @@ class TestMainController:
 
     def test_toggle_check_wrong_type(self):
         item = create_autospec(TemplateItem)
-        item.type = ItemType.STRING
+        item.type_selection_combo = ItemType.STRING
         self._controller.annots.view.annot_list.currentItem = MagicMock(return_value=item)
         self._controller._toggle_check()
 
     def test_toggle_check(self):
         item = create_autospec(TemplateItem)
-        item.type = ItemType.BOOL
+        item.type_selection_combo = ItemType.BOOL
         item.editable_widget = create_autospec(QCheckBox)
         item.get_value = MagicMock(return_value=True)
         item.editable_widget.setChecked = MagicMock()

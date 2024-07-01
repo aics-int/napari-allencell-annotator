@@ -3,7 +3,7 @@ import sys
 from qtpy.QtWidgets import QApplication
 
 import napari
-from napari_allencell_annotator.controller.main_controller import MainController
+from napari_allencell_annotator.view.main_view import MainController
 
 
 class App(QApplication):
