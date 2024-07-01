@@ -12,6 +12,9 @@ from napari_allencell_annotator.model.annotator_model import AnnotatorModel
 from napari_allencell_annotator.widgets.create_dialog import CreateDialog
 from napari_allencell_annotator.widgets.template_item import ItemType, TemplateItem
 from napari_allencell_annotator.widgets.popup import Popup
+from napari_allencell_annotator.view.viewer import Viewer
+from napari_allencell_annotator.view.i_viewer import IViewer
+
 import napari
 from typing import List, Dict, Union
 
@@ -35,14 +38,14 @@ class MainView(QFrame):
     def __init__(self, napari_viewer: napari.Viewer):
         super().__init__()
         # init viewer and parts of the plugin
-        self.napari = napari_viewer
+        self.viewer: IViewer = Viewer(napari_viewer)
         self._model = AnnotatorModel()
 
         # ImagesView and Controller
-        self._images_view = ImagesView(self._model, self.napari)
+        self._images_view = ImagesView(self._model, self.viewer)
         self._images_view.show()
 
-        self.annots = AnnotatorController(self.napari)
+        self.annots = AnnotatorController(self.viewer)
 
         # set layout and add sub views
         self.setLayout(QVBoxLayout())
