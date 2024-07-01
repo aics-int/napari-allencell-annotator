@@ -1,5 +1,9 @@
 import json
+from pathlib import Path
 
+from napari_allencell_annotator.model.annotation_model import AnnotationModel
+from napari_allencell_annotator.model.key import Key
+from napari_allencell_annotator.util.json_utils import JSONUtils
 from napari_allencell_annotator.view.annotator_view import (
     AnnotatorView,
     AnnotatorViewMode,
@@ -8,6 +12,7 @@ import napari
 
 from typing import Dict, List, Optional, Any
 import csv
+
 
 
 class AnnotatorController:
@@ -57,6 +62,8 @@ class AnnotatorController:
 
     def __init__(self, viewer: napari.Viewer):
 
+        self._annotation_model = AnnotationModel()
+
         # dictionary of json info:
         self.annot_json_data: Dict[str, Dict[str, Any]] = None
         # open in view mode
@@ -84,6 +91,7 @@ class AnnotatorController:
         dct : Dict[str, Dict[str, Any]]
             a dictionary of annotation data. name -> {type -> str,  options -> List[str], default -> bool, int, or str}
         """
+
         return self.annot_json_data
 
     def set_annot_json_data(self, dct: Dict[str, Dict[str, Any]]):
@@ -115,20 +123,19 @@ class AnnotatorController:
         file_path : str
             file path for json file to write to.
         """
-        if self.annot_json_data is not None:
-            json.dump(self.annot_json_data, open(file_path, "w"), indent=4)
+        json.dump(self._annotation_model.get_annotation_keys(), open(file_path, "w"), indent=4)
 
     def start_viewing(self, alr_anntd: Optional[bool] = False):
         """Change view to VIEW mode and render annotations."""
         self.view.set_mode(mode=AnnotatorViewMode.VIEW)
-        self.view.render_annotations(self.annot_json_data)
+        self.view.render_annotations(self._annotation_model.get_annotation_keys()) #TODO fix render_annotations to use annoations dict
         # disable edit button if already annotated is True
         self.view.edit_btn.setEnabled(not alr_anntd)
 
     def stop_viewing(self):
         """Change view to ADD mode, reset annotations, and clear annotation json data."""
         self.view.set_mode(mode=AnnotatorViewMode.ADD)
-        self.annot_json_data = None
+        self._annotation_model.clear_annotation_keys()
 
     def start_annotating(self, num_images: int, dct: Dict[str, List[str]], shuffled: bool):
         """
@@ -162,7 +169,7 @@ class AnnotatorController:
         self.files_and_annots = {}
         self.view.set_num_images()
         self.view.set_mode(mode=AnnotatorViewMode.ADD)
-        self.annot_json_data = None
+        self._annotation_model.clear_annotation_keys()
         self.set_curr_img()
         self.set_csv_path()
 
@@ -233,6 +240,7 @@ class AnnotatorController:
         self.files_and_annots[prev_img] = self.files_and_annots[prev_img][:2:] + lst
 
     def read_json(self, file_path: str):
+        # TODO change param to path
         """
         Read a json file into a dictionary and set annot_json_data.
 
@@ -242,8 +250,8 @@ class AnnotatorController:
             file path to json file to read from
         """
         # todo file not found
-        with open(file_path, "r") as f:
-            self.annot_json_data: Dict[str, Dict] = json.loads(f.read())
+        json_dict: dict[str, Key] = JSONUtils.json_dump_to_dict(JSONUtils.get_json_data(Path(file_path)))
+        self._annotation_model.set_annotation_keys(json_dict)
 
     def get_annotations_csv(self, annotations: str):
         """
@@ -254,8 +262,8 @@ class AnnotatorController:
         annotations: str
             a string of annotation dictionary data from the csv
         """
-
-        self.annot_json_data = json.loads(annotations)
+        json_dict: dict[str, Key] = JSONUtils.json_dump_to_dict(annotations)
+        self._annotation_model.set_annotation_keys(json_dict)
 
     def write_csv(self):
         """write headers and file info"""
