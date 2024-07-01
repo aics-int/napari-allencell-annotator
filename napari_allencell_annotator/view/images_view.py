@@ -2,9 +2,7 @@ from pathlib import Path
 import random
 from typing import Optional
 
-from napari_allencell_annotator.constants.constants import SUPPORTED_FILE_TYPES
 from napari_allencell_annotator.view.i_viewer import IViewer
-
 from napari_allencell_annotator.widgets.file_scrollable_popup import FileScrollablePopup
 from napari_allencell_annotator.widgets.popup import Popup
 from qtpy.QtWidgets import QFrame
@@ -25,6 +23,7 @@ from napari_allencell_annotator.widgets.file_input import (
     FileInputMode,
 )
 from napari_allencell_annotator.widgets.files_widget import FilesWidget, FileItem
+from napari_allencell_annotator.util.file_utils import FileUtils
 from napari_allencell_annotator._style import Style
 from napari_allencell_annotator.model.annotator_model import AnnotatorModel
 
@@ -242,7 +241,7 @@ class ImagesView(QFrame):
         """
         self.num_files_label.setText(f"Image files: {num_files}")
 
-    def _add_selected_dir_to_ui(self, dir: Path) -> None:
+    def _add_selected_dir_to_ui(self, dir_path: Path) -> None:
         """
         Adds all files in a directory to the GUI.
 
@@ -251,8 +250,8 @@ class ImagesView(QFrame):
         dir_list : List[Path]
             The input list with dir[0] holding directory name.
         """
-        # TODO file editing code: create file utility to do this
-        all_files_in_dir: list[Path] = list(dir.glob("*.*"))
+        all_files_in_dir: list[Path] = FileUtils.get_files_in_dir(dir_path)
+
         if len(all_files_in_dir) < 1:
             self.alert("Folder is empty")
         else:
@@ -291,9 +290,8 @@ class ImagesView(QFrame):
             The list of files
         """
         # ignore hidden files and directories
-        # TODO: put list comprehension into a file utility class
-        for file_path in [file for file in file_list if not file.name.startswith(".") and file.is_file()]:
-            if self.is_supported(file_path):
+        for file_path in FileUtils.select_only_valid_files(file_list=file_list):
+            if FileUtils.is_supported(file_path):
                 if file_path not in self._model.get_all_images():
                     self.add_new_item(file_path)
             else:
@@ -389,3 +387,7 @@ class ImagesView(QFrame):
         self._model.set_all_images([])  # clear model
         self.file_widget.clear_all()  # clear widget
         self.update_num_files_label(self._model.get_num_images())  # update label
+<<<<<<< HEAD
+=======
+
+>>>>>>> refactor-base
