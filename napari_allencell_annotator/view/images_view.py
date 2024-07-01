@@ -228,7 +228,6 @@ class ImagesView(QFrame):
             img.add_image(viewer=self.viewer)
             current.highlight()
 
-
     def update_num_files_label(self, num_files: int) -> None:
         """
         Update num_files_label to show the number of image files
@@ -386,4 +385,3 @@ class ImagesView(QFrame):
         self._model.set_all_images([])  # clear model
         self.file_widget.clear_all()  # clear widget
         self.update_num_files_label(self._model.get_num_images())  # update label
-

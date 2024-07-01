@@ -43,5 +43,3 @@ class ImageUtils:
                 The viewer where the image will be added to
         """
         viewer.add_image(self._image.data)
-
-
