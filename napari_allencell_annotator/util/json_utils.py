@@ -11,7 +11,7 @@ class JSONUtils:
     def dict_to_json_dump(annotation_keys: dict[str, Key]) -> str:
         # convert annotation_keys to json compatible format
         keys_dict: dict[str, dict] = {}
-        for key, key_info in annotation_keys:
+        for key, key_info in annotation_keys.items():
             keys_dict[key] = {
                 "type": str(key_info.get_type()),
                 "default": key_info.get_default_value(),
@@ -28,10 +28,10 @@ class JSONUtils:
         for key, value in original_dict.items():
             # this means it is a combo_key
             if "options" in list(value.keys()):
-                converted_dict[key] = ComboKey(eval(value["type"]), value["options"], value["default"])
+                converted_dict[key] = ComboKey(value["type"], value["options"], value["default"])
             # is a Key
             else:
-                converted_dict[key] = Key(eval(value["type"]), value["default"])
+                converted_dict[key] = Key(value["type"], value["default"])
 
         return converted_dict
 
@@ -39,5 +39,10 @@ class JSONUtils:
     def get_json_data(path: Path) -> str:
         with open(path, "r") as f:
             return f.read()
+
+    @staticmethod
+    def write_json_data(data: str, path: Path) -> None:
+        with open(path, 'w') as f:
+            f.write(data)
 
 

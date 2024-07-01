@@ -1,6 +1,8 @@
 import csv
 import itertools
 from pathlib import Path
+
+from napari_allencell_annotator.model.annotation_model import AnnotationModel
 from napari_allencell_annotator.view.images_view import ImagesView
 from qtpy import QtCore
 from qtpy.QtWidgets import QFrame, QShortcut
@@ -8,7 +10,7 @@ from qtpy.QtWidgets import QVBoxLayout, QDialog
 from qtpy.QtGui import QKeySequence
 
 from napari_allencell_annotator.controller.annotator_controller import AnnotatorController
-from napari_allencell_annotator.model.annotator_model import AnnotatorModel
+from napari_allencell_annotator.model.annotator_model import ImagesModel
 from napari_allencell_annotator.widgets.create_dialog import CreateDialog
 from napari_allencell_annotator.widgets.template_item import ItemType, TemplateItem
 from napari_allencell_annotator.widgets.popup import Popup
@@ -36,13 +38,14 @@ class MainView(QFrame):
         super().__init__()
         # init viewer and parts of the plugin
         self.napari = napari_viewer
-        self._model = AnnotatorModel()
+        self._model = ImagesModel()
 
         # ImagesView and Controller
         self._images_view = ImagesView(self._model, self.napari)
         self._images_view.show()
 
-        self.annots = AnnotatorController(self.napari)
+        self._annotation_model = AnnotationModel()
+        self.annots = AnnotatorController(self._annotation_model, self.napari)
 
         # set layout and add sub views
         self.setLayout(QVBoxLayout())
@@ -81,13 +84,12 @@ class MainView(QFrame):
     def _create_clicked(self):
         """Create dialog window for annotation creation and start viewing on accept event."""
 
-        dlg = CreateDialog(self, self.annots.get_annot_json_data())
+        dlg = CreateDialog(self._annotation_model, parent=self)
         if dlg.exec() == QDialog.Accepted:
             self.csv_annotation_values = None
-            self.annots.set_annot_json_data(dlg.new_annot_dict)
             self.annots.start_viewing()
 
-    def _json_write_selected_evt(self, file_list: List[Path]):
+    def _json_write_selected_evt(self, file_path: Path):
         """
         Set json file name and write the annotations to the file.
 
@@ -99,16 +101,11 @@ class MainView(QFrame):
         file_list : List[str]
             The list containing one file name.
         """
-
-        if file_list is None or len(file_list) < 1:
-            self.images.view.alert("No selection provided")
-        else:
-            file_path = file_list[0]
-            extension = file_path.suffix
-            if extension != ".json":
-                file_path = file_path.with_suffix(".json")
-            self.annots.view.save_json_btn.setEnabled(False)
-            self.annots.write_json(file_path)
+        extension = file_path.suffix
+        if extension != ".json":
+            file_path = file_path.with_suffix(".json")
+        self.annots.view.save_json_btn.setEnabled(False)
+        self.annots.write_json(file_path)
 
     def _csv_json_import_selected_evt(self, file_list: List[Path]):
         """
@@ -560,7 +557,7 @@ class MainView(QFrame):
             True if null values are in the list.
         """
 
-        if len(lst) < len(self.annots.get_annot_json_data().keys()):
+        if len(lst) < len(self._annotation_model.get_annotation_keys().keys()):
             return True
         else:
             for item in lst:

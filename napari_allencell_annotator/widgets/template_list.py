@@ -5,6 +5,8 @@ from qtpy.QtWidgets import QLineEdit, QCheckBox, QComboBox, QSpinBox
 from qtpy.QtWidgets import QSizePolicy
 from qtpy.QtWidgets import QListWidget
 
+from napari_allencell_annotator.model.combo_key import ComboKey
+from napari_allencell_annotator.model.key import Key
 from napari_allencell_annotator.widgets.template_item import TemplateItem, ItemType
 from napari_allencell_annotator._style import Style
 
@@ -75,7 +77,7 @@ class TemplateList(QListWidget):
 
         self.height = 0
 
-    def add_item(self, name: str, dct: Dict[str, Any]):
+    def add_item(self, name: str, key: Key | ComboKey):
         """
         Add annotation template item from dictionary entries.
 
@@ -86,8 +88,8 @@ class TemplateList(QListWidget):
         dct : Dict[str, Any]
             annotation type, default, and options.
         """
-        annot_type: str = dct["type"]
-        default: Any = dct["default"]
+        annot_type = str(key.get_type())
+        default: Any = key.get_default_value()
         widget = None
         if annot_type == "string":
             annot_type = ItemType.STRING
@@ -103,8 +105,9 @@ class TemplateList(QListWidget):
         elif annot_type == "list":
             annot_type = ItemType.LIST
             widget = QComboBox()
-            for opt in dct["options"]:
-                widget.addItem(opt)
+            if isinstance(key, ComboKey):
+                for opt in key.get_options():
+                    widget.addItem(opt)
             widget.setCurrentText(default)
         item = TemplateItem(self, name, annot_type, default, widget)
 

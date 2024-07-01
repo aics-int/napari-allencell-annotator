@@ -24,7 +24,7 @@ from napari_allencell_annotator.widgets.file_input import (
 from napari_allencell_annotator.widgets.files_widget import FilesWidget, FileItem
 from napari_allencell_annotator.util.file_utils import FileUtils
 from napari_allencell_annotator._style import Style
-from napari_allencell_annotator.model.annotator_model import AnnotatorModel
+from napari_allencell_annotator.model.annotator_model import ImagesModel
 
 
 class ImagesView(QFrame):
@@ -46,7 +46,7 @@ class ImagesView(QFrame):
         Updates num_files_label to show the current number of image files
     """
 
-    def __init__(self, annotator_model: AnnotatorModel, viewer: napari.Viewer):
+    def __init__(self, annotator_model: ImagesModel, viewer: napari.Viewer):
         """
         Parameters
         ----------

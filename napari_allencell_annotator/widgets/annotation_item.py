@@ -201,6 +201,8 @@ class AnnotationItem(QListWidgetItem):
             Dict: annotation item data (type, default, options)
             str: error msg if applicable
         """
+
+        #TODO: refactor this mess- bkim 7/1/20-24
         # bool valid if all annotation values are in the correct format
         error = ""
         valid: bool = True
@@ -228,24 +230,25 @@ class AnnotationItem(QListWidgetItem):
                 # default text exists
                 default = default
             if type == "text":
-                default = "string"
+                type = "string"
             else:
+                type = "list"
                 # type is options
                 # comma separate list of options
-                txt2 = self.default_options.text()
+                options_list = self.default_options.text()
                 # unhighlight by default
                 self._unhighlight(self.default_options)
                 # if there is less than two options provided
-                if txt2 is None or len(txt2.split(",")) < 2:
+                if options_list is None or len(options_list.split(",")) < 2:
                     valid = False
                     self.highlight(self.default_options)
                     error = error + " Must provide two dropdown options. "
                 else:
-                    txt2 = [word.strip() for word in txt2.split(",")]
+                    options_list = [word.strip() for word in options_list.split(",")]
                     contained: bool = False
                     if default == "":
                         contained = True
-                    for item in txt2:
+                    for item in options_list:
                         # check each item in options
                         if len(item) == 0:
                             valid = False
@@ -255,13 +258,13 @@ class AnnotationItem(QListWidgetItem):
                         else:
                             if not contained and item == default:
                                 contained = True
-                    if not contained:
-                        txt2.append(default)
-                    options = txt2
-                    key = ComboKey("list", options, default)
-        elif type == "int":
+                    if default not in options_list:
+                        error = f"Default value {default} is not in list of valid options"
+                        valid = False
+                    options = options_list
+        elif type == "number":
             # number defaults are required by spinbox, always valid
-            type = "int"
+            type = "number"
             default = self.default_num.value()
         else:
             # checkbox type default required by the drop down, always valid
@@ -271,7 +274,10 @@ class AnnotationItem(QListWidgetItem):
             else:
                 default = False
 
-        key = Key(eval(type), default)
+        if type == "list":
+            key = ComboKey("list", options, default)
+        else:
+            key = Key(type, default)
         return valid, name, key, error
 
     def highlight(self, objct: QWidget):

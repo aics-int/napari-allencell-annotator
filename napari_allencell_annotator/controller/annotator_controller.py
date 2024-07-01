@@ -60,9 +60,9 @@ class AnnotatorController:
         Writes header and annotations to the csv file.
     """
 
-    def __init__(self, viewer: napari.Viewer):
+    def __init__(self, model: AnnotationModel, viewer: napari.Viewer):
+        self._annotation_model = model
 
-        self._annotation_model = AnnotationModel()
         # open in view mode
         self.view: AnnotatorView = AnnotatorView(viewer)
 
@@ -76,31 +76,6 @@ class AnnotatorController:
         self.view.cancel_btn.clicked.connect(self.stop_viewing)
 
         self.shuffled: bool = None
-
-    # next item, prev item, itemchanged event to call highlight, click -> selection, select on open
-
-    def get_annot_json_data(self) -> Dict[str, Dict[str, Any]]:
-        """
-        Get annotation data dictionary.
-
-        Returns
-        ------
-        dct : Dict[str, Dict[str, Any]]
-            a dictionary of annotation data. name -> {type -> str,  options -> List[str], default -> bool, int, or str}
-        """
-
-        return self.annot_json_data
-
-    def set_annot_json_data(self, dct: Dict[str, Dict[str, Any]]):
-        """
-        Set annotation data dictionary.
-
-        Parameters
-        ------
-        dct : Dict[str, Dict[str, Any]]
-            a dictionary of annotation data. name -> {type -> str,  options -> List[str], default -> bool, int, or str}
-        """
-        self.annot_json_data = dct
 
     def set_csv_path(self, path: Optional[str] = None):
         """
@@ -120,7 +95,10 @@ class AnnotatorController:
         file_path : str
             file path for json file to write to.
         """
-        json.dump(self._annotation_model.get_annotation_keys(), open(file_path, "w"), indent=4)
+
+        json_data: str = JSONUtils.dict_to_json_dump(self._annotation_model.get_annotation_keys())
+        JSONUtils.write_json_data(json_data, Path(file_path))
+
 
     def start_viewing(self, alr_anntd: Optional[bool] = False):
         """Change view to VIEW mode and render annotations."""

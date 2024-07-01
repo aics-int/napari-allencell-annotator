@@ -15,6 +15,7 @@ from qtpy.QtWidgets import (
 from qtpy.QtCore import Signal
 
 from napari_allencell_annotator.model.annotation_model import AnnotationModel
+from napari_allencell_annotator.model.key import Key
 from napari_allencell_annotator.widgets.annotation_widget import AnnotationWidget
 
 
@@ -44,7 +45,7 @@ class CreateDialog(QDialog):
         self.list = AnnotationWidget()
 
         self.layout = QVBoxLayout()
-        if len(self.model.get_annotation_keys()) > 0:
+        if len(self._annotation_model.get_annotation_keys()) > 0:
             self.list.add_new_item()
             label = QLabel("Create Annotations")
             label.setAlignment(Qt.AlignCenter)
@@ -64,7 +65,6 @@ class CreateDialog(QDialog):
         self.cancel = QPushButton("Cancel")  # check: if edit -> cancel go back to view
         self.apply = QPushButton("Apply")
         self.btns = QWidget()
-        self.new_annot_dict: Dict[str, Dict] = None
         layout = QHBoxLayout()
         layout.addWidget(self.add)
         layout.addWidget(self.delete)
@@ -83,7 +83,7 @@ class CreateDialog(QDialog):
 
         self.setLayout(self.layout)
 
-        if len(self.model.get_annotation_keys()) > 0:
+        if len(self._annotation_model.get_annotation_keys()) > 0:
             self.render_annotations()
         self._connect_slots()
 
@@ -148,11 +148,11 @@ class CreateDialog(QDialog):
             if name in dct.keys():
                 valid = False
                 i.highlight(i.name)
-                error = error + " No duplicate names allowed. "
+                error = error + f"Error in {name}: No duplicate names allowed. "
             dct[name] = key
             if not item_valid:
                 valid = False
-                error = error + " " + item_error
+                error = error + f"Error in {name}: " + item_error
                 break
 
         # if all values were valid emit signal and set new_annot_dict

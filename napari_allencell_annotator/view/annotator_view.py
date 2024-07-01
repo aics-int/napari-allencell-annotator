@@ -13,6 +13,8 @@ from qtpy.QtWidgets import (
     QVBoxLayout,
 )
 from napari import Viewer
+
+from napari_allencell_annotator.model.key import Key
 from napari_allencell_annotator.widgets.file_input import (
     FileInput,
     FileInputMode,
@@ -273,7 +275,7 @@ class AnnotatorView(QFrame):
             self.layout.addWidget(self.annot_widget)
             self.prev_btn.setEnabled(False)
 
-    def render_annotations(self, data: Dict[str, Dict[str, Any]]):
+    def render_annotations(self, data: Dict[str, Key]):
         """
         Read annotation dictionary into individual annotations.
 
@@ -284,11 +286,11 @@ class AnnotatorView(QFrame):
         """
         self.annot_list.clear_all()
         self.annots_order.clear()
-        for name in data.keys():
-            self._create_annot(name, data[name])
+        for name, key_info in data.items():
+            self._create_annot(name, key_info)
         self.scroll.setMaximumHeight(self.annot_list.height)
 
-    def _create_annot(self, name: str, dct: Dict[str, Any]):
+    def _create_annot(self, name: str, key: Key):
         """
         Create annotation widgets from dictionary entries.
 
@@ -300,4 +302,4 @@ class AnnotatorView(QFrame):
             annotation type, default, and options.
         """
         self.annots_order.append(name)
-        self.annot_list.add_item(name, dct)
+        self.annot_list.add_item(name, key)

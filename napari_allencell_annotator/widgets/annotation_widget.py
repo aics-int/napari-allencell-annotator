@@ -46,9 +46,9 @@ class AnnotationWidget(QListWidget):
         # TODO support float?
         item: AnnotationItem = self.add_new_item()
         annot_type: str = str(key_info.get_type())
-        if annot_type == "str":
+        if annot_type == "string":
             item.fill_vals_text(name, key_info.get_default_value())
-        elif annot_type == "int":
+        elif annot_type == "number":
             item.fill_vals_number(name, key_info.get_default_value())
         elif annot_type == "bool":
             item.fill_vals_check(name, key_info.get_default_value())
