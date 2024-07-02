@@ -3,7 +3,6 @@ from enum import Enum
 from qtpy.QtWidgets import QPushButton
 from qtpy.QtWidgets import QHBoxLayout, QWidget, QFileDialog
 from qtpy.QtCore import Signal
-from typing import List, Optional
 from pathlib import Path
 
 
