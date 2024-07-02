@@ -14,7 +14,6 @@ from typing import Dict, List, Optional, Any
 import csv
 
 
-
 class AnnotatorController:
     """
     A class used to control the model and view for annotations.
@@ -99,11 +98,12 @@ class AnnotatorController:
         json_data: str = JSONUtils.dict_to_json_dump(self._annotation_model.get_annotation_keys())
         JSONUtils.write_json_data(json_data, Path(file_path))
 
-
     def start_viewing(self, alr_anntd: Optional[bool] = False):
         """Change view to VIEW mode and render annotations."""
         self.view.set_mode(mode=AnnotatorViewMode.VIEW)
-        self.view.render_annotations(self._annotation_model.get_annotation_keys()) #TODO fix render_annotations to use annoations dict
+        self.view.render_annotations(
+            self._annotation_model.get_annotation_keys()
+        )  # TODO fix render_annotations to use annoations dict
         # disable edit button if already annotated is True
         self.view.edit_btn.setEnabled(not alr_anntd)
 

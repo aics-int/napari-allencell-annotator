@@ -46,6 +46,7 @@ class ImagesView(QFrame):
     update_num_files_label(num_files:int)
         Updates num_files_label to show the current number of image files
     """
+
     def __init__(self, annotator_model: ImagesModel, viewer: IViewer):
         """
         Parameters
