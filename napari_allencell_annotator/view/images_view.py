@@ -2,6 +2,7 @@ from pathlib import Path
 import random
 from typing import Optional
 
+from napari_allencell_annotator.view.i_viewer import IViewer
 from napari_allencell_annotator.widgets.file_scrollable_popup import FileScrollablePopup
 from napari_allencell_annotator.widgets.popup import Popup
 from qtpy.QtWidgets import QFrame
@@ -13,8 +14,7 @@ from qtpy.QtWidgets import (
     QGridLayout,
     QPushButton,
 )
-import napari
-from napari.utils.notifications import show_info
+
 
 from napari_allencell_annotator.widgets.file_input import (
     FileInput,
@@ -23,7 +23,7 @@ from napari_allencell_annotator.widgets.file_input import (
 from napari_allencell_annotator.widgets.files_widget import FilesWidget, FileItem
 from napari_allencell_annotator.util.file_utils import FileUtils
 from napari_allencell_annotator._style import Style
-from napari_allencell_annotator.model.annotator_model import AnnotatorModel
+from napari_allencell_annotator.model.annotator_model import ImagesModel
 
 from napari_allencell_annotator.util.image_utils import ImageUtils
 
@@ -34,8 +34,8 @@ class ImagesView(QFrame):
 
     Attributes
     ----------
-    viewer : napari.Viewer
-        a napari viewer where the plugin will be used
+    viewer : IViewer
+        a viewer where the plugin will be used
     ctrl : ImagesController
         a controller for the view
 
@@ -46,13 +46,12 @@ class ImagesView(QFrame):
     update_num_files_label(num_files:int)
         Updates num_files_label to show the current number of image files
     """
-
-    def __init__(self, annotator_model: AnnotatorModel, viewer: napari.Viewer):
+    def __init__(self, annotator_model: ImagesModel, viewer: IViewer):
         """
         Parameters
         ----------
-        viewer : napari.Viewer
-            The napari viewer for the plugin
+        viewer : IViewer
+            The viewer for the plugin
         """
         self._model = annotator_model
         super().__init__()
@@ -99,7 +98,7 @@ class ImagesView(QFrame):
 
         self.setLayout(self.layout)
 
-        self.viewer: napari.viewer = viewer
+        self.viewer: IViewer = viewer
         self._connect_slots()
 
     def _connect_slots(self) -> None:
@@ -139,17 +138,6 @@ class ImagesView(QFrame):
         self._disable_delete_button()
         self._disable_shuffle_button()
         self.enable_add_buttons()
-
-    def alert(self, alert_msg: str) -> None:
-        """
-        Displays an error alert on the napari viewer.
-
-        Parameters
-        ----------
-        alert_msg : str
-            The message to be displayed
-        """
-        show_info(alert_msg)
 
     def enable_add_buttons(self) -> None:
         """Enables add file and add directory buttons."""
@@ -219,8 +207,7 @@ class ImagesView(QFrame):
         previous: FileItem
             Previous file
         """
-        # TODO: viewer code, move to viewer, create a fake viewer
-        self.viewer.layers.clear()
+        self.viewer.clear_layers()
         if previous is not None:
             previous.unhighlight()
         if current is not None:
@@ -251,7 +238,7 @@ class ImagesView(QFrame):
         all_files_in_dir: list[Path] = FileUtils.get_files_in_dir(dir_path)
 
         if len(all_files_in_dir) < 1:
-            self.alert("Folder is empty")
+            self.viewer.alert("Folder is empty")
         else:
             self._add_selected_files(all_files_in_dir)
 
@@ -293,7 +280,7 @@ class ImagesView(QFrame):
                 if file_path not in self._model.get_all_images():
                     self.add_new_item(file_path)
             else:
-                self.alert("Unsupported file type(s)")
+                self.viewer.alert("Unsupported file type(s)")
 
     def _handle_shuffle_clicked(self, checked: bool) -> None:
         """

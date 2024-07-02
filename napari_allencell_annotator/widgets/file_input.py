@@ -67,8 +67,10 @@ class FileInput(QWidget):
             self._select_file()
         elif self._mode == FileInputMode.DIRECTORY:
             self._select_dir()
-        else:
-            pass
+        elif self._mode == FileInputMode.JSON:
+            self._select_json()
+        elif self._mode == FileInputMode.CSV:
+            self._select_csv()
 
     def _select_file(self) -> None:
         files, _ = QFileDialog.getOpenFileNames(
@@ -78,6 +80,15 @@ class FileInput(QWidget):
         )
         self.files_selected.emit([Path(file) for file in files])
 
+    def _select_json(self) -> None:
+        file_path_str, _ = QFileDialog.getSaveFileName(
+            self,
+            "Select or create a json file",
+            filter="JSON Files (*.json)",
+            options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
+        )
+        self.file_selected.emit(Path(file_path_str))
+
     def _select_dir(self) -> None:
         dir_path_str: str = QFileDialog.getExistingDirectory(
             self,
@@ -85,6 +96,16 @@ class FileInput(QWidget):
             options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
         )
         self.dir_selected.emit(Path(dir_path_str))
+
+    def _select_csv(self) -> None:
+        file_path_str:str
+        file_path_str, _ = QFileDialog.getSaveFileName(
+            self,
+            "Select or create a csv file",
+            filter="CSV Files (*.csv)",
+            options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
+        )
+        self.file_selected.emit(Path(file_path_str))
 
     # def _select_file(self) -> None:  # pragma: no-cover
     #     file_path: Optional[Path] = None
