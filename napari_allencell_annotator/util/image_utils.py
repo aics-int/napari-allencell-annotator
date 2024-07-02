@@ -1,4 +1,6 @@
 from pathlib import Path
+
+import numpy as np
 from bioio import BioImage
 import bioio_ome_tiff
 import bioio_czi
@@ -33,13 +35,8 @@ class ImageUtils:
         else:
             self._image = BioImage(filepath, reader=bioio_imageio.Reader)
 
-    def add_image(self, viewer: napari.Viewer) -> None:
+    def get_image_data(self) -> np.ndarray:
         """
-        Shows the image in the viewer
-
-        Parameters
-        ----------
-        viewer: napari.Viewer
-                The viewer where the image will be added to
+        Returns image data
         """
-        viewer.add_image(self._image.data)
+        return self._image.data

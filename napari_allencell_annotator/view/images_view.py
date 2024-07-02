@@ -225,7 +225,7 @@ class ImagesView(QFrame):
             previous.unhighlight()
         if current is not None:
             img: ImageUtils = ImageUtils(current.file_path)
-            img.add_image(viewer=self.viewer)
+            self.viewer.add_image(img.get_image_data())
             current.highlight()
 
     def update_num_files_label(self, num_files: int) -> None:
