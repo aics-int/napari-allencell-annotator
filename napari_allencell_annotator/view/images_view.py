@@ -2,11 +2,15 @@ from pathlib import Path
 import random
 from typing import Optional
 
+from PyQt5.QtWidgets import QListWidgetItem
+
+from napari_allencell_annotator.model.annotation_model import AnnotatorModel
 from napari_allencell_annotator.view.i_viewer import IViewer
 from napari_allencell_annotator.widgets.file_scrollable_popup import FileScrollablePopup
 from napari_allencell_annotator.widgets.popup import Popup
 from qtpy.QtWidgets import QFrame
 from qtpy.QtCore import Qt
+from qtpy.QtCore import Signal
 
 from qtpy.QtWidgets import (
     QLabel,
@@ -23,7 +27,7 @@ from napari_allencell_annotator.widgets.file_input import (
 from napari_allencell_annotator.widgets.files_widget import FilesWidget, FileItem
 from napari_allencell_annotator.util.file_utils import FileUtils
 from napari_allencell_annotator._style import Style
-from napari_allencell_annotator.model.annotator_model import ImagesModel
+from napari_allencell_annotator.model.images_model import ImagesModel
 
 
 class ImagesView(QFrame):
@@ -51,7 +55,7 @@ class ImagesView(QFrame):
         viewer : IViewer
             The viewer for the plugin
         """
-        self._model = annotator_model
+        self._annotator_model: AnnotatorModel = annotator_model
         super().__init__()
 
         self.setStyleSheet(Style.get_stylesheet("main.qss"))
@@ -258,13 +262,13 @@ class ImagesView(QFrame):
             File name visibility
         """
         self.file_widget.add_item(file, hidden)
-        self._model.add_image(file)  # update model
+        self._annotator_model.add_image(file)  # update model
         if (
-            self._model.get_num_images() == 1
+            self._annotator_model.get_num_images() == 1
         ):  # TODO: WHY DO WE NEED THIS?, rethink signal organization so we fire from model and have UI react to it
             self.file_widget.files_added.emit(True)
 
-        self.update_num_files_label(self._model.get_num_images())
+        self.update_num_files_label(self._annotator_model.get_num_images())
 
     def _add_selected_files(self, file_list: list[Path]) -> None:
         """
@@ -278,7 +282,7 @@ class ImagesView(QFrame):
         # ignore hidden files and directories
         for file_path in FileUtils.select_only_valid_files(file_list=file_list):
             if FileUtils.is_supported(file_path):
-                if file_path not in self._model.get_all_images():
+                if file_path not in self._annotator_model.get_all_images():
                     self.add_new_item(file_path)
             else:
                 self.viewer.alert("Unsupported file type(s)")
@@ -304,14 +308,14 @@ class ImagesView(QFrame):
 
     def _shuffle_file_order(self):
         # TODO: set shuffled state in model, file widget clears and repopulates on its own.
-        files: list[Path] = self._model.get_all_images()
+        files: list[Path] = self._annotator_model.get_all_images()
         if len(files) > 0:
             self.disable_add_buttons()
             # clear file widget
             self.file_widget.clear_for_shuff()
             random.shuffle(files)
-            self._model.set_all_images(files)
-            for file in self._model.get_all_images():
+            self._annotator_model.set_all_images(files)
+            for file in self._annotator_model.get_all_images():
                 # add with shuffled order
                 self.file_widget.add_item(file, hidden=True)
 
@@ -357,19 +361,54 @@ class ImagesView(QFrame):
         """
         # TODO when we delete from the model, connect file widget so that it deletes that entry itself without
         # us explicitly calling remove_item on it
-        if item.file_path in self._model.get_all_images():
-            self._model.remove_image(item.file_path)
+        if item.file_path in self._annotator_model.get_all_images():
+            self._annotator_model.remove_image(item.file_path)
             self.file_widget.remove_item(item)
 
-            if self._model.get_num_images() == 0:
+            if self._annotator_model.get_num_images() == 0:
                 self.file_widget.files_added.emit(False)  # TODO why is this emitted again here
 
-            self.update_num_files_label(self._model.get_num_images())
+            self.update_num_files_label(self._annotator_model.get_num_images())
 
     def clear_all(self) -> None:
         """
         Clear all image data from the model and the file widget.
         """
-        self._model.set_all_images([])  # clear model
+        self._annotator_model.set_all_images([])  # clear model
         self.file_widget.clear_all()  # clear widget
-        self.update_num_files_label(self._model.get_num_images())  # update label
+        self.update_num_files_label(self._annotator_model.get_num_images())  # update label
+
+    def start_annotating(self, row: Optional[int] = 0) -> None:
+        """Set current item to the one at row."""
+        count: int = self.file_widget.count()
+        for x in range(count):
+            file_item: Optional[QListWidgetItem] = self.file_widget.item(x)
+            file_item.hide_check()
+        if count > 0:
+            self.file_widget.setCurrentItem(self.file_widget.item(row))
+
+        else:
+            self.viewer.alert("No files to annotate")
+
+    def next_img(self) -> None:
+        """
+        Set the current image to the next in the list, stop incrementing
+        at the last row.
+        """
+        if self.file_widget.get_curr_row() < self.file_widget.count() - 1:
+            self.file_widget.setCurrentItem(self.file_widget.item(self.file_widget.get_curr_row() + 1))
+
+    def prev_img(self) -> None:
+        """Set the current image to the previous in the list, stop at first image."""
+        if self.file_widget.get_curr_row() > 0:
+            self.file_widget.setCurrentItem(self.file_widget.item(self.file_widget.get_curr_row() - 1))
+
+    def hide_image_paths(self) -> None:
+        """
+        Hide image paths (if shuffle is selected for annotations)
+        """
+        self.file_widget.currentItemChanged.connect(lambda curr, prev: self._annotator_model.set_curr_img_index(curr))
+        self.input_dir.hide()
+        self.input_file.hide()
+        self.shuffle.hide()
+        self.delete.hide()

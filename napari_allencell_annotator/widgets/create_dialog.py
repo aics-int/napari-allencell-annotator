@@ -14,7 +14,7 @@ from qtpy.QtWidgets import (
 )
 from qtpy.QtCore import Signal
 
-from napari_allencell_annotator.model.annotation_model import AnnotationModel
+from napari_allencell_annotator.model.annotation_model import AnnotatorModel
 from napari_allencell_annotator.model.key import Key
 from napari_allencell_annotator.widgets.annotation_widget import AnnotationWidget
 
@@ -34,7 +34,7 @@ class CreateDialog(QDialog):
     # signal emitted when all annotations created are valid
     valid_annots_made = Signal()
 
-    def __init__(self, model: AnnotationModel, parent=None):
+    def __init__(self, model: AnnotatorModel, parent=None):
         super().__init__(parent)
         self._annotation_model = model
         self.setStyleSheet(Style.get_stylesheet("main.qss"))

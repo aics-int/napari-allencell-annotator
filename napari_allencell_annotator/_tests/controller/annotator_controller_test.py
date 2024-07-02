@@ -127,7 +127,7 @@ class TestAnnotatorController:
         )
         self._controller.write_csv.assert_called_once_with()
         self._controller.record_annotations.assert_called_once_with("path")
-        self._controller.view.set_curr_index.assert_called_once_with()
+        self._controller.view.display_current_progress.assert_called_once_with()
         assert self._controller.files_and_annots == {}
         self._controller.view.set_num_images.assert_called_once_with()
 
@@ -175,7 +175,7 @@ class TestAnnotatorController:
         assert len(self._controller.files_and_annots) == 1
         assert self._controller.files_and_annots["path.png"] == ["path", ""]
         self._controller.view.render_values.assert_not_called()
-        self._controller.view.set_curr_index.assert_called_once_with(4)
+        self._controller.view.display_current_progress.assert_called_once_with(4)
         self._controller.view.next_btn.setEnabled.assert_called_once_with(False)
         self._controller.view.prev_btn.setEnabled.assert_called_once_with(True)
 
@@ -195,7 +195,7 @@ class TestAnnotatorController:
         assert len(self._controller.files_and_annots) == 1
         assert self._controller.files_and_annots["path.png"] == ["path", "", "True", "hello"]
         self._controller.view.render_values.assert_called_once_with(["True", "hello"])
-        self._controller.view.set_curr_index.assert_called_once_with(0)
+        self._controller.view.display_current_progress.assert_called_once_with(0)
         self._controller.view.next_btn.setEnabled.assert_called_once_with(True)
         self._controller.view.prev_btn.setEnabled.assert_called_once_with(False)
 
@@ -215,7 +215,7 @@ class TestAnnotatorController:
         assert len(self._controller.files_and_annots) == 1
         assert self._controller.files_and_annots["path.png"] == ["path", "", "True", "", ""]
         self._controller.view.render_values.assert_called_once_with(["True", "", ""])
-        self._controller.view.set_curr_index.assert_called_once_with(3)
+        self._controller.view.display_current_progress.assert_called_once_with(3)
         self._controller.view.next_btn.setEnabled.assert_called_once_with(True)
         self._controller.view.prev_btn.setEnabled.assert_called_once_with(True)
 

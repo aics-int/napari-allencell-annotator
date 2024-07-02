@@ -2,7 +2,7 @@ import csv
 import itertools
 from pathlib import Path
 
-from napari_allencell_annotator.model.annotation_model import AnnotationModel
+from napari_allencell_annotator.model.annotation_model import AnnotatorModel
 from napari_allencell_annotator.view.images_view import ImagesView
 from qtpy import QtCore
 from qtpy.QtWidgets import QFrame, QShortcut
@@ -10,7 +10,7 @@ from qtpy.QtWidgets import QVBoxLayout, QDialog
 from qtpy.QtGui import QKeySequence
 
 from napari_allencell_annotator.controller.annotator_controller import AnnotatorController
-from napari_allencell_annotator.model.annotator_model import ImagesModel
+from napari_allencell_annotator.model.images_model import ImagesModel
 from napari_allencell_annotator.widgets.create_dialog import CreateDialog
 from napari_allencell_annotator.widgets.template_item import ItemType, TemplateItem
 from napari_allencell_annotator.widgets.popup import Popup
@@ -41,15 +41,13 @@ class MainView(QFrame):
         super().__init__()
         # init viewer and parts of the plugin
         self._viewer: IViewer = Viewer(napari_viewer)
-        self._images_model = ImagesModel()
+        self._annotator_model = AnnotatorModel()
 
         # ImagesView and Controller
-        self._images_view = ImagesView(self._images_model, self._viewer)
-        self._model = ImagesModel()
+        self._images_view = ImagesView(self._annotator_model, self._viewer)
         self._images_view.show()
 
-        self._annotation_model = AnnotationModel()
-        self.annots = AnnotatorController(self._annotation_model, self._viewer)
+        self.annots = AnnotatorController(self._annotator_model, self._viewer)
 
         # set layout and add sub views
         self.setLayout(QVBoxLayout())
@@ -85,10 +83,13 @@ class MainView(QFrame):
         self.annots.view.save_json_btn.file_selected.connect(self._json_write_selected_evt)
         self.annots.view.edit_btn.clicked.connect(self._create_clicked)
 
+        # handle events
+        self._annotator_model.image_changed.connect(self._image_selected)
+
     def _create_clicked(self):
         """Create dialog window for annotation creation and start viewing on accept event."""
 
-        dlg = CreateDialog(self._annotation_model, parent=self)
+        dlg = CreateDialog(self._annotator_model, parent=self)
         if dlg.exec() == QDialog.Accepted:
             self.csv_annotation_values = None
             self.annots.start_viewing()
@@ -250,7 +251,7 @@ class MainView(QFrame):
 
         Alert user if there are no files added.
         """
-        if self._images_model.get_num_images() < 1:
+        if self._annotator_model.get_num_images() < 1:
             self._viewer.alert("Can't Annotate Without Adding Images")
         else:
             proceed: bool = Popup.make_popup(
@@ -289,43 +290,40 @@ class MainView(QFrame):
 
         Pass in annotation values if there are any.
         """
+        # init annotations dictionary to store data
+        self._annotator_model.set_annotations({})
         self.annotating_shortcuts_on()
-
-        dct, shuffled = self.images.get_files_dict()
-        # dct is a dictionary file path -> [filename, fms]
-        if shuffled:
+        if self._annotator_model.is_images_shuffled():
             # remove file list if blind annotation
             self.layout().removeWidget(self.images.view)
             self.images.view.hide()
 
-        if self.csv_annotation_values is not None and len(self.csv_annotation_values) > 0:
-            # if we are using csv annotation data
-            # make sure csv_annotation_values reflects any changes made in view mode (add, delete, shuffle)
-            self._fix_csv_annotations(dct)
-
-            self.images.start_annotating(self.starting_row)
-
-            # remove this
-            temp_csv_annotation_values = {}
-            for key in self.csv_annotation_values:
-                temp_csv_annotation_values[Path(key)] = self.csv_annotation_values[key]
-
-            self.annots.start_annotating(self.images.get_num_images(), temp_csv_annotation_values, shuffled)
-
+        #TODO: CODE TO READ ANNOTATIONS IF ALREADY EXISTS
+        # if self.csv_annotation_values is not None and len(self.csv_annotation_values) > 0:
+        #     # if we are using csv annotation data
+        #     # make sure csv_annotation_values reflects any changes made in view mode (add, delete, shuffle)
+        #     self._fix_csv_annotations(dct)
+        #     self.images.start_annotating(self.starting_row)
+        #
+        #     # remove this
+        #     temp_csv_annotation_values = {}
+        #     for key in self.csv_annotation_values:
+        #         temp_csv_annotation_values[Path(key)] = self.csv_annotation_values[key]
+        #
+        #     self.annots.start_annotating(self.images.get_num_images(), temp_csv_annotation_values, shuffled)
         else:
             # start annotating from beginning with just file info
-            self.images.start_annotating()
-            self.annots.start_annotating(self.images.get_num_images(), dct, shuffled)
+            self._images_view.start_annotating()
+            self.annots.start_annotating()
 
         # remove this
-        self.annots.set_curr_img(self.images.curr_img_dict())
-        if not shuffled:
+        # self.annots.set_curr_img()
+        if not self._annotator_model.is_images_shuffled():
             # alter images view to fit annotation mode
-            self.images.view.file_widget.currentItemChanged.connect(self._image_selected)
-            self.images.view.input_dir.hide()
-            self.images.view.input_file.hide()
-            self.images.view.shuffle.hide()
-            self.images.view.delete.hide()
+            self._images_view.hide_image_paths()
+
+        # set first image
+        self._annotator_model.set_curr_img_index(0)
 
     def annotating_shortcuts_on(self):
         """Create annotation keyboard shortcuts and connect them to slots."""
@@ -522,18 +520,16 @@ class MainView(QFrame):
         self.annots.record_annotations(self.images.curr_img_dict()["File Path"])
         self.images.prev_img()
         self.annots.view.save_btn.setEnabled(True)
-        self.annots.set_curr_img(self.images.curr_img_dict())
+        self.annots.set_curr_img()
 
-    def _image_selected(self, current, previous):
+    def _image_selected(self):
         """
         Record the annotations for the previously selected image and set current image.
 
         Called only when annotating un-blind and users select an image from the list.
         """
         self.annots.view.save_btn.setEnabled(True)
-        if previous:
-            self.annots.record_annotations(previous.file_path)
-        self.annots.set_curr_img(self.images.curr_img_dict())
+        self.annots.set_curr_img()
 
     def _exit_clicked(self):
         """Stop annotation if user confirms choice in popup."""
@@ -557,7 +553,7 @@ class MainView(QFrame):
             True if null values are in the list.
         """
 
-        if len(lst) < len(self._annotation_model.get_annotation_keys().keys()):
+        if len(lst) < len(self._annotator_model.get_annotation_keys().keys()):
             return True
         else:
             for item in lst:
