@@ -37,15 +37,15 @@ class MainView(QFrame):
     def __init__(self, napari_viewer: napari.Viewer):
         super().__init__()
         # init viewer and parts of the plugin
-        self.napari = napari_viewer
-        self._model = ImagesModel()
+        self._viewer = napari_viewer
+        self._images_model = ImagesModel()
 
         # ImagesView and Controller
-        self._images_view = ImagesView(self._model, self.napari)
+        self._images_view = ImagesView(self._images_model, self._viewer)
         self._images_view.show()
 
         self._annotation_model = AnnotationModel()
-        self.annots = AnnotatorController(self._annotation_model, self.napari)
+        self.annots = AnnotatorController(self._annotation_model, self._viewer)
 
         # set layout and add sub views
         self.setLayout(QVBoxLayout())
@@ -220,7 +220,7 @@ class MainView(QFrame):
         """Open file widget for importing csv/json."""
         self.annots.view.annot_input.simulate_click()
 
-    def _csv_write_selected_evt(self, file_list: List[Path]):
+    def _csv_write_selected_evt(self, file_path: Path):
         """
         Set csv file name for writing annotations and call _setup_annotating.
 
@@ -232,16 +232,12 @@ class MainView(QFrame):
         file_list : List[str]
             The list containing one file name.
         """
-        if file_list is None or len(file_list) < 1:
-            self.images.view.alert("No selection provided")
-        else:
-            file_path = file_list[0]
-            extension = file_path.suffix
-            if extension != ".csv":
-                file_path = file_path.with_suffix(".csv")
-            # remove this
-            self.annots.set_csv_path(str(file_path))
-            self._setup_annotating()
+        extension = file_path.suffix
+        if extension != ".csv":
+            file_path = file_path.with_suffix(".csv")
+        # remove this
+        self.annots.set_csv_path(str(file_path))
+        self._setup_annotating()
 
     def _start_annotating_clicked(self):
         """
@@ -250,8 +246,8 @@ class MainView(QFrame):
 
         Alert user if there are no files added.
         """
-        if self.images.get_num_images() is None or self.images.get_num_images() < 1:
-            self.images.view.alert("Can't Annotate Without Adding Images")
+        if self._images_model.get_num_images() < 1:
+            self._viewer.alert("Can't Annotate Without Adding Images")
         else:
             proceed: bool = Popup.make_popup(
                 "Once annotating starts both the image set and annotations cannot be "

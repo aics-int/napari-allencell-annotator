@@ -109,7 +109,7 @@ class CreateDialog(QDialog):
 
     def render_annotations(self):
         """Display the types and defaults for each existing annotation."""
-        for key_name, key_info in self._annotation_model.get_annotation_keys():
+        for key_name, key_info in self._annotation_model.get_annotation_keys().items():
             self.list.add_existing_item(key_name, key_info)
 
     def _delete_clicked(self):
