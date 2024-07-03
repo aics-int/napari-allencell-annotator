@@ -27,6 +27,7 @@ from napari_allencell_annotator.model.annotation_model import AnnotatorModel
 from napari_allencell_annotator.view.images_view import ImagesView
 from napari_allencell_annotator.widgets.files_widget import FilesWidget
 from napari_allencell_annotator.widgets.file_item import FileItem
+from aicsimageio import AICSImage
 
 @pytest.fixture
 def annotator_model() -> AnnotatorModel:
@@ -165,7 +166,7 @@ def test_handle_files_added_when_no_file_added(images_view: ImagesView) -> None:
 
 # def test_display_img_unhighlight_previous(images_view: ImagesView, files_widget: FilesWidget) -> None:
 #     # ARRANGE
-#     test_previous_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
+#     test_previous_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.ome.tiff"
 #     test_previous_file_item: FileItem = FileItem(test_previous_file, files_widget, False)
 #     test_previous_file_item.label.setStyleSheet(
 #         """QLabel{
@@ -181,6 +182,60 @@ def test_handle_files_added_when_no_file_added(images_view: ImagesView) -> None:
 #     assert test_previous_file_item.label.styleSheet() == """QLabel{}"""
 #
 #
+def test_display_img_when_previous_is_none_and_current_is_none(images_view: ImagesView, files_widget: FilesWidget) -> None:
+    # ACT
+    images_view._display_img(current=None, previous=None)
+
+    # ASSERT
+    assert len(images_view.viewer.get_layers()) == 0
+
+
+def test_display_img_when_previous_is_not_none_and_current_is_none(images_view: ImagesView, files_widget: FilesWidget) -> None:
+    # ARRANGE
+    test_previous_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.ome.tiff"
+    test_previous_file_item: FileItem = FileItem(test_previous_file, files_widget, False)
+    test_previous_file_item.label.setStyleSheet(
+                """QLabel{
+                                            font-weight: bold;
+                                            text-decoration: underline;
+                                        }"""
+            )
+
+    # ACT
+    images_view._display_img(current=None, previous=test_previous_file_item)
+
+    # ASSERT
+    assert len(images_view.viewer.get_layers()) == 0
+    assert test_previous_file_item.label.styleSheet() == """QLabel{}"""
+
+
+# TODO: Implement after merging bioio, FakeImageUtils
+def test_display_img_when_previous_is_none_and_current_is_not_none(images_view: ImagesView, files_widget: FilesWidget) -> None:
+    # ARRANGE
+    test_current_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.ome.tiff"
+    test_current_file_item: FileItem = FileItem(test_current_file, files_widget, False)
+    pass
+
+
+# TODO: Implement after merging bioio, FakeImageUtils
+def test_display_img_when_previous_is_not_none_and_current_is_not_none(images_view: ImagesView, files_widget: FilesWidget) -> None:
+    # ARRANGE
+    test_previous_file: Path = Path(
+        napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.ome.tiff"
+    test_previous_file_item: FileItem = FileItem(test_previous_file, files_widget, False)
+    test_previous_file_item.label.setStyleSheet(
+        """QLabel{
+                                    font-weight: bold;
+                                    text-decoration: underline;
+                                }"""
+    )
+
+    test_current_file: Path = Path(
+        napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.ome.tiff"
+    test_current_file_item: FileItem = FileItem(test_current_file, files_widget, False)
+    pass
+
+
 def test_display_img_when_previous_and_current_are_none(images_view: ImagesView, files_widget: FilesWidget) -> None:
     # ACT
     images_view._display_img(current=None, previous=None)
@@ -198,7 +253,7 @@ def test_display_img_when_previous_and_current_are_none(images_view: ImagesView,
 
 def test_add_new_item(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
     # ARRANGE
-    test_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
+    test_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.ome.tiff"
     assert annotator_model.get_num_images() == 0
 
     # ACT
