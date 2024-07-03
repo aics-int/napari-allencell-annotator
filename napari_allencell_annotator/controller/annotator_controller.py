@@ -66,8 +66,6 @@ class AnnotatorController:
         self.view: AnnotatorView = AnnotatorView(model, viewer)
 
         self.view.show()
-        # annotation dictionary maps file paths -> [file name, FMS, annot1val, annot2val, ...]
-        self.files_and_annots: Dict[str, List[str]] = {}
 
         self.view.cancel_btn.clicked.connect(self.stop_viewing)
         # we want to save the annotation for the image that we just switched off of.
