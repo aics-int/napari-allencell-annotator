@@ -193,7 +193,11 @@ class AnnotatorView(QFrame):
         """
         display current progres.
         """
-        self.progress_bar.setText("{} of {} Images".format(self._annotator_model.get_curr_img_index() + 1, self._annotator_model.get_num_images()))
+        self.progress_bar.setText(
+            "{} of {} Images".format(
+                self._annotator_model.get_curr_img_index() + 1, self._annotator_model.get_num_images()
+            )
+        )
 
     def _reset_annotations(self):
         """Reset annotation data to empty."""

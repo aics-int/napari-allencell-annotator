@@ -1,6 +1,7 @@
 # from unittest import mock
 from pathlib import Path
 from unittest.mock import MagicMock, create_autospec, patch
+
 # from napari_allencell_annotator.controller.images_controller import ImagesController
 # from napari_allencell_annotator.view.images_view import (
 #     ImagesView,
@@ -14,6 +15,7 @@ from unittest.mock import MagicMock, create_autospec, patch
 #
 import napari
 import napari_allencell_annotator
+
 # from napari_allencell_annotator.view.images_view import AICSImage
 # from napari_allencell_annotator.view.images_view import napari
 # from napari_allencell_annotator.view.images_view import exceptions
@@ -25,6 +27,7 @@ from pytestqt.qtbot import QtBot
 from napari_allencell_annotator._tests.fakes.fake_viewer import FakeViewer
 from napari_allencell_annotator.model.annotation_model import AnnotatorModel
 from napari_allencell_annotator.view.images_view import ImagesView
+
 
 @pytest.fixture
 def annotator_model() -> AnnotatorModel:
@@ -43,12 +46,14 @@ def test_update_shuff_text_checked(images_view: ImagesView) -> None:
     # ASSERT
     assert images_view.shuffle.text() == "Unhide"
 
+
 def test_update_shuff_text_checked(images_view) -> None:
     # ACT
     images_view._update_shuff_text(False)
 
     # ASSERT
     assert images_view.shuffle.text() == "Shuffle and Hide"
+
 
 def test_reset_buttons(images_view) -> None:
     # ACT
@@ -57,11 +62,12 @@ def test_reset_buttons(images_view) -> None:
     # ASSERT
     assert images_view.delete.text() == "Delete All"
     assert not images_view.shuffle.isChecked()
-    assert images_view.delete.toolTip() == "" # When tooltip is empty its an empty string
+    assert images_view.delete.toolTip() == ""  # When tooltip is empty its an empty string
     assert not images_view.delete.isEnabled()
     assert not images_view.shuffle.isEnabled()
     assert images_view.input_dir.isEnabled()
     assert images_view.input_file.isEnabled()
+
 
 def test_add_new_item(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
     # ARRANGE
@@ -77,17 +83,6 @@ def test_add_new_item(images_view: ImagesView, annotator_model: AnnotatorModel) 
     assert images_view.shuffle.isEnabled()
     assert images_view.delete.isEnabled()
     assert images_view.num_files_label.text() == "Image files: 1"
-
-
-
-
-
-
-
-
-
-
-
 
 
 # class TestImagesView:

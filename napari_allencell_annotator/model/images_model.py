@@ -6,7 +6,6 @@ class ImagesModel:
         # Stores annotations, dictionary of Path -> dict of annotations key/value
         self._annotations: dict[Path, dict[str | any]] = dict()
 
-
     def add_image(self, file_item: Path) -> None:
         self._added_images.append(file_item)
 

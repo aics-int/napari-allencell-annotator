@@ -15,4 +15,3 @@ class FakeViewer(IViewer):
 
     def alert(self, alert_msg: str) -> None:
         pass
-

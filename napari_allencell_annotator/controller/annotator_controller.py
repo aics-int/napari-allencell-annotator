@@ -14,7 +14,6 @@ from typing import Dict, List, Optional, Any
 import csv
 
 
-
 class AnnotatorController:
     """
     A class used to control the model and view for annotations.
@@ -72,8 +71,9 @@ class AnnotatorController:
 
         self.view.cancel_btn.clicked.connect(self.stop_viewing)
         # we want to save the annotation for the image that we just switched off of.
-        self._annotation_model.image_changed.connect(lambda: self.record_annotations(self._annotation_model.get_previous_image_index()))
-
+        self._annotation_model.image_changed.connect(
+            lambda: self.record_annotations(self._annotation_model.get_previous_image_index())
+        )
 
     def write_json(self, file_path: str):
         """
@@ -86,11 +86,12 @@ class AnnotatorController:
         json_data: str = JSONUtils.dict_to_json_dump(self._annotation_model.get_annotation_keys())
         JSONUtils.write_json_data(json_data, Path(file_path))
 
-
     def start_viewing(self, alr_anntd: Optional[bool] = False):
         """Change view to VIEW mode and render annotations."""
         self.view.set_mode(mode=AnnotatorViewMode.VIEW)
-        self.view.render_annotations(self._annotation_model.get_annotation_keys()) #TODO fix render_annotations to use annoations dict
+        self.view.render_annotations(
+            self._annotation_model.get_annotation_keys()
+        )  # TODO fix render_annotations to use annoations dict
         # disable edit button if already annotated is True
         self.view.edit_btn.setEnabled(not alr_anntd)
 
@@ -193,10 +194,11 @@ class AnnotatorController:
         record_idx : int
             The index of the image we should save annotations for
         """
-        if record_idx is not None: # ignore recording annotations when loading first image.
+        if record_idx is not None:  # ignore recording annotations when loading first image.
             # we're saving annotation for the image we just switched off of.
-            self._annotation_model.add_annotation(self._annotation_model.get_all_images()[record_idx],
-                                                  self.view.get_curr_annots())
+            self._annotation_model.add_annotation(
+                self._annotation_model.get_all_images()[record_idx], self.view.get_curr_annots()
+            )
 
     def read_json(self, file_path: str):
         # TODO change param to path

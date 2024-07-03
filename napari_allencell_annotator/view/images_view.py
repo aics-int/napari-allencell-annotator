@@ -48,6 +48,7 @@ class ImagesView(QFrame):
     update_num_files_label(num_files:int)
         Updates num_files_label to show the current number of image files
     """
+
     def __init__(self, annotator_model: AnnotatorModel, viewer: IViewer):
         """
         Parameters
@@ -196,7 +197,7 @@ class ImagesView(QFrame):
         self.viewer.clear_layers()
         previous = self._annotator_model.get_previous_image_index()
         if previous is not None:
-           self.file_widget.item(previous).unhighlight()
+            self.file_widget.item(previous).unhighlight()
 
         current = self.file_widget.item(self._annotator_model.get_curr_img_index())
         if current is not None:
@@ -280,16 +281,18 @@ class ImagesView(QFrame):
         checked : bool
             Toggle state of the shuffle button.
         """
-        new_toggle_state:bool = not self._annotator_model.is_images_shuffled()
+        new_toggle_state: bool = not self._annotator_model.is_images_shuffled()
         self._update_shuff_text(new_toggle_state)
         if new_toggle_state:
             # Switching to shuffle: on
             self.disable_add_buttons()
             # Set shuffled_files field in model, will emit event to have UI react to shuffled files.
-            self._annotator_model.set_shuffled_images(FileUtils.shuffle_file_list(self._annotator_model.get_all_images()))
+            self._annotator_model.set_shuffled_images(
+                FileUtils.shuffle_file_list(self._annotator_model.get_all_images())
+            )
         else:
             # Switching to shuffle: off
-            self.enable_add_buttons() # re-enable image adding
+            self.enable_add_buttons()  # re-enable image adding
             # Set shuffled_files to None, indicating we've unshuffled the images
             self._annotator_model.set_shuffled_images(None)
 
@@ -343,7 +346,7 @@ class ImagesView(QFrame):
         Clear all image data from the model and the file widget.
         """
         self._annotator_model.clear_all_images()  # clear model
-        self._annotator_model.set_shuffled_images(None) # clear shuffled images, if any
+        self._annotator_model.set_shuffled_images(None)  # clear shuffled images, if any
 
     def start_annotating(self) -> None:
         """Set current item to the one at row."""
@@ -375,4 +378,3 @@ class ImagesView(QFrame):
         """Clear file widget and reset buttons."""
         self.file_widget.clear_all()
         self.view.reset_buttons()
-

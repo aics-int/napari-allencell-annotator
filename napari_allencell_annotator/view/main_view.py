@@ -41,6 +41,7 @@ class MainView(QFrame):
         super().__init__()
 
         import faulthandler
+
         faulthandler.enable()
         # init viewer and parts of the plugin
         self._viewer: IViewer = Viewer(napari_viewer)
@@ -292,7 +293,7 @@ class MainView(QFrame):
             self.layout().removeWidget(self._images_view)
             self._images_view.hide()
 
-        #TODO: CODE TO READ ANNOTATIONS IF ALREADY EXISTS
+        # TODO: CODE TO READ ANNOTATIONS IF ALREADY EXISTS
         # if self.csv_annotation_values is not None and len(self.csv_annotation_values) > 0:
         #     # if we are using csv annotation data
         #     # make sure csv_annotation_values reflects any changes made in view mode (add, delete, shuffle)

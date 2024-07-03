@@ -12,25 +12,30 @@ from napari_allencell_annotator.util.file_utils import FileUtils
 from napari_allencell_annotator.util.json_utils import JSONUtils
 
 
-
 class AnnotatorModel(QObject):
 
     image_changed: Signal = Signal()
     image_count_changed: Signal = Signal(int)
     images_shuffled: Signal = Signal(bool)
+
     def __init__(self):
         super().__init__()
-        self._annotation_keys: dict[str, Key] = {} # dict of annotation key names-Key objects containing information about that key,
-                                                   # such as default value, type, options
+        self._annotation_keys: dict[str, Key] = (
+            {}
+        )  # dict of annotation key names-Key objects containing information about that key,
+        # such as default value, type, options
         self._added_images: list[Path] = []  # List of paths of added images
         self._shuffled_images: Optional[list[Path]] = None  # If user has not shuffled images, this is None by default.
 
-
         # THE FOLLOWING FIELDS ONLY ARE NEEDED WHEN ANNOTATING STARTS AND ARE INITIALIZED AFTER STARTING.
-        self._curr_img_index: int = None        # Current image being annotated's index, None by default (when annotations have not started)
+        self._curr_img_index: int = (
+            None  # Current image being annotated's index, None by default (when annotations have not started)
+        )
         self._previous_img_index: Optional[int] = None  # index of previously viewed image, None by default
-        self._created_annotations: Optional[dict[Path, list[Any]]] = None # annotations that have been crated. If annotating has not started, is None by default.
-                                                         # dict of image path -> annotations
+        self._created_annotations: Optional[dict[Path, list[Any]]] = (
+            None  # annotations that have been crated. If annotating has not started, is None by default.
+        )
+        # dict of image path -> annotations
         self._csv_save_path: Optional[Path] = None
 
     def get_annotation_keys(self) -> dict[str, Key]:
@@ -74,10 +79,8 @@ class AnnotatorModel(QObject):
         else:
             self.images_shuffled.emit(False)
 
-
     def get_shuffled_images(self) -> list[Path]:
         return self._shuffled_images
-
 
     def is_images_shuffled(self) -> bool:
         return self._shuffled_images is not None
@@ -91,7 +94,6 @@ class AnnotatorModel(QObject):
         # when we set the current index to None to exit training, we dont want to emit image_changed
         if self._curr_img_index is not None:
             self.image_changed.emit()
-
 
     def get_curr_img(self) -> Path:
         return self._added_images[self._curr_img_index]

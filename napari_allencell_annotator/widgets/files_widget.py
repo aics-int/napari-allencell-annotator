@@ -47,9 +47,10 @@ class FilesWidget(QListWidget):
         self.setCurrentItem(None)
         self._annotator_model = annotator_model
 
-        self._annotator_model.image_changed.connect(lambda: self.setCurrentItem(self.item(self._annotator_model.get_curr_img_index())))
+        self._annotator_model.image_changed.connect(
+            lambda: self.setCurrentItem(self.item(self._annotator_model.get_curr_img_index()))
+        )
         self._annotator_model.images_shuffled.connect(self._handle_shuffle)
-
 
     def unhide_all(self) -> None:
         """Display the file names on all files in the list."""
@@ -75,9 +76,9 @@ class FilesWidget(QListWidget):
         if shuffled:
             # readd shuffled images to list
             for shuffled_img in self._annotator_model.get_shuffled_images():
-                self.add_item(shuffled_img, hidden=True) # add hidden when items shuffled.
+                self.add_item(shuffled_img, hidden=True)  # add hidden when items shuffled.
         else:
-            #readd unshuffled images to list
+            # readd unshuffled images to list
             for img in self._annotator_model.get_all_images():
                 self.add_item(img)
 
