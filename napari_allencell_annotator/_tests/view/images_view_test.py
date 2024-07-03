@@ -25,6 +25,8 @@ from pytestqt.qtbot import QtBot
 from napari_allencell_annotator._tests.fakes.fake_viewer import FakeViewer
 from napari_allencell_annotator.model.annotation_model import AnnotatorModel
 from napari_allencell_annotator.view.images_view import ImagesView
+from napari_allencell_annotator.widgets.files_widget import FilesWidget
+from napari_allencell_annotator.widgets.file_item import FileItem
 
 @pytest.fixture
 def annotator_model() -> AnnotatorModel:
@@ -34,6 +36,11 @@ def annotator_model() -> AnnotatorModel:
 @pytest.fixture
 def images_view(annotator_model, qtbot) -> ImagesView:
     return ImagesView(annotator_model, FakeViewer())
+
+
+@pytest.fixture()
+def files_widget() -> FilesWidget:
+    return FilesWidget()
 
 
 def test_update_shuff_text_checked(images_view: ImagesView) -> None:
@@ -91,9 +98,96 @@ def test_toggle_delete_button_text_checked(images_view: ImagesView) -> None:
     # ASSERT
     assert images_view.delete.text() == "Delete Selected"
 
+
+def test_toggle_delete_button_text_unchecked(images_view: ImagesView) -> None:
+    # ACT
+    images_view._toggle_delete_button_text(False)
+
+    # ASSERT
+    assert images_view.delete.text() == "Delete All"
+
+
+def test_enable_delete_buttons(images_view: ImagesView) -> None:
+    # ACT
+    images_view._enable_delete_button()
+
+    # ASSERT
+    assert images_view.delete.toolTip() == "Check box on the right \n to select files for deletion"
+    assert images_view.delete.text() == "Delete All"
+    assert images_view.delete.isEnabled()
+
+
+def test_disable_delete_buttons(images_view: ImagesView) -> None:
+    # ACT
+    images_view._disable_delete_button()
+
+    # ASSERT
+    assert images_view.delete.toolTip() == ""
+    assert not images_view.delete.isEnabled()
+
+
+def test_enable_shuffle_buttons(images_view: ImagesView) -> None:
+    # ACT
+    images_view._enable_shuffle_button()
+
+    # ASSERT
+    assert images_view.shuffle.isEnabled()
+
+
+def test_disable_shuffle_buttons(images_view: ImagesView) -> None:
+    # ACT
+    images_view._disable_shuffle_button()
+
+    # ASSERT
+    assert not images_view.shuffle.isEnabled()
+
+
+def test_handle_files_added_when_file_added(images_view: ImagesView) -> None:
+    # ACT
+    images_view._handle_files_added(True)
+
+    # ASSERT
+    assert images_view.delete.toolTip() == "Check box on the right \n to select files for deletion"
+    assert images_view.delete.text() == "Delete All"
+    assert images_view.delete.isEnabled()
+    assert images_view.shuffle.isEnabled()
+
+
+def test_handle_files_added_when_no_file_added(images_view: ImagesView) -> None:
+    # ACT
+    images_view._handle_files_added(False)
+
+    # ASSERT
+    assert images_view.delete.toolTip() == ""
+    assert not images_view.delete.isEnabled()
+    assert not images_view.shuffle.isEnabled()
+
+
+# def test_display_img_unhighlight_previous(images_view: ImagesView, files_widget: FilesWidget) -> None:
+#     # ARRANGE
+#     test_previous_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
+#     test_previous_file_item: FileItem = FileItem(test_previous_file, files_widget, False)
+#     test_previous_file_item.label.setStyleSheet(
+#         """QLabel{
+#                                     font-weight: bold;
+#                                     text-decoration: underline;
+#                                 }"""
+#     )
+#
+#     # ACT
+#     images_view._display_img(current=None, previous=test_previous_file_item)
+#
+#     # ASSERT
+#     assert test_previous_file_item.label.styleSheet() == """QLabel{}"""
+#
+#
+# def test_display_img_when_previous_and_current_are_none(images_view: ImagesView, files_widget: FilesWidget) -> None:
+#     # ACT
+#     images_view._display_img(current=None, previous=None)
+
 def test_add_new_item(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
     # ARRANGE
-    test_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img.tiff"
+    test_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
     assert annotator_model.get_num_images() == 0
 
     # ACT
