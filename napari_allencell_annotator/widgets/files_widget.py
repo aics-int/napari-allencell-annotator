@@ -51,6 +51,9 @@ class FilesWidget(QListWidget):
             lambda: self.setCurrentItem(self.item(self._annotator_model.get_curr_img_index()))
         )
         self._annotator_model.images_shuffled.connect(self._handle_shuffle)
+        self._annotator_model.image_set_added.connect(
+            lambda: self._handle_shuffle(self._annotator_model.is_images_shuffled())
+        )
 
     def unhide_all(self) -> None:
         """Display the file names on all files in the list."""
