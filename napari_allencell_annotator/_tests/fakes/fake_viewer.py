@@ -11,7 +11,7 @@ class FakeViewer(IViewer):
         super().__init__()
 
         self._layers = []
-        self._alerts = []
+        self.alerts = []
 
     def add_image(self, image: np.ndarray) -> None:
         self._layers.append(image)
@@ -20,10 +20,7 @@ class FakeViewer(IViewer):
         self._layers.clear()
 
     def alert(self, alert_msg: str) -> None:
-        self._alerts.append(alert_msg)
+        self.alerts.append(alert_msg)
 
     def get_layers(self) -> List[Layer]:
         return self._layers
-
-    def get_alerts(self) -> List[str]:
-        return self._alerts
