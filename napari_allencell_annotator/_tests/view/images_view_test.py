@@ -43,12 +43,14 @@ def test_update_shuff_text_checked(images_view: ImagesView) -> None:
     # ASSERT
     assert images_view.shuffle.text() == "Unhide"
 
-def test_update_shuff_text_checked(images_view) -> None:
+
+def test_update_shuff_text_unchecked(images_view) -> None:
     # ACT
     images_view._update_shuff_text(False)
 
     # ASSERT
     assert images_view.shuffle.text() == "Shuffle and Hide"
+
 
 def test_reset_buttons(images_view) -> None:
     # ACT
@@ -62,6 +64,32 @@ def test_reset_buttons(images_view) -> None:
     assert not images_view.shuffle.isEnabled()
     assert images_view.input_dir.isEnabled()
     assert images_view.input_file.isEnabled()
+
+
+def test_enable_add_buttons(images_view: ImagesView) -> None:
+    # ACT
+    images_view.enable_add_buttons()
+
+    # ASSERT
+    assert images_view.input_dir._input_btn.isEnabled()
+    assert images_view.input_file._input_btn.isEnabled()
+
+
+def test_disable_add_buttons(images_view: ImagesView) -> None:
+    # ACT
+    images_view.disable_add_buttons()
+
+    # ASSERT
+    assert not images_view.input_dir._input_btn.isEnabled()
+    assert not images_view.input_file._input_btn.isEnabled()
+
+
+def test_toggle_delete_button_text_checked(images_view: ImagesView) -> None:
+    # ACT
+    images_view._toggle_delete_button_text(True)
+
+    # ASSERT
+    assert images_view.delete.text() == "Delete Selected"
 
 def test_add_new_item(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
     # ARRANGE
