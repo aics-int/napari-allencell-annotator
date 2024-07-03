@@ -27,6 +27,7 @@ from napari_allencell_annotator.model.annotation_model import AnnotatorModel
 from napari_allencell_annotator.view.images_view import ImagesView
 from napari_allencell_annotator.widgets.files_widget import FilesWidget
 from napari_allencell_annotator.widgets.file_item import FileItem
+from typing import List
 from aicsimageio import AICSImage
 
 @pytest.fixture
@@ -164,24 +165,6 @@ def test_handle_files_added_when_no_file_added(images_view: ImagesView) -> None:
     assert not images_view.shuffle.isEnabled()
 
 
-# def test_display_img_unhighlight_previous(images_view: ImagesView, files_widget: FilesWidget) -> None:
-#     # ARRANGE
-#     test_previous_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.ome.tiff"
-#     test_previous_file_item: FileItem = FileItem(test_previous_file, files_widget, False)
-#     test_previous_file_item.label.setStyleSheet(
-#         """QLabel{
-#                                     font-weight: bold;
-#                                     text-decoration: underline;
-#                                 }"""
-#     )
-#
-#     # ACT
-#     images_view._display_img(current=None, previous=test_previous_file_item)
-#
-#     # ASSERT
-#     assert test_previous_file_item.label.styleSheet() == """QLabel{}"""
-#
-#
 def test_display_img_when_previous_is_none_and_current_is_none(images_view: ImagesView, files_widget: FilesWidget) -> None:
     # ACT
     images_view._display_img(current=None, previous=None)
@@ -192,7 +175,7 @@ def test_display_img_when_previous_is_none_and_current_is_none(images_view: Imag
 
 def test_display_img_when_previous_is_not_none_and_current_is_none(images_view: ImagesView, files_widget: FilesWidget) -> None:
     # ARRANGE
-    test_previous_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.ome.tiff"
+    test_previous_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
     test_previous_file_item: FileItem = FileItem(test_previous_file, files_widget, False)
     test_previous_file_item.label.setStyleSheet(
                 """QLabel{
@@ -212,7 +195,7 @@ def test_display_img_when_previous_is_not_none_and_current_is_none(images_view: 
 # TODO: Implement after merging bioio, FakeImageUtils
 def test_display_img_when_previous_is_none_and_current_is_not_none(images_view: ImagesView, files_widget: FilesWidget) -> None:
     # ARRANGE
-    test_current_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.ome.tiff"
+    test_current_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
     test_current_file_item: FileItem = FileItem(test_current_file, files_widget, False)
     pass
 
@@ -221,7 +204,7 @@ def test_display_img_when_previous_is_none_and_current_is_not_none(images_view: 
 def test_display_img_when_previous_is_not_none_and_current_is_not_none(images_view: ImagesView, files_widget: FilesWidget) -> None:
     # ARRANGE
     test_previous_file: Path = Path(
-        napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.ome.tiff"
+        napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
     test_previous_file_item: FileItem = FileItem(test_previous_file, files_widget, False)
     test_previous_file_item.label.setStyleSheet(
         """QLabel{
@@ -231,29 +214,116 @@ def test_display_img_when_previous_is_not_none_and_current_is_not_none(images_vi
     )
 
     test_current_file: Path = Path(
-        napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.ome.tiff"
+        napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
     test_current_file_item: FileItem = FileItem(test_current_file, files_widget, False)
     pass
 
 
-def test_display_img_when_previous_and_current_are_none(images_view: ImagesView, files_widget: FilesWidget) -> None:
+def test_update_num_files_label(images_view: ImagesView):
+    # ARRANGE
+    images_view.num_files_label.setText("Image files: 0")
+
     # ACT
-    images_view._display_img(current=None, previous=None)
+    images_view.update_num_files_label(1)
 
     # ASSERT
-    assert len(images_view.viewer.get_layers()) == 0
+    assert images_view.num_files_label.text() == "Image files: 1"
 
 
-def test_display_img_when_previous_and_current_are_none(images_view: ImagesView, files_widget: FilesWidget) -> None:
+def test_add_selected_dir_to_ui_empty_dir(images_view: ImagesView, annotator_model: AnnotatorModel):
+    # ARRANGE
+    empty_dir: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "empty_dir"
+    assert len(images_view.viewer.get_alerts()) == 0
+    assert annotator_model.get_num_images() == 0
+
     # ACT
-    images_view._display_img(current=None, previous=None)
+    images_view._add_selected_dir_to_ui(empty_dir)
 
     # ASSERT
-    assert len(images_view.viewer.get_layers()) == 0
+    assert len(images_view.viewer.get_alerts()) == 1
+    assert images_view.viewer.get_alerts()[-1] == "Folder is empty"
+    assert annotator_model.get_num_images() == 0
+    assert not images_view.shuffle.isEnabled()
+    assert not images_view.delete.isEnabled()
+    assert images_view.num_files_label.text() == "Image files:"
+
+
+def test_add_selected_dir_to_ui_non_empty_dir(images_view: ImagesView, annotator_model: AnnotatorModel):
+    # ARRANGE
+    img_dir: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "valid_img_dir"
+    assert len(images_view.viewer.get_alerts()) == 0
+    assert annotator_model.get_num_images() == 0
+
+    # ACT
+    images_view._add_selected_dir_to_ui(img_dir)
+
+    # ASSERT
+    assert len(images_view.viewer.get_alerts()) == 0
+    assert annotator_model.get_num_images() == 2
+    assert annotator_model.get_all_images()[0] == img_dir / "test_img1.tiff"
+    assert annotator_model.get_all_images()[1] == img_dir / "test_img2.tiff"
+    assert images_view.shuffle.isEnabled()
+    assert images_view.delete.isEnabled()
+    assert images_view.num_files_label.text() == "Image files: 2"
+
+
+def test_add_selected_files_invalid_files(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
+    # ARRANGE
+    assert len(images_view.viewer.get_alerts()) == 0
+    assert annotator_model.get_num_images() == 0
+
+    # ACT
+    images_view._add_selected_files([Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "invalid_img_dir" / "test_dir",
+                                     Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "invalid_img_dir" / ".test.csv"])
+
+    # ASSERT
+    assert len(images_view.viewer.get_alerts()) == 0
+    assert annotator_model.get_num_images() == 0
+    assert not images_view.shuffle.isEnabled()
+    assert not images_view.delete.isEnabled()
+    assert images_view.num_files_label.text() == "Image files:"
+
+def test_add_selected_files_unsupported_files(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
+    # ARRANGE
+    assert len(images_view.viewer.get_alerts()) == 0
+    assert annotator_model.get_num_images() == 0
+
+    # ACT
+    images_view._add_selected_files(
+        [Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "invalid_img_dir" / "test.csv"])
+
+    # ASSERT
+    assert len(images_view.viewer.get_alerts()) == 1
+    assert images_view.viewer.get_alerts()[-1] == "Unsupported file type(s)"
+    assert annotator_model.get_num_images() == 0
+    assert not images_view.shuffle.isEnabled()
+    assert not images_view.delete.isEnabled()
+    assert images_view.num_files_label.text() == "Image files:"
+
+
+def test_add_selected_files_valid_files(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
+    # ARRANGE
+    assert len(images_view.viewer.get_alerts()) == 0
+    assert annotator_model.get_num_images() == 0
+
+    # ACT
+    images_view._add_selected_files(
+        [Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "valid_img_dir" / "test_img1.tiff",
+         Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "valid_img_dir" / "test_img2.tiff"])
+
+    # ASSERT
+    assert len(images_view.viewer.get_alerts()) == 0
+    assert annotator_model.get_num_images() == 2
+    assert annotator_model.get_all_images()[0] == Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "valid_img_dir" / "test_img1.tiff"
+    assert annotator_model.get_all_images()[1] == Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "valid_img_dir" / "test_img2.tiff"
+    assert images_view.shuffle.isEnabled()
+    assert images_view.delete.isEnabled()
+    assert images_view.num_files_label.text() == "Image files: 2"
+
 
 def test_add_new_item(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
     # ARRANGE
-    test_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.ome.tiff"
+    test_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
     assert annotator_model.get_num_images() == 0
 
     # ACT
