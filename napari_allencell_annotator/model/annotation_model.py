@@ -15,6 +15,7 @@ from napari_allencell_annotator.util.json_utils import JSONUtils
 class AnnotatorModel(QObject):
 
     image_changed: Signal = Signal()
+    at_least_one_file_added: Signal = Signal(bool)
     def __init__(self):
         super().__init__()
         self._annotation_keys: dict[str, Key] = {} # dict of annotation key names-Key objects containing information about that key,
@@ -41,6 +42,9 @@ class AnnotatorModel(QObject):
 
     def add_image(self, file_item: Path) -> None:
         self._added_images.append(file_item)
+        if len(self._added_images) > 0:
+            self.at_least_one_file_added.emit(True)
+
 
     def get_all_images(self) -> list[Path]:
         return self._added_images
@@ -56,11 +60,12 @@ class AnnotatorModel(QObject):
 
     def clear_all_images(self) -> None:
         self._added_images = []
-        # TODO: fire signal to disable shuffle and delete
+        self.at_least_one_file_added.emit(False)
 
     def remove_image(self, item: Path) -> None:
         self._added_images.remove(item)
-        # TODO: if theres nothing left, disable shuffle and delete
+        if len(self._added_images) < 1:
+            self.at_least_one_file_added.emit(False)
 
     def set_images_shuffled(self, shuffled: bool) -> None:
         self._images_shuffled = shuffled

@@ -110,10 +110,10 @@ class ImagesView(QFrame):
         self.shuffle.clicked.connect(self._handle_shuffle_clicked)
         self.delete.clicked.connect(self._handle_delete_clicked)
         self.file_widget.files_selected.connect(self._toggle_delete_button_text)
-        self.file_widget.files_added.connect(self._handle_files_added)
 
         self.shuffle.toggled.connect(self._update_shuff_text)
         self._annotator_model.image_changed.connect(self._display_img)
+        self._annotator_model.at_least_one_file_available.connect(self._handle_at_least_one_file_available)
 
     def _update_shuff_text(self, checked: bool) -> None:
         """
@@ -183,7 +183,7 @@ class ImagesView(QFrame):
         """Disable shuffle button"""
         self.shuffle.setEnabled(False)
 
-    def _handle_files_added(self, files_added: bool) -> None:
+    def _handle_at_least_one_files_available(self, at_least_one: bool) -> None:
         """
         Enable or disable delete and shuffle buttons when files are added.
 
@@ -191,10 +191,10 @@ class ImagesView(QFrame):
         ----------
         files_added : bool
         """
-        if files_added:
+        if at_least_one:
             self._enable_delete_button()
             self._enable_shuffle_button()
-        elif not files_added:
+        else:
             self._disable_delete_button()
             self._disable_shuffle_button()
 
@@ -266,11 +266,6 @@ class ImagesView(QFrame):
         """
         self.file_widget.add_item(file, hidden)
         self._annotator_model.add_image(file)  # update model
-        if (
-            self._annotator_model.get_num_images() == 1
-        ):  # TODO: WHY DO WE NEED THIS?, rethink signal organization so we fire from model and have UI react to it
-            self.file_widget.files_added.emit(True)
-
         self.update_num_files_label(self._annotator_model.get_num_images())
 
     def _add_selected_files(self, file_list: list[Path]) -> None:
@@ -349,7 +344,6 @@ class ImagesView(QFrame):
             self.remove_image(item)
 
         self.file_widget.checked.clear()
-        self.file_widget.files_selected.emit(False)  # TODO why is this emitted
 
     def remove_image(self, item: FileItem) -> None:
         """
@@ -367,10 +361,6 @@ class ImagesView(QFrame):
         if item.file_path in self._annotator_model.get_all_images():
             self._annotator_model.remove_image(item.file_path)
             self.file_widget.remove_item(item)
-
-            if self._annotator_model.get_num_images() == 0:
-                self.file_widget.files_added.emit(False)  # TODO why is this emitted again here
-
             self.update_num_files_label(self._annotator_model.get_num_images())
 
     def clear_all(self) -> None:
