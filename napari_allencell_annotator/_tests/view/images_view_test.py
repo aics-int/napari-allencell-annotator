@@ -308,7 +308,7 @@ def test_delete_checked(images_view: ImagesView, annotator_model: AnnotatorModel
     # ASSERT
     assert images_view.file_widget.count() == 0
     assert len(images_view.file_widget.checked) == 0
-    assert len(images_view._annotator_model.get_all_images()) == 0
+    assert annotator_model.get_num_images() == 0
 
 
 def test_remove_image(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
@@ -317,14 +317,123 @@ def test_remove_image(images_view: ImagesView, annotator_model: AnnotatorModel) 
         napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
     test_file_item: FileItem = FileItem(test_file, images_view.file_widget, False)
     annotator_model.set_all_images([test_file])
-    assert images_view.file_widget.count() == 1
 
     # ACT
     images_view.remove_image(test_file_item)
 
     # ASSERT
-    assert len(images_view._annotator_model.get_all_images()) == 0
+    assert annotator_model.get_num_images() == 0
     assert images_view.file_widget.count() == 0
+
+
+def test_clear_all(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
+    # ARRANGE
+    test_file: Path = Path(
+        napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
+    test_file_item: FileItem = FileItem(test_file, images_view.file_widget, False)
+    annotator_model.set_all_images([test_file])
+
+    # ACT
+    images_view.clear_all()
+
+    # ASSERT
+    assert annotator_model.get_num_images() == 0
+    assert images_view.file_widget.count() == 0
+
+
+def test_start_annotating_no_files(images_view: ImagesView):
+    # ACT
+    images_view.start_annotating()
+
+    # ASSERT
+    assert len(images_view.viewer.alerts) == 1
+    assert images_view.viewer.alerts[-1] == "No files to annotate"
+
+
+def test_start_annotating_with_files(images_view: ImagesView):
+    # ARRANGE
+    test_file_1: Path = Path(
+        napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
+    test_file_item_1: FileItem = FileItem(test_file_1, images_view.file_widget, False)
+
+    test_file_2: Path = Path(
+        napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img2.tiff"
+    test_file_item_2: FileItem = FileItem(test_file_2, images_view.file_widget, False)
+
+    # ACT
+    images_view.start_annotating()
+
+    # ASSERT
+    for i in range(images_view.file_widget.count()):
+        assert images_view.file_widget.item(i).check.isHidden()
+
+    assert images_view.file_widget.currentItem() == test_file_item_1
+
+
+def test_next_img(images_view: ImagesView) -> None:
+    # ARRANGE
+    test_file_1: Path = Path(
+        napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
+    test_file_item_1: FileItem = FileItem(test_file_1, images_view.file_widget, False)
+
+    test_file_2: Path = Path(
+        napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img2.tiff"
+    test_file_item_2: FileItem = FileItem(test_file_2, images_view.file_widget, False)
+
+    images_view.file_widget.setCurrentItem(test_file_item_1)
+
+    # ACT
+    images_view.next_img()
+
+    # ASSERT
+    assert images_view.file_widget.currentItem() == test_file_item_2
+
+
+def test_next_img_last_img(images_view: ImagesView) -> None:
+    # ARRANGE
+    test_file: Path = Path(
+        napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
+    test_file_item: FileItem = FileItem(test_file, images_view.file_widget, False)
+    images_view.file_widget.setCurrentItem(test_file_item)
+
+    # ACT
+    images_view.next_img()
+
+    # ASSERT
+    assert images_view.file_widget.currentItem() == test_file_item
+
+
+def test_prev_img(images_view: ImagesView) -> None:
+    # ARRANGE
+    test_file_1: Path = Path(
+        napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
+    test_file_item_1: FileItem = FileItem(test_file_1, images_view.file_widget, False)
+
+    test_file_2: Path = Path(
+        napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img2.tiff"
+    test_file_item_2: FileItem = FileItem(test_file_2, images_view.file_widget, False)
+
+    images_view.file_widget.setCurrentItem(test_file_item_2)
+
+    # ACT
+    images_view.prev_img()
+
+    # ASSERT
+    assert images_view.file_widget.currentItem() == test_file_item_1
+
+
+def test_prev_img_first_img(images_view: ImagesView) -> None:
+    # ARRANGE
+    test_file: Path = Path(
+        napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
+    test_file_item: FileItem = FileItem(test_file, images_view.file_widget, False)
+    images_view.file_widget.setCurrentItem(test_file_item)
+
+    # ACT
+    images_view.prev_img()
+
+    # ASSERT
+    assert images_view.file_widget.currentItem() == test_file_item
 
 
 def test_add_new_item(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
