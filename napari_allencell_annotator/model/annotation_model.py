@@ -20,22 +20,32 @@ class AnnotatorModel(QObject):
 
     def __init__(self):
         super().__init__()
+        # dict of annotation key names -> Key objects containing information about that key
+        # such as default values, options, type
         self._annotation_keys: dict[str, Key] = (
             {}
-        )  # dict of annotation key names-Key objects containing information about that key,
-        # such as default value, type, options
-        self._added_images: list[Path] = []  # List of paths of added images
-        self._shuffled_images: Optional[list[Path]] = None  # If user has not shuffled images, this is None by default.
+        )
+        # Images that have been added to annotator
+        self._added_images: list[Path] = []
+        # Shuffled images list. If user has not selected shuffle, this remains None
+        # and is populated with a shuffled list if the user has selected shuffle
+        self._shuffled_images: Optional[list[Path]] = None
 
         # THE FOLLOWING FIELDS ONLY ARE NEEDED WHEN ANNOTATING STARTS AND ARE INITIALIZED AFTER STARTING.
-        self._curr_img_index: int = (
-            None  # Current image being annotated's index, None by default (when annotations have not started)
+        # Current image index, which is none by default
+        # Changes to curr_img_index through set_curr_img_index() emits an image_changed event which parts of the app
+        # react to display that image. None if the user has not started annotating.
+        self._curr_img_index: Optional[int] = (
+            None
         )
         self._previous_img_index: Optional[int] = None  # index of previously viewed image, None by default
+        # annotations that have been crated. If annotating has not started, is None by default.
+        # dict of annotated image path -> list of annotations for that image
         self._created_annotations: Optional[dict[Path, list[Any]]] = (
-            None  # annotations that have been crated. If annotating has not started, is None by default.
+            None
         )
-        # dict of image path -> annotations
+        # path to csv where data should be saved.
+        # None if annotating has not started.
         self._csv_save_path: Optional[Path] = None
 
     def get_annotation_keys(self) -> dict[str, Key]:

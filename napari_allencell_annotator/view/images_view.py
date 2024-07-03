@@ -249,6 +249,7 @@ class ImagesView(QFrame):
         hidden : Optional[bool]
             File name visibility
         """
+        # TODO update model, which dispatches event, and have filewidget react to it.
         self.file_widget.add_item(file, hidden)
         self._annotator_model.add_image(file)  # update model
 

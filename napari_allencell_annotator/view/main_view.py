@@ -3,6 +3,7 @@ import itertools
 from pathlib import Path
 
 from napari_allencell_annotator.model.annotation_model import AnnotatorModel
+from napari_allencell_annotator.util.file_utils import FileUtils
 from napari_allencell_annotator.view.images_view import ImagesView
 from qtpy import QtCore
 from qtpy.QtWidgets import QFrame, QShortcut
@@ -18,7 +19,7 @@ from napari_allencell_annotator.view.viewer import Viewer
 from napari_allencell_annotator.view.i_viewer import IViewer
 
 import napari
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Any
 
 
 class MainView(QFrame):
@@ -111,7 +112,7 @@ class MainView(QFrame):
         self.annots.view.save_json_btn.setEnabled(False)
         self.annots.write_json(file_path)
 
-    def _csv_json_import_selected_evt(self, file_list: List[Path]):
+    def _csv_json_import_selected_evt(self, file_path: Path):
         """
         Read annotations from csv or json file. Read/Save csv images and annotation data if user chooses to.
 
@@ -121,64 +122,45 @@ class MainView(QFrame):
             The list containing one file name.
         """
         # todo bad file: json or csv --> send back to add
-        if file_list is None or len(file_list) < 1:
+        if file_path is None:
             self._viewer.alert("No selection provided")
         else:
-            file_path = file_list[0]
             use_annots: bool = False
             if file_path.suffix == ".json":
                 self.annots.read_json(file_path)
 
-            # elif file_path.suffix == ".csv":
-            #     use_annots = Popup.make_popup(
-            #         "Would you like to use the images and annotation values from "
-            #         "this csv in addition to the annotation template?\n\n "
-            #         "\n Note: any currently listed images will be cleared."
-            #     )
-            #     file = open(file_path)
-            #
-            #     reader = csv.reader(file)
-            #     shuffled = next(reader)[1]
-            #     shuffled = self.str_to_bool(shuffled)
-            #     # annotation data header
-            #     annts = next(reader)[1]
-            #     # set the json dictionary of annotations
-            #     self.annots.get_annotations_csv(annts)
-            #     # skip actual header
-            #     next(reader)
-            #     self.starting_row = None
-            #     if use_annots:
-            #         self.has_new_shuffled_order = False
-            #
-            #         # get image/annotation data
-            #         # dictionary File Path -> [file name, fms, annt1, annt2...]
-            #         self.csv_annotation_values = {}
-            #
-            #         row_num: int = 0
-            #         for row in reader:
-            #             # for each line, add data to already annotated and check if there are null values
-            #             # if null, starting row for annotations is set
-            #             self.csv_annotation_values[row[0]] = row[1::]
-            #             if self.starting_row is None:
-            #                 # if there is a none value for an annotation
-            #                 if self.starting_row is None:
-            #                     if self.has_none_annotation(row[3::]):
-            #                         self.starting_row = row_num
-            #                 row_num = row_num + 1
-            #         if row_num == len(self.csv_annotation_values):
-            #             # all images have all annotations filled in, start annotating at last image
-            #             self.starting_row = row_num - 1
-            #         # remove this
-            #         self.images.load_from_csv(list(map(lambda x: Path(x), self.csv_annotation_values.keys())), shuffled)
-            #         # keep track of if images are shuffled from now on:
-            #         self.images.view.shuffle.toggled.connect(self._shuffle_toggled)
-            #     # start at row 0 if annotation data was not used from csv
-            #     if self.starting_row is None:
-            #         self.starting_row = 0
-            #     file.close()
+            elif file_path.suffix == ".csv":
+                use_annots = Popup.make_popup(
+                    "Would you like to use the images and annotation values from "
+                    "this csv in addition to the annotation template?\n\n "
+                    "\n Note: any currently listed images will be cleared."
+                )
+                file = open(file_path)
+                reader = csv.reader(file)
+                shuffled: str = next(reader)[1]
+                shuffled = self.str_to_bool(shuffled)
+                # annotation data header
+                annts = next(reader)[1]
+                # set annotation Key dict in model with json header info
+                self.annots.get_annotations_csv(annts)
+                # skip actual header
+                next(reader)
+                if use_annots:
+                    # get image/annotation data
+                    # dictionary File Path -> [file name, fms, annt1, annt2...]
+                    self.csv_annotation_values: dict[Path, list[Any]] = {}
+                    for row in reader:
+                        # for each line, add data to already annotated and check if there are null values
+                        # if null, starting row for annotations is set
+                        path: Path = Path(row[0])
+                        self.csv_annotation_values[path] = row[1::]
+                        self._annotator_model.add_image(path)
+                        self._images_view.add_new_item(path)
+                # start at row 0 if annotation data was not used from csv
+                file.close()
 
-            # move to view mode
-            # proceed True is has annotation values,
+            if shuffled:
+                self._annotator_model.set_shuffled_images(FileUtils.shuffle_file_list(self._annotator_model.get_all_images()))
             self.annots.start_viewing(use_annots)
 
     def _shuffle_toggled(self, checked: bool):
@@ -264,10 +246,6 @@ class MainView(QFrame):
 
         Display images and annots views.
         """
-
-        if self._annotator_model.is_images_shuffled():
-            # Undo shuffle state
-            self._annotator_model.set_shuffled_images(None)
         self.layout().addWidget(self._images_view, stretch=1)
         self.layout().addWidget(self.annots.view, stretch=1)
         self._images_view.show()
@@ -292,20 +270,9 @@ class MainView(QFrame):
             # remove file list if blind annotation
             self.layout().removeWidget(self._images_view)
             self._images_view.hide()
+            self.annots.start_annotating()
 
         # TODO: CODE TO READ ANNOTATIONS IF ALREADY EXISTS
-        # if self.csv_annotation_values is not None and len(self.csv_annotation_values) > 0:
-        #     # if we are using csv annotation data
-        #     # make sure csv_annotation_values reflects any changes made in view mode (add, delete, shuffle)
-        #     self._fix_csv_annotations(dct)
-        #     self.images.start_annotating(self.starting_row)
-        #
-        #     # remove this
-        #     temp_csv_annotation_values = {}
-        #     for key in self.csv_annotation_values:
-        #         temp_csv_annotation_values[Path(key)] = self.csv_annotation_values[key]
-        #
-        #     self.annots.start_annotating(self.images.get_num_images(), temp_csv_annotation_values, shuffled)
         else:
             # start annotating from beginning with just file info
             self._images_view.start_annotating()

@@ -127,9 +127,7 @@ class AnnotatorController:
         # TODO change this
         self.save_annotations()
         # reset optional fields in model to None (pre-annottion state)
-        self._annotation_model.set_annotations(None)
         self._annotation_model.set_curr_img_index(None)
-        self._annotation_model.set_previous_image_index(None)
         self._annotation_model.set_csv_save_path(None)
 
         self.view.set_mode(mode=AnnotatorViewMode.ADD)
@@ -200,7 +198,7 @@ class AnnotatorController:
                 self._annotation_model.get_all_images()[record_idx], self.view.get_curr_annots()
             )
 
-    def read_json(self, file_path: str):
+    def read_json(self, file_path: Path):
         # TODO change param to path
         """
         Read a json file into a dictionary and set annot_json_data.
