@@ -298,7 +298,7 @@ class MainView(QFrame):
             self.layout().removeWidget(self.images.view)
             self.images.view.hide()
 
-        #TODO: CODE TO READ ANNOTATIONS IF ALREADY EXISTS
+        # TODO: CODE TO READ ANNOTATIONS IF ALREADY EXISTS
         # if self.csv_annotation_values is not None and len(self.csv_annotation_values) > 0:
         #     # if we are using csv annotation data
         #     # make sure csv_annotation_values reflects any changes made in view mode (add, delete, shuffle)

@@ -98,7 +98,7 @@ class FileInput(QWidget):
         self.dir_selected.emit(Path(dir_path_str))
 
     def _select_csv(self) -> None:
-        file_path_str:str
+        file_path_str: str
         file_path_str, _ = QFileDialog.getSaveFileName(
             self,
             "Select or create a csv file",

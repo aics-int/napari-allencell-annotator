@@ -15,7 +15,6 @@ class JSONUtils:
             keys_dict[key] = {
                 "type": str(key_info.get_type()),
                 "default": key_info.get_default_value(),
-
             }
             if isinstance(key_info, ComboKey):
                 keys_dict[key]["options"] = key_info.get_options()
@@ -42,7 +41,5 @@ class JSONUtils:
 
     @staticmethod
     def write_json_data(data: str, path: Path) -> None:
-        with open(path, 'w') as f:
+        with open(path, "w") as f:
             f.write(data)
-
-

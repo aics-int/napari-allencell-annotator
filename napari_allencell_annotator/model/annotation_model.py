@@ -15,14 +15,20 @@ class AnnotatorModel(QObject):
 
     def __init__(self):
         super().__init__()
-        self._annotation_keys: dict[str, Key] = {} # dict of annotation key names-Key objects containing information about that key,
-                                                   # such as default value, type, options
+        self._annotation_keys: dict[str, Key] = (
+            {}
+        )  # dict of annotation key names-Key objects containing information about that key,
+        # such as default value, type, options
         self._added_images: list[Path] = []  # List of paths of added images
         self._images_shuffled: bool = False  # Whether or not user has selected shuffle images
-        self._curr_img_index: int = -1        # Current image being annotated's index, -1 by default (when annotations have not started)
+        self._curr_img_index: int = (
+            -1
+        )  # Current image being annotated's index, -1 by default (when annotations have not started)
         self._previous_img_index: Optional[int] = None  # index of previously viewed image, None by default
-        self._created_annotations: Optional[dict] = None # annotations that have been crated. If annotating has not started, is None by default.
-                                                         # dict of image path -> annotations
+        self._created_annotations: Optional[dict] = (
+            None  # annotations that have been crated. If annotating has not started, is None by default.
+        )
+        # dict of image path -> annotations
 
     def get_annotation_keys(self) -> dict[str, Key]:
         return self._annotation_keys
@@ -63,10 +69,9 @@ class AnnotatorModel(QObject):
         return self._curr_img_index
 
     def set_curr_img_index(self, idx: int) -> None:
-        self._previous_img_index = self.get_curr_img_index() # store previous image index
+        self._previous_img_index = self.get_curr_img_index()  # store previous image index
         self._curr_img_index = idx
         self.image_changed.emit(idx)
-
 
     def get_curr_img(self) -> Path:
         return self._added_images[self._curr_img_index]

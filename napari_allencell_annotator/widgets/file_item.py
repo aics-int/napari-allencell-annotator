@@ -102,7 +102,6 @@ class FileItem(QListWidgetItem):
                         }"""
         )
 
-
     def unhighlight(self):
         """unhighlight item"""
         self.label.setStyleSheet("""QLabel{}""")
