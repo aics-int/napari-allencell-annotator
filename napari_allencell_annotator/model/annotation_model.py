@@ -8,6 +8,7 @@ from qtpy.QtCore import Signal
 
 from napari_allencell_annotator.model.combo_key import ComboKey
 from napari_allencell_annotator.model.key import Key
+from napari_allencell_annotator.util.file_utils import FileUtils
 from napari_allencell_annotator.util.json_utils import JSONUtils
 
 
@@ -15,13 +16,14 @@ from napari_allencell_annotator.util.json_utils import JSONUtils
 class AnnotatorModel(QObject):
 
     image_changed: Signal = Signal()
-    at_least_one_file_added: Signal = Signal(bool)
+    image_count_changed: Signal = Signal(int)
+    images_shuffled: Signal = Signal(bool)
     def __init__(self):
         super().__init__()
         self._annotation_keys: dict[str, Key] = {} # dict of annotation key names-Key objects containing information about that key,
                                                    # such as default value, type, options
         self._added_images: list[Path] = []  # List of paths of added images
-        self._images_shuffled: bool = False  # Whether or not user has selected shuffle images
+        self._shuffled_images: Optional[list[Path]] = None  # If user has not shuffled images, this is None by default.
 
 
         # THE FOLLOWING FIELDS ONLY ARE NEEDED WHEN ANNOTATING STARTS AND ARE INITIALIZED AFTER STARTING.
@@ -42,9 +44,7 @@ class AnnotatorModel(QObject):
 
     def add_image(self, file_item: Path) -> None:
         self._added_images.append(file_item)
-        if len(self._added_images) > 0:
-            self.at_least_one_file_added.emit(True)
-
+        self.image_count_changed.emit(self.get_num_images())
 
     def get_all_images(self) -> list[Path]:
         return self._added_images
@@ -60,18 +60,27 @@ class AnnotatorModel(QObject):
 
     def clear_all_images(self) -> None:
         self._added_images = []
-        self.at_least_one_file_added.emit(False)
+        self.image_count_changed.emit(0)
 
     def remove_image(self, item: Path) -> None:
         self._added_images.remove(item)
-        if len(self._added_images) < 1:
-            self.at_least_one_file_added.emit(False)
+        self.image_count_changed.emit(self.get_num_images())
 
-    def set_images_shuffled(self, shuffled: bool) -> None:
-        self._images_shuffled = shuffled
+    def set_shuffled_images(self, shuffled: Optional[list[Path]]) -> None:
+        self._shuffled_images = shuffled
+        if shuffled is not None:
+            # we are setting the _shuffled_images field to a list of shuffled images. emit event so ui reacts
+            self.images_shuffled.emit(True)
+        else:
+            self.images_shuffled.emit(False)
+
+
+    def get_shuffled_images(self) -> list[Path]:
+        return self._shuffled_images
+
 
     def is_images_shuffled(self) -> bool:
-        return self._images_shuffled
+        return self._shuffled_images is not None
 
     def get_curr_img_index(self) -> int:
         return self._curr_img_index

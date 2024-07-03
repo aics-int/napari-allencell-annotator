@@ -111,9 +111,8 @@ class ImagesView(QFrame):
         self.delete.clicked.connect(self._handle_delete_clicked)
         self.file_widget.files_selected.connect(self._toggle_delete_button_text)
 
-        self.shuffle.toggled.connect(self._update_shuff_text)
         self._annotator_model.image_changed.connect(self._display_img)
-        self._annotator_model.at_least_one_file_available.connect(self._handle_at_least_one_file_available)
+        self._annotator_model.image_count_changed.connect(self._handle_image_count_changed)
 
     def _update_shuff_text(self, checked: bool) -> None:
         """
@@ -183,21 +182,6 @@ class ImagesView(QFrame):
         """Disable shuffle button"""
         self.shuffle.setEnabled(False)
 
-    def _handle_at_least_one_files_available(self, at_least_one: bool) -> None:
-        """
-        Enable or disable delete and shuffle buttons when files are added.
-
-        Parameters
-        ----------
-        files_added : bool
-        """
-        if at_least_one:
-            self._enable_delete_button()
-            self._enable_shuffle_button()
-        else:
-            self._disable_delete_button()
-            self._disable_shuffle_button()
-
     def _display_img(self) -> None:
         """
         Display the current image in napari.
@@ -266,7 +250,6 @@ class ImagesView(QFrame):
         """
         self.file_widget.add_item(file, hidden)
         self._annotator_model.add_image(file)  # update model
-        self.update_num_files_label(self._annotator_model.get_num_images())
 
     def _add_selected_files(self, file_list: list[Path]) -> None:
         """
@@ -285,7 +268,7 @@ class ImagesView(QFrame):
             else:
                 self.viewer.alert("Unsupported file type(s)")
 
-    def _handle_shuffle_clicked(self, checked: bool) -> None:
+    def _handle_shuffle_clicked(self) -> None:
         """
         Shuffle file order and hide file names if checked.
         Return files to original order and names if unchecked.
@@ -297,25 +280,18 @@ class ImagesView(QFrame):
         checked : bool
             Toggle state of the shuffle button.
         """
-        if checked:
-            self._shuffle_file_order()
-        else:
-            self.enable_add_buttons()
-            self.file_widget.set_shuffled(False)
-            self.file_widget.unhide_all()
-
-    def _shuffle_file_order(self):
-        # TODO: set shuffled state in model, file widget clears and repopulates on its own.
-        files: list[Path] = self._annotator_model.get_all_images()
-        if len(files) > 0:
+        new_toggle_state:bool = not self._annotator_model.is_images_shuffled()
+        self._update_shuff_text(new_toggle_state)
+        if new_toggle_state:
+            # Switching to shuffle: on
             self.disable_add_buttons()
-            # clear file widget
-            self.file_widget.clear_for_shuff()
-            random.shuffle(files)
-            self._annotator_model.set_all_images(files)
-            for file in self._annotator_model.get_all_images():
-                # add with shuffled order
-                self.file_widget.add_item(file, hidden=True)
+            # Set shuffled_files field in model, will emit event to have UI react to shuffled files.
+            self._annotator_model.set_shuffled_images(FileUtils.shuffle_file_list(self._annotator_model.get_all_images()))
+        else:
+            # Switching to shuffle: off
+            self.enable_add_buttons() # re-enable image adding
+            # Set shuffled_files to None, indicating we've unshuffled the images
+            self._annotator_model.set_shuffled_images(None)
 
     def _handle_delete_clicked(self) -> None:
         """
@@ -334,7 +310,6 @@ class ImagesView(QFrame):
             proceed: bool = Popup.make_popup("Remove all images?")
             if proceed:
                 self.clear_all()
-                self.reset_buttons()
 
     def delete_checked(self) -> None:
         """
@@ -367,9 +342,8 @@ class ImagesView(QFrame):
         """
         Clear all image data from the model and the file widget.
         """
-        self._annotator_model.set_all_images([])  # clear model
-        self.file_widget.clear_all()  # clear widget
-        self.update_num_files_label(self._annotator_model.get_num_images())  # update label
+        self._annotator_model.clear_all_images()  # clear model
+        self._annotator_model.set_shuffled_images(None) # clear shuffled images, if any
 
     def start_annotating(self) -> None:
         """Set current item to the one at row."""
@@ -388,3 +362,12 @@ class ImagesView(QFrame):
         self.input_file.hide()
         self.shuffle.hide()
         self.delete.hide()
+
+    def _handle_image_count_changed(self, count) -> None:
+        self.update_num_files_label(count)
+        if count > 0:
+            self._enable_delete_button()
+            self._enable_shuffle_button()
+        elif count < 0:
+            self.reset_buttons()
+

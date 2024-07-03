@@ -45,32 +45,11 @@ class FilesWidget(QListWidget):
         # files_dict holds all image info file path -> [file name, FMS]
         # also holds the original insertion order in .keys()
         self.setCurrentItem(None)
-        self._shuffled: bool = False
         self._annotator_model = annotator_model
 
         self._annotator_model.image_changed.connect(lambda: self.setCurrentItem(self.item(self._annotator_model.get_curr_img_index())))
+        self._annotator_model.images_shuffled.connect(self._handle_shuffle)
 
-    @property
-    def shuffled(self) -> bool:
-        """
-        Current shuffle state of the list.
-
-        Returns
-        -------
-        bool
-            the shuffled property.
-        """
-        return self._shuffled
-
-    def set_shuffled(self, shuffled: bool) -> None:
-        """
-        Set the shuffled property to shuffled or unshuffled.
-
-        Parameters
-        ----------
-        shuffled : bool
-        """
-        self._shuffled = shuffled
 
     def unhide_all(self) -> None:
         """Display the file names on all files in the list."""
@@ -91,25 +70,24 @@ class FilesWidget(QListWidget):
         else:
             return -1
 
-    def clear_all(self) -> None:
-        """Clear all image data in the file widget."""
-        self._shuffled = False
-        self.checked = set()
+    def _handle_shuffle(self, shuffled: bool) -> None:
+        self._reset_list()
+        if shuffled:
+            # readd shuffled images to list
+            for shuffled_img in self._annotator_model.get_shuffled_images():
+                self.add_item(shuffled_img, hidden=True) # add hidden when items shuffled.
+        else:
+            #readd unshuffled images to list
+            for img in self._annotator_model.get_all_images():
+                self.add_item(img)
 
-        self.setCurrentItem(None)
-        self.clear()
-
-    def clear_for_shuff(self) -> None:
+    def _reset_list(self) -> None:
         """
-        Clear the list display.
-
-        This function clears all displayed, checked, and current items, but keeps the files_dict.
-
+        Reset the list of files
         """
-        self._shuffled = True
         self.setCurrentItem(None)
         self.checked = set()
-        self.clear()
+        self.clear()  # clear list
 
     def add_item(self, file: Path, hidden: bool = False) -> None:
         """
