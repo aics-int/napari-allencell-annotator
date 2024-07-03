@@ -431,10 +431,6 @@ def test_prev_img_first_img(images_view: ImagesView) -> None:
 
 
 def test_hide_image_paths(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
-    # ARRANGE
-    test_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
-    test_file_item: FileItem = FileItem(test_file, images_view.file_widget, False)
-
     # ACT
     images_view.hide_image_paths()
 
