@@ -181,9 +181,20 @@ def test_handle_files_added_when_no_file_added(images_view: ImagesView) -> None:
 #     assert test_previous_file_item.label.styleSheet() == """QLabel{}"""
 #
 #
-# def test_display_img_when_previous_and_current_are_none(images_view: ImagesView, files_widget: FilesWidget) -> None:
-#     # ACT
-#     images_view._display_img(current=None, previous=None)
+def test_display_img_when_previous_and_current_are_none(images_view: ImagesView, files_widget: FilesWidget) -> None:
+    # ACT
+    images_view._display_img(current=None, previous=None)
+
+    # ASSERT
+    assert len(images_view.viewer.get_layers()) == 0
+
+
+def test_display_img_when_previous_and_current_are_none(images_view: ImagesView, files_widget: FilesWidget) -> None:
+    # ACT
+    images_view._display_img(current=None, previous=None)
+
+    # ASSERT
+    assert len(images_view.viewer.get_layers()) == 0
 
 def test_add_new_item(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
     # ARRANGE

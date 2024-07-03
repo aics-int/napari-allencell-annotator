@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 import numpy as np
+from napari.layers import Layer
+from typing import List
 
 
 class IViewer(ABC):
@@ -17,4 +19,8 @@ class IViewer(ABC):
 
     @abstractmethod
     def alert(self, alert_msg: str) -> None:
+        pass
+
+    @abstractmethod
+    def get_layers(self) -> List[Layer]:
         pass
