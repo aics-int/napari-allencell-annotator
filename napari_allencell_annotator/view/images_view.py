@@ -371,3 +371,8 @@ class ImagesView(QFrame):
         elif count < 0:
             self.reset_buttons()
 
+    def stop_annotating(self):
+        """Clear file widget and reset buttons."""
+        self.file_widget.clear_all()
+        self.view.reset_buttons()
+

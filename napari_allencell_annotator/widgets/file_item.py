@@ -59,6 +59,8 @@ class FileItem(QListWidgetItem):
         if parent is not None:
             parent.setItemWidget(self, self.widget)
 
+        self.clicked.connect(self._model.image)
+
     @property
     def file_path(self) -> Path:
         return self._file_path

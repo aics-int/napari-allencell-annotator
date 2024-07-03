@@ -134,6 +134,7 @@ class AnnotatorView(QFrame):
         self.edit_btn.setToolTip("Edit annotation Template")
         self.cancel_btn = QPushButton("Clear")
         self.cancel_btn.setToolTip("Clear annotation template")
+        self.cancel_btn.clicked.connect(self._reset_annotations)
         self.start_btn = QPushButton("Start")
         self.start_btn.setToolTip("Start Annotating Images")
         self.csv_input = FileInput(mode=FileInputMode.CSV)
@@ -248,7 +249,6 @@ class AnnotatorView(QFrame):
         self.layout.removeItem(item)
         if self._mode == AnnotatorViewMode.ADD:
             self.add_widget.show()
-            self._reset_annotations()
             self.layout.addWidget(self.add_widget)
         elif self._mode == AnnotatorViewMode.VIEW:
             self.save_json_btn.setEnabled(True)

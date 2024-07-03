@@ -121,7 +121,7 @@ class MainView(QFrame):
         """
         # todo bad file: json or csv --> send back to add
         if file_list is None or len(file_list) < 1:
-            self.images.view.alert("No selection provided")
+            self._viewer.alert("No selection provided")
         else:
             file_path = file_list[0]
             use_annots: bool = False
@@ -196,7 +196,7 @@ class MainView(QFrame):
         if checked:
             # images have been shuffled, have to adjust order
             self._annotator_model.set_images_shuffled(True)
-            self.images.view.shuffle.toggled.disconnect(self._shuffle_toggled)
+            self._images_view.shuffle.toggled.disconnect(self._shuffle_toggled)
 
     def str_to_bool(self, string) -> bool:
         """
@@ -263,19 +263,19 @@ class MainView(QFrame):
 
         Display images and annots views.
         """
-        if not self._annotator_model.is_images_shuffled():
-            self._images_view.shuffle.toggled.disconnect(self._shuffle_toggled)
-            self.has_new_shuffled_order = None
-            self.images.view.file_widget.currentItemChanged.disconnect(self._image_selected)
-        self.layout().addWidget(self.images.view, stretch=1)
+
+        if self._annotator_model.is_images_shuffled():
+            # Undo shuffle state
+            self._annotator_model.set_shuffled_images(None)
+        self.layout().addWidget(self._images_view, stretch=1)
         self.layout().addWidget(self.annots.view, stretch=1)
-        self.images.view.show()
+        self._images_view.show()
         self.annots.stop_annotating()
-        self.images.stop_annotating()
-        self.images.view.input_file.show()
-        self.images.view.input_dir.show()
-        self.images.view.shuffle.show()
-        self.images.view.delete.show()
+
+        self._images_view.input_file.show()
+        self._images_view.input_dir.show()
+        self._images_view.shuffle.show()
+        self._images_view.delete.show()
         self.annotating_shortcuts_off()
 
     def _setup_annotating(self):
@@ -289,8 +289,8 @@ class MainView(QFrame):
         self.annotating_shortcuts_on()
         if self._annotator_model.is_images_shuffled():
             # remove file list if blind annotation
-            self.layout().removeWidget(self.images.view)
-            self.images.view.hide()
+            self.layout().removeWidget(self._images_view)
+            self._images_view.hide()
 
         #TODO: CODE TO READ ANNOTATIONS IF ALREADY EXISTS
         # if self.csv_annotation_values is not None and len(self.csv_annotation_values) > 0:
@@ -318,6 +318,7 @@ class MainView(QFrame):
 
         # set first image
         self._annotator_model.set_curr_img_index(0)
+        self._annotator_model.set_previous_image_index(None)
 
     def annotating_shortcuts_on(self):
         """Create annotation keyboard shortcuts and connect them to slots."""
@@ -500,6 +501,8 @@ class MainView(QFrame):
         If the last image is being annotated, write to csv. If the second
         image is being annotated, enable previous button.
         """
+
+        self._annotator_model.set_previous_image_index(self._annotator_model.get_curr_img_index())
         # This dispatches a signal which updates  annotations dictionary and sets the next image
         self._annotator_model.set_curr_img_index(self._annotator_model.get_curr_img_index() + 1)
         self.annots.view.save_btn.setEnabled(True)
@@ -510,6 +513,7 @@ class MainView(QFrame):
 
         If the first image is being annotated, disable button.
         """
+        self._annotator_model.set_previous_image_index(self._annotator_model.get_curr_img_index())
         self._annotator_model.set_curr_img_index(self._annotator_model.get_curr_img_index() - 1)
         self.annots.view.save_btn.setEnabled(True)
 
@@ -528,7 +532,7 @@ class MainView(QFrame):
         if proceed:
             self._stop_annotating()
 
-        self.images.view.update_num_files_label(self.images.get_num_images())
+        self._images_view.update_num_files_label(self._annotator_model.get_num_images())
 
     def _save(self):
         """Save and write current annotations."""

@@ -125,15 +125,13 @@ class AnnotatorController:
         """Reset values from annotating and change mode to ADD."""
         # TODO change this
         self.save_annotations()
-        self.view.display_current_progress()
-        self.files_and_annots = {}
-        self.view.set_num_images()
-        self.view.set_mode(mode=AnnotatorViewMode.ADD)
-        self._annotation_model.clear_annotation_keys()
-        self.set_curr_img()
+        # reset optional fields in model to None (pre-annottion state)
+        self._annotation_model.set_annotations(None)
+        self._annotation_model.set_curr_img_index(None)
+        self._annotation_model.set_previous_image_index(None)
         self._annotation_model.set_csv_save_path(None)
 
-        #self.view.annot_list.currentItemChanged.disconnect(self._curr_item_changed)
+        self.view.set_mode(mode=AnnotatorViewMode.ADD)
 
     def _curr_item_changed(self, current, previous):
         """
