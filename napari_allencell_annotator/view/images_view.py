@@ -76,7 +76,7 @@ class ImagesView(QFrame):
         self.layout.addWidget(self.input_dir, 1, 0, 1, 2)
         self.layout.addWidget(self.input_file, 1, 2, 1, 2)
 
-        self.file_widget: FilesWidget = FilesWidget()
+        self.file_widget: FilesWidget = FilesWidget(self._annotator_model)
 
         self.scroll: QScrollArea = QScrollArea()
         self.scroll.setWidget(self.file_widget)
@@ -113,7 +113,7 @@ class ImagesView(QFrame):
         self.file_widget.files_added.connect(self._handle_files_added)
 
         self.shuffle.toggled.connect(self._update_shuff_text)
-        self.file_widget.currentItemChanged.connect(self._display_img)
+        self._annotator_model.image_changed.connect(self._display_img)
 
     def _update_shuff_text(self, checked: bool) -> None:
         """
@@ -198,7 +198,7 @@ class ImagesView(QFrame):
             self._disable_delete_button()
             self._disable_shuffle_button()
 
-    def _display_img(self, current: FileItem, previous: FileItem) -> None:
+    def _display_img(self) -> None:
         """
         Display the current image in napari.
 
@@ -210,8 +210,11 @@ class ImagesView(QFrame):
             Previous file
         """
         self.viewer.clear_layers()
+        previous = self._annotator_model.get_previous_image_index()
         if previous is not None:
-            previous.unhighlight()
+           self.file_widget.item(previous).unhighlight()
+
+        current = self.file_widget.item(self._annotator_model.get_curr_img_index())
         if current is not None:
             try:
                 img: AICSImage = AICSImage(current.file_path)  # TODO update to bioio
@@ -378,36 +381,19 @@ class ImagesView(QFrame):
         self.file_widget.clear_all()  # clear widget
         self.update_num_files_label(self._annotator_model.get_num_images())  # update label
 
-    def start_annotating(self, row: Optional[int] = 0) -> None:
+    def start_annotating(self) -> None:
         """Set current item to the one at row."""
         count: int = self.file_widget.count()
         for x in range(count):
             file_item: Optional[QListWidgetItem] = self.file_widget.item(x)
             file_item.hide_check()
-        if count > 0:
-            self.file_widget.setCurrentItem(self.file_widget.item(row))
-
         else:
             self.viewer.alert("No files to annotate")
-
-    def next_img(self) -> None:
-        """
-        Set the current image to the next in the list, stop incrementing
-        at the last row.
-        """
-        if self.file_widget.get_curr_row() < self.file_widget.count() - 1:
-            self.file_widget.setCurrentItem(self.file_widget.item(self.file_widget.get_curr_row() + 1))
-
-    def prev_img(self) -> None:
-        """Set the current image to the previous in the list, stop at first image."""
-        if self.file_widget.get_curr_row() > 0:
-            self.file_widget.setCurrentItem(self.file_widget.item(self.file_widget.get_curr_row() - 1))
 
     def hide_image_paths(self) -> None:
         """
         Hide image paths (if shuffle is selected for annotations)
         """
-        self.file_widget.currentItemChanged.connect(lambda curr, prev: self._annotator_model.set_curr_img_index(curr))
         self.input_dir.hide()
         self.input_file.hide()
         self.shuffle.hide()

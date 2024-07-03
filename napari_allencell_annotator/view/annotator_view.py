@@ -110,7 +110,6 @@ class AnnotatorView(QFrame):
 
         self.layout.addWidget(self.scroll)
 
-        self.num_images: int = None
         self.curr_index: int = None
 
         # Add widget visible in ADD mode
@@ -189,17 +188,6 @@ class AnnotatorView(QFrame):
         self._mode = mode
         self._display_mode()
 
-    def set_num_images(self, num: Optional[int] = None):
-        """
-        Set the total number of images to be annotated
-
-        Parameters
-        ----------
-        num : Optional[int]
-            number of images, set to None if not provided.
-        """
-        self.num_images = num
-
     def display_current_progress(self):
         """
         display current progres.
@@ -220,9 +208,9 @@ class AnnotatorView(QFrame):
             item.set_default_value()
 
         # TODO why do we need this?
-        self.annot_list.setCurrentItem(self.annot_list.items[0])
+        # self.annot_list.setCurrentItem(self.annot_list.items[0])
 
-    def render_values(self, vals: dict[str, Any]):
+    def render_values(self, vals: list[Any]):
         """
         Set the values of the annotation widgets.
 
@@ -231,15 +219,15 @@ class AnnotatorView(QFrame):
         vals:List[str]
             the values for the annotations.
         """
-        for item in self.annot_list.items:
-            item_data = vals[item.name]
+        for item, annotation in zip(self.annot_list.items, vals):
+            item_data = annotation
             if item_data is None or item_data == "":
                 item.set_default_value()
             else:
                 item.set_value(item_data)
-        self.annot_list.setCurrentItem(self.annot_list.items[0])
+        # self.annot_list.setCurrentItem(self.annot_list.items[0])
 
-    def get_curr_annots(self) -> dict[str, Any]:
+    def get_curr_annots(self) -> List[Any]:
         """
         Return the current annotation values in a list.
 
@@ -248,9 +236,9 @@ class AnnotatorView(QFrame):
         List
             a list of annotation values.
         """
-        annots = {}
+        annots = []
         for i in self.annot_list.items:
-            annots[i.name] = i.get_value()
+            annots.append(i.get_value())
         return annots
 
     def _display_mode(self):

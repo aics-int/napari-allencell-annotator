@@ -2,6 +2,8 @@ from typing import Set
 from qtpy.QtWidgets import QListWidget
 from qtpy.QtCore import Signal
 from pathlib import Path
+
+from napari_allencell_annotator.model.annotation_model import AnnotatorModel
 from napari_allencell_annotator.widgets.file_item import FileItem
 
 
@@ -37,13 +39,16 @@ class FilesWidget(QListWidget):
     files_selected: Signal = Signal(bool)
     files_added: Signal = Signal(bool)
 
-    def __init__(self):
+    def __init__(self, annotator_model: AnnotatorModel):
         QListWidget.__init__(self)
         self.checked: Set[FileItem] = set()
         # files_dict holds all image info file path -> [file name, FMS]
         # also holds the original insertion order in .keys()
         self.setCurrentItem(None)
         self._shuffled: bool = False
+        self._annotator_model = annotator_model
+
+        self._annotator_model.image_changed.connect(lambda: self.setCurrentItem(self.item(self._annotator_model.get_curr_img_index())))
 
     @property
     def shuffled(self) -> bool:
@@ -152,3 +157,6 @@ class FilesWidget(QListWidget):
             self.checked.remove(item)
             if len(self.checked) == 0:
                 self.files_selected.emit(False)
+
+    def unhide_item_at(self, idx: int) -> None:
+        self.unhide_item_at(idx)
