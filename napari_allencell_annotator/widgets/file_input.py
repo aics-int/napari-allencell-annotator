@@ -71,6 +71,8 @@ class FileInput(QWidget):
             self._select_json()
         elif self._mode == FileInputMode.CSV:
             self._select_csv()
+        elif self._mode == FileInputMode.JSONCSV:
+            self._select_csv_or_json()
 
     def _select_file(self) -> None:
         files, _ = QFileDialog.getOpenFileNames(
@@ -107,47 +109,13 @@ class FileInput(QWidget):
         )
         self.file_selected.emit(Path(file_path_str))
 
-    # def _select_file(self) -> None:  # pragma: no-cover
-    #     file_path: Optional[Path] = None
-    #     if self._mode == FileInputMode.FILE:
-    #         file_path, _ = QFileDialog.getOpenFileNames(
-    #             self,
-    #             "Select a file",
-    #             options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
-    #         )
-    #     elif self._mode == FileInputMode.DIRECTORY:
-    #         dir_path_str: str = QFileDialog.getExistingDirectory(
-    #             self,
-    #             "Select a directory",
-    #             options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
-    #         )
-    #     elif self._mode == FileInputMode.CSV:
-    #         file_path_str: str
-    #         file_path_str, _ = QFileDialog.getSaveFileName(
-    #             self,
-    #             "Select or create a csv file",
-    #             filter="CSV Files (*.csv)",
-    #             options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
-    #         )
-    #     elif self._mode == FileInputMode.JSON:
-    #         file_path_str: str
-    #         file_path_str, _ = QFileDialog.getSaveFileName(
-    #             self,
-    #             "Select or create a json file",
-    #             filter="JSON Files (*.json)",
-    #             options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
-    #         )
-    #     else:
-    #         # JSONCSV
-    #         file_path_str: str
-    #         file_path_str, _ = QFileDialog.getOpenFileName(
-    #             self,
-    #             "Select a .csv or .json file with annotations",
-    #             filter="CSV Files (*.csv) ;; JSON (*.json)",
-    #             options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
-    #         )
-    #
-    #     if file_path:
-    #         # file_path_obj: List[Path] = self.convert_to_path_object(file_path)
-    #         # self.selected_file = file_path_obj
-    #         self.file_selected.emit(Path(file_path))
+    def _select_csv_or_json(self) -> None:
+        # JSONCSV
+        file_path_str: str
+        file_path_str, _ = QFileDialog.getOpenFileName(
+            self,
+            "Select a .csv or .json file with annotations",
+            filter="CSV Files (*.csv) ;; JSON (*.json)",
+            options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
+        )
+        self.file_selected.emit(Path(file_path_str))

@@ -36,7 +36,7 @@ class TestAnnotatorView:
         self._view.num_images = 4
         self._view.progress_bar = MagicMock()
         self._view.progress_bar.setText = MagicMock()
-        self._view.set_curr_index(2)
+        self._view.display_current_progress(2)
         self._view.progress_bar.setText.assert_called_once_with("3 of 4 Images")
         assert self._view.curr_index == 2
 
