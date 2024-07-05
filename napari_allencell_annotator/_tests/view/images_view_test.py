@@ -176,7 +176,7 @@ def test_display_img_change_image(images_view: ImagesView, files_widget: FilesWi
     pass
 
 
-def test_update_num_files_label(images_view: ImagesView):
+def test_update_num_files_label(images_view: ImagesView) -> None:
     # ACT
     images_view.update_num_files_label(1)
 
@@ -184,7 +184,7 @@ def test_update_num_files_label(images_view: ImagesView):
     assert images_view.num_files_label.text() == "Image files: 1"
 
 
-def test_add_selected_dir_to_ui_empty_dir(images_view: ImagesView, annotator_model: AnnotatorModel):
+def test_add_selected_dir_to_ui_empty_dir(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
     # ARRANGE
     empty_dir: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "empty_dir"
 
@@ -343,7 +343,7 @@ def test_clear_all(images_view: ImagesView, annotator_model: AnnotatorModel) -> 
     assert images_view.file_widget.count() == 0
 
 
-def test_start_annotating_no_files(images_view: ImagesView):
+def test_start_annotating_no_files(images_view: ImagesView) -> None:
     # ACT
     images_view.start_annotating()
 
@@ -352,7 +352,7 @@ def test_start_annotating_no_files(images_view: ImagesView):
     assert images_view.viewer.alerts[-1] == "No files to annotate"
 
 
-def test_start_annotating_with_files(images_view: ImagesView):
+def test_start_annotating_with_files(images_view: ImagesView) -> None:
     # ARRANGE
     test_file_1: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
     test_file_item_1: FileItem = FileItem(test_file_1, images_view.file_widget, False)
