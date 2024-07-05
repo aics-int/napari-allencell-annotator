@@ -214,7 +214,6 @@ def test_add_selected_dir_to_ui_non_empty_dir(images_view: ImagesView, annotator
 def test_add_new_item(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
     # ARRANGE
     test_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
-    assert annotator_model.get_num_images() == 0
 
     # ACT
     images_view.add_new_item(test_file)
@@ -222,9 +221,8 @@ def test_add_new_item(images_view: ImagesView, annotator_model: AnnotatorModel) 
     # ASSERT
     assert annotator_model.get_num_images() == 1
     assert annotator_model.get_all_images()[annotator_model.get_num_images() - 1] == test_file
-    assert images_view.shuffle.isEnabled()
-    assert images_view.delete.isEnabled()
-    assert images_view.num_files_label.text() == "Image files: 1"
+    assert images_view.file_widget.count() == 1
+    assert images_view.file_widget.item(0).label.text() == "test_img1"
 
 
 def test_add_selected_files_invalid_files(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
@@ -290,8 +288,9 @@ def test_handle_shuffle_clicked_unchecked(images_view: ImagesView) -> None:
 
     # ASSERT
     assert not images_view.file_widget._shuffled
+
     for i in range(images_view.file_widget.count()):
-        assert images_view.file_widget.item(i).label.text() == images_view.file_widget.item(i)._make_display_name()
+        assert images_view.file_widget.item(i).label.text() == "test_img1"
         assert not images_view.file_widget.item(i).check.isHidden()
 
 
