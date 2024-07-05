@@ -190,18 +190,10 @@ class AnnotatorController:
         record_idx : int
             The index of the image we should save annotations for
         """
-<<<<<<< HEAD
-        # dont save anything when initializing annotator
-        if self._annotation_model.get_previous_image_index() > -1:
-            annotations: dict[str, Any] = self.view.get_curr_annots()
-            self._annotation_model.add_annotation(
-                self._annotation_model.get_all_images()[self._annotation_model.get_previous_image_index()], annotations
-=======
         if record_idx is not None:  # ignore recording annotations when loading first image.
             # we're saving annotation for the image we just switched off of.
             self._annotation_model.add_annotation(
                 self._annotation_model.get_all_images()[record_idx], self.view.get_curr_annots()
->>>>>>> refactor-base
             )
 
     def read_json(self, file_path: Path):

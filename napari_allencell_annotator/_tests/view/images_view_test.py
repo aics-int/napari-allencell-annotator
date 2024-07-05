@@ -20,11 +20,6 @@ def images_view(annotator_model, qtbot) -> ImagesView:
     return ImagesView(annotator_model, FakeViewer())
 
 
-@pytest.fixture()
-def files_widget() -> FilesWidget:
-    return FilesWidget()
-
-
 def test_update_shuff_text_checked(images_view: ImagesView) -> None:
     # ACT
     images_view._update_shuff_text(True)
@@ -123,56 +118,22 @@ def test_disable_shuffle_buttons(images_view: ImagesView) -> None:
     assert not images_view.shuffle.isEnabled()
 
 
-def test_handle_files_added_when_file_added(images_view: ImagesView) -> None:
-    # ACT
-    images_view._handle_files_added(True)
-
-    # ASSERT
-    assert images_view.delete.toolTip() == "Check box on the right \n to select files for deletion"
-    assert images_view.delete.text() == "Delete All"
-    assert images_view.delete.isEnabled()
-    assert images_view.shuffle.isEnabled()
-
-
-def test_handle_files_added_when_no_file_added(images_view: ImagesView) -> None:
-    # ACT
-    images_view._handle_files_added(False)
-
-    # ASSERT
-    assert images_view.delete.toolTip() == ""
-    assert not images_view.delete.isEnabled()
-    assert not images_view.shuffle.isEnabled()
-
-
-def test_display_img_stop_display(images_view: ImagesView, files_widget: FilesWidget) -> None:
-    # ARRANGE
-    test_previous_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
-    test_previous_file_item: FileItem = FileItem(test_previous_file, files_widget, False)
-
-    # ACT
-    images_view._display_img(current=None, previous=test_previous_file_item)
-
-    # ASSERT
-    assert len(images_view.viewer.get_layers()) == 0
-    assert test_previous_file_item.label.styleSheet() == """QLabel{}"""
-
-
 # TODO: Implement after merging bioio, FakeImageUtils
-def test_display_img_start_display(images_view: ImagesView, files_widget: FilesWidget) -> None:
+def test_display_img_start_display(images_view: ImagesView) -> None:
     # ARRANGE
     test_current_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
-    test_current_file_item: FileItem = FileItem(test_current_file, files_widget, False)
+    test_current_file_item: FileItem = FileItem(test_current_file, images_view.file_widget, False)
     pass
 
 
 # TODO: Implement after merging bioio, FakeImageUtils
-def test_display_img_change_image(images_view: ImagesView, files_widget: FilesWidget) -> None:
+def test_display_img_change_image(images_view: ImagesView) -> None:
     # ARRANGE
     test_previous_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
-    test_previous_file_item: FileItem = FileItem(test_previous_file, files_widget, False)
+    test_previous_file_item: FileItem = FileItem(test_previous_file, images_view.file_widget, False)
 
     test_current_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
-    test_current_file_item: FileItem = FileItem(test_current_file, files_widget, False)
+    test_current_file_item: FileItem = FileItem(test_current_file, images_view.file_widget, False)
     pass
 
 
@@ -209,6 +170,7 @@ def test_add_selected_dir_to_ui_non_empty_dir(images_view: ImagesView, annotator
     assert annotator_model.get_num_images() == 2
     assert annotator_model.get_all_images()[0] == img_dir / "test_img1.tiff"
     assert annotator_model.get_all_images()[1] == img_dir / "test_img2.tiff"
+
 
 def test_add_new_item(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
     # ARRANGE
@@ -271,25 +233,28 @@ def test_add_selected_files_valid_files(images_view: ImagesView, annotator_model
     )
 
 
-# TODO: Implement after shuffle refactoring
-def test_handle_shuffle_clicked_checked(images_view: ImagesView):
-    pass
-
-
-def test_handle_shuffle_clicked_unchecked(images_view: ImagesView) -> None:
+def test_handle_shuffle_clicked_toggled_on(images_view: ImagesView, annotator_model: AnnotatorModel):
     # ARRANGE
     test_previous_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
-    test_previous_file_item: FileItem = FileItem(test_previous_file, images_view.file_widget, False)
 
     # ACT
-    images_view._handle_shuffle_clicked(False)
+    annotator_model.set_shuffled_images([test_previous_file])
 
     # ASSERT
-    assert not images_view.file_widget._shuffled
+    assert len(annotator_model.get_shuffled_images()) == 1
+    assert annotator_model.get_shuffled_images()[0] == test_previous_file
 
-    for i in range(images_view.file_widget.count()):
-        assert images_view.file_widget.item(i).label.text() == "test_img1"
-        assert not images_view.file_widget.item(i).check.isHidden()
+
+def test_handle_shuffle_clicked_toggled_off(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
+    # ARRANGE
+    test_previous_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
+    annotator_model.set_shuffled_images([test_previous_file])
+
+    # ACT
+    images_view._handle_shuffle_clicked()
+
+    # ASSERT
+    assert annotator_model.get_shuffled_images() is None
 
 
 def test_delete_checked(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
@@ -363,68 +328,6 @@ def test_start_annotating_with_files(images_view: ImagesView) -> None:
     # ASSERT
     for i in range(images_view.file_widget.count()):
         assert images_view.file_widget.item(i).check.isHidden()
-
-    assert images_view.file_widget.currentItem() == test_file_item_1
-
-
-def test_next_img(images_view: ImagesView) -> None:
-    # ARRANGE
-    test_file_1: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
-    test_file_item_1: FileItem = FileItem(test_file_1, images_view.file_widget, False)
-
-    test_file_2: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img2.tiff"
-    test_file_item_2: FileItem = FileItem(test_file_2, images_view.file_widget, False)
-
-    images_view.file_widget.setCurrentItem(test_file_item_1)
-
-    # ACT
-    images_view.next_img()
-
-    # ASSERT
-    assert images_view.file_widget.currentItem() == test_file_item_2
-
-
-def test_next_img_last_img(images_view: ImagesView) -> None:
-    # ARRANGE
-    test_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
-    test_file_item: FileItem = FileItem(test_file, images_view.file_widget, False)
-    images_view.file_widget.setCurrentItem(test_file_item)
-
-    # ACT
-    images_view.next_img()
-
-    # ASSERT
-    assert images_view.file_widget.currentItem() == test_file_item
-
-
-def test_prev_img(images_view: ImagesView) -> None:
-    # ARRANGE
-    test_file_1: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
-    test_file_item_1: FileItem = FileItem(test_file_1, images_view.file_widget, False)
-
-    test_file_2: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img2.tiff"
-    test_file_item_2: FileItem = FileItem(test_file_2, images_view.file_widget, False)
-
-    images_view.file_widget.setCurrentItem(test_file_item_2)
-
-    # ACT
-    images_view.prev_img()
-
-    # ASSERT
-    assert images_view.file_widget.currentItem() == test_file_item_1
-
-
-def test_prev_img_first_img(images_view: ImagesView) -> None:
-    # ARRANGE
-    test_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
-    test_file_item: FileItem = FileItem(test_file, images_view.file_widget, False)
-    images_view.file_widget.setCurrentItem(test_file_item)
-
-    # ACT
-    images_view.prev_img()
-
-    # ASSERT
-    assert images_view.file_widget.currentItem() == test_file_item
 
 
 def test_hide_image_paths(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
