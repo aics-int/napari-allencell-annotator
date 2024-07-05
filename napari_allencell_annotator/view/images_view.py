@@ -18,7 +18,6 @@ from qtpy.QtWidgets import (
     QGridLayout,
     QPushButton,
 )
-from aicsimageio import AICSImage, exceptions
 
 from napari_allencell_annotator.widgets.file_input import (
     FileInput,
@@ -28,6 +27,7 @@ from napari_allencell_annotator.widgets.files_widget import FilesWidget, FileIte
 from napari_allencell_annotator.util.file_utils import FileUtils
 from napari_allencell_annotator._style import Style
 from napari_allencell_annotator.model.images_model import ImagesModel
+from napari_allencell_annotator.util.image_utils import ImageUtils
 
 
 class ImagesView(QFrame):
@@ -201,12 +201,9 @@ class ImagesView(QFrame):
 
         current = self.file_widget.item(self._annotator_model.get_curr_img_index())
         if current is not None:
-            try:
-                img: AICSImage = AICSImage(current.file_path)  # TODO update to bioio
-                self.viewer.add_image(img.data)
-                current.highlight()
-            except exceptions.UnsupportedFileFormatError:
-                self.viewer.alert("AICS Unsupported File Type")
+            img: ImageUtils = ImageUtils(current.file_path)
+            self.viewer.add_image(img.get_image_data())
+            current.highlight()
 
     def update_num_files_label(self, num_files: int) -> None:
         """
