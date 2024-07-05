@@ -1,4 +1,5 @@
 import json
+from enum import Enum
 from pathlib import Path
 from typing import Optional, Any
 
@@ -7,28 +8,45 @@ from qtpy.QtCore import Signal
 
 from napari_allencell_annotator.model.combo_key import ComboKey
 from napari_allencell_annotator.model.key import Key
+from napari_allencell_annotator.util.file_utils import FileUtils
 from napari_allencell_annotator.util.json_utils import JSONUtils
 
 
 class AnnotatorModel(QObject):
-    image_changed: Signal = Signal(int)
+
+    image_changed: Signal = Signal()
+    image_count_changed: Signal = Signal(int)
+    images_shuffled: Signal = Signal(bool)
 
     def __init__(self):
         super().__init__()
+        # dict of annotation key names -> Key objects containing information about that key
+        # such as default values, options, type
         self._annotation_keys: dict[str, Key] = (
             {}
-        )  # dict of annotation key names-Key objects containing information about that key,
-        # such as default value, type, options
-        self._added_images: list[Path] = []  # List of paths of added images
-        self._images_shuffled: bool = False  # Whether or not user has selected shuffle images
-        self._curr_img_index: int = (
-            -1
-        )  # Current image being annotated's index, -1 by default (when annotations have not started)
-        self._previous_img_index: Optional[int] = None  # index of previously viewed image, None by default
-        self._created_annotations: Optional[dict] = (
-            None  # annotations that have been crated. If annotating has not started, is None by default.
         )
-        # dict of image path -> annotations
+        # Images that have been added to annotator
+        self._added_images: list[Path] = []
+        # Shuffled images list. If user has not selected shuffle, this remains None
+        # and is populated with a shuffled list if the user has selected shuffle
+        self._shuffled_images: Optional[list[Path]] = None
+
+        # THE FOLLOWING FIELDS ONLY ARE NEEDED WHEN ANNOTATING STARTS AND ARE INITIALIZED AFTER STARTING.
+        # Current image index, which is none by default
+        # Changes to curr_img_index through set_curr_img_index() emits an image_changed event which parts of the app
+        # react to display that image. None if the user has not started annotating.
+        self._curr_img_index: Optional[int] = (
+            None
+        )
+        self._previous_img_index: Optional[int] = None  # index of previously viewed image, None by default
+        # annotations that have been crated. If annotating has not started, is None by default.
+        # dict of annotated image path -> list of annotations for that image
+        self._created_annotations: Optional[dict[Path, list[Any]]] = (
+            None
+        )
+        # path to csv where data should be saved.
+        # None if annotating has not started.
+        self._csv_save_path: Optional[Path] = None
 
     def get_annotation_keys(self) -> dict[str, Key]:
         return self._annotation_keys
@@ -41,9 +59,13 @@ class AnnotatorModel(QObject):
 
     def add_image(self, file_item: Path) -> None:
         self._added_images.append(file_item)
+        self.image_count_changed.emit(self.get_num_images())
 
     def get_all_images(self) -> list[Path]:
         return self._added_images
+
+    def get_image_at(self, idx: int) -> Path:
+        return self._added_images[idx]
 
     def get_num_images(self) -> int:
         return len(self._added_images)
@@ -53,36 +75,46 @@ class AnnotatorModel(QObject):
 
     def clear_all_images(self) -> None:
         self._added_images = []
-        # TODO: fire signal to disable shuffle and delete
+        self.image_count_changed.emit(0)
 
     def remove_image(self, item: Path) -> None:
         self._added_images.remove(item)
-        # TODO: if theres nothing left, disable shuffle and delete
+        self.image_count_changed.emit(self.get_num_images())
 
-    def set_images_shuffled(self, shuffled: bool) -> None:
-        self._images_shuffled = shuffled
+    def set_shuffled_images(self, shuffled: Optional[list[Path]]) -> None:
+        self._shuffled_images = shuffled
+        if shuffled is not None:
+            # we are setting the _shuffled_images field to a list of shuffled images. emit event so ui reacts
+            self.images_shuffled.emit(True)
+        else:
+            self.images_shuffled.emit(False)
+
+    def get_shuffled_images(self) -> list[Path]:
+        return self._shuffled_images
 
     def is_images_shuffled(self) -> bool:
-        return self._images_shuffled
+        return self._shuffled_images is not None
 
     def get_curr_img_index(self) -> int:
         return self._curr_img_index
 
     def set_curr_img_index(self, idx: int) -> None:
-        self._previous_img_index = self.get_curr_img_index()  # store previous image index
         self._curr_img_index = idx
-        self.image_changed.emit(idx)
+
+        # when we set the current index to None to exit training, we dont want to emit image_changed
+        if self._curr_img_index is not None:
+            self.image_changed.emit()
 
     def get_curr_img(self) -> Path:
         return self._added_images[self._curr_img_index]
 
-    def get_annotations(self) -> dict[Path, dict[str | Any]]:
+    def get_annotations(self) -> dict[Path, list[Any]]:
         return self._created_annotations
 
-    def add_annotation(self, file_path: Path, annotation: dict[str | Any]):
+    def add_annotation(self, file_path: Path, annotation: list[Any]):
         self._created_annotations[file_path] = annotation
 
-    def set_annotations(self, annotations: dict[Path, dict[str | Any]]) -> None:
+    def set_annotations(self, annotations: dict[Path, list[Any]]) -> None:
         self._created_annotations = annotations
 
     def set_previous_image_index(self, idx: int) -> None:
@@ -90,3 +122,9 @@ class AnnotatorModel(QObject):
 
     def get_previous_image_index(self) -> int:
         return self._previous_img_index
+
+    def set_csv_save_path(self, path: Path) -> None:
+        self._csv_save_path = path
+
+    def get_csv_save_path(self) -> Path:
+        return self._csv_save_path

@@ -1,3 +1,4 @@
+import random
 from pathlib import Path
 from napari_allencell_annotator.constants.constants import SUPPORTED_FILE_TYPES
 
@@ -51,3 +52,9 @@ class FileUtils:
             The path to a directory
         """
         return list(dir_path.glob("*.*"))
+
+    @staticmethod
+    def shuffle_file_list(files: list[Path]) -> list[Path]:
+        shuffled_list = files.copy()
+        random.shuffle(shuffled_list)
+        return shuffled_list
