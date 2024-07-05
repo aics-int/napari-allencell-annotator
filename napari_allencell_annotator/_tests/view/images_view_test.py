@@ -83,41 +83,6 @@ def test_toggle_delete_button_text_unchecked(images_view: ImagesView) -> None:
     assert images_view.delete.text() == "Delete All"
 
 
-def test_enable_delete_buttons(images_view: ImagesView) -> None:
-    # ACT
-    images_view._enable_delete_button()
-
-    # ASSERT
-    assert images_view.delete.toolTip() == "Check box on the right \n to select files for deletion"
-    assert images_view.delete.text() == "Delete All"
-    assert images_view.delete.isEnabled()
-
-
-def test_disable_delete_buttons(images_view: ImagesView) -> None:
-    # ACT
-    images_view._disable_delete_button()
-
-    # ASSERT
-    assert images_view.delete.toolTip() == ""
-    assert not images_view.delete.isEnabled()
-
-
-def test_enable_shuffle_buttons(images_view: ImagesView) -> None:
-    # ACT
-    images_view._enable_shuffle_button()
-
-    # ASSERT
-    assert images_view.shuffle.isEnabled()
-
-
-def test_disable_shuffle_buttons(images_view: ImagesView) -> None:
-    # ACT
-    images_view._disable_shuffle_button()
-
-    # ASSERT
-    assert not images_view.shuffle.isEnabled()
-
-
 # TODO: Implement after merging bioio, FakeImageUtils
 def test_display_img_start_display(images_view: ImagesView) -> None:
     # ARRANGE
@@ -339,3 +304,41 @@ def test_hide_image_paths(images_view: ImagesView, annotator_model: AnnotatorMod
     assert images_view.input_file.isHidden()
     assert images_view.shuffle.isHidden()
     assert images_view.delete.isHidden()
+
+
+def test_handle_image_count_changed_some_images(images_view):
+    # ACT
+    images_view._handle_image_count_changed(1)
+
+    # ASSERT
+    assert images_view.shuffle.isEnabled()
+    assert images_view.delete.toolTip() == "Check box on the right \n to select files for deletion"
+    assert images_view.delete.text() == "Delete All"
+    assert images_view.delete.isEnabled()
+
+
+def test_handle_image_count_changed_no_images(images_view):
+    # ACT
+    images_view._handle_image_count_changed(0)
+
+    # ASSERT
+    assert images_view.delete.text() == "Delete All"
+    assert not images_view.shuffle.isChecked()
+    assert images_view.delete.toolTip() == ""
+    assert not images_view.delete.isEnabled()
+    assert not images_view.shuffle.isEnabled()
+    assert images_view.input_dir.isEnabled()
+    assert images_view.input_file.isEnabled()
+
+# def test_stop_annotating(images_view):
+#     # ARRANGE
+#     test_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
+#     test_file_item: FileItem = FileItem(test_file, images_view.file_widget, False)
+#     assert images_view.file_widget.count() == 1
+#
+#     # ACT
+#     images_view.stop_annotating()
+#
+#     # ASSERT
+#     assert images_view.file_widget.count() == 0
+
