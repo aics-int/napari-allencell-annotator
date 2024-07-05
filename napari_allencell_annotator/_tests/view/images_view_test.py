@@ -307,7 +307,7 @@ def test_hide_image_paths(images_view: ImagesView, annotator_model: AnnotatorMod
     assert images_view.delete.isHidden()
 
 
-def test_handle_image_count_changed_some_images(images_view):
+def test_handle_image_count_changed_some_images(images_view: ImagesView) -> None:
     # ACT
     images_view._handle_image_count_changed(1)
 
@@ -318,7 +318,7 @@ def test_handle_image_count_changed_some_images(images_view):
     assert images_view.delete.isEnabled()
 
 
-def test_handle_image_count_changed_no_images(images_view):
+def test_handle_image_count_changed_no_images(images_view: ImagesView) -> None:
     # ACT
     images_view._handle_image_count_changed(0)
 
