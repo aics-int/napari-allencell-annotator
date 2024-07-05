@@ -9,7 +9,6 @@ from napari_allencell_annotator.widgets.files_widget import FilesWidget
 from napari_allencell_annotator.widgets.file_item import FileItem
 
 
-
 @pytest.fixture
 def annotator_model() -> AnnotatorModel:
     return AnnotatorModel()
@@ -48,6 +47,7 @@ def test_reset_buttons(images_view) -> None:
     assert not images_view.shuffle.isEnabled()
     assert images_view.input_dir.isEnabled()
     assert images_view.input_file.isEnabled()
+
 
 def test_enable_add_buttons(images_view: ImagesView) -> None:
     # ACT
@@ -149,6 +149,7 @@ def test_add_new_item(images_view: ImagesView, annotator_model: AnnotatorModel) 
     assert annotator_model.get_all_images()[annotator_model.get_num_images() - 1] == test_file
     assert images_view.file_widget.count() == 1
     assert images_view.file_widget.item(0).label.text() == "test_img1"
+
 
 def test_add_selected_files_invalid_files(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
     # ACT
@@ -330,6 +331,7 @@ def test_handle_image_count_changed_no_images(images_view):
     assert images_view.input_dir.isEnabled()
     assert images_view.input_file.isEnabled()
 
+
 # def test_stop_annotating(images_view):
 #     # ARRANGE
 #     test_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
@@ -341,4 +343,3 @@ def test_handle_image_count_changed_no_images(images_view):
 #
 #     # ASSERT
 #     assert images_view.file_widget.count() == 0
-

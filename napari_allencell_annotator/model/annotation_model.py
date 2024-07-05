@@ -22,9 +22,7 @@ class AnnotatorModel(QObject):
         super().__init__()
         # dict of annotation key names -> Key objects containing information about that key
         # such as default values, options, type
-        self._annotation_keys: dict[str, Key] = (
-            {}
-        )
+        self._annotation_keys: dict[str, Key] = {}
         # Images that have been added to annotator
         self._added_images: list[Path] = []
         # Shuffled images list. If user has not selected shuffle, this remains None
@@ -35,15 +33,11 @@ class AnnotatorModel(QObject):
         # Current image index, which is none by default
         # Changes to curr_img_index through set_curr_img_index() emits an image_changed event which parts of the app
         # react to display that image. None if the user has not started annotating.
-        self._curr_img_index: Optional[int] = (
-            None
-        )
+        self._curr_img_index: Optional[int] = None
         self._previous_img_index: Optional[int] = None  # index of previously viewed image, None by default
         # annotations that have been crated. If annotating has not started, is None by default.
         # dict of annotated image path -> list of annotations for that image
-        self._created_annotations: Optional[dict[Path, list[Any]]] = (
-            None
-        )
+        self._created_annotations: Optional[dict[Path, list[Any]]] = None
         # path to csv where data should be saved.
         # None if annotating has not started.
         self._csv_save_path: Optional[Path] = None

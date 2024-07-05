@@ -160,7 +160,9 @@ class MainView(QFrame):
                 file.close()
 
             if shuffled:
-                self._annotator_model.set_shuffled_images(FileUtils.shuffle_file_list(self._annotator_model.get_all_images()))
+                self._annotator_model.set_shuffled_images(
+                    FileUtils.shuffle_file_list(self._annotator_model.get_all_images())
+                )
             self.annots.start_viewing(use_annots)
 
     def _shuffle_toggled(self, checked: bool):
