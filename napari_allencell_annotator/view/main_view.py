@@ -262,12 +262,12 @@ class MainView(QFrame):
 
         Pass in annotation values if there are any.
         """
-        starting_idx: int
+        starting_idx: int = 0
         # init annotations dictionary to store data
         if self._annotator_model.get_annotations() is None:
             # there aren't preloaded annotations from a csv, so create an empty set
             self._annotator_model.set_annotations({})
-            starting_idx = 0
+
         else:
             # we have preloaded annotations from a csv, reorder so already annotated images are at the front
 
