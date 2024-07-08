@@ -41,7 +41,7 @@ def images_view(annotator_model, qtbot) -> ImagesView:
 
 def test_update_shuff_text_checked(images_view: ImagesView) -> None:
     # ACT
-    images_view._update_shuff_text(True)
+    images_view._handle_shuffle_ui(True)
 
     # ASSERT
     assert images_view.shuffle.text() == "Unhide"
@@ -49,7 +49,7 @@ def test_update_shuff_text_checked(images_view: ImagesView) -> None:
 
 def test_update_shuff_text_checked(images_view) -> None:
     # ACT
-    images_view._update_shuff_text(False)
+    images_view._handle_shuffle_ui(False)
 
     # ASSERT
     assert images_view.shuffle.text() == "Shuffle and Hide"

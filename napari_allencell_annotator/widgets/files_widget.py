@@ -54,6 +54,7 @@ class FilesWidget(QListWidget):
         self._annotator_model.image_set_added.connect(
             lambda: self._handle_shuffle(self._annotator_model.is_images_shuffled())
         )
+        self._annotator_model.image_count_changed.connect(self._handle_image_count_change)
 
     def unhide_all(self) -> None:
         """Display the file names on all files in the list."""
@@ -92,6 +93,10 @@ class FilesWidget(QListWidget):
         self.setCurrentItem(None)
         self.checked = set()
         self.clear()  # clear list
+
+    def _handle_image_count_change(self, count: int) -> None:
+        if count == 0:
+            self._reset_list()
 
     def add_item(self, file: Path, hidden: bool = False) -> None:
         """

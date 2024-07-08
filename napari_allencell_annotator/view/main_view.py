@@ -40,10 +40,6 @@ class MainView(QFrame):
 
     def __init__(self, napari_viewer: napari.Viewer):
         super().__init__()
-
-        import faulthandler
-
-        faulthandler.enable()
         # init viewer and parts of the plugin
         self._viewer: IViewer = Viewer(napari_viewer)
         self._annotator_model = AnnotatorModel()
@@ -266,31 +262,38 @@ class MainView(QFrame):
 
         Pass in annotation values if there are any.
         """
-        starting_idx: int
+        starting_idx: int = 0
         # init annotations dictionary to store data
         if self._annotator_model.get_annotations() is None:
             # there aren't preloaded annotations from a csv, so create an empty set
             self._annotator_model.set_annotations({})
-            starting_idx = 0
+
         else:
             # we have preloaded annotations from a csv, reorder so already annotated images are at the front
 
             old_images_list: list[Path] = self._annotator_model.get_all_images()
             new_images_list: list[Path] = []
-            self._annotator_model.clear_all_images()  # reset images list
+            self._annotator_model.empty_image_list()  # reset images list
             for annot_path, annot_list in self._annotator_model.get_annotations().items():
-                if annot_list and len(annot_list) == len(self._annotator_model.get_annotation_keys()):
-                    new_images_list.insert(0, annot_path)
-                    old_images_list.remove(annot_path)
-                else:
-                    new_images_list.append(annot_path)
-                    old_images_list.remove(annot_path)
-            starting_idx = len(new_images_list)
-            # if all images annotated, start at 1 minus index
+                # if the image with the existing annotations exists
+                if annot_path in old_images_list:
+                    # if the annotation is complete move to front
+                    if annot_list and len(annot_list) == len(self._annotator_model.get_annotation_keys()):
+                        new_images_list.insert(0, annot_path)
+                        old_images_list.remove(annot_path)
+                        starting_idx = starting_idx + 1
+                    else:
+                        # otherwise add to back
+                        new_images_list.append(annot_path)
+                        old_images_list.remove(annot_path)
+
+            # use all images if not shuffled, shuffled image list if it is shuffled
             if not self._annotator_model.is_images_shuffled():
                 self._annotator_model.set_all_images(new_images_list + old_images_list)
             else:
                 self._annotator_model.set_shuffled_images(new_images_list + old_images_list)
+
+            # if all images annotated, start at 1 minus index
             if starting_idx >= self._annotator_model.get_num_images():
                 starting_idx = starting_idx - 1
 
@@ -314,8 +317,9 @@ class MainView(QFrame):
             self._images_view.hide_image_paths()
 
         # set first image
-        self._annotator_model.set_curr_img_index(starting_idx)
         self._annotator_model.set_previous_image_index(None)
+        self._annotator_model.set_curr_img_index(starting_idx)
+
 
     def annotating_shortcuts_on(self):
         """Create annotation keyboard shortcuts and connect them to slots."""
