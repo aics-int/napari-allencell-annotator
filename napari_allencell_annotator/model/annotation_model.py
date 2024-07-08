@@ -72,7 +72,10 @@ class AnnotatorModel(QObject):
             return self._added_images[idx]
 
     def get_num_images(self) -> int:
-        return len(self._added_images)
+        if self.is_images_shuffled():
+            return len(self._shuffled_images)
+        else:
+            return len(self._added_images)
 
     def set_all_images(self, list_of_img: list[Path]) -> None:
         self._added_images = list_of_img
@@ -82,7 +85,7 @@ class AnnotatorModel(QObject):
     def clear_all_images(self) -> None:
         self._added_images = []
         if self.is_images_shuffled():
-            self._shuffled_images = None
+            self._shuffled_images = []
         self.image_count_changed.emit(0)
 
     def remove_image(self, item: Path) -> None:

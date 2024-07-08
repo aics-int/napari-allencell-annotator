@@ -291,6 +291,7 @@ class MainView(QFrame):
                 self._annotator_model.set_all_images(new_images_list + old_images_list)
             else:
                 self._annotator_model.set_shuffled_images(new_images_list + old_images_list)
+
             if starting_idx >= self._annotator_model.get_num_images():
                 starting_idx = starting_idx - 1
 
