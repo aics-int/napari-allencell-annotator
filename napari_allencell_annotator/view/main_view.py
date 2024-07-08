@@ -275,13 +275,15 @@ class MainView(QFrame):
             new_images_list: list[Path] = []
             self._annotator_model.empty_image_list()  # reset images list
             for annot_path, annot_list in self._annotator_model.get_annotations().items():
-                if annot_list and len(annot_list) == len(self._annotator_model.get_annotation_keys()):
-                    new_images_list.insert(0, annot_path)
-                    old_images_list.remove(annot_path)
-                else:
-                    new_images_list.append(annot_path)
-                    old_images_list.remove(annot_path)
-            starting_idx = len(new_images_list)
+                # if the image with the existing annotations exists
+                if annot_path in old_images_list:
+                    if annot_list and len(annot_list) == len(self._annotator_model.get_annotation_keys()):
+                        new_images_list.insert(0, annot_path)
+                        old_images_list.remove(annot_path)
+                    else:
+                        new_images_list.append(annot_path)
+                        old_images_list.remove(annot_path)
+                starting_idx = len(new_images_list)
 
             # use all images if not shuffled, shuffled image list if it is shuffled
             if not self._annotator_model.is_images_shuffled():
