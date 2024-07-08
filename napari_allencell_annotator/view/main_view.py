@@ -281,7 +281,7 @@ class MainView(QFrame):
                     if annot_list and len(annot_list) == len(self._annotator_model.get_annotation_keys()):
                         new_images_list.insert(0, annot_path)
                         old_images_list.remove(annot_path)
-                        starting_idx = len(new_images_list)
+                        starting_idx = starting_idx + 1
                     else:
                         # otherwise add to back
                         new_images_list.append(annot_path)
