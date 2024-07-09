@@ -119,7 +119,7 @@ class AnnotatorModel(QObject):
         self._curr_img_index = idx
 
         # when we set the current index to None to exit training, we dont want to emit image_changed
-        if self._curr_img_index is not None and self._curr_img_index != self._previous_img_index:
+        if self._curr_img_index is not None:
             self.image_changed.emit()
 
     def get_curr_img(self) -> Path:

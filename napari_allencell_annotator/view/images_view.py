@@ -286,6 +286,8 @@ class ImagesView(QFrame):
             Toggle state of the shuffle button.
         """
         new_toggle_state: bool = not self._annotator_model.is_images_shuffled()
+        self._annotator_model.set_curr_img_index(None)
+        self._annotator_model.set_previous_image_index(None)
         # self._update_shuff_text(new_toggle_state)
         if new_toggle_state:
             # Switching to shuffle: on
