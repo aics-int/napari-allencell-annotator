@@ -161,6 +161,9 @@ class AnnotatorController:
         curr_img : Dict[str, str]
             The current image {'File Path' : 'path', 'Row' : str(rownum)}
         """
+        if self._annotation_model.get_annotations() is None:
+            return
+
         path: Path = self._annotation_model.get_curr_img()
         # files_and_annots values are lists File Path ->[File Name, FMS, annot1val, annot2val ...]
         # if the file has not been annotated the list is just length 2 [File Name, FMS]
