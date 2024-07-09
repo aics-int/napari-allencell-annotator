@@ -84,6 +84,7 @@ class AnnotatorModel(QObject):
 
     def clear_all_images(self) -> None:
         self._added_images = []
+        self._created_annotations = None
         if self.is_images_shuffled():
             self.set_shuffled_images(None)
         self.image_count_changed.emit(0)
