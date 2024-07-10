@@ -342,6 +342,9 @@ class ImagesView(QFrame):
         # TODO when we delete from the model, connect file widget so that it deletes that entry itself without
         # us explicitly calling remove_item on it
         if item.file_path in self._annotator_model.get_all_images():
+            if self.file_widget.currentItem() == item:
+                self.viewer.clear_layers()
+                self.file_widget.setCurrentItem(None)
             self._annotator_model.remove_image(item.file_path)
             self.file_widget.remove_item(item)
             self.update_num_files_label(self._annotator_model.get_num_images())
