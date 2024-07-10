@@ -125,14 +125,11 @@ class AnnotatorController:
         # TODO: DO WE WANT TO SAVE ALL IMAGES WITHOUT ANNOTATIONS
         # Save rest of annotations, even if empty
 
-        # self.record_annotations(self._annotation_model.get_curr_img_index())
-        #
-        # for idx in range(self._annotation_model.get_num_images()):
-        #     if self._annotation_model.get_image_at(idx) not in self._annotation_model.get_annotations().keys():
-        #         self._annotation_model.add_annotation(self._annotation_model.get_image_at(idx), [])
+        self.record_annotations(self._annotation_model.get_curr_img_index())
 
-        for idx in range(self._annotation_model.get_curr_img_index(), self._annotation_model.get_num_images()):
-            self._annotation_model.add_annotation(self._annotation_model.get_image_at(idx), [])
+        for idx in range(self._annotation_model.get_num_images()):
+            if self._annotation_model.get_image_at(idx) not in self._annotation_model.get_annotations().keys():
+                self._annotation_model.add_annotation(self._annotation_model.get_image_at(idx), [])
 
         self.write_csv()
         # reset optional fields in model to None (pre-annottion state)
