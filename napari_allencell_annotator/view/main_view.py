@@ -40,10 +40,6 @@ class MainView(QFrame):
 
     def __init__(self, napari_viewer: napari.Viewer):
         super().__init__()
-
-        import faulthandler
-
-        faulthandler.enable()
         # init viewer and parts of the plugin
         self._viewer: IViewer = Viewer(napari_viewer)
         self._annotator_model = AnnotatorModel()
@@ -138,31 +134,29 @@ class MainView(QFrame):
                 file = open(file_path)
                 reader = csv.reader(file)
                 shuffled: str = next(reader)[1]
-                shuffled = self.str_to_bool(shuffled)
+                # shuffled = self.str_to_bool(shuffled)
                 # annotation data header
                 annts = next(reader)[1]
                 # set annotation Key dict in model with json header info
                 self.annots.get_annotations_csv(annts)
                 # skip actual header
                 next(reader)
+                image_list: list[Path] = []
                 if use_annots:
-                    # get image/annotation data
-                    # dictionary File Path -> [file name, fms, annt1, annt2...]
-                    self.csv_annotation_values: dict[Path, list[Any]] = {}
-                    for row in reader:
-                        # for each line, add data to already annotated and check if there are null values
-                        # if null, starting row for annotations is set
-                        path: Path = Path(row[0])
-                        self.csv_annotation_values[path] = row[1::]
-                        self._annotator_model.add_image(path)
-                        self._images_view.add_new_item(path)
+                    # init annotations dict and fill with data from csv
+                    self._annotator_model.set_annotations({})
+
+                for row in reader:
+                    # for each line, add data to already annotated and check if there are null values
+                    # if null, starting row for annotations is set
+                    path: Path = Path(row[1])
+                    image_list.append(path)
+                    if use_annots:
+                        self._annotator_model.add_annotation(path, row[2:])
+                    # self._images_view.add_new_item(path)
                 # start at row 0 if annotation data was not used from csv
                 file.close()
-
-            if shuffled:
-                self._annotator_model.set_shuffled_images(
-                    FileUtils.shuffle_file_list(self._annotator_model.get_all_images())
-                )
+            self._annotator_model.set_all_images(image_list)
             self.annots.start_viewing(use_annots)
 
     def _shuffle_toggled(self, checked: bool):
@@ -265,8 +259,41 @@ class MainView(QFrame):
 
         Pass in annotation values if there are any.
         """
+        starting_idx: int = 0
         # init annotations dictionary to store data
-        self._annotator_model.set_annotations({})
+        if self._annotator_model.get_annotations() is None:
+            # there aren't preloaded annotations from a csv, so create an empty set
+            self._annotator_model.set_annotations({})
+
+        else:
+            # we have preloaded annotations from a csv, reorder so already annotated images are at the front
+
+            old_images_list: list[Path] = self._annotator_model.get_all_images()
+            new_images_list: list[Path] = []
+            self._annotator_model.empty_image_list()  # reset images list
+            for annot_path, annot_list in self._annotator_model.get_annotations().items():
+                # if the image with the existing annotations exists
+                if annot_path in old_images_list:
+                    # if the annotation is complete move to front
+                    if annot_list and len(annot_list) == len(self._annotator_model.get_annotation_keys()):
+                        new_images_list.insert(0, annot_path)
+                        old_images_list.remove(annot_path)
+                        starting_idx = starting_idx + 1
+                    else:
+                        # otherwise add to back
+                        new_images_list.append(annot_path)
+                        old_images_list.remove(annot_path)
+
+            # use all images if not shuffled, shuffled image list if it is shuffled
+            if not self._annotator_model.is_images_shuffled():
+                self._annotator_model.set_all_images(new_images_list + old_images_list)
+            else:
+                self._annotator_model.set_shuffled_images(new_images_list + old_images_list)
+
+            # if all images annotated, start at 1 minus index
+            if starting_idx >= self._annotator_model.get_num_images():
+                starting_idx = starting_idx - 1
+
         self.annotating_shortcuts_on()
         if self._annotator_model.is_images_shuffled():
             # remove file list if blind annotation
@@ -287,8 +314,9 @@ class MainView(QFrame):
             self._images_view.hide_image_paths()
 
         # set first image
-        self._annotator_model.set_curr_img_index(0)
         self._annotator_model.set_previous_image_index(None)
+        self._annotator_model.set_curr_img_index(starting_idx)
+
 
     def annotating_shortcuts_on(self):
         """Create annotation keyboard shortcuts and connect them to slots."""

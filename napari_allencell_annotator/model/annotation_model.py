@@ -17,6 +17,7 @@ class AnnotatorModel(QObject):
     image_changed: Signal = Signal()
     image_count_changed: Signal = Signal(int)
     images_shuffled: Signal = Signal(bool)
+    image_set_added: Signal = Signal()
 
     def __init__(self):
         super().__init__()
@@ -51,25 +52,47 @@ class AnnotatorModel(QObject):
     def set_annotation_keys(self, annotation_keys: dict[str, Key]) -> None:
         self._annotation_keys = annotation_keys
 
-    def add_image(self, file_item: Path) -> None:
-        self._added_images.append(file_item)
+    def add_image(self, file_item: Path, idx: Optional[int] = None) -> None:
+        if idx:
+            self._added_images.insert(idx)
+        else:
+            self._added_images.append(file_item)
         self.image_count_changed.emit(self.get_num_images())
 
     def get_all_images(self) -> list[Path]:
-        return self._added_images
+        if self.is_images_shuffled():
+            return self._shuffled_images
+        else:
+            return self._added_images
 
     def get_image_at(self, idx: int) -> Path:
-        return self._added_images[idx]
+        if self.is_images_shuffled():
+            return self._shuffled_images[idx]
+        else:
+            return self._added_images[idx]
 
     def get_num_images(self) -> int:
-        return len(self._added_images)
+        if self.is_images_shuffled():
+            return len(self._shuffled_images)
+        else:
+            return len(self._added_images)
 
     def set_all_images(self, list_of_img: list[Path]) -> None:
         self._added_images = list_of_img
+        self.image_set_added.emit()
+        self.image_count_changed.emit(self.get_num_images())
 
     def clear_all_images(self) -> None:
         self._added_images = []
+        if self.is_images_shuffled():
+            self.set_shuffled_images(None)
         self.image_count_changed.emit(0)
+
+    def empty_image_list(self) -> None:
+        if self.is_images_shuffled():
+            self._shuffled_images = []
+        else:
+            self._added_images = []
 
     def remove_image(self, item: Path) -> None:
         self._added_images.remove(item)
@@ -100,7 +123,10 @@ class AnnotatorModel(QObject):
             self.image_changed.emit()
 
     def get_curr_img(self) -> Path:
-        return self._added_images[self._curr_img_index]
+        if self.is_images_shuffled():
+            return self._shuffled_images[self._curr_img_index]
+        else:
+            return self._added_images[self._curr_img_index]
 
     def get_annotations(self) -> dict[Path, list[Any]]:
         return self._created_annotations
