@@ -46,6 +46,8 @@ class AnnotatorModel(QObject):
         # None if annotating has not started.
         self._csv_save_path: Optional[Path] = None
 
+        self._annotation_started = False
+
     def get_annotation_keys(self) -> dict[str, Key]:
         return self._annotation_keys
 
@@ -162,4 +164,10 @@ class AnnotatorModel(QObject):
 
     def set_img(self, idx: int) -> None:
         self.set_image.emit(idx)
+
+    def is_annotation_started(self) -> bool:
+        return self._annotation_started
+
+    def set_annotation_started(self, started: bool) -> None:
+        self._annotation_started = started
 

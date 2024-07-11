@@ -315,6 +315,7 @@ class MainView(QFrame):
 
         # set first image
         self._annotator_model.set_img(starting_idx)
+        self._annotator_model.set_annotation_started(True)
 
 
 
