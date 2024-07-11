@@ -18,6 +18,8 @@ class AnnotatorModel(QObject):
     image_count_changed: Signal = Signal(int)
     images_shuffled: Signal = Signal(bool)
     image_set_added: Signal = Signal()
+    next_image: Signal = Signal()
+    prev_image: Signal = Signal()
 
     def __init__(self):
         super().__init__()
@@ -150,3 +152,10 @@ class AnnotatorModel(QObject):
 
     def get_csv_save_path(self) -> Path:
         return self._csv_save_path
+
+    def next_img(self) -> None:
+        self.next_image.emit()
+
+    def prev_img(self) -> None:
+        self.prev_image.emit()
+

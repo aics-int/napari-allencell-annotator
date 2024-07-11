@@ -500,9 +500,8 @@ class MainView(QFrame):
         image is being annotated, enable previous button.
         """
 
-        self._annotator_model.set_previous_image_index(self._annotator_model.get_curr_img_index())
+        self._annotator_model.next_img()
         # This dispatches a signal which updates  annotations dictionary and sets the next image
-        self._annotator_model.set_curr_img_index(self._annotator_model.get_curr_img_index() + 1)
         self.annots.view.save_btn.setEnabled(True)
 
     def _prev_image_clicked(self):
@@ -511,8 +510,7 @@ class MainView(QFrame):
 
         If the first image is being annotated, disable button.
         """
-        self._annotator_model.set_previous_image_index(self._annotator_model.get_curr_img_index())
-        self._annotator_model.set_curr_img_index(self._annotator_model.get_curr_img_index() - 1)
+        self._annotator_model.prev_img()
         self.annots.view.save_btn.setEnabled(True)
 
     def _image_selected(self):
