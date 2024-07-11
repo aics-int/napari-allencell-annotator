@@ -1,4 +1,7 @@
+from typing import List
+
 import numpy as np
+from napari.layers import Layer
 
 from napari_allencell_annotator.view.i_viewer import IViewer
 from napari.utils.notifications import show_info
@@ -39,3 +42,6 @@ class Viewer(IViewer):
             The message to be displayed
         """
         show_info(alert_msg)
+
+    def get_layers(self) -> List[Layer]:
+        return list(self.viewer.layers)
