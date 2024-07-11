@@ -125,7 +125,7 @@ class AnnotatorController:
         self.record_annotations(self._annotation_model.get_curr_img_index())
 
         for idx in range(self._annotation_model.get_num_images()):
-            if self._annotation_model.get_image_at(idx) not in self._annotation_model.get_annotations().keys():
+            if self._annotation_model.get_image_at(idx) not in self._annotation_model.get_annotations():
                 self._annotation_model.add_annotation(self._annotation_model.get_image_at(idx), [])
 
         self.write_csv()
