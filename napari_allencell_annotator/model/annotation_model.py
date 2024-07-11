@@ -20,6 +20,7 @@ class AnnotatorModel(QObject):
     image_set_added: Signal = Signal()
     next_image: Signal = Signal()
     prev_image: Signal = Signal()
+    set_image: Signal = Signal(int)
 
     def __init__(self):
         super().__init__()
@@ -158,4 +159,7 @@ class AnnotatorModel(QObject):
 
     def prev_img(self) -> None:
         self.prev_image.emit()
+
+    def set_img(self, idx: int) -> None:
+        self.set_image.emit(idx)
 

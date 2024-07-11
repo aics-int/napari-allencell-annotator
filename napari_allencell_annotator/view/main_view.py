@@ -314,8 +314,8 @@ class MainView(QFrame):
             self._images_view.hide_image_paths()
 
         # set first image
-        self._annotator_model.set_previous_image_index(None)
-        self._annotator_model.set_curr_img_index(starting_idx)
+        self._annotator_model.set_img(starting_idx)
+
 
 
     def annotating_shortcuts_on(self):

@@ -54,7 +54,7 @@ class FilesWidget(QListWidget):
         self._annotator_model.prev_image.connect(
             lambda: self.setCurrentItem(self.item(self._annotator_model.get_curr_img_index() - 1))
         )
-
+        self._annotator_model.set_image.connect(lambda idx: self.setCurrentItem(self.item(idx)))
         self._annotator_model.images_shuffled.connect(self._handle_shuffle)
         self._annotator_model.image_set_added.connect(
             lambda: self._handle_shuffle(self._annotator_model.is_images_shuffled())

@@ -130,7 +130,6 @@ class AnnotatorController:
 
         self.write_csv()
         # reset optional fields in model to None (pre-annottion state)
-        self._annotation_model.set_curr_img_index(None)
         self._annotation_model.set_csv_save_path(None)
         self.view.set_mode(AnnotatorViewMode.VIEW)
 
