@@ -122,6 +122,7 @@ class AnnotatorController:
 
     def stop_annotating(self):
         """Reset values from annotating and change mode to ADD."""
+        # TODO: DO WE WANT TO SAVE ALL IMAGES WITHOUT ANNOTATIONS
         self.record_annotations(self._annotation_model.get_curr_img_index())
 
         for idx in range(self._annotation_model.get_num_images()):
