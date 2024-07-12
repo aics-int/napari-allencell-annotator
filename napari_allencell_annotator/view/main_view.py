@@ -155,8 +155,13 @@ class MainView(QFrame):
                         self._annotator_model.add_annotation(path, row[2:])
                     # self._images_view.add_new_item(path)
                 # start at row 0 if annotation data was not used from csv
+
                 file.close()
             self._annotator_model.set_all_images(image_list)
+            if shuffled:
+                self._annotator_model.set_shuffled_images(
+                    FileUtils.shuffle_file_list(self._annotator_model.get_all_images())
+                )
             self.annots.start_viewing(use_annots)
 
     def _shuffle_toggled(self, checked: bool):
