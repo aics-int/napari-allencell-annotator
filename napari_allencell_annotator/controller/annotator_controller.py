@@ -161,31 +161,29 @@ class AnnotatorController:
         curr_img : Dict[str, str]
             The current image {'File Path' : 'path', 'Row' : str(rownum)}
         """
-        if self._annotation_model.get_annotations() is None:
-            return
-
-        path: Path = self._annotation_model.get_curr_img()
-        # files_and_annots values are lists File Path ->[File Name, FMS, annot1val, annot2val ...]
-        # if the file has not been annotated the list is just length 2 [File Name, FMS]
-        if path not in list(self._annotation_model.get_annotations().keys()):
-            # if the image is un-annotated render the default values
-            self.view.render_default_values()
-        else:
-            # if the image has been annotated render the values that were entered
-            # dictionary list [2::] is [annot1val, annot2val, ...]
-            self.view.render_values(self._annotation_model.get_annotations()[path])
-        # convert row to int
-        self.view.display_current_progress()
-        # if at the end disable next
-        if self._annotation_model.get_curr_img_index() == self._annotation_model.get_num_images() - 1:
-            self.view.next_btn.setEnabled(False)
-        else:
-            self.view.next_btn.setEnabled(True)
-        # if at the start disable prev
-        if self._annotation_model.get_curr_img_index() == 0:
-            self.view.prev_btn.setEnabled(False)
-        else:
-            self.view.prev_btn.setEnabled(True)
+        if self._annotation_model.get_annotations() is not None:
+            path: Path = self._annotation_model.get_curr_img()
+            # files_and_annots values are lists File Path ->[File Name, FMS, annot1val, annot2val ...]
+            # if the file has not been annotated the list is just length 2 [File Name, FMS]
+            if path not in list(self._annotation_model.get_annotations().keys()):
+                # if the image is un-annotated render the default values
+                self.view.render_default_values()
+            else:
+                # if the image has been annotated render the values that were entered
+                # dictionary list [2::] is [annot1val, annot2val, ...]
+                self.view.render_values(self._annotation_model.get_annotations()[path])
+            # convert row to int
+            self.view.display_current_progress()
+            # if at the end disable next
+            if self._annotation_model.get_curr_img_index() == self._annotation_model.get_num_images() - 1:
+                self.view.next_btn.setEnabled(False)
+            else:
+                self.view.next_btn.setEnabled(True)
+            # if at the start disable prev
+            if self._annotation_model.get_curr_img_index() == 0:
+                self.view.prev_btn.setEnabled(False)
+            else:
+                self.view.prev_btn.setEnabled(True)
 
     def record_annotations(self, record_idx: int):
         """
