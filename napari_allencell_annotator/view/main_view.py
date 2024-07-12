@@ -133,8 +133,7 @@ class MainView(QFrame):
                 )
                 file = open(file_path)
                 reader = csv.reader(file)
-                shuffled: str = next(reader)[1]
-                # shuffled = self.str_to_bool(shuffled)
+                shuffled: bool = self.str_to_bool(next(reader)[1])
                 # annotation data header
                 annts = next(reader)[1]
                 # set annotation Key dict in model with json header info
