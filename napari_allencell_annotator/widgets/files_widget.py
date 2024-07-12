@@ -78,7 +78,10 @@ class FilesWidget(QListWidget):
         else:
             self._annotator_model.set_previous_image_index(self.row(prev_item))
 
-        self._annotator_model.set_curr_img_index(self.row(curr_item))
+        if curr_item is None:
+            self._annotator_model.set_curr_img_index(None)
+        else:
+            self._annotator_model.set_curr_img_index(self.row(curr_item))
 
 
     def unhide_all(self) -> None:

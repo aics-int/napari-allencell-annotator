@@ -117,6 +117,7 @@ class ImagesView(QFrame):
         self._annotator_model.image_changed.connect(self._display_img)
         self._annotator_model.image_count_changed.connect(self._handle_image_count_changed)
         self._annotator_model.images_shuffled.connect(self._handle_shuffle_ui)
+        self._annotator_model.unselect_image.connect(self.viewer.clear_layers)
 
     def _handle_shuffle_ui(self, checked: bool) -> None:
         """
@@ -285,7 +286,7 @@ class ImagesView(QFrame):
             Toggle state of the shuffle button.
         """
         new_toggle_state: bool = not self._annotator_model.is_images_shuffled()
-        self.viewer.clear_layers()
+        self.file_widget.setCurrentItem(None)
         # self._update_shuff_text(new_toggle_state)
         if new_toggle_state:
             # Switching to shuffle: on
@@ -342,7 +343,6 @@ class ImagesView(QFrame):
         # us explicitly calling remove_item on it
         if item.file_path in self._annotator_model.get_all_images():
             if self.file_widget.currentItem() == item:
-                self.viewer.clear_layers()
                 self.file_widget.setCurrentItem(None)
             self._annotator_model.remove_image(item.file_path)
             self.file_widget.remove_item(item)
@@ -353,7 +353,6 @@ class ImagesView(QFrame):
         Clear all image data from the model and the file widget.
         """
         self._annotator_model.clear_all_images()  # clear model
-        self.viewer.clear_layers()
         self.file_widget.setCurrentItem(None)
         # self._annotator_model.set_shuffled_images(None)  # clear shuffled images, if any
 

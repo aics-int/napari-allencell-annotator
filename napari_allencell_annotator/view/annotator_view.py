@@ -85,6 +85,7 @@ class AnnotatorView(QFrame):
     ):
         super().__init__()
         self._annotator_model = model
+        self._annotator_model.unselect_image.connect(self.render_default_values)
         self._mode = mode
         label = QLabel("Annotations")
         label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)

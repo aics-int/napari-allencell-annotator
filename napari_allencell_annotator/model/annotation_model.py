@@ -21,6 +21,7 @@ class AnnotatorModel(QObject):
     next_image: Signal = Signal()
     prev_image: Signal = Signal()
     set_image: Signal = Signal(int)
+    unselect_image: Signal = Signal()
 
     def __init__(self):
         super().__init__()
@@ -128,6 +129,9 @@ class AnnotatorModel(QObject):
         if self._curr_img_index is not None:
             self.image_changed.emit()
 
+        else:
+            self.unselect_image.emit()
+
     def get_curr_img(self) -> Path:
         if self.is_images_shuffled():
             return self._shuffled_images[self._curr_img_index]
@@ -169,4 +173,5 @@ class AnnotatorModel(QObject):
 
     def set_annotation_started(self, started: bool) -> None:
         self._annotation_started = started
+
 
