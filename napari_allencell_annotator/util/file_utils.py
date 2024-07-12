@@ -51,7 +51,7 @@ class FileUtils:
         dir_path: list[Path]
             The path to a directory
         """
-        return list(dir_path.glob("*.*"))
+        return sorted(list(dir_path.glob("*.*")))
 
     @staticmethod
     def shuffle_file_list(files: list[Path]) -> list[Path]:
