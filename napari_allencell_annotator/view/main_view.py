@@ -279,7 +279,7 @@ class MainView(QFrame):
                 if annot_path in old_images_list:
                     # if the annotation is complete move to front
                     if annot_list and len(annot_list) == len(self._annotator_model.get_annotation_keys()):
-                        new_images_list.insert(0, annot_path)
+                        new_images_list.insert(starting_idx, annot_path)
                         old_images_list.remove(annot_path)
                         starting_idx = starting_idx + 1
                     else:
