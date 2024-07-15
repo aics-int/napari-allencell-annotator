@@ -36,9 +36,9 @@ class AnnotatorModel(QObject):
         # THE FOLLOWING FIELDS ONLY ARE NEEDED WHEN ANNOTATING STARTS AND ARE INITIALIZED AFTER STARTING.
         # Current image index, which is none by default
         # Changes to curr_img_index through set_curr_img_index() emits an image_changed event which parts of the app
-        # react to display that image. None if the user has not started annotating.
+        # react to display that image. -1 if the user has not started annotating.
         self._curr_img_index: int = -1
-        self._previous_img_index: Optional[int] = -1  # index of previously viewed image, None by default
+        self._previous_img_index: int = -1  # index of previously viewed image, -1 by default
         # annotations that have been crated. If annotating has not started, is None by default.
         # dict of annotated image path -> list of annotations for that image
         self._created_annotations: Optional[dict[Path, list[Any]]] = None
@@ -123,8 +123,6 @@ class AnnotatorModel(QObject):
 
     def set_curr_img_index(self, idx: int) -> None:
         self._curr_img_index = idx
-
-        # when we set the current index to -1 to exit training, we dont want to emit image_changed
         self.image_changed.emit()
 
     def get_curr_img(self) -> Optional[Path]:
