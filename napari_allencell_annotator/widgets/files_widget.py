@@ -73,15 +73,8 @@ class FilesWidget(QListWidget):
         prev_item:
             the previous file item
         """
-        if prev_item is None:
-            self._annotator_model.set_previous_image_index(None)
-        else:
-            self._annotator_model.set_previous_image_index(self.row(prev_item))
-
-        if curr_item is None:
-            self._annotator_model.set_curr_img_index(None)
-        else:
-            self._annotator_model.set_curr_img_index(self.row(curr_item))
+        self._annotator_model.set_previous_image_index(self.row(prev_item))
+        self._annotator_model.set_curr_img_index(self.row(curr_item))
 
     def unhide_all(self) -> None:
         """Display the file names on all files in the list."""

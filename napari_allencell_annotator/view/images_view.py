@@ -117,7 +117,6 @@ class ImagesView(QFrame):
         self._annotator_model.image_changed.connect(self._display_img)
         self._annotator_model.image_count_changed.connect(self._handle_image_count_changed)
         self._annotator_model.images_shuffled.connect(self._handle_shuffle_ui)
-        self._annotator_model.unselect_image.connect(self.viewer.clear_layers)
 
     def _handle_shuffle_ui(self, checked: bool) -> None:
         """
@@ -201,9 +200,9 @@ class ImagesView(QFrame):
             Previous file
         """
         self.viewer.clear_layers()
-        previous = self._annotator_model.get_previous_image_index()
+        previous = self.file_widget.item(self._annotator_model.get_previous_image_index())
         if previous is not None:
-            self.file_widget.item(previous).unhighlight()
+            previous.unhighlight()
 
         current = self.file_widget.item(self._annotator_model.get_curr_img_index())
         if current is not None:

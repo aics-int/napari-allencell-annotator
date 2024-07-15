@@ -21,7 +21,6 @@ class AnnotatorModel(QObject):
     next_image: Signal = Signal()
     prev_image: Signal = Signal()
     set_image: Signal = Signal(int)
-    unselect_image: Signal = Signal()
 
     def __init__(self):
         super().__init__()
@@ -38,8 +37,8 @@ class AnnotatorModel(QObject):
         # Current image index, which is none by default
         # Changes to curr_img_index through set_curr_img_index() emits an image_changed event which parts of the app
         # react to display that image. None if the user has not started annotating.
-        self._curr_img_index: Optional[int] = None
-        self._previous_img_index: Optional[int] = None  # index of previously viewed image, None by default
+        self._curr_img_index: int = -1
+        self._previous_img_index: Optional[int] = -1  # index of previously viewed image, None by default
         # annotations that have been crated. If annotating has not started, is None by default.
         # dict of annotated image path -> list of annotations for that image
         self._created_annotations: Optional[dict[Path, list[Any]]] = None
@@ -125,18 +124,17 @@ class AnnotatorModel(QObject):
     def set_curr_img_index(self, idx: int) -> None:
         self._curr_img_index = idx
 
-        # when we set the current index to None to exit training, we dont want to emit image_changed
-        if self._curr_img_index is not None:
-            self.image_changed.emit()
+        # when we set the current index to -1 to exit training, we dont want to emit image_changed
+        self.image_changed.emit()
 
+    def get_curr_img(self) -> Optional[Path]:
+        if self.get_curr_img_index() != -1:
+            if self.is_images_shuffled():
+                return self._shuffled_images[self._curr_img_index]
+            else:
+                return self._added_images[self._curr_img_index]
         else:
-            self.unselect_image.emit()
-
-    def get_curr_img(self) -> Path:
-        if self.is_images_shuffled():
-            return self._shuffled_images[self._curr_img_index]
-        else:
-            return self._added_images[self._curr_img_index]
+            return None
 
     def get_annotations(self) -> dict[Path, list[Any]]:
         return self._created_annotations
