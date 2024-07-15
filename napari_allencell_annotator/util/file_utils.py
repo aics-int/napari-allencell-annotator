@@ -42,9 +42,9 @@ class FileUtils:
         return extension in SUPPORTED_FILE_TYPES
 
     @staticmethod
-    def get_files_in_dir(dir_path: Path) -> list[Path]:
+    def get_sorted_files_in_dir(dir_path: Path) -> list[Path]:
         """
-        Return a list of paths to files in a directory.
+        Return a sorted list of paths to files in a directory.
 
         Parameters
         ----------

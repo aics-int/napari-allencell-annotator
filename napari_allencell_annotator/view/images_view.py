@@ -231,7 +231,7 @@ class ImagesView(QFrame):
         dir_list : List[Path]
             The input list with dir[0] holding directory name.
         """
-        all_files_in_dir: list[Path] = FileUtils.get_files_in_dir(dir_path)
+        all_files_in_dir: list[Path] = FileUtils.get_sorted_files_in_dir(dir_path)
 
         if len(all_files_in_dir) < 1:
             self.viewer.alert("Folder is empty")
