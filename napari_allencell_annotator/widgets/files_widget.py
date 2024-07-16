@@ -59,10 +59,7 @@ class FilesWidget(QListWidget):
 
     def _handle_image_changed(self):
         with QSignalBlocker(self):
-            if self._annotator_model.get_curr_img_index() is not None:
-                self.setCurrentItem(self.item(self._annotator_model.get_curr_img_index()))
-            else:
-                self.setCurrentItem(None)
+            self.setCurrentItem(self.item(self._annotator_model.get_curr_img_index()))
 
     def _handle_file_item_changed(self, curr_item: FileItem, prev_item: FileItem) -> None:
         """
