@@ -85,6 +85,7 @@ class AnnotatorView(QFrame):
     ):
         super().__init__()
         self._annotator_model = model
+        self._annotator_model.image_changed.connect(self._handle_image_changed)
         self._mode = mode
         label = QLabel("Annotations")
         label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
@@ -188,6 +189,10 @@ class AnnotatorView(QFrame):
         """
         self._mode = mode
         self._display_mode()
+
+    def _handle_image_changed(self):
+        if self._annotator_model.get_curr_img_index() == -1:
+            self.render_default_values()
 
     def display_current_progress(self):
         """
