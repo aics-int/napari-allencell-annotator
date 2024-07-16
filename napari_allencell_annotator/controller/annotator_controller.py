@@ -168,13 +168,14 @@ class AnnotatorController:
             path: Path = self._annotation_model.get_curr_img()
             # files_and_annots values are lists File Path ->[File Name, FMS, annot1val, annot2val ...]
             # if the file has not been annotated the list is just length 2 [File Name, FMS]
-            if path not in list(self._annotation_model.get_annotations().keys()):
-                # if the image is un-annotated render the default values
+            if path is None or path not in list(self._annotation_model.get_annotations().keys()):
+                # if the image is un-annotated render the default values or no image is selected
                 self.view.render_default_values()
             else:
                 # if the image has been annotated render the values that were entered
                 # dictionary list [2::] is [annot1val, annot2val, ...]
                 self.view.render_values(self._annotation_model.get_annotations()[path])
+
             # convert row to int
             self.view.display_current_progress()
             # if at the end disable next
@@ -198,7 +199,7 @@ class AnnotatorController:
             The index of the image we should save annotations for
         """
         if (
-            record_idx is not None and self._annotation_model.is_annotation_started()
+            record_idx != -1 and self._annotation_model.is_annotation_started()
         ):  # ignore recording annotations when loading first image or just starting out
             # we're saving annotation for the image we just switched off of.
             self._annotation_model.add_annotation(

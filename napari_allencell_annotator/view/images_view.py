@@ -201,9 +201,9 @@ class ImagesView(QFrame):
             Previous file
         """
         self.viewer.clear_layers()
-        previous = self._annotator_model.get_previous_image_index()
+        previous = self.file_widget.item(self._annotator_model.get_previous_image_index())
         if previous is not None:
-            self.file_widget.item(previous).unhighlight()
+            previous.unhighlight()
 
         current = self.file_widget.item(self._annotator_model.get_curr_img_index())
         if current is not None:
@@ -231,7 +231,7 @@ class ImagesView(QFrame):
         dir_list : List[Path]
             The input list with dir[0] holding directory name.
         """
-        all_files_in_dir: list[Path] = FileUtils.get_files_in_dir(dir_path)
+        all_files_in_dir: list[Path] = FileUtils.get_sorted_files_in_dir(dir_path)
 
         if len(all_files_in_dir) < 1:
             self.viewer.alert("Folder is empty")
@@ -286,6 +286,7 @@ class ImagesView(QFrame):
             Toggle state of the shuffle button.
         """
         new_toggle_state: bool = not self._annotator_model.is_images_shuffled()
+
         # self._update_shuff_text(new_toggle_state)
         if new_toggle_state:
             # Switching to shuffle: on
