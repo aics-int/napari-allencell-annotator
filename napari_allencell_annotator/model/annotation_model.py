@@ -135,7 +135,7 @@ class AnnotatorModel(QObject):
         return self._created_annotations
 
     def add_annotation(self, file_path: Path, annotation: list[Any]):
-        self._created_annotations[file_path]: list[Any] = annotation
+        self._created_annotations[file_path] = annotation
 
     def set_annotations(self, annotations: dict[Path, list[Any]]) -> None:
         self._created_annotations = annotations
