@@ -320,7 +320,8 @@ class MainView(QFrame):
             self._images_view.hide_image_paths()
 
         # set first image
-        self._annotator_model.set_img(starting_idx)
+        self._annotator_model.set_previous_image_index(self._annotator_model.get_curr_img_index())
+        self._annotator_model.set_curr_img_index(starting_idx)
         self._annotator_model.set_annotation_started(True)
 
     def annotating_shortcuts_on(self):
@@ -505,8 +506,9 @@ class MainView(QFrame):
         image is being annotated, enable previous button.
         """
 
-        self._annotator_model.next_img()
+        self._annotator_model.set_previous_image_index(self._annotator_model.get_curr_img_index())
         # This dispatches a signal which updates  annotations dictionary and sets the next image
+        self._annotator_model.set_curr_img_index(self._annotator_model.get_curr_img_index() + 1)
         self.annots.view.save_btn.setEnabled(True)
 
     def _prev_image_clicked(self):
@@ -515,7 +517,8 @@ class MainView(QFrame):
 
         If the first image is being annotated, disable button.
         """
-        self._annotator_model.prev_img()
+        self._annotator_model.set_previous_image_index(self._annotator_model.get_curr_img_index())
+        self._annotator_model.set_curr_img_index(self._annotator_model.get_curr_img_index() - 1)
         self.annots.view.save_btn.setEnabled(True)
 
     def _image_selected(self):
