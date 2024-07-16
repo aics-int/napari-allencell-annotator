@@ -1,4 +1,6 @@
 from typing import Set
+
+from PyQt5.QtCore import QSignalBlocker
 from qtpy.QtWidgets import QListWidget
 from qtpy.QtCore import Signal
 from pathlib import Path
@@ -47,22 +49,22 @@ class FilesWidget(QListWidget):
         self.setCurrentItem(None)
         self._annotator_model = annotator_model
 
-        self._annotator_model.next_image.connect(
-            lambda: self.setCurrentItem(self.item(self._annotator_model.get_curr_img_index() + 1))
-        )
-
-        self._annotator_model.prev_image.connect(
-            lambda: self.setCurrentItem(self.item(self._annotator_model.get_curr_img_index() - 1))
-        )
-        self._annotator_model.set_image.connect(lambda idx: self.setCurrentItem(self.item(idx)))
+        self._annotator_model.image_changed.connect(self._handle_image_changed)
         self._annotator_model.images_shuffled.connect(self._handle_shuffle)
         self._annotator_model.image_set_added.connect(
             lambda: self._handle_shuffle(self._annotator_model.is_images_shuffled())
         )
         self._annotator_model.image_count_changed.connect(self._handle_image_count_change)
-        self.currentItemChanged.connect(self._handle_item_changed)
+        self.currentItemChanged.connect(self._handle_file_item_changed)
 
-    def _handle_item_changed(self, curr_item: FileItem, prev_item: FileItem) -> None:
+    def _handle_image_changed(self):
+        with QSignalBlocker(self):
+            if self._annotator_model.get_curr_img_index() is not None:
+                self.setCurrentItem(self.item(self._annotator_model.get_curr_img_index()))
+            else:
+                self.setCurrentItem(None)
+
+    def _handle_file_item_changed(self, curr_item: FileItem, prev_item: FileItem) -> None:
         """
         Update the model when the current item in the file widget is changed if it has not been updated.
 
@@ -78,7 +80,10 @@ class FilesWidget(QListWidget):
         else:
             self._annotator_model.set_previous_image_index(self.row(prev_item))
 
-        self._annotator_model.set_curr_img_index(self.row(curr_item))
+        if curr_item is None:
+            self._annotator_model.set_curr_img_index(None)
+        else:
+            self._annotator_model.set_curr_img_index(self.row(curr_item))
 
 
     def unhide_all(self) -> None:
