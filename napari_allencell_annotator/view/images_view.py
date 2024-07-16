@@ -343,9 +343,9 @@ class ImagesView(QFrame):
         if item.file_path in self._annotator_model.get_all_images():
             if self.file_widget.currentItem() == item:
                 self.viewer.clear_layers()
-                self.file_widget.setCurrentItem(None)
-            self._annotator_model.remove_image(item.file_path)
+
             self.file_widget.remove_item(item)
+            self._annotator_model.remove_image(item.file_path)
             self.update_num_files_label(self._annotator_model.get_num_images())
 
     def clear_all(self) -> None:
