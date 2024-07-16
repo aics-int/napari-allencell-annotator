@@ -197,7 +197,9 @@ class AnnotatorController:
         record_idx : int
             The index of the image we should save annotations for
         """
-        if record_idx is not None and self._annotation_model.is_annotation_started():  # ignore recording annotations when loading first image or just starting out
+        if (
+            record_idx is not None and self._annotation_model.is_annotation_started()
+        ):  # ignore recording annotations when loading first image or just starting out
             # we're saving annotation for the image we just switched off of.
             self._annotation_model.add_annotation(
                 self._annotation_model.get_all_images()[record_idx], self.view.get_curr_annots()

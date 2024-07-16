@@ -157,4 +157,3 @@ class AnnotatorModel(QObject):
 
     def set_annotation_started(self, started: bool) -> None:
         self._annotation_started = started
-

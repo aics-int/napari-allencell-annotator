@@ -318,8 +318,6 @@ class MainView(QFrame):
         self._annotator_model.set_curr_img_index(starting_idx)
         self._annotator_model.set_annotation_started(True)
 
-
-
     def annotating_shortcuts_on(self):
         """Create annotation keyboard shortcuts and connect them to slots."""
 

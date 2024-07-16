@@ -85,7 +85,6 @@ class FilesWidget(QListWidget):
         else:
             self._annotator_model.set_curr_img_index(self.row(curr_item))
 
-
     def unhide_all(self) -> None:
         """Display the file names on all files in the list."""
         for i in range(self.count()):
