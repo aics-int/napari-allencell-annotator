@@ -353,8 +353,6 @@ class ImagesView(QFrame):
         Clear all image data from the model and the file widget.
         """
         self._annotator_model.clear_all_images()  # clear model
-        self.viewer.clear_layers()
-        self.file_widget.setCurrentItem(None)
         # self._annotator_model.set_shuffled_images(None)  # clear shuffled images, if any
 
     def start_annotating(self) -> None:
@@ -380,7 +378,8 @@ class ImagesView(QFrame):
         if count > 0:
             self._enable_delete_button()
             self._enable_shuffle_button()
-        elif count < 0:
+        else:
+            self.viewer.clear_layers()
             self.reset_buttons()
 
     def stop_annotating(self):
