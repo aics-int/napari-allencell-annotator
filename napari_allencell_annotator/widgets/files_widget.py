@@ -61,6 +61,14 @@ class FilesWidget(QListWidget):
         with QSignalBlocker(self):
             self.setCurrentItem(self.item(self._annotator_model.get_curr_img_index()))
 
+            previous = self.item(self._annotator_model.get_previous_image_index())
+            if previous is not None:
+                previous.unhighlight()
+
+            current = self.item(self._annotator_model.get_curr_img_index())
+            if current is not None:
+                current.highlight()
+
     def _handle_file_item_changed(self, curr_item: FileItem, prev_item: FileItem) -> None:
         """
         Update the model when the current item in the file widget is changed if it has not been updated.

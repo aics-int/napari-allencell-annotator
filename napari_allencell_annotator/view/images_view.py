@@ -201,15 +201,12 @@ class ImagesView(QFrame):
             Previous file
         """
         self.viewer.clear_layers()
-        previous = self.file_widget.item(self._annotator_model.get_previous_image_index())
-        if previous is not None:
-            previous.unhighlight()
 
-        current = self.file_widget.item(self._annotator_model.get_curr_img_index())
+        current: Path = self._annotator_model.get_curr_img()
         if current is not None:
-            img: ImageUtils = ImageUtils(current.file_path)
+            img: ImageUtils = ImageUtils(current)
             self.viewer.add_image(img.get_image_data())
-            current.highlight()
+
 
     def update_num_files_label(self, num_files: int) -> None:
         """
