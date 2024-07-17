@@ -133,8 +133,7 @@ class MainView(QFrame):
                 )
                 file = open(file_path)
                 reader = csv.reader(file)
-                shuffled: str = next(reader)[1]
-                # shuffled = self.str_to_bool(shuffled)
+                shuffled: bool = self.str_to_bool(next(reader)[1])
                 # annotation data header
                 annts = next(reader)[1]
                 # set annotation Key dict in model with json header info
@@ -156,7 +155,14 @@ class MainView(QFrame):
                     # self._images_view.add_new_item(path)
                 # start at row 0 if annotation data was not used from csv
                 file.close()
-            self._annotator_model.set_all_images(image_list)
+                self._annotator_model.set_all_images(image_list)
+                if shuffled:
+                    self._annotator_model.set_shuffled_images(
+                        FileUtils.shuffle_file_list(self._annotator_model.get_all_images())
+                    )
+                else:
+                    self._annotator_model.set_shuffled_images(None)
+
             self.annots.start_viewing(use_annots)
 
     def _shuffle_toggled(self, checked: bool):
@@ -276,7 +282,7 @@ class MainView(QFrame):
                 if annot_path in old_images_list:
                     # if the annotation is complete move to front
                     if annot_list and len(annot_list) == len(self._annotator_model.get_annotation_keys()):
-                        new_images_list.insert(0, annot_path)
+                        new_images_list.insert(starting_idx, annot_path)
                         old_images_list.remove(annot_path)
                         starting_idx = starting_idx + 1
                     else:
@@ -314,9 +320,9 @@ class MainView(QFrame):
             self._images_view.hide_image_paths()
 
         # set first image
-        self._annotator_model.set_previous_image_index(None)
+        self._annotator_model.set_previous_image_index(self._annotator_model.get_curr_img_index())
         self._annotator_model.set_curr_img_index(starting_idx)
-
+        self._annotator_model.set_annotation_started(True)
 
     def annotating_shortcuts_on(self):
         """Create annotation keyboard shortcuts and connect them to slots."""

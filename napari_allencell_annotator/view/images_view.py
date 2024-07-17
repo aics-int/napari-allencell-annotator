@@ -117,6 +117,7 @@ class ImagesView(QFrame):
         self._annotator_model.image_changed.connect(self._display_img)
         self._annotator_model.image_count_changed.connect(self._handle_image_count_changed)
         self._annotator_model.images_shuffled.connect(self._handle_shuffle_ui)
+        self._annotator_model.images_shuffled.connect(self.viewer.clear_layers)
 
     def _handle_shuffle_ui(self, checked: bool) -> None:
         """
@@ -200,15 +201,12 @@ class ImagesView(QFrame):
             Previous file
         """
         self.viewer.clear_layers()
-        previous = self._annotator_model.get_previous_image_index()
-        if previous is not None:
-            self.file_widget.item(previous).unhighlight()
 
-        current = self.file_widget.item(self._annotator_model.get_curr_img_index())
+        current: Path = self._annotator_model.get_curr_img()
         if current is not None:
-            img: ImageUtils = ImageUtils(current.file_path)
+            img: ImageUtils = ImageUtils(current)
             self.viewer.add_image(img.get_image_data())
-            current.highlight()
+
 
     def update_num_files_label(self, num_files: int) -> None:
         """
@@ -230,7 +228,7 @@ class ImagesView(QFrame):
         dir_list : List[Path]
             The input list with dir[0] holding directory name.
         """
-        all_files_in_dir: list[Path] = FileUtils.get_files_in_dir(dir_path)
+        all_files_in_dir: list[Path] = FileUtils.get_sorted_files_in_dir(dir_path)
 
         if len(all_files_in_dir) < 1:
             self.viewer.alert("Folder is empty")
@@ -285,6 +283,7 @@ class ImagesView(QFrame):
             Toggle state of the shuffle button.
         """
         new_toggle_state: bool = not self._annotator_model.is_images_shuffled()
+
         # self._update_shuff_text(new_toggle_state)
         if new_toggle_state:
             # Switching to shuffle: on
@@ -340,8 +339,11 @@ class ImagesView(QFrame):
         # TODO when we delete from the model, connect file widget so that it deletes that entry itself without
         # us explicitly calling remove_item on it
         if item.file_path in self._annotator_model.get_all_images():
-            self._annotator_model.remove_image(item.file_path)
+            if self.file_widget.currentItem() == item:
+                self.viewer.clear_layers()
+
             self.file_widget.remove_item(item)
+            self._annotator_model.remove_image(item.file_path)
             self.update_num_files_label(self._annotator_model.get_num_images())
 
     def clear_all(self) -> None:
@@ -374,7 +376,8 @@ class ImagesView(QFrame):
         if count > 0:
             self._enable_delete_button()
             self._enable_shuffle_button()
-        elif count < 0:
+        else:
+            self.viewer.clear_layers()
             self.reset_buttons()
 
     def stop_annotating(self):

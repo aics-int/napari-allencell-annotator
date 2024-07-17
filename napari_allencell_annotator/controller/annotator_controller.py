@@ -126,12 +126,13 @@ class AnnotatorController:
         self.record_annotations(self._annotation_model.get_curr_img_index())
 
         # Save rest of annotations, even if empty
-        for idx in range(self._annotation_model.get_curr_img_index()+1, self._annotation_model.get_num_images()):
-            self._annotation_model.add_annotation(self._annotation_model.get_image_at(idx), [])
+        for idx in range(self._annotation_model.get_num_images()):
+            if self._annotation_model.get_image_at(idx) not in self._annotation_model.get_annotations():
+                self._annotation_model.add_annotation(self._annotation_model.get_image_at(idx), [])
 
         self.write_csv()
         # reset optional fields in model to None (pre-annottion state)
-        self._annotation_model.set_curr_img_index(None)
+        self._annotation_model.set_annotation_started(False)
         self._annotation_model.set_csv_save_path(None)
         self.view.set_mode(AnnotatorViewMode.VIEW)
 
@@ -163,28 +164,30 @@ class AnnotatorController:
         curr_img : Dict[str, str]
             The current image {'File Path' : 'path', 'Row' : str(rownum)}
         """
-        path: Path = self._annotation_model.get_curr_img()
-        # files_and_annots values are lists File Path ->[File Name, FMS, annot1val, annot2val ...]
-        # if the file has not been annotated the list is just length 2 [File Name, FMS]
-        if path not in list(self._annotation_model.get_annotations().keys()) or len(self._annotation_model.get_annotations()[path]) == 0:
-            # if the image is un-annotated render the default values
-            self.view.render_default_values()
-        else:
-            # if the image has been annotated render the values that were entered
-            # dictionary list [2::] is [annot1val, annot2val, ...]
-            self.view.render_values(self._annotation_model.get_annotations()[path])
-        # convert row to int
-        self.view.display_current_progress()
-        # if at the end disable next
-        if self._annotation_model.get_curr_img_index() == self._annotation_model.get_num_images() - 1:
-            self.view.next_btn.setEnabled(False)
-        else:
-            self.view.next_btn.setEnabled(True)
-        # if at the start disable prev
-        if self._annotation_model.get_curr_img_index() == 0:
-            self.view.prev_btn.setEnabled(False)
-        else:
-            self.view.prev_btn.setEnabled(True)
+        if self._annotation_model.get_annotations() is not None:
+            path: Path = self._annotation_model.get_curr_img()
+            # files_and_annots values are lists File Path ->[File Name, FMS, annot1val, annot2val ...]
+            # if the file has not been annotated the list is just length 2 [File Name, FMS]
+            if path is None or path not in list(self._annotation_model.get_annotations().keys()):
+                # if the image is un-annotated render the default values or no image is selected
+                self.view.render_default_values()
+            else:
+                # if the image has been annotated render the values that were entered
+                # dictionary list [2::] is [annot1val, annot2val, ...]
+                self.view.render_values(self._annotation_model.get_annotations()[path])
+
+            # convert row to int
+            self.view.display_current_progress()
+            # if at the end disable next
+            if self._annotation_model.get_curr_img_index() == self._annotation_model.get_num_images() - 1:
+                self.view.next_btn.setEnabled(False)
+            else:
+                self.view.next_btn.setEnabled(True)
+            # if at the start disable prev
+            if self._annotation_model.get_curr_img_index() == 0:
+                self.view.prev_btn.setEnabled(False)
+            else:
+                self.view.prev_btn.setEnabled(True)
 
     def record_annotations(self, record_idx: int):
         """
@@ -195,7 +198,9 @@ class AnnotatorController:
         record_idx : int
             The index of the image we should save annotations for
         """
-        if record_idx is not None:  # ignore recording annotations when loading first image.
+        if (
+            record_idx != -1 and self._annotation_model.is_annotation_started()
+        ):  # ignore recording annotations when loading first image or just starting out
             # we're saving annotation for the image we just switched off of.
             self._annotation_model.add_annotation(
                 self._annotation_model.get_all_images()[record_idx], self.view.get_curr_annots()

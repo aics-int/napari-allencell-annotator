@@ -42,16 +42,16 @@ class FileUtils:
         return extension in SUPPORTED_FILE_TYPES
 
     @staticmethod
-    def get_files_in_dir(dir_path: Path) -> list[Path]:
+    def get_sorted_files_in_dir(dir_path: Path) -> list[Path]:
         """
-        Return a list of paths to files in a directory.
+        Return a sorted list of paths to files in a directory.
 
         Parameters
         ----------
         dir_path: list[Path]
             The path to a directory
         """
-        return list(dir_path.glob("*.*"))
+        return sorted(list(dir_path.glob("*.*")))
 
     @staticmethod
     def shuffle_file_list(files: list[Path]) -> list[Path]:
