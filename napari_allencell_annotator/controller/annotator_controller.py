@@ -168,7 +168,11 @@ class AnnotatorController:
             path: Path = self._annotation_model.get_curr_img()
             # files_and_annots values are lists File Path ->[File Name, FMS, annot1val, annot2val ...]
             # if the file has not been annotated the list is just length 2 [File Name, FMS]
-            if path is None or path not in list(self._annotation_model.get_annotations().keys()) or len(self._annotation_model.get_annotations()[path]) == 0:
+            if (
+                path is None
+                or path not in list(self._annotation_model.get_annotations().keys())
+                or len(self._annotation_model.get_annotations()[path]) == 0
+            ):
                 # if the image is un-annotated render the default values or no image is selected
                 self.view.render_default_values()
             else:

@@ -207,7 +207,6 @@ class ImagesView(QFrame):
             img: ImageUtils = ImageUtils(current)
             self.viewer.add_image(img.get_image_data())
 
-
     def update_num_files_label(self, num_files: int) -> None:
         """
         Update num_files_label to show the number of image files
