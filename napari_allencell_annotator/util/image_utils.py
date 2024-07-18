@@ -5,7 +5,6 @@ from bioio import BioImage
 import bioio_ome_tiff
 import bioio_czi
 import bioio_imageio
-import napari
 
 
 class ImageUtils:

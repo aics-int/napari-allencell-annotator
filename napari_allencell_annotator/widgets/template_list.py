@@ -1,4 +1,4 @@
-from typing import Dict, Any, List
+from typing import Any, List
 
 from qtpy import QtWidgets
 from qtpy.QtWidgets import QLineEdit, QCheckBox, QComboBox, QSpinBox
