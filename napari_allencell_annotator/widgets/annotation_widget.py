@@ -1,5 +1,3 @@
-from typing import Dict, Any
-
 from qtpy.QtWidgets import QListWidget, QAbstractItemView
 from qtpy.QtCore import Signal
 
