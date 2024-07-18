@@ -37,4 +37,4 @@ class ImageUtils:
         """
         Returns image data as a dask array
         """
-        return self._image.dask_data
+        return self._image.get_image_dask_data()
