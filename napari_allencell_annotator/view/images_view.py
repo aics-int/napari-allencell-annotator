@@ -1,5 +1,4 @@
 from pathlib import Path
-import random
 from typing import Optional
 
 from PyQt5.QtWidgets import QListWidgetItem
@@ -10,7 +9,6 @@ from napari_allencell_annotator.widgets.file_scrollable_popup import FileScrolla
 from napari_allencell_annotator.widgets.popup import Popup
 from qtpy.QtWidgets import QFrame
 from qtpy.QtCore import Qt
-from qtpy.QtCore import Signal
 
 from qtpy.QtWidgets import (
     QLabel,
@@ -27,7 +25,6 @@ from napari_allencell_annotator.widgets.file_input import (
 from napari_allencell_annotator.widgets.files_widget import FilesWidget, FileItem
 from napari_allencell_annotator.util.file_utils import FileUtils
 from napari_allencell_annotator._style import Style
-from napari_allencell_annotator.model.images_model import ImagesModel
 
 from napari_allencell_annotator.util.image_utils import ImageUtils
 

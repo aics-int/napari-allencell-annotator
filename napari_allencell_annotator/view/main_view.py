@@ -1,5 +1,4 @@
 import csv
-import itertools
 from pathlib import Path
 
 from napari_allencell_annotator.model.annotation_model import AnnotatorModel
@@ -11,7 +10,6 @@ from qtpy.QtWidgets import QVBoxLayout, QDialog
 from qtpy.QtGui import QKeySequence
 
 from napari_allencell_annotator.controller.annotator_controller import AnnotatorController
-from napari_allencell_annotator.model.images_model import ImagesModel
 from napari_allencell_annotator.widgets.create_dialog import CreateDialog
 from napari_allencell_annotator.widgets.template_item import ItemType, TemplateItem
 from napari_allencell_annotator.widgets.popup import Popup
@@ -19,7 +17,7 @@ from napari_allencell_annotator.view.viewer import Viewer
 from napari_allencell_annotator.view.i_viewer import IViewer
 
 import napari
-from typing import List, Dict, Union, Any
+from typing import List, Union
 
 
 class MainView(QFrame):

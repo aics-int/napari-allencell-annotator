@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 
 from napari_allencell_annotator.model.annotation_model import AnnotatorModel
@@ -10,7 +9,7 @@ from napari_allencell_annotator.view.annotator_view import (
 )
 import napari
 
-from typing import Dict, List, Optional, Any
+from typing import List, Optional
 import csv
 
 

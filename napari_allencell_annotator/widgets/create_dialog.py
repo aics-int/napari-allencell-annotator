@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Any
+from typing import Dict
 
 from napari_allencell_annotator._style import Style
 from qtpy import QtWidgets
