@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import numpy as np
+import dask.array as da
 from bioio import BioImage
 import bioio_ome_tiff
 import bioio_czi
@@ -18,8 +19,8 @@ class ImageUtils:
 
     Methods
     -------
-    add_image(self, viewer: napari.Viewer) -> None
-        Shows the image in the viewer
+    get_image_data(self) -> da.Array
+        Returns the dask array of the image
     """
 
     def __init__(self, filepath: Path):
@@ -34,8 +35,8 @@ class ImageUtils:
         else:
             self._image = BioImage(filepath, reader=bioio_imageio.Reader)
 
-    def get_image_data(self) -> np.ndarray:
+    def get_image_data(self) -> da.Array:
         """
-        Returns image data
+        Returns image data as a dask array
         """
-        return self._image.data
+        return self._image.get_image_dask_data()
