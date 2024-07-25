@@ -1,7 +1,7 @@
-import glob
 import random
 from pathlib import Path
 from napari_allencell_annotator.constants.constants import SUPPORTED_FILE_TYPES
+from typing import List
 
 
 class FileUtils:
@@ -20,7 +20,7 @@ class FileUtils:
             A list of paths
         """
 
-        valid_files = []
+        valid_files: List[Path] = []
         for file in file_list:
             if not file.name.startswith("."):
                 # get files
@@ -31,7 +31,7 @@ class FileUtils:
                     valid_files.append(file)
                 # get zarr inside the directory only if there's one zarr file
                 else:
-                    dir_files = list(file.glob("*.zarr"))
+                    dir_files: List[Path] = list(file.glob("*.zarr"))
 
                     if len(dir_files) == 1:
                         valid_files += dir_files

@@ -224,11 +224,11 @@ class ImagesView(QFrame):
         dir_list : List[Path]
             The input list with dir[0] holding directory name.
         """
-        # ome.zarr
+        # ome.zarr folder
         if dir_path.suffix == ".zarr":
             self._add_selected_files([dir_path])
 
-        # folder -> ome.zarr
+        # other
         else:
             all_files_in_dir: list[Path] = FileUtils.get_sorted_dirs_and_files_in_dir(dir_path)
 
