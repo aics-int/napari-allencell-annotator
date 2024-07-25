@@ -1,3 +1,4 @@
+import glob
 import random
 from pathlib import Path
 from napari_allencell_annotator.constants.constants import SUPPORTED_FILE_TYPES
@@ -18,11 +19,24 @@ class FileUtils:
         file_list: list[Path]
             A list of paths
         """
-        return [
-            file
-            for file in file_list
-            if not file.name.startswith(".") and (file.is_file() or file.name.endswith(".zarr"))
-        ]
+
+        valid_files = []
+        for file in file_list:
+            if not file.name.startswith("."):
+                # get files
+                if file.is_file():
+                    valid_files.append(file)
+                # get zarr file
+                elif file.is_dir() and file.name.endswith(".zarr"):
+                    valid_files.append(file)
+                # get zarr inside the directory only if there's one zarr file
+                else:
+                    dir_files = list(file.glob("*.zarr"))
+
+                    if len(dir_files) > 0:
+                        valid_files += dir_files
+
+        return valid_files
 
     @staticmethod
     def is_supported(file_path: Path) -> bool:
@@ -46,7 +60,7 @@ class FileUtils:
         return extension in SUPPORTED_FILE_TYPES
 
     @staticmethod
-    def get_sorted_files_in_dir(dir_path: Path) -> list[Path]:
+    def get_sorted_dirs_and_files_in_dir(dir_path: Path) -> list[Path]:
         """
         Return a sorted list of paths to files in a directory.
 
@@ -55,7 +69,8 @@ class FileUtils:
         dir_path: list[Path]
             The path to a directory
         """
-        return sorted(list(dir_path.glob("*.*")))
+
+        return sorted(list(dir_path.glob("*")))
 
     @staticmethod
     def shuffle_file_list(files: list[Path]) -> list[Path]:
