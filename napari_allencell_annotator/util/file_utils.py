@@ -30,8 +30,8 @@ class FileUtils:
                     valid_files.append(file)
                 # get zarr inside the directory
                 else:
-                    dir_files: List[Path] = list(file.glob("*.zarr"))
-                    valid_files += dir_files
+                    dir_zarr_files: List[Path] = list(file.glob("*.zarr"))
+                    valid_files += dir_zarr_files
 
         return valid_files
 
