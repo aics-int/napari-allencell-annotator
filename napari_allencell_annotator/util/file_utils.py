@@ -33,7 +33,7 @@ class FileUtils:
                 else:
                     dir_files = list(file.glob("*.zarr"))
 
-                    if len(dir_files) > 0:
+                    if len(dir_files) == 1:
                         valid_files += dir_files
 
         return valid_files
