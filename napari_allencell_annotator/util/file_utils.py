@@ -74,3 +74,11 @@ class FileUtils:
         shuffled_list = files.copy()
         random.shuffle(shuffled_list)
         return shuffled_list
+
+    @staticmethod
+    def get_file_name(path: Path):
+        if path.suffix == ".zarr":
+            return path.parent.stem
+        else:
+            return path.name
+

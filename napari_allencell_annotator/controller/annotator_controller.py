@@ -2,6 +2,7 @@ from pathlib import Path
 
 from napari_allencell_annotator.model.annotation_model import AnnotatorModel
 from napari_allencell_annotator.model.key import Key
+from napari_allencell_annotator.util.file_utils import FileUtils
 from napari_allencell_annotator.util.json_utils import JSONUtils
 from napari_allencell_annotator.view.annotator_view import (
     AnnotatorView,
@@ -249,5 +250,5 @@ class AnnotatorController:
             header.append(name)
         writer.writerow(header)
         for path, annotations in self._annotation_model.get_annotations().items():
-            writer.writerow([path.name, str(path)] + annotations)
+            writer.writerow([FileUtils.get_file_name(path), str(path)] + annotations)
         file.close()
