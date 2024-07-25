@@ -68,7 +68,10 @@ class FileItem(QListWidgetItem):
 
     def get_name(self) -> str:
         """Return basename"""
-        return self._file_path.stem
+        if self._file_path.suffix == ".zarr":
+            return self._file_path.parent.stem
+        else:
+            return self._file_path.stem
 
     def unhide(self) -> None:
         """Display the file name instead of hidden name."""

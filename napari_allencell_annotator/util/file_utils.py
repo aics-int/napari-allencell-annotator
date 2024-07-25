@@ -19,7 +19,6 @@ class FileUtils:
         file_list: list[Path]
             A list of paths
         """
-
         valid_files: List[Path] = []
         for file in file_list:
             if not file.name.startswith("."):
@@ -29,12 +28,10 @@ class FileUtils:
                 # get zarr file
                 elif file.is_dir() and file.name.endswith(".zarr"):
                     valid_files.append(file)
-                # get zarr inside the directory only if there's one zarr file
+                # get zarr inside the directory
                 else:
                     dir_files: List[Path] = list(file.glob("*.zarr"))
-
-                    if len(dir_files) == 1:
-                        valid_files += dir_files
+                    valid_files += dir_files
 
         return valid_files
 
