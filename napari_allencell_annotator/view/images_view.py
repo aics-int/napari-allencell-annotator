@@ -224,12 +224,20 @@ class ImagesView(QFrame):
         dir_list : List[Path]
             The input list with dir[0] holding directory name.
         """
-        all_files_in_dir: list[Path] = FileUtils.get_sorted_files_in_dir(dir_path)
+        extension: str = dir_path.suffix
 
-        if len(all_files_in_dir) < 1:
-            self.viewer.alert("Folder is empty")
+        # ome.zarr
+        if extension == ".zarr" and dir_path not in self._annotator_model.get_all_images():
+            self.add_new_item(dir_path)
+
+        # folder -> ome.zarr
         else:
-            self._add_selected_files(all_files_in_dir)
+            all_files_in_dir: list[Path] = FileUtils.get_sorted_files_in_dir(dir_path)
+
+            if len(all_files_in_dir) < 1:
+                self.viewer.alert("Folder is empty")
+            else:
+                self._add_selected_files(all_files_in_dir)
 
     def add_new_item(self, file: Path, hidden: Optional[bool] = False) -> None:
         """

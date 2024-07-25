@@ -41,4 +41,4 @@ class ImageUtils:
         """
         Returns image data
         """
-        return self._image.data
+        return self._image.get_dask_stack()

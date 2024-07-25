@@ -18,7 +18,11 @@ class FileUtils:
         file_list: list[Path]
             A list of paths
         """
-        return [file for file in file_list if not file.name.startswith(".") and file.is_file()]
+        return [
+            file
+            for file in file_list
+            if not file.name.startswith(".") and (file.is_file() or file.name.endswith(".zarr"))
+        ]
 
     @staticmethod
     def is_supported(file_path: Path) -> bool:
