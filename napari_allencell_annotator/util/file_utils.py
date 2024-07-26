@@ -81,4 +81,3 @@ class FileUtils:
             return path.parent.stem
         else:
             return path.name
-
