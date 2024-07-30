@@ -1,7 +1,7 @@
-from typing import List
+from typing import List, Tuple
 
 import numpy as np
-from napari.layers import Layer
+from napari.layers import Layer, Points
 
 from napari_allencell_annotator.view.i_viewer import IViewer
 
@@ -11,6 +11,7 @@ class FakeViewer(IViewer):
         super().__init__()
 
         self._layers = []
+        self._point_layers = []
         self.alerts = []
 
     def add_image(self, image: np.ndarray) -> None:
@@ -24,3 +25,14 @@ class FakeViewer(IViewer):
 
     def get_layers(self) -> List[Layer]:
         return self._layers
+
+    def get_all_points(self) -> List[Points]:
+        return self._point_layers
+
+    def create_points(self, name: str, color: str, visible: bool) -> Points:
+        points: Points = Points(data=None, name=name, color=color, visible=visible)
+        self._point_layers.append(points)
+        return points
+
+    def get_points(self, point_layer: Points, image_dims_order: str) -> List[Tuple]:
+        return [(0, 0, 0, 0, 0)]

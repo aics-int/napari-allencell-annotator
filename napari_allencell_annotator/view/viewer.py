@@ -56,7 +56,7 @@ class Viewer(IViewer):
         return [layer for layer in self.get_layers() if isinstance(layer, Points)]
 
     @staticmethod
-    def order_point(point: np.ndarray, image_dims_order: str) -> Tuple[float]:
+    def order_point(point: np.ndarray, image_dims_order: str) -> Tuple:
         """
         Orders a point according to the image dimension and returns it as a tuple
 
@@ -118,7 +118,7 @@ class Viewer(IViewer):
         """
         point_layer.mode = mode
 
-    def get_points(self, point_layer: Points, image_dims_order: str) -> List[Tuple[float]]:
+    def get_points(self, point_layer: Points, image_dims_order: str) -> List[Tuple]:
         """
         Returns a list of points in the point layer.
 

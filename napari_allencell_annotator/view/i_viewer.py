@@ -34,5 +34,5 @@ class IViewer(ABC):
         pass
 
     @abstractmethod
-    def get_points(self, point_layer: Points, image_dims_order: str) -> List[Tuple[float]]:
+    def get_points(self, point_layer: Points, image_dims_order: str) -> List[Tuple]:
         pass
