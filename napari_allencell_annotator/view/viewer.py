@@ -1,12 +1,24 @@
 from typing import List, Tuple, Dict
-
+from enum import Enum
 import numpy as np
-from napari.layers import Layer, Points
 
+from napari.layers import Layer, Points
 from napari_allencell_annotator.view.i_viewer import IViewer
 from napari.utils.notifications import show_info
 import napari
 
+class LayerMode(Enum):
+    """
+    Mode for view.
+
+    ADD is used when there is not an annotation set selected
+    VIEW is used when an annotation set has been made/selected, but annotating has not started.
+    ANNOTATE is used when the image set is finalized and annotating has started.
+    """
+
+    ADD = "ADD"
+    SELECT = "SELECT"
+    PAN_ZOOM = "PAN_ZOOM"
 
 class Viewer(IViewer):
     """Handles actions related to napari viewer"""
@@ -101,11 +113,11 @@ class Viewer(IViewer):
             A new point layer
         """
         point_layer: Points = self.viewer.add_points(None, name=name, face_color=color, visible=visible, ndim=5)
-        self.set_point_mode(point_layer=point_layer, mode="ADD")
+        self.set_point_mode(point_layer=point_layer, mode=LayerMode.ADD)
         return point_layer
 
     @staticmethod
-    def set_point_mode(point_layer: Points, mode: str) -> None:
+    def set_point_mode(point_layer: Points, mode: LayerMode) -> None:
         """
         Sets a point layer's mode.
 
@@ -118,7 +130,7 @@ class Viewer(IViewer):
         """
         point_layer.mode = mode
 
-    def get_points(self, point_layer: Points, image_dims_order: str) -> List[Tuple]:
+    def get_selected_points(self, point_layer: Points, image_dims_order: str) -> List[Tuple]:
         """
         Returns a list of points in the point layer.
 
