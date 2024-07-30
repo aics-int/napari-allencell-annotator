@@ -34,5 +34,5 @@ class FakeViewer(IViewer):
         self._point_layers.append(points)
         return points
 
-    def get_points(self, point_layer: Points, image_dims_order: str) -> List[Tuple]:
+    def get_selected_points(self, point_layer: Points, image_dims_order: str) -> List[Tuple]:
         return [(0, 0, 0, 0, 0)]
