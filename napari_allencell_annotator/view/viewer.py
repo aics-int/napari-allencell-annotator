@@ -115,11 +115,11 @@ class Viewer(IViewer):
             A new point layer
         """
         point_layer: Points = self.viewer.add_points(None, name=name, face_color=color, visible=visible, ndim=5)
-        self.set_point_mode(point_layer=point_layer, mode=PointsLayerMode.ADD)
+        self.set_points_layer_mode(point_layer=point_layer, mode=PointsLayerMode.ADD)
         return point_layer
 
     @staticmethod
-    def set_point_mode(point_layer: Points, mode: PointsLayerMode) -> None:
+    def set_points_layer_mode(point_layer: Points, mode: PointsLayerMode) -> None:
         """
         Sets a point layer's mode.
 
