@@ -246,8 +246,8 @@ def test_delete_checked(images_view: ImagesView, annotator_model: AnnotatorModel
 def test_remove_image(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
     # ARRANGE
     test_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
-    test_file_item: FileItem = FileItem(test_file, images_view.file_widget, False)
     annotator_model.set_all_images([test_file])
+    test_file_item = images_view.file_widget.item(0)
 
     # ACT
     images_view.remove_image(test_file_item)
@@ -260,7 +260,6 @@ def test_remove_image(images_view: ImagesView, annotator_model: AnnotatorModel) 
 def test_clear_all(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
     # ARRANGE
     test_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
-    test_file_item: FileItem = FileItem(test_file, images_view.file_widget, False)
     annotator_model.set_all_images([test_file])
 
     # ACT
