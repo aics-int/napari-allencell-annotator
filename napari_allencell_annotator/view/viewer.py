@@ -7,6 +7,7 @@ from napari_allencell_annotator.view.i_viewer import IViewer
 from napari.utils.notifications import show_info
 import napari
 
+
 class LayerMode(Enum):
     """
     Mode for view.
@@ -19,6 +20,7 @@ class LayerMode(Enum):
     ADD = "ADD"
     SELECT = "SELECT"
     PAN_ZOOM = "PAN_ZOOM"
+
 
 class Viewer(IViewer):
     """Handles actions related to napari viewer"""
