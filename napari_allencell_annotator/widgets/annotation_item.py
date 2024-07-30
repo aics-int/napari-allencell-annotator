@@ -35,7 +35,7 @@ class AnnotationItem(QListWidgetItem):
 
         type_label = QLabel("Type:")
         self.type_selection_combo = QComboBox()
-        self.type_selection_combo.addItems(["text", "number", "checkbox", "dropdown"])
+        self.type_selection_combo.addItems(["text", "number", "checkbox", "dropdown", "point"])
         self.name.setWhatsThis("name")
         self.type_selection_combo.setWhatsThis("type")
         self.name_widget = QWidget()
@@ -51,7 +51,7 @@ class AnnotationItem(QListWidgetItem):
         self.layout.addWidget(self.name, 0, 1, 1, 2)
         self.layout.addWidget(type_label, 0, 3, 1, 1)
         self.layout.addWidget(self.type_selection_combo, 0, 4, 1, 2)
-        default_label = QLabel("Default:")
+        self.default_label = QLabel("Default:")
         self.default_text = QLineEdit()
         self.default_text.setPlaceholderText("Optional: Default Text")
         self.default_num = QSpinBox()
@@ -70,7 +70,7 @@ class AnnotationItem(QListWidgetItem):
         self.default_options.setSizePolicy(sp_retain)
         self.default_options_label.setSizePolicy(sp_retain)
 
-        self.layout.addWidget(default_label, 0, 6, 1, 1)
+        self.layout.addWidget(self.default_label, 0, 6, 1, 1)
         self.layout.addWidget(self.default_text, 0, 7, 1, 2)
         self.layout.addWidget(self.default_options_label, 1, 1, 1, 1)
         self.layout.addWidget(self.default_options, 1, 2, 1, 7)
@@ -161,28 +161,41 @@ class AnnotationItem(QListWidgetItem):
         text : str
             the new type selected.
         """
-        default_widget = self.layout.itemAtPosition(0, 7).widget()
-        default_widget.setParent(None)
-        self.layout.removeWidget(default_widget)
+        default_item = self.layout.itemAtPosition(0, 7)
+        if default_item is not None:
+            default_widget = default_item.widget()
+            default_widget.setParent(None)
+            self.layout.removeWidget(default_widget)
 
         if text == "text":
+            self.default_label.show()
             self.default_options.hide()
             self.default_options_label.hide()
             self.layout.addWidget(self.default_text, 0, 7, 1, 2)
 
         elif text == "number":
+            self.default_label.show()
             self.default_options.hide()
             self.default_options_label.hide()
             self.layout.addWidget(self.default_num, 0, 7, 1, 2)
 
         elif text == "checkbox":
+            self.default_label.show()
             self.default_options.hide()
             self.default_options_label.hide()
             self.layout.addWidget(self.default_check, 0, 7, 1, 2)
-        else:
+
+        elif text == "dropdown":
+            self.default_label.show()
             self.default_options.show()
             self.default_options_label.show()
             self.layout.addWidget(self.default_text, 0, 7, 1, 2)
+
+        else:
+            self.default_label.hide()
+            self.default_options.hide()
+            self.default_options_label.hide()
+
 
     def get_data(self) -> Tuple[bool, str, Key, str]:
         """
