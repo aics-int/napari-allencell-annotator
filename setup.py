@@ -15,7 +15,6 @@ requirements = [
     "napari>=0.4.9",
     "napari-plugin-engine>=0.1.4",
     "numpy",
-    "aicsimageio >= 4.9.1",
     "xarray >= 2022.6.0",
     "magicgui >= 0.3.7",  # psygnal 0.3.0
     "aicspylibczi >= 3.0.5",
@@ -23,6 +22,11 @@ requirements = [
     "bioformats-jar",
     "bfio",
     "qtpy",
+    "bioio",
+    "bioio-ome-tiff",
+    "bioio-czi",
+    "tifffile>=2021.8.30",
+    "bioio-imageio",
 ]
 
 test_requirements = [
@@ -36,6 +40,7 @@ test_requirements = [
     "pytest-raises>=0.10",
     "pytest-qt>=3.3.0",
     "quilt3>=3.1.12",
+    "pyqt5",
 ]
 
 dev_requirements = [

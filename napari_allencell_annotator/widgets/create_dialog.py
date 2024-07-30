@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Any
+from typing import Dict
 
 from napari_allencell_annotator._style import Style
 from qtpy import QtWidgets
@@ -12,8 +12,10 @@ from qtpy.QtWidgets import (
     QScrollArea,
     QHBoxLayout,
 )
-from psygnal._signal import Signal
+from qtpy.QtCore import Signal
 
+from napari_allencell_annotator.model.annotation_model import AnnotatorModel
+from napari_allencell_annotator.model.key import Key
 from napari_allencell_annotator.widgets.annotation_widget import AnnotationWidget
 
 
@@ -32,8 +34,9 @@ class CreateDialog(QDialog):
     # signal emitted when all annotations created are valid
     valid_annots_made = Signal()
 
-    def __init__(self, parent=None, existing_annots: Optional[Dict[str, Dict[str, Any]]] = None):
+    def __init__(self, model: AnnotatorModel, parent=None):
         super().__init__(parent)
+        self._annotation_model = model
         self.setStyleSheet(Style.get_stylesheet("main.qss"))
 
         self.setWindowTitle("Create Annotations")
@@ -42,8 +45,7 @@ class CreateDialog(QDialog):
         self.list = AnnotationWidget()
 
         self.layout = QVBoxLayout()
-        self.existing_annots = existing_annots
-        if self.existing_annots is None:
+        if len(self._annotation_model.get_annotation_keys()) > 0:
             self.list.add_new_item()
             label = QLabel("Create Annotations")
             label.setAlignment(Qt.AlignCenter)
@@ -63,7 +65,6 @@ class CreateDialog(QDialog):
         self.cancel = QPushButton("Cancel")  # check: if edit -> cancel go back to view
         self.apply = QPushButton("Apply")
         self.btns = QWidget()
-        self.new_annot_dict: Dict[str, Dict] = None
         layout = QHBoxLayout()
         layout.addWidget(self.add)
         layout.addWidget(self.delete)
@@ -82,7 +83,7 @@ class CreateDialog(QDialog):
 
         self.setLayout(self.layout)
 
-        if self.existing_annots:
+        if len(self._annotation_model.get_annotation_keys()) > 0:
             self.render_annotations()
         self._connect_slots()
 
@@ -108,8 +109,8 @@ class CreateDialog(QDialog):
 
     def render_annotations(self):
         """Display the types and defaults for each existing annotation."""
-        for name, dct in self.existing_annots.items():
-            self.list.add_existing_item(name, dct)
+        for key_name, key_info in self._annotation_model.get_annotation_keys().items():
+            self.list.add_existing_item(key_name, key_info)
 
     def _delete_clicked(self):
         """Delete checked items if there is at least one item checked."""
@@ -131,7 +132,7 @@ class CreateDialog(QDialog):
 
         """
 
-        dct: Dict[str, Dict] = {}
+        dct: Dict[str, Key] = {}
         valid = True
         error = ""
         # grab all items from list of annotations
@@ -142,22 +143,22 @@ class CreateDialog(QDialog):
             error = " Must provide at least one annotation. "
 
         for i in items:
-            item_valid, name, sub_dct, item_error = i.get_data()
+            item_valid, name, key, item_error = i.get_data()
             # sub_dct is annotation data (type,default, options)
             if name in dct.keys():
                 valid = False
                 i.highlight(i.name)
-                error = error + " No duplicate names allowed. "
-            dct[name] = sub_dct
+                error = error + f"Error in {name}: No duplicate names allowed. "
+            dct[name] = key
             if not item_valid:
                 valid = False
-                error = error + " " + item_error
+                error = error + f"Error in {name}: " + item_error
                 break
 
         # if all values were valid emit signal and set new_annot_dict
         self.error.setText(error)
         if valid:
-            self.new_annot_dict = dct
+            self._annotation_model.set_annotation_keys(dct)
             self.valid_annots_made.emit()
         else:
-            self.new_annot_dict = None
+            self._annotation_model.clear_annotation_keys()

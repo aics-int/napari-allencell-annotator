@@ -1,84 +1,34 @@
-from typing import Dict, List
-from napari_allencell_annotator.widgets.file_item import FileItem
 from pathlib import Path
 
 
 class ImagesModel:
-    """
-    A class used to manage image files for annotation.
-
-    Attributes
-    ----------
-    _files_dict: Dict[str, List[str]]
-        A dictionary of file path -> [File Name, FMS]
-        stores file order in insertion order of keys
-
-    Methods
-    -------
-    get_files_dict() -> Dict[str, List[str]]
-        Returns the dictionary of all image files.
-    set_files_dict(files_dict: Dict[str, List[str]])
-        Sets the dictionary to a new value.
-    get_num_files() -> int
-        Returns the number of files in the dictionary.
-    remove_item(item: FileItem)
-        Removes an item from the dictionary.
-    add_item(file: str)
-        Adds an item to the dictionary.
-    get_name(file: str) -> str
-        Returns the basename of a file.
-    """
-
     def __init__(self):
-        self._files_dict: Dict[str, List[str]] = {}
+        # Stores annotations, dictionary of Path -> dict of annotations key/value
+        self._annotations: dict[Path, dict[str | any]] = dict()
 
-    def get_files_dict(self) -> Dict[str, List[str]]:
-        """
-        Return the dictionary of all image files.
+    def add_image(self, file_item: Path) -> None:
+        self._added_images.append(file_item)
 
-        Returns
-        -------
-        Dict[str, List[str]]
-            The dictionary of files. path -> [File Name, FMS]
-        """
-        return self._files_dict
+    def get_all_images(self) -> list[Path]:
+        return self._added_images
 
-    def set_files_dict(self, files_dict: Dict[str, List[str]]) -> None:
-        """
-        Set the dictionary to a new value.
-        """
-        self._files_dict = files_dict
+    def get_num_images(self) -> int:
+        return len(self._added_images)
 
-    def get_num_files(self) -> int:
-        """
-        Return the number of files in the dictionary.
+    def set_all_images(self, list_of_img: list[Path]) -> None:
+        self._added_images = list_of_img
 
-        Returns
-        -------
-        int
-            The size of the dictionary
-        """
-        return len(self._files_dict)
+    def clear_all_images(self) -> None:
+        self._added_images = []
+        # TODO: fire signal to disable shuffle and delete
 
-    def remove_item(self, item: FileItem) -> None:
-        """
-        Remove an item from the dictionary.
-        """
-        del self._files_dict[item.file_path]
+    def remove_image(self, item: Path) -> None:
+        self._added_images.remove(item)
+        # TODO: if theres nothing left, disable shuffle and delete
 
-    def add_item(self, file: str) -> None:
-        """
-        Add an item to the dictionary.
-        """
-        self._files_dict[file] = [self.get_name(file), ""]
-
-    def get_name(self, file: str) -> str:
-        """
-        Return the basename of a file.
-
-        Returns
-        -------
-        str
-            basename
-        """
-        return Path(file).stem
+    #
+    # def set_shuffled_images(self, list_of_img: list[Path]) -> None:
+    #     self._shuffled_images = list_of_img
+    #
+    # def get_shuffled_images(self) -> list[Path]:
+    #     return self._shuffled_images

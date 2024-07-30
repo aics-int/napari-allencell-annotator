@@ -1,7 +1,11 @@
 from typing import Set
+
+from PyQt5.QtCore import QSignalBlocker
 from qtpy.QtWidgets import QListWidget
 from qtpy.QtCore import Signal
+from pathlib import Path
 
+from napari_allencell_annotator.model.annotation_model import AnnotatorModel
 from napari_allencell_annotator.widgets.file_item import FileItem
 
 
@@ -15,9 +19,6 @@ class FilesWidget(QListWidget):
         a boolean, True if list is currently shuffled
     checked : Set[FileItem]
         a set of items that are currently checked
-    files_dict : Dict[str , List[str]]
-        a dictionary of file path -> [File Name, FMS]
-        stores file order in insertion order of keys
 
     Methods
     -------
@@ -27,11 +28,11 @@ class FilesWidget(QListWidget):
         Displays the file names on all files in the list.
     clear_all()
         Clears all image data in the file widget.
-    clear_for_shuff() -> List[str]
+    clear_for_shuff()
         Clears the list display.
     get_curr_row() -> int
         Returns current image row.
-    add_item(file: str, hidden: bool)
+    add_item(file: Path, hidden: bool)
         Adds a file to the file widget.
     remove_item(item: ListItem)
         Removes the item from the file widget.
@@ -40,35 +41,47 @@ class FilesWidget(QListWidget):
     files_selected: Signal = Signal(bool)
     files_added: Signal = Signal(bool)
 
-    def __init__(self):
+    def __init__(self, annotator_model: AnnotatorModel):
         QListWidget.__init__(self)
         self.checked: Set[FileItem] = set()
         # files_dict holds all image info file path -> [file name, FMS]
         # also holds the original insertion order in .keys()
         self.setCurrentItem(None)
-        self._shuffled: bool = False
+        self._annotator_model = annotator_model
 
-    @property
-    def shuffled(self) -> bool:
-        """
-        Current shuffle state of the list.
+        self._annotator_model.image_changed.connect(self._handle_image_changed)
+        self._annotator_model.images_shuffled.connect(self._handle_shuffle)
+        self._annotator_model.image_set_added.connect(
+            lambda: self._handle_shuffle(self._annotator_model.is_images_shuffled())
+        )
+        self._annotator_model.image_count_changed.connect(self._handle_image_count_change)
+        self.currentItemChanged.connect(self._handle_file_item_changed)
 
-        Returns
-        -------
-        bool
-            the shuffled property.
-        """
-        return self._shuffled
+    def _handle_image_changed(self):
+        with QSignalBlocker(self):
+            self.setCurrentItem(self.item(self._annotator_model.get_curr_img_index()))
 
-    def set_shuffled(self, shuffled: bool) -> None:
+            previous = self.item(self._annotator_model.get_previous_image_index())
+            if previous is not None:
+                previous.unhighlight()
+
+            current = self.item(self._annotator_model.get_curr_img_index())
+            if current is not None:
+                current.highlight()
+
+    def _handle_file_item_changed(self, curr_item: FileItem, prev_item: FileItem) -> None:
         """
-        Set the shuffled property to shuffled or unshuffled.
+        Update the model when the current item in the file widget is changed if it has not been updated.
 
         Parameters
         ----------
-        shuffled : bool
+        curr_item:
+            the current file item
+        prev_item:
+            the previous file item
         """
-        self._shuffled = shuffled
+        self._annotator_model.set_previous_image_index(self.row(prev_item))
+        self._annotator_model.set_curr_img_index(self.row(curr_item))
 
     def unhide_all(self) -> None:
         """Display the file names on all files in the list."""
@@ -89,31 +102,30 @@ class FilesWidget(QListWidget):
         else:
             return -1
 
-    def clear_all(self) -> None:
-        """Clear all image data in the file widget."""
-        self._shuffled = False
-        self.checked = set()
+    def _handle_shuffle(self, shuffled: bool) -> None:
+        self._reset_list()
+        if shuffled:
+            # readd shuffled images to list
+            for shuffled_img in self._annotator_model.get_shuffled_images():
+                self.add_item(shuffled_img, hidden=True)  # add hidden when items shuffled.
+        else:
+            # readd unshuffled images to list
+            for img in self._annotator_model.get_all_images():
+                self.add_item(img)
 
-        self.setCurrentItem(None)
-        self.clear()
-
-    def clear_for_shuff(self) -> None:
+    def _reset_list(self) -> None:
         """
-        Clear the list display.
-
-        This function clears all displayed, checked, and current items, but keeps the files_dict.
-
-        Returns
-        -------
-         Dict[str, List[str]]
-            file dictionary file path -> [file name, fms].
+        Reset the list of files
         """
-        self._shuffled = True
         self.setCurrentItem(None)
         self.checked = set()
-        self.clear()
+        self.clear()  # clear list
 
-    def add_item(self, file: str, hidden: bool = False) -> None:
+    def _handle_image_count_change(self, count: int) -> None:
+        if count == 0:
+            self._reset_list()
+
+    def add_item(self, file: Path, hidden: bool = False) -> None:
         """
         Add a file to the file widget.
 
@@ -121,7 +133,7 @@ class FilesWidget(QListWidget):
 
         Params
         -------
-        file: str
+        file: Path
             a file path.
         hidden: bool
             file name visibility.
@@ -159,3 +171,6 @@ class FilesWidget(QListWidget):
             self.checked.remove(item)
             if len(self.checked) == 0:
                 self.files_selected.emit(False)
+
+    def unhide_item_at(self, idx: int) -> None:
+        self.unhide_item_at(idx)

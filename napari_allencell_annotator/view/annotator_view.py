@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Dict, List, Optional, Any, Union
+from typing import Dict, List, Any
 
 from qtpy.QtWidgets import QFrame
 from qtpy import QtCore
@@ -13,6 +13,9 @@ from qtpy.QtWidgets import (
     QVBoxLayout,
 )
 from napari import Viewer
+
+from napari_allencell_annotator.model.annotation_model import AnnotatorModel
+from napari_allencell_annotator.model.key import Key
 from napari_allencell_annotator.widgets.file_input import (
     FileInput,
     FileInputMode,
@@ -76,10 +79,13 @@ class AnnotatorView(QFrame):
 
     def __init__(
         self,
+        model: AnnotatorModel,
         viewer: Viewer,
         mode: AnnotatorViewMode = AnnotatorViewMode.ADD,
     ):
         super().__init__()
+        self._annotator_model = model
+        self._annotator_model.image_changed.connect(self._handle_image_changed)
         self._mode = mode
         label = QLabel("Annotations")
         label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
@@ -105,7 +111,6 @@ class AnnotatorView(QFrame):
 
         self.layout.addWidget(self.scroll)
 
-        self.num_images: int = None
         self.curr_index: int = None
 
         # Add widget visible in ADD mode
@@ -130,6 +135,7 @@ class AnnotatorView(QFrame):
         self.edit_btn.setToolTip("Edit annotation Template")
         self.cancel_btn = QPushButton("Clear")
         self.cancel_btn.setToolTip("Clear annotation template")
+        self.cancel_btn.clicked.connect(self._reset_annotations)
         self.start_btn = QPushButton("Start")
         self.start_btn.setToolTip("Start Annotating Images")
         self.csv_input = FileInput(mode=FileInputMode.CSV)
@@ -184,29 +190,19 @@ class AnnotatorView(QFrame):
         self._mode = mode
         self._display_mode()
 
-    def set_num_images(self, num: Optional[int] = None):
-        """
-        Set the total number of images to be annotated
+    def _handle_image_changed(self):
+        if self._annotator_model.get_curr_img_index() == -1:
+            self.render_default_values()
 
-        Parameters
-        ----------
-        num : Optional[int]
-            number of images, set to None if not provided.
+    def display_current_progress(self):
         """
-        self.num_images = num
-
-    def set_curr_index(self, num: Optional[int] = None):
+        display current progres.
         """
-        Set the index of the currently selected image and display it on progress bar.
-
-        Parameters
-        ----------
-        num : Optional[int]
-            row of the current image.
-        """
-        if num is not None:
-            self.curr_index = num
-            self.progress_bar.setText("{} of {} Images".format(self.curr_index + 1, self.num_images))
+        self.progress_bar.setText(
+            "{} of {} Images".format(
+                self._annotator_model.get_curr_img_index() + 1, self._annotator_model.get_num_images()
+            )
+        )
 
     def _reset_annotations(self):
         """Reset annotation data to empty."""
@@ -218,12 +214,13 @@ class AnnotatorView(QFrame):
     def render_default_values(self):
         """Set annotation widget values to default."""
         # for curr index if annots exist fill else fill with default
-        first_item = self.annot_list.items[0]
         for item in self.annot_list.items:
             item.set_default_value()
-        self.annot_list.setCurrentItem(first_item)
 
-    def render_values(self, vals: List[str]):
+        # TODO why do we need this?
+        # self.annot_list.setCurrentItem(self.annot_list.items[0])
+
+    def render_values(self, vals: list[Any]):
         """
         Set the values of the annotation widgets.
 
@@ -232,15 +229,15 @@ class AnnotatorView(QFrame):
         vals:List[str]
             the values for the annotations.
         """
-        first_item = self.annot_list.items[0]
-        for item, val in zip(self.annot_list.items, vals):
-            if val is None or val == "":
+        for item, annotation in zip(self.annot_list.items, vals):
+            item_data = annotation
+            if item_data is None or item_data == "":
                 item.set_default_value()
             else:
-                item.set_value(val)
-        self.annot_list.setCurrentItem(first_item)
+                item.set_value(item_data)
+        # self.annot_list.setCurrentItem(self.annot_list.items[0])
 
-    def get_curr_annots(self) -> List[Union[str, bool, int]]:
+    def get_curr_annots(self) -> List[Any]:
         """
         Return the current annotation values in a list.
 
@@ -251,8 +248,7 @@ class AnnotatorView(QFrame):
         """
         annots = []
         for i in self.annot_list.items:
-            value = i.get_value()
-            annots.append(value)
+            annots.append(i.get_value())
         return annots
 
     def _display_mode(self):
@@ -262,7 +258,6 @@ class AnnotatorView(QFrame):
         self.layout.removeItem(item)
         if self._mode == AnnotatorViewMode.ADD:
             self.add_widget.show()
-            self._reset_annotations()
             self.layout.addWidget(self.add_widget)
         elif self._mode == AnnotatorViewMode.VIEW:
             self.save_json_btn.setEnabled(True)
@@ -273,7 +268,7 @@ class AnnotatorView(QFrame):
             self.layout.addWidget(self.annot_widget)
             self.prev_btn.setEnabled(False)
 
-    def render_annotations(self, data: Dict[str, Dict[str, Any]]):
+    def render_annotations(self, data: Dict[str, Key]):
         """
         Read annotation dictionary into individual annotations.
 
@@ -283,11 +278,12 @@ class AnnotatorView(QFrame):
             The dictionary of annotation names -> a dictionary of types, defaults, and options.
         """
         self.annot_list.clear_all()
-        for name in data.keys():
-            self._create_annot(name, data[name])
+        self.annots_order.clear()
+        for name, key_info in data.items():
+            self._create_annot(name, key_info)
         self.scroll.setMaximumHeight(self.annot_list.height)
 
-    def _create_annot(self, name: str, dct: Dict[str, Any]):
+    def _create_annot(self, name: str, key: Key):
         """
         Create annotation widgets from dictionary entries.
 
@@ -298,6 +294,5 @@ class AnnotatorView(QFrame):
         dct : Dict[str, Any]
             annotation type, default, and options.
         """
-
         self.annots_order.append(name)
-        self.annot_list.add_item(name, dct)
+        self.annot_list.add_item(name, key)

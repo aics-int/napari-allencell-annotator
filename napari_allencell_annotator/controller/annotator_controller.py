@@ -1,12 +1,15 @@
-import json
+from pathlib import Path
 
+from napari_allencell_annotator.model.annotation_model import AnnotatorModel
+from napari_allencell_annotator.model.key import Key
+from napari_allencell_annotator.util.json_utils import JSONUtils
 from napari_allencell_annotator.view.annotator_view import (
     AnnotatorView,
     AnnotatorViewMode,
 )
 import napari
 
-from typing import Dict, List, Optional, Any
+from typing import List, Optional
 import csv
 
 
@@ -55,58 +58,19 @@ class AnnotatorController:
         Writes header and annotations to the csv file.
     """
 
-    def __init__(self, viewer: napari.Viewer):
+    def __init__(self, model: AnnotatorModel, viewer: napari.Viewer):
+        self._annotation_model = model
 
-        # dictionary of json info:
-        self.annot_json_data: Dict[str, Dict[str, Any]] = None
         # open in view mode
-        self.view: AnnotatorView = AnnotatorView(viewer)
+        self.view: AnnotatorView = AnnotatorView(model, viewer)
 
         self.view.show()
-        # {'File Path' : path, 'Row' : str(row)}
-        self.curr_img_dict: Dict[str, str] = None
-        self.csv_path: str = None
-        # annotation dictionary maps file paths -> [file name, FMS, annot1val, annot2val, ...]
-        self.files_and_annots: Dict[str, List[str]] = {}
 
         self.view.cancel_btn.clicked.connect(self.stop_viewing)
-
-        self.shuffled: bool = None
-
-    # next item, prev item, itemchanged event to call highlight, click -> selection, select on open
-
-    def get_annot_json_data(self) -> Dict[str, Dict[str, Any]]:
-        """
-        Get annotation data dictionary.
-
-        Returns
-        ------
-        dct : Dict[str, Dict[str, Any]]
-            a dictionary of annotation data. name -> {type -> str,  options -> List[str], default -> bool, int, or str}
-        """
-        return self.annot_json_data
-
-    def set_annot_json_data(self, dct: Dict[str, Dict[str, Any]]):
-        """
-        Set annotation data dictionary.
-
-        Parameters
-        ------
-        dct : Dict[str, Dict[str, Any]]
-            a dictionary of annotation data. name -> {type -> str,  options -> List[str], default -> bool, int, or str}
-        """
-        self.annot_json_data = dct
-
-    def set_csv_path(self, path: Optional[str] = None):
-        """
-        Set csv file path for writing.
-
-        Parameters
-        ----------
-        path: Optional[str] = None
-            file path of csv. set to none if not provided.
-        """
-        self.csv_path = path
+        # we want to save the annotation for the image that we just switched off of.
+        self._annotation_model.image_changed.connect(
+            lambda: self.record_annotations(self._annotation_model.get_previous_image_index())
+        )
 
     def write_json(self, file_path: str):
         """
@@ -115,22 +79,25 @@ class AnnotatorController:
         file_path : str
             file path for json file to write to.
         """
-        if self.annot_json_data is not None:
-            json.dump(self.annot_json_data, open(file_path, "w"), indent=4)
+
+        json_data: str = JSONUtils.dict_to_json_dump(self._annotation_model.get_annotation_keys())
+        JSONUtils.write_json_data(json_data, Path(file_path))
 
     def start_viewing(self, alr_anntd: Optional[bool] = False):
         """Change view to VIEW mode and render annotations."""
         self.view.set_mode(mode=AnnotatorViewMode.VIEW)
-        self.view.render_annotations(self.annot_json_data)
+        self.view.render_annotations(
+            self._annotation_model.get_annotation_keys()
+        )  # TODO fix render_annotations to use annoations dict
         # disable edit button if already annotated is True
         self.view.edit_btn.setEnabled(not alr_anntd)
 
     def stop_viewing(self):
         """Change view to ADD mode, reset annotations, and clear annotation json data."""
         self.view.set_mode(mode=AnnotatorViewMode.ADD)
-        self.annot_json_data = None
+        self._annotation_model.clear_annotation_keys()
 
-    def start_annotating(self, num_images: int, dct: Dict[str, List[str]], shuffled: bool):
+    def start_annotating(self):
         """
         Change annotation view to annotating mode and create files_and_annots with files.
 
@@ -141,32 +108,32 @@ class AnnotatorController:
         dct : Dict[str, List[str]]
             The files to be used. path -> [name, FMS]
         """
-
-        self.files_and_annots = dct
-        self.view.set_num_images(num_images)
         self.view.set_mode(mode=AnnotatorViewMode.ANNOTATE)
-        self.shuffled = shuffled
 
         self.view.annot_list.create_evt_listeners()
-        self.view.annot_list.currentItemChanged.connect(self._curr_item_changed)
+        # self.view.annot_list.currentItemChanged.connect(self._curr_item_changed)
 
     def save_annotations(self):
         """Save current annotation data"""
-        self.record_annotations(self.curr_img_dict["File Path"])
+        # save annotations for file we're on
+        self.record_annotations(self._annotation_model.get_curr_img_index())
         self.write_csv()
 
     def stop_annotating(self):
         """Reset values from annotating and change mode to ADD."""
-        self.save_annotations()
-        self.view.set_curr_index()
-        self.files_and_annots = {}
-        self.view.set_num_images()
-        self.view.set_mode(mode=AnnotatorViewMode.ADD)
-        self.annot_json_data = None
-        self.set_curr_img()
-        self.set_csv_path()
+        # TODO: DO WE WANT TO SAVE ALL IMAGES WITHOUT ANNOTATIONS
+        self.record_annotations(self._annotation_model.get_curr_img_index())
 
-        self.view.annot_list.currentItemChanged.disconnect(self._curr_item_changed)
+        # Save rest of annotations, even if empty
+        for idx in range(self._annotation_model.get_num_images()):
+            if self._annotation_model.get_image_at(idx) not in self._annotation_model.get_annotations():
+                self._annotation_model.add_annotation(self._annotation_model.get_image_at(idx), [])
+
+        self.write_csv()
+        # reset optional fields in model to None (pre-annottion state)
+        self._annotation_model.set_annotation_started(False)
+        self._annotation_model.set_csv_save_path(None)
+        self.view.set_mode(AnnotatorViewMode.VIEW)
 
     def _curr_item_changed(self, current, previous):
         """
@@ -184,55 +151,66 @@ class AnnotatorController:
         if previous is not None:
             previous.unhighlight()
 
-    def set_curr_img(self, curr_img: Optional[Dict[str, str]] = None):
+    def set_curr_img(self):
         """
         Set the current image and add the image to annotations_dict.
 
         Changes next button if annotating the last image.
 
         Parameters
+
         ----------
         curr_img : Dict[str, str]
             The current image {'File Path' : 'path', 'Row' : str(rownum)}
         """
-        self.curr_img_dict = curr_img
-        if curr_img is not None:
-            path: str = curr_img["File Path"]
+        if self._annotation_model.get_annotations() is not None:
+            path: Path = self._annotation_model.get_curr_img()
             # files_and_annots values are lists File Path ->[File Name, FMS, annot1val, annot2val ...]
             # if the file has not been annotated the list is just length 2 [File Name, FMS]
-            if len(self.files_and_annots[path]) < 3:
-                # if the image is un-annotated render the default values
-
+            if (
+                path is None
+                or path not in list(self._annotation_model.get_annotations().keys())
+                or len(self._annotation_model.get_annotations()[path]) == 0
+            ):
+                # if the image is un-annotated render the default values or no image is selected
                 self.view.render_default_values()
             else:
                 # if the image has been annotated render the values that were entered
                 # dictionary list [2::] is [annot1val, annot2val, ...]
-                self.view.render_values(self.files_and_annots[path][2::])
+                self.view.render_values(self._annotation_model.get_annotations()[path])
+
             # convert row to int
-            self.view.set_curr_index(int(curr_img["Row"]))
+            self.view.display_current_progress()
             # if at the end disable next
-            if int(curr_img["Row"]) == self.view.num_images - 1:
+            if self._annotation_model.get_curr_img_index() == self._annotation_model.get_num_images() - 1:
                 self.view.next_btn.setEnabled(False)
             else:
                 self.view.next_btn.setEnabled(True)
-            if int(curr_img["Row"]) == 0:
+            # if at the start disable prev
+            if self._annotation_model.get_curr_img_index() == 0:
                 self.view.prev_btn.setEnabled(False)
             else:
                 self.view.prev_btn.setEnabled(True)
 
-    def record_annotations(self, prev_img: str):
+    def record_annotations(self, record_idx: int):
         """
-        Add the outgoing image's annotation values to the files_and_annots.
+        Add the image's annotation values to the annotation dictionary
 
         Parameters
         ----------
-        prev_img : str
-            The previous image file path.
+        record_idx : int
+            The index of the image we should save annotations for
         """
-        lst: List = self.view.get_curr_annots()
-        self.files_and_annots[prev_img] = self.files_and_annots[prev_img][:2:] + lst
+        if (
+            record_idx != -1 and self._annotation_model.is_annotation_started()
+        ):  # ignore recording annotations when loading first image or just starting out
+            # we're saving annotation for the image we just switched off of.
+            self._annotation_model.add_annotation(
+                self._annotation_model.get_all_images()[record_idx], self.view.get_curr_annots()
+            )
 
-    def read_json(self, file_path: str):
+    def read_json(self, file_path: Path):
+        # TODO change param to path
         """
         Read a json file into a dictionary and set annot_json_data.
 
@@ -241,11 +219,11 @@ class AnnotatorController:
         file_path : str
             file path to json file to read from
         """
-        # todo file not found
-        with open(file_path, "r") as f:
-            self.annot_json_data: Dict[str, Dict] = json.loads(f.read())
+        json_dict: dict[str, Key] = JSONUtils.json_dump_to_dict(JSONUtils.get_json_data(Path(file_path)))
+        self._annotation_model.set_annotation_keys(json_dict)
 
     def get_annotations_csv(self, annotations: str):
+        # TODO change param to path
         """
         Read the first line of a csv file into a dictionary and set annot_json_data.
 
@@ -254,21 +232,22 @@ class AnnotatorController:
         annotations: str
             a string of annotation dictionary data from the csv
         """
-
-        self.annot_json_data = json.loads(annotations)
+        json_dict: dict[str, Key] = JSONUtils.json_dump_to_dict(annotations)
+        self._annotation_model.set_annotation_keys(json_dict)
 
     def write_csv(self):
+        # TODO put into csv utils class
         """write headers and file info"""
-        file = open(self.csv_path, "w")
+        file = open(self._annotation_model.get_csv_save_path(), "w")
         writer = csv.writer(file)
-        writer.writerow(["Shuffled:", self.shuffled])
-        header: List[str] = ["Annotations:", json.dumps(self.annot_json_data)]
+        writer.writerow(["Shuffled:", self._annotation_model.is_images_shuffled()])
+        header: List[str] = ["Annotations:", JSONUtils.dict_to_json_dump(self._annotation_model.get_annotation_keys())]
         writer.writerow(header)
 
-        header = ["File Name", "File Path", "FMS"]
+        header = ["File Name", "File Path"]
         for name in self.view.annots_order:
             header.append(name)
         writer.writerow(header)
-        for name, lst in self.files_and_annots.items():
-            writer.writerow([name] + lst)
+        for path, annotations in self._annotation_model.get_annotations().items():
+            writer.writerow([path.name, str(path)] + annotations)
         file.close()
