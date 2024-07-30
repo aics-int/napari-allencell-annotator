@@ -134,5 +134,7 @@ class Viewer(IViewer):
         List[Tuple[float]]
             A list of tuples representing points in the point layer
         """
-        ordered_points: List[tuple] = list(map(lambda point: self.order_point(point, image_dims_order=image_dims_order), point_layer.data))
+        ordered_points: List[tuple] = list(
+            map(lambda point: self.order_point(point, image_dims_order=image_dims_order), point_layer.data)
+        )
         return ordered_points
