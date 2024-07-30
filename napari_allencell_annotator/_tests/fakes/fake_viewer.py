@@ -35,4 +35,4 @@ class FakeViewer(IViewer):
         return points
 
     def get_selected_points(self, point_layer: Points, image_dims_order: str) -> List[Tuple]:
-        return [(0, 0, 0, 0, 0)]
+        return [(0.0, 0.0, 0.0, 0.0, 0.0)]

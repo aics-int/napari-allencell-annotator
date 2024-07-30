@@ -12,11 +12,10 @@ class PointsLayerMode(Enum):
     """
     Mode for view.
 
-    ADD is used when there is not an annotation set selected
-    VIEW is used when an annotation set has been made/selected, but annotating has not started.
-    ANNOTATE is used when the image set is finalized and annotating has started.
+    ADD is used to add points.
+    SELECT is used to move, edit, or delete points.
+    PAN_ZOOM is the default mode and allows normal interactivity with the canvas.
     """
-
     ADD = "ADD"
     SELECT = "SELECT"
     PAN_ZOOM = "PAN_ZOOM"
