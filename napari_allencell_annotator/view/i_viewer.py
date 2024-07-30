@@ -26,11 +26,11 @@ class IViewer(ABC):
         pass
 
     @abstractmethod
-    def get_all_points(self) -> List[Points]:
+    def get_all_points_layers(self) -> List[Points]:
         pass
 
     @abstractmethod
-    def create_points(self, name: str, color: str, visible: bool) -> Points:
+    def create_points_layer(self, name: str, color: str, visible: bool) -> Points:
         pass
 
     @abstractmethod

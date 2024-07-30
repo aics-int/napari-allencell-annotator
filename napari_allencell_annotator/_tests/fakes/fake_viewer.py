@@ -26,10 +26,10 @@ class FakeViewer(IViewer):
     def get_layers(self) -> List[Layer]:
         return self._layers
 
-    def get_all_points(self) -> List[Points]:
+    def get_all_points_layers(self) -> List[Points]:
         return self._point_layers
 
-    def create_points(self, name: str, color: str, visible: bool) -> Points:
+    def create_points_layer(self, name: str, color: str, visible: bool) -> Points:
         points: Points = Points(data=None, name=name, color=color, visible=visible)
         self._point_layers.append(points)
         return points

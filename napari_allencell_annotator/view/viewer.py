@@ -62,7 +62,7 @@ class Viewer(IViewer):
         """
         return list(self.viewer.layers)
 
-    def get_all_points(self) -> List[Points]:
+    def get_all_points_layers(self) -> List[Points]:
         """
         Returns a list of all point layers in the viewer.
         """
@@ -95,7 +95,7 @@ class Viewer(IViewer):
 
         return tuple(ordered_point_list)
 
-    def create_points(self, name: str, color: str, visible: bool) -> Points:
+    def create_points_layer(self, name: str, color: str, visible: bool) -> Points:
         """
         Creates a new point layer and sets to ADD mode to allow users to select points.
 
