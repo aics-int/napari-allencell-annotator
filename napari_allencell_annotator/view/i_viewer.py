@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import numpy as np
 from napari.layers import Layer, Points
-from typing import List, Tuple, Optional
+from typing import List, Tuple
 
 
 class IViewer(ABC):
