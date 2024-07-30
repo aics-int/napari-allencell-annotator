@@ -8,7 +8,7 @@ from napari.utils.notifications import show_info
 import napari
 
 
-class LayerMode(Enum):
+class PointsLayerMode(Enum):
     """
     Mode for view.
 
@@ -115,11 +115,11 @@ class Viewer(IViewer):
             A new point layer
         """
         point_layer: Points = self.viewer.add_points(None, name=name, face_color=color, visible=visible, ndim=5)
-        self.set_point_mode(point_layer=point_layer, mode=LayerMode.ADD)
+        self.set_point_mode(point_layer=point_layer, mode=PointsLayerMode.ADD)
         return point_layer
 
     @staticmethod
-    def set_point_mode(point_layer: Points, mode: LayerMode) -> None:
+    def set_point_mode(point_layer: Points, mode: PointsLayerMode) -> None:
         """
         Sets a point layer's mode.
 
@@ -130,7 +130,7 @@ class Viewer(IViewer):
         mode: str
             The mode
         """
-        point_layer.mode = mode
+        point_layer.mode = mode.value
 
     def get_selected_points(self, point_layer: Points, image_dims_order: str) -> List[Tuple]:
         """
