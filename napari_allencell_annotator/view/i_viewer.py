@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import numpy as np
-from napari.layers import Layer
-from typing import List
+from napari.layers import Layer, Points
+from typing import List, Tuple, Optional
 
 
 class IViewer(ABC):
@@ -23,4 +23,16 @@ class IViewer(ABC):
 
     @abstractmethod
     def get_layers(self) -> List[Layer]:
+        pass
+
+    @abstractmethod
+    def get_all_points(self) -> List[Points]:
+        pass
+
+    @abstractmethod
+    def create_points(self, name: str, color: str, visible: bool) -> Points:
+        pass
+
+    @abstractmethod
+    def get_points(self, point_layer: Points, image_dims_order: str) -> Optional[List[tuple]]:
         pass
