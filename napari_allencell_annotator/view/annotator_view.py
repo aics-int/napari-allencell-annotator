@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Dict, List, Optional, Any, Union
+from typing import Dict, List, Any
 
 from qtpy.QtWidgets import QFrame
 from qtpy import QtCore

@@ -1,15 +1,10 @@
-import json
-from enum import Enum
 from pathlib import Path
 from typing import Optional, Any
 
 from PyQt5.QtCore import QObject
 from qtpy.QtCore import Signal
 
-from napari_allencell_annotator.model.combo_key import ComboKey
 from napari_allencell_annotator.model.key import Key
-from napari_allencell_annotator.util.file_utils import FileUtils
-from napari_allencell_annotator.util.json_utils import JSONUtils
 
 
 class AnnotatorModel(QObject):

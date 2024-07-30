@@ -228,28 +228,29 @@ def test_handle_shuffle_clicked_toggled_off(images_view: ImagesView, annotator_m
 def test_delete_checked(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
     # ARRANGE
     test_file_1: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
-    test_file_item_1: FileItem = FileItem(test_file_1, images_view.file_widget, False)
-
     test_file_2: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img2.tiff"
-    test_file_item_2: FileItem = FileItem(test_file_2, images_view.file_widget, False)
-
 
     annotator_model.set_all_images([test_file_1, test_file_2])
-    images_view.file_widget.checked.add(test_file_item_1)
-    images_view.file_widget.checked.add(test_file_item_2)
+    test_file_item_1: FileItem = images_view.file_widget.item(0)
+    test_file_item_2: FileItem = images_view.file_widget.item(1)
+    images_view.file_widget.checked = {test_file_item_1, test_file_item_2}
+    assert annotator_model.get_num_images() == 2
+    assert images_view.file_widget.count() == 2
 
     # ACT
     images_view.delete_checked()
 
     # ASSERT
     assert annotator_model.get_num_images() == 0
+    assert images_view.file_widget.count() == 0
 
 
 def test_remove_image(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
     # ARRANGE
     test_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
-    test_file_item: FileItem = FileItem(test_file, images_view.file_widget, False)
+
     annotator_model.set_all_images([test_file])
+    test_file_item: FileItem = images_view.file_widget.item(0)
 
     # ACT
     images_view.remove_image(test_file_item)
@@ -262,7 +263,6 @@ def test_remove_image(images_view: ImagesView, annotator_model: AnnotatorModel) 
 def test_clear_all(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
     # ARRANGE
     test_file: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
-    test_file_item: FileItem = FileItem(test_file, images_view.file_widget, False)
     annotator_model.set_all_images([test_file])
 
     # ACT
@@ -282,13 +282,11 @@ def test_start_annotating_no_files(images_view: ImagesView) -> None:
     assert images_view.viewer.alerts[-1] == "No files to annotate"
 
 
-def test_start_annotating_with_files(images_view: ImagesView) -> None:
+def test_start_annotating_with_files(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
     # ARRANGE
     test_file_1: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
-    test_file_item_1: FileItem = FileItem(test_file_1, images_view.file_widget, False)
-
     test_file_2: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img2.tiff"
-    test_file_item_2: FileItem = FileItem(test_file_2, images_view.file_widget, False)
+    annotator_model.set_all_images([test_file_1, test_file_2])
 
     # ACT
     images_view.start_annotating()

@@ -1,4 +1,4 @@
-from typing import Tuple, Dict, List, Optional, Any
+from typing import Tuple, List, Optional, Any
 
 from qtpy.QtWidgets import QLayout
 from qtpy import QtWidgets
