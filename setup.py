@@ -40,6 +40,7 @@ test_requirements = [
     "pytest-raises>=0.10",
     "pytest-qt>=3.3.0",
     "quilt3>=3.1.12",
+    "pyqt5"
 ]
 
 dev_requirements = [
