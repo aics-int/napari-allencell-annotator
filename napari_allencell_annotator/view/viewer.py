@@ -44,13 +44,34 @@ class Viewer(IViewer):
         show_info(alert_msg)
 
     def get_layers(self) -> List[Layer]:
+        """
+        Returns a list of all layers in the viewer.
+        """
         return list(self.viewer.layers)
 
     def get_all_points(self) -> List[Points]:
+        """
+        Returns a list of all point layers in the viewer.
+        """
         return [layer for layer in self.get_layers() if isinstance(layer, Points)]
 
     @staticmethod
     def order_point(point: np.ndarray, image_dims_order: str) -> Tuple[float]:
+        """
+        Orders a point according to the image dimension and returns it as a tuple
+
+        Parameters
+        ----------
+        point: np.ndarray
+            A point in a point layer
+        image_dims_order: str
+            The dimension of the image
+
+        Returns
+        -------
+        Tuple[float]
+            A tuple containing ordered point coordinates
+        """
         point_dict: Dict[str, np.ndarray] = {"T": point[0], "C": point[1], "Z": point[2], "Y": point[3], "X": point[4]}
 
         ordered_point_list: List = []
@@ -62,14 +83,56 @@ class Viewer(IViewer):
         return tuple(ordered_point_list)
 
     def create_points(self, name: str, color: str, visible: bool) -> Points:
+        """
+        Creates a new point layer and sets to ADD mode to allow users to select points.
+
+        Parameters
+        ----------
+        name: str
+            The name of the point layer
+        color: str
+            The face color of the points
+        visible: bool
+            Whether the point layer is visible in the viewer
+
+        Returns
+        -------
+        Points
+            A new point layer
+        """
         point_layer: Points = self.viewer.add_points(None, name=name, face_color=color, visible=visible, ndim=5)
         self.set_point_mode(point_layer=point_layer, mode="ADD")
         return point_layer
 
     @staticmethod
     def set_point_mode(point_layer: Points, mode: str) -> None:
+        """
+        Sets a point layer's mode.
+
+        Parameters
+        ----------
+        point_layer: Points
+            The point layer to be set
+        mode: str
+            The mode
+        """
         point_layer.mode = mode
 
-    def get_points(self, point_layer: Points, image_dims_order: str) -> List[tuple]:
+    def get_points(self, point_layer: Points, image_dims_order: str) -> List[Tuple[float]]:
+        """
+        Returns a list of points in the point layer.
+
+        Parameters
+        ----------
+        point_layer: Points
+            The point layer
+        image_dims_order: str
+            The dimension order of the image
+
+        Returns
+        -------
+        List[Tuple[float]]
+            A list of tuples representing points in the point layer
+        """
         ordered_points: List[tuple] = list(map(lambda point: self.order_point(point, image_dims_order=image_dims_order), point_layer.data))
         return ordered_points
