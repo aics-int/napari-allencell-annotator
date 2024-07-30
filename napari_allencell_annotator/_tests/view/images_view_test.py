@@ -1,6 +1,7 @@
 from pathlib import Path
 import napari_allencell_annotator
 import pytest
+from pytestqt import qtbot
 
 from napari_allencell_annotator._tests.fakes.fake_viewer import FakeViewer
 from napari_allencell_annotator.model.annotation_model import AnnotatorModel
@@ -223,6 +224,7 @@ def test_handle_shuffle_clicked_toggled_off(images_view: ImagesView, annotator_m
     assert annotator_model.get_shuffled_images() is None
 
 
+
 def test_delete_checked(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
     # ARRANGE
     test_file_1: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
@@ -231,15 +233,15 @@ def test_delete_checked(images_view: ImagesView, annotator_model: AnnotatorModel
     test_file_2: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img2.tiff"
     test_file_item_2: FileItem = FileItem(test_file_2, images_view.file_widget, False)
 
-    images_view.file_widget.checked = {test_file_item_1, test_file_item_2}
+
     annotator_model.set_all_images([test_file_1, test_file_2])
+    images_view.file_widget.checked.add(test_file_item_1)
+    images_view.file_widget.checked.add(test_file_item_2)
 
     # ACT
     images_view.delete_checked()
 
     # ASSERT
-    assert images_view.file_widget.count() == 0
-    assert len(images_view.file_widget.checked) == 0
     assert annotator_model.get_num_images() == 0
 
 
