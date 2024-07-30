@@ -224,7 +224,6 @@ def test_handle_shuffle_clicked_toggled_off(images_view: ImagesView, annotator_m
     assert annotator_model.get_shuffled_images() is None
 
 
-
 def test_delete_checked(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
     # ARRANGE
     test_file_1: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
