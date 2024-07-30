@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import List, Tuple, Dict
 
 import numpy as np
 from napari.layers import Layer, Points
@@ -51,26 +51,25 @@ class Viewer(IViewer):
 
     @staticmethod
     def order_point(point: np.ndarray, image_dims_order: str) -> Tuple[float]:
-        print(image_dims_order)
-        point_dict = {"T": point[0], "C": point[1], "Z": point[2], "Y": point[3], "X": point[4]}
+        point_dict: Dict[str, np.ndarray] = {"T": point[0], "C": point[1], "Z": point[2], "Y": point[3], "X": point[4]}
 
         ordered_point_list: List = []
 
         for dim in image_dims_order:
-            dim_value = point_dict[dim] if dim in point_dict else 0.0
+            dim_value: float = point_dict[dim] if dim in point_dict else 0.0
             ordered_point_list.append(dim_value)
 
         return tuple(ordered_point_list)
 
     def create_points(self, name: str, color: str, visible: bool) -> Points:
-        new = self.viewer.add_points(None, name=name, face_color=color, visible=visible, ndim=5)
-        new.mode = "ADD"
-        return new
+        point_layer: Points = self.viewer.add_points(None, name=name, face_color=color, visible=visible, ndim=5)
+        self.set_point_mode(point_layer=point_layer, mode="ADD")
+        return point_layer
 
     @staticmethod
-    def save_points(point_layer: Points) -> None:
-        point_layer.mode = "PAN_ZOOM"
+    def set_point_mode(point_layer: Points, mode: str) -> None:
+        point_layer.mode = mode
 
-    def get_points(self, point_layer: Points, image_dims_order: str) -> Optional[List[tuple]]:
-        ordered_points = list(map(lambda point: self.order_point(point, image_dims_order=image_dims_order), point_layer.data))
+    def get_points(self, point_layer: Points, image_dims_order: str) -> List[tuple]:
+        ordered_points: List[tuple] = list(map(lambda point: self.order_point(point, image_dims_order=image_dims_order), point_layer.data))
         return ordered_points
