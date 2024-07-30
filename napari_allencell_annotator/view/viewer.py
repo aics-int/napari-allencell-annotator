@@ -16,6 +16,7 @@ class PointsLayerMode(Enum):
     SELECT is used to move, edit, or delete points.
     PAN_ZOOM is the default mode and allows normal interactivity with the canvas.
     """
+
     ADD = "ADD"
     SELECT = "SELECT"
     PAN_ZOOM = "PAN_ZOOM"
