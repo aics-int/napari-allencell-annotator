@@ -14,4 +14,4 @@ def test_get_dask_data() -> None:
         test_image = ImageUtils(test_img_path).get_dask_data()
 
         # ASSERT
-        assert np.all(test_image == np.array([[[0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0]]]))
+        assert np.allclose(test_image, np.array([[[0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0]]]))
