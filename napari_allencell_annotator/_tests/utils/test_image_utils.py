@@ -12,7 +12,7 @@ def test_get_dask_data_tiff() -> None:
     ).get_dask_data()
 
     # ASSERT
-    assert (test_image == np.array([[[0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0]]])).all()
+    assert np.all(test_image == np.array([[[0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0]]]))
 
 
 def test_get_dask_data_tif() -> None:
@@ -22,7 +22,7 @@ def test_get_dask_data_tif() -> None:
     ).get_dask_data()
 
     # ASSERT
-    assert (test_image == np.array([[[0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0]]])).all()
+    assert np.all(test_image == np.array([[[0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0]]]))
 
 
 def test_get_dask_data_png() -> None:
@@ -30,7 +30,7 @@ def test_get_dask_data_png() -> None:
     test_image = ImageUtils(Path("napari_allencell_annotator/_tests/assets/image_types/test_img.png")).get_dask_data()
 
     # ASSERT
-    assert (test_image == np.array([[[0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0]]])).all()
+    assert np.all(test_image == np.array([[[0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0]]]))
 
 
 def test_get_dask_data_jpg() -> None:
@@ -38,7 +38,7 @@ def test_get_dask_data_jpg() -> None:
     test_image = ImageUtils(Path("napari_allencell_annotator/_tests/assets/image_types/test_img.jpg")).get_dask_data()
 
     # ASSERT
-    assert (test_image == np.array([[[0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0]]])).all()
+    assert np.all(test_image == np.array([[[0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0]]]))
 
 
 def test_get_dask_data_jpeg() -> None:
@@ -46,4 +46,4 @@ def test_get_dask_data_jpeg() -> None:
     test_image = ImageUtils(Path("napari_allencell_annotator/_tests/assets/image_types/test_img.jpeg")).get_dask_data()
 
     # ASSERT
-    assert (test_image == np.array([[[0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0]]])).all()
+    assert np.all(test_image == np.array([[[0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0]]]))
