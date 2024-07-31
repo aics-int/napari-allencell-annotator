@@ -39,3 +39,9 @@ class ImageUtils:
         Returns image data
         """
         return self._image.data
+
+    def get_image_dims_order(self) -> str:
+        """
+        Returns image dimension order
+        """
+        return self._image.dims
