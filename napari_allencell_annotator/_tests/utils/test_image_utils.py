@@ -5,13 +5,14 @@ import napari_allencell_annotator
 from napari_allencell_annotator.util.image_utils import ImageUtils
 
 
-def test_get_dask_data() -> None:
+def test_get_dask_data_tiff() -> None:
     # ARRANGE
-    test_dir: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "image_types"
+    test_path: Path = (
+        Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "image_types" / "img.ome.tiff"
+    )
 
-    for test_img_path in test_dir.glob("test_img.*"):
-        # ACT
-        test_image = ImageUtils(test_img_path).get_dask_data()
+    # ACT
+    test_image = ImageUtils(test_path).get_dask_data()
 
-        # ASSERT
-        assert np.allclose(test_image, np.array([[[0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0]]]))
+    # ASSERT
+    np.testing.assert_array_equal(test_image[0, 0, :, :, :, :], np.zeros((2, 2, 2, 2)))
