@@ -35,7 +35,7 @@ class ImageUtils:
         else:
             self._image = BioImage(filepath, reader=bioio_imageio.Reader)
 
-    def get_image_data(self) -> da.Array:
+    def get_dask_data(self) -> da.Array:
         """
         Returns image data as a dask array
         """
