@@ -1,6 +1,5 @@
 from pathlib import Path
 import numpy as np
-import pytest
 
 from napari_allencell_annotator.util.image_utils import ImageUtils
 

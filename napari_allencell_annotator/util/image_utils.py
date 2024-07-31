@@ -19,7 +19,7 @@ class ImageUtils:
 
     Methods
     -------
-    get_image_data(self) -> da.Array
+    get_dask_data(self) -> da.Array
         Returns the dask array of the image
     """
 
