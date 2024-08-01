@@ -51,9 +51,9 @@ class Viewer(IViewer):
         # # for all other images <=5 dims
         #     layer = self.viewer.add(image.get_dask_stack())
 
-        layer = self.viewer.add_image(image.get_dask_stack())
+        self.viewer.add_image(image.get_dask_stack())
 
-        layer.axis_labels = image.dims.order.replace("S", ""),
+        # layer.axis_labels = image.dims.order
 
     def clear_layers(self) -> None:
         """
