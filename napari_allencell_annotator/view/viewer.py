@@ -51,7 +51,7 @@ class Viewer(IViewer):
         # # for all other images <=5 dims
         #     layer = self.viewer.add(image.get_dask_stack())
 
-        layer = self.viewer.add(image.get_dask_stack())
+        layer = self.viewer.add_image(image.get_dask_stack())
 
         layer.axis_labels = image.dims.order.replace("S", ""),
 
@@ -104,23 +104,24 @@ class Viewer(IViewer):
         Points
             A new point layer
         """
-        point_layer: Points = self.viewer.add_points(None, name=name, face_color=color, visible=visible, ndim=ndim)
-        self.set_points_layer_mode(point_layer=point_layer, mode=PointsLayerMode.ADD)
-        return point_layer
+        points_layer: Points = self.viewer.add_points(None, name=name, face_color=color, visible=visible, ndim=ndim)
+        self.set_points_layer_mode(points_layer_name=points_layer.name, mode=PointsLayerMode.ADD)
+        return points_layer
 
-    @staticmethod
-    def set_points_layer_mode(point_layer: Points, mode: PointsLayerMode) -> None:
+    def set_points_layer_mode(self, points_layer_name: str, mode: PointsLayerMode) -> None:
         """
         Sets a point layer's mode.
 
         Parameters
         ----------
-        point_layer: Points
-            The point layer to be set
+        points_layer_name: name
+            The name of the Points layer
         mode: str
             The mode
         """
-        point_layer.mode = mode.value
+        for points_layer in self.get_all_points_layers():
+            if points_layer.name == points_layer_name:
+                points_layer.mode = mode.value
 
     def get_selected_points(self, point_layer: Points) -> List[Tuple]:
         """
