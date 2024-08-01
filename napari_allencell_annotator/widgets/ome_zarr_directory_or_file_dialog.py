@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 from qtpy.QtWidgets import QFileDialog
@@ -18,7 +17,7 @@ class OmeZarrDirectoryOrFileDialog(QFileDialog):
         Called whenever the user selects a new option in the File Dialog menu.
         """
         path: Path = Path(name)
-        if os.path.isdir(path) and FileUtils.is_ome_zarr(path):
+        if path.is_dir() and FileUtils.is_ome_zarr(path):
             self.setFileMode(QFileDialog.Directory)
             self.setNameFilter("Directories and files (*)")
         else:
