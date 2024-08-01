@@ -12,7 +12,6 @@ class FakeViewer(IViewer):
         super().__init__()
 
         self._layers = []
-        self._points_layers = []
         self.alerts = []
 
     def add_image(self, image: BioImage) -> None:
@@ -28,11 +27,11 @@ class FakeViewer(IViewer):
         return self._layers
 
     def get_all_points_layers(self) -> List[Points]:
-        return self._points_layers
+        return [layer for layer in self.get_layers() if isinstance(layer, Points)]
 
     def create_points_layer(self, name: str, color: str, visible: bool, ndim: int) -> Points:
         points: Points = Points(data=None, name=name, color=color, visible=visible, ndim=ndim)
-        self._points_layers.append(points)
+        self._layers.append(points)
         return points
 
     def get_selected_points(self, point_layer: Points) -> List[Tuple]:
