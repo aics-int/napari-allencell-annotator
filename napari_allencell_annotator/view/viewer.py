@@ -105,23 +105,21 @@ class Viewer(IViewer):
             A new point layer
         """
         points_layer: Points = self.viewer.add_points(None, name=name, face_color=color, visible=visible, ndim=ndim)
-        self.set_points_layer_mode(points_layer_name=points_layer.name, mode=PointsLayerMode.ADD)
+        self.set_points_layer_mode(points_layer=points_layer, mode=PointsLayerMode.ADD)
         return points_layer
 
-    def set_points_layer_mode(self, points_layer_name: str, mode: PointsLayerMode) -> None:
+    def set_points_layer_mode(self, points_layer: Points, mode: PointsLayerMode) -> None:
         """
         Sets a point layer's mode.
 
         Parameters
         ----------
-        points_layer_name: name
-            The name of the Points layer
+        points_layer: Points
+            The Points layer
         mode: str
             The mode
         """
-        for points_layer in self.get_all_points_layers():
-            if points_layer.name == points_layer_name:
-                points_layer.mode = mode.value
+        points_layer.mode = mode.value
 
     def get_selected_points(self, point_layer: Points) -> List[Tuple]:
         """
@@ -139,3 +137,6 @@ class Viewer(IViewer):
         """
         ordered_points: List[tuple] = list(map(tuple, point_layer.data))
         return ordered_points
+
+    def get_all_point_annotations(self, points_layer: Points):
+        pass
