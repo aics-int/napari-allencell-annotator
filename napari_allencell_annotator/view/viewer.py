@@ -1,7 +1,9 @@
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Optional
 from enum import Enum
-import numpy as np
 
+import dask.array
+import numpy as np
+from bioio import BioImage
 from napari.layers import Layer, Points
 from napari_allencell_annotator.view.i_viewer import IViewer
 from napari.utils.notifications import show_info
@@ -29,7 +31,7 @@ class Viewer(IViewer):
         super().__init__()
         self.viewer: napari.Viewer = viewer
 
-    def add_image(self, image: np.ndarray) -> None:
+    def add_image(self, image: BioImage) -> None:
         """
         Add an image to the napari viewer
 
@@ -38,7 +40,20 @@ class Viewer(IViewer):
         image: np.ndarray
             An image to be added
         """
-        self.viewer.add_image(image)
+        # layer: Optional[napari.layers.Layer] = None
+        # # For multiscene images
+        # if len(image.scenes) > 0:
+        #     for i in range(len(image.scenes)):
+        #         # add each scene separately
+        #         data: dask.array.Array = image.get_image_dask_data(image.dims.order.replace("S", ""), S=i)
+        #         layer = self.viewer.add(data)
+        # else:
+        # # for all other images <=5 dims
+        #     layer = self.viewer.add(image.get_dask_stack())
+
+        layer = self.viewer.add(image.get_dask_stack())
+
+        layer.axis_labels = image.dims.order.replace("S", ""),
 
     def clear_layers(self) -> None:
         """
@@ -69,34 +84,7 @@ class Viewer(IViewer):
         """
         return [layer for layer in self.get_layers() if isinstance(layer, Points)]
 
-    @staticmethod
-    def order_point(point: np.ndarray, image_dims_order: str) -> Tuple:
-        """
-        Orders a point according to the image dimension and returns it as a tuple
-
-        Parameters
-        ----------
-        point: np.ndarray
-            A point in a point layer
-        image_dims_order: str
-            The dimension of the image
-
-        Returns
-        -------
-        Tuple[float]
-            A tuple containing ordered point coordinates
-        """
-        point_dict: Dict[str, np.ndarray] = {"T": point[0], "C": point[1], "Z": point[2], "Y": point[3], "X": point[4]}
-
-        ordered_point_list: List = []
-
-        for dim in image_dims_order:
-            dim_value: float = point_dict[dim] if dim in point_dict else 0.0
-            ordered_point_list.append(dim_value)
-
-        return tuple(ordered_point_list)
-
-    def create_points_layer(self, name: str, color: str, visible: bool) -> Points:
+    def create_points_layer(self, name: str, color: str, visible: bool, ndim: int) -> Points:
         """
         Creates a new point layer and sets to ADD mode to allow users to select points.
 
@@ -108,13 +96,15 @@ class Viewer(IViewer):
             The face color of the points
         visible: bool
             Whether the point layer is visible in the viewer
+        ndim: int
+            The number of image dimensions
 
         Returns
         -------
         Points
             A new point layer
         """
-        point_layer: Points = self.viewer.add_points(None, name=name, face_color=color, visible=visible, ndim=5)
+        point_layer: Points = self.viewer.add_points(None, name=name, face_color=color, visible=visible, ndim=ndim)
         self.set_points_layer_mode(point_layer=point_layer, mode=PointsLayerMode.ADD)
         return point_layer
 
@@ -132,7 +122,7 @@ class Viewer(IViewer):
         """
         point_layer.mode = mode.value
 
-    def get_selected_points(self, point_layer: Points, image_dims_order: str) -> List[Tuple]:
+    def get_selected_points(self, point_layer: Points) -> List[Tuple]:
         """
         Returns a list of points in the point layer.
 
@@ -140,15 +130,11 @@ class Viewer(IViewer):
         ----------
         point_layer: Points
             The point layer
-        image_dims_order: str
-            The dimension order of the image
 
         Returns
         -------
         List[Tuple[float]]
             A list of tuples representing points in the point layer
         """
-        ordered_points: List[tuple] = list(
-            map(lambda point: self.order_point(point, image_dims_order=image_dims_order), point_layer.data)
-        )
+        ordered_points: List[tuple] = list(map(tuple, point_layer.data))
         return ordered_points

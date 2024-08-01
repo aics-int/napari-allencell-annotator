@@ -34,14 +34,8 @@ class ImageUtils:
         else:
             self._image = BioImage(filepath, reader=bioio_imageio.Reader)
 
-    def get_image_data(self) -> np.ndarray:
+    def get_image(self) -> BioImage:
         """
-        Returns image data
+        Returns Bioimage object loaded with correct reader
         """
-        return self._image.data
-
-    def get_image_dims_order(self) -> str:
-        """
-        Returns image dimension order
-        """
-        return self._image.dims
+        return self._image
