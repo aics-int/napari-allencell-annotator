@@ -37,7 +37,7 @@ class ImageUtils:
         else:
             self._image = BioImage(filepath, reader=bioio_imageio.Reader)
 
-    def get_image_data(self) -> np.ndarray:
+    def get_image_dask_data(self) -> np.ndarray:
         """
         Returns image data
         """
