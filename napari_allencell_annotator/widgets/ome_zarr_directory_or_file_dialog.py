@@ -4,6 +4,7 @@ from pathlib import Path
 from qtpy.QtWidgets import QFileDialog
 from napari_allencell_annotator.util.file_utils import FileUtils
 
+
 class OmeZarrDirectoryOrFileDialog(QFileDialog):
     def __init__(self):
         super().__init__()
@@ -22,5 +23,3 @@ class OmeZarrDirectoryOrFileDialog(QFileDialog):
             self.setNameFilter("Directories and files (*)")
         else:
             self.setFileMode(QFileDialog.ExistingFiles)
-
-

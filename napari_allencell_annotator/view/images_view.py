@@ -260,7 +260,7 @@ class ImagesView(QFrame):
             The list of files
         """
         # ignore hidden files and directories
-        for file_path in FileUtils.select_only_valid_files(file_list=file_list):
+        for file_path in FileUtils.select_valid_images(path_list=file_list):
             if FileUtils.is_supported(file_path):
                 if file_path not in self._annotator_model.get_all_images():
                     self.add_new_item(file_path)

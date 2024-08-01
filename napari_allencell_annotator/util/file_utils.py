@@ -1,3 +1,4 @@
+import os.path
 import random
 from pathlib import Path
 from napari_allencell_annotator.constants.constants import SUPPORTED_FILE_TYPES
@@ -19,21 +20,11 @@ class FileUtils:
         file_list: list[Path]
             A list of paths
         """
-        valid_files: List[Path] = []
-        for file in file_list:
-            if not file.name.startswith("."):
-                # get files
-                if file.is_file():
-                    valid_files.append(file)
-                # get zarr file
-                elif file.is_dir() and file.name.endswith(".zarr"):
-                    valid_files.append(file)
-                # get zarr inside the directory
-                else:
-                    dir_zarr_files: List[Path] = list(file.glob("*.zarr"))
-                    valid_files += dir_zarr_files
-
-        return valid_files
+        return [
+            file
+            for file in file_list
+            if not file.name.startswith(".") and file.is_file() and FileUtils.is_supported(file)
+        ]
 
     @staticmethod
     def is_supported(file_path: Path) -> bool:
@@ -88,3 +79,21 @@ class FileUtils:
             return True
         else:
             return False
+
+    @staticmethod
+    def select_only_ome_zarr(path_list: List[Path]) -> List[Path]:
+        valid_dirs = [path for path in path_list if not path.name.startswith(".") and os.path.isdir(path)]
+
+        ome_zarr_dirs = []
+        for valid_dir in valid_dirs:
+            if valid_dir.name.endswith(".ome.zarr"):
+                ome_zarr_dirs.append(valid_dir)
+            else:
+                ome_zarr_files: List[Path] = list(valid_dir.glob("*.zarr"))
+                ome_zarr_dirs += ome_zarr_files
+
+        return ome_zarr_dirs
+
+    @staticmethod
+    def select_valid_images(path_list: List[Path]):
+        return FileUtils.select_only_valid_files(path_list) + FileUtils.select_only_ome_zarr(path_list)
