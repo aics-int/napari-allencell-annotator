@@ -81,3 +81,10 @@ class FileUtils:
             return path.parent.stem
         else:
             return path.name
+
+    @staticmethod
+    def is_ome_zarr(path: Path):
+        if path.name.endswith(".ome.zarr") or len(list(path.glob("*.ome.zarr"))) != 0:
+            return True
+        else:
+            return False

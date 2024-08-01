@@ -1,9 +1,12 @@
 from enum import Enum
+from typing import List
 
 from qtpy.QtWidgets import QPushButton
 from qtpy.QtWidgets import QHBoxLayout, QWidget, QFileDialog
 from qtpy.QtCore import Signal
 from pathlib import Path
+
+from napari_allencell_annotator.widgets.ome_zarr_directory_or_file_dialog import OmeZarrDirectoryOrFileDialog
 
 
 class FileInputMode(Enum):
@@ -75,12 +78,11 @@ class FileInput(QWidget):
             self._select_csv_or_json()
 
     def _select_file(self) -> None:
-        files, _ = QFileDialog.getOpenFileNames(
-            self,
-            "Select a file",
-            options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
-        )
-        self.files_selected.emit([Path(file) for file in files])
+        custom_file_dialog = OmeZarrDirectoryOrFileDialog()
+
+        if custom_file_dialog.exec_() == QFileDialog.Accepted:
+            files: List[str] = custom_file_dialog.selectedFiles()
+            self.files_selected.emit([Path(file) for file in files])
 
     def _select_json(self) -> None:
         file_path_str, _ = QFileDialog.getSaveFileName(
