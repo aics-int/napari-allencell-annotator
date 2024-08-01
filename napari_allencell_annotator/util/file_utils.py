@@ -10,20 +10,27 @@ class FileUtils:
     """
 
     @staticmethod
-    def select_only_valid_files(file_list: list[Path]) -> list[Path]:
+    def select_valid_images(file_list: list[Path]) -> list[Path]:
         """
-        Return a list of paths to files that are not hidden.
+        Return a list of paths to files that are not hidden and is either a valid image file or a valid zarr image.
 
         Parameters
         ----------
         file_list: list[Path]
             A list of paths
         """
-        return [
-            file
-            for file in file_list
-            if not file.name.startswith(".") and file.is_file() and FileUtils.is_supported(file)
-        ]
+        valid_files: list[Path] = []
+        for file in file_list:
+            # is not hidden
+            if not file.name.startswith("."):
+                # all supported files including raw zarr
+                if FileUtils.is_supported(file):
+                    valid_files.append(file)
+                # if zarr outer folder was selected instead
+                elif FileUtils.is_outer_zarr(file):
+                    valid_files.append(FileUtils.get_raw_zarr_from_outer_dir(file))
+
+        return valid_files
 
     @staticmethod
     def is_supported(file_path: Path) -> bool:
@@ -74,25 +81,16 @@ class FileUtils:
 
     @staticmethod
     def is_ome_zarr(path: Path):
-        if path.name.endswith(".ome.zarr") or len(list(path.glob("*.ome.zarr"))) != 0:
+        return path.name.endswith(".ome.zarr") or FileUtils.is_outer_zarr(path)
+
+    @staticmethod
+    def is_outer_zarr(path: Path) -> bool:
+        if list(path.glob("*.zarr")):
             return True
         else:
             return False
 
     @staticmethod
-    def select_only_ome_zarr(path_list: List[Path]) -> List[Path]:
-        valid_dirs = [path for path in path_list if not path.name.startswith(".") and path.is_dir()]
+    def get_raw_zarr_from_outer_dir(path: Path) -> Path:
+        return path.glob("*.zarr").__next__()
 
-        ome_zarr_dirs = []
-        for valid_dir in valid_dirs:
-            if valid_dir.name.endswith(".ome.zarr"):
-                ome_zarr_dirs.append(valid_dir)
-            else:
-                ome_zarr_files: List[Path] = list(valid_dir.glob("*.zarr"))
-                ome_zarr_dirs += ome_zarr_files
-
-        return ome_zarr_dirs
-
-    @staticmethod
-    def select_valid_images(path_list: List[Path]):
-        return FileUtils.select_only_valid_files(path_list) + FileUtils.select_only_ome_zarr(path_list)
