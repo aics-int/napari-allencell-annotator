@@ -261,9 +261,8 @@ class ImagesView(QFrame):
         """
         # ignore hidden files and directories
         for file_path in FileUtils.select_valid_images(path_list=file_list):
-            if FileUtils.is_supported(file_path):
-                if file_path not in self._annotator_model.get_all_images():
-                    self.add_new_item(file_path)
+            if file_path not in self._annotator_model.get_all_images():
+                self.add_new_item(file_path)
             else:
                 self.viewer.alert("Unsupported file type(s)")
 
