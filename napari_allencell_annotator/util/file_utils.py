@@ -1,4 +1,3 @@
-import os.path
 import random
 from pathlib import Path
 from napari_allencell_annotator.constants.constants import SUPPORTED_FILE_TYPES
@@ -82,7 +81,7 @@ class FileUtils:
 
     @staticmethod
     def select_only_ome_zarr(path_list: List[Path]) -> List[Path]:
-        valid_dirs = [path for path in path_list if not path.name.startswith(".") and os.path.isdir(path)]
+        valid_dirs = [path for path in path_list if not path.name.startswith(".") and path.is_dir()]
 
         ome_zarr_dirs = []
         for valid_dir in valid_dirs:
