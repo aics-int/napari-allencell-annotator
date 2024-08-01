@@ -36,4 +36,4 @@ class FakeViewer(IViewer):
         return points
 
     def get_selected_points(self, point_layer: Points) -> List[Tuple]:
-        return [(0.0, 0.0, 0.0, 0.0, 0.0)]
+        return list(map(tuple, point_layer.data))
