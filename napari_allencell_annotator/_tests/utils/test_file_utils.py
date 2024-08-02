@@ -17,3 +17,4 @@ def test_get_file_name():
     assert jpeg_file_name == "test.jpeg"
     assert czi_file_name == "test.czi"
     assert zarr_file_name == "parent"
+

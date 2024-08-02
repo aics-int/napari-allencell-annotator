@@ -80,10 +80,6 @@ class FileUtils:
             return path.name
 
     @staticmethod
-    def is_ome_zarr(path: Path):
-        return path.name.endswith(".ome.zarr") or FileUtils.is_outer_zarr(path)
-
-    @staticmethod
     def is_outer_zarr(path: Path) -> bool:
         if list(path.glob("*.zarr")):
             return True
