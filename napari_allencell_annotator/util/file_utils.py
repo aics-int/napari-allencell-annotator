@@ -1,7 +1,6 @@
 import random
 from pathlib import Path
 from napari_allencell_annotator.constants.constants import SUPPORTED_FILE_TYPES
-from typing import List
 
 
 class FileUtils:
