@@ -7,12 +7,17 @@ import napari_allencell_annotator
 
 def test_sorted_dirs_and_files_in_dir():
     # ACT
-    sorted_file_list: List[Path] = FileUtils.get_sorted_dirs_and_files_in_dir(Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "sort_img_dir")
+    sorted_file_list: List[Path] = FileUtils.get_sorted_dirs_and_files_in_dir(
+        Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "sort_img_dir"
+    )
 
     # ASSERT
-    assert sorted_file_list == [Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "sort_img_dir" / "a",
-                                Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "sort_img_dir"/ "b.ome.tiff",
-                                Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "sort_img_dir"/ "c.ome.tiff"]
+    assert sorted_file_list == [
+        Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "sort_img_dir" / "a",
+        Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "sort_img_dir" / "b.ome.tiff",
+        Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "sort_img_dir" / "c.ome.tiff",
+    ]
+
 
 def test_select_valid_images() -> None:
     # ARRANGE
