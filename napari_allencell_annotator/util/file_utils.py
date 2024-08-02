@@ -26,8 +26,8 @@ class FileUtils:
                 if FileUtils.is_supported(file):
                     valid_files.append(file)
                 # if zarr outer folder was selected instead
-                elif FileUtils.is_outer_zarr(file):
-                    valid_files.append(FileUtils.get_raw_zarr_from_outer_dir(file))
+                elif FileUtils._is_outer_zarr(file):
+                    valid_files.append(FileUtils._get_raw_zarr_from_outer_dir(file))
 
         return valid_files
 
@@ -100,7 +100,7 @@ class FileUtils:
             return path.name
 
     @staticmethod
-    def is_outer_zarr(path: Path) -> bool:
+    def _is_outer_zarr(path: Path) -> bool:
         """
         Return whether a given path is the outer directory of a raw zarr.
 
@@ -115,7 +115,7 @@ class FileUtils:
             return False
 
     @staticmethod
-    def get_raw_zarr_from_outer_dir(path: Path) -> Path:
+    def _get_raw_zarr_from_outer_dir(path: Path) -> Path:
         """
         Returns the path to the raw zarr in a given directory
 

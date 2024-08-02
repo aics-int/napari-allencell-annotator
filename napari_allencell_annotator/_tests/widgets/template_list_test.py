@@ -150,10 +150,10 @@ class TestTemplateList:
 #     self._list._items = []
 #     self._list.height = 10
 #
-#     self._list.add_item("name", {"type": "list", "default": "default", "options": ["a", "b", "c"]})
+#     self._list.add_item("name", {"type": "list", "default": "default", "options": ["a", "b.ome.tiff", "c"]})
 #
 #     mock_init.assert_called_once_with()
-#     QComboBox.addItem.assert_has_calls([mock.call("a"), mock.call("b"), mock.call("c")])
+#     QComboBox.addItem.assert_has_calls([mock.call("a"), mock.call("b.ome.tiff"), mock.call("c")])
 #     QComboBox.setCurrentText.assert_called_once_with("default")
 #     mock_init_temp.assert_called_once()
 #     self._list.items == [mock_init_temp]
