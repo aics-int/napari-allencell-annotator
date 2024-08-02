@@ -221,8 +221,8 @@ class ImagesView(QFrame):
 
         Parameters
         ----------
-        dir_list : List[Path]
-            The input list with dir[0] holding directory name.
+        dir_path : Path
+            The directory path
         """
         # get both files and folders
         all_files_in_dir: list[Path] = FileUtils.get_sorted_dirs_and_files_in_dir(dir_path)

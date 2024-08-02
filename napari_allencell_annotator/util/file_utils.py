@@ -68,12 +68,33 @@ class FileUtils:
 
     @staticmethod
     def shuffle_file_list(files: list[Path]) -> list[Path]:
+        """
+        Shuffles the file list.
+
+        Parameters
+        ----------
+        files: list[Path]
+            A file list to be shuffled
+
+        Returns
+        -------
+        list[Path]
+            The shuffled file list
+        """
         shuffled_list = files.copy()
         random.shuffle(shuffled_list)
         return shuffled_list
 
     @staticmethod
     def get_file_name(path: Path):
+        """
+        Return the parent file name for zarr. Otherwise, return the file name.
+
+        Parameters
+        ----------
+        path: Path
+            The path to an image file
+        """
         if path.suffix == ".zarr":
             return path.parent.stem
         else:
@@ -81,6 +102,14 @@ class FileUtils:
 
     @staticmethod
     def is_outer_zarr(path: Path) -> bool:
+        """
+        Return whether a given path is the outer directory of a raw zarr.
+
+        Parameters
+        ----------
+        path: Path
+            The path to a directory
+        """
         if list(path.glob("*.zarr")):
             return True
         else:
@@ -88,4 +117,12 @@ class FileUtils:
 
     @staticmethod
     def get_raw_zarr_from_outer_dir(path: Path) -> Path:
+        """
+        Returns the path to the raw zarr in a given directory
+
+        Parameters
+        ----------
+        path: Path
+            The path to an outer zarr directory
+        """
         return path.glob("*.zarr").__next__()

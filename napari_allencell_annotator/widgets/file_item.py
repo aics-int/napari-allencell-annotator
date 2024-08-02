@@ -67,7 +67,7 @@ class FileItem(QListWidgetItem):
         return str(self._file_path)
 
     def get_name(self) -> str:
-        """Return basename"""
+        """Return parent file name for zarr. Otherwise, return file name."""
         if self._file_path.suffix == ".zarr":
             return self._file_path.parent.stem
         else:

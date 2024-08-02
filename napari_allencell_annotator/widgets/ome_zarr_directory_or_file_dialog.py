@@ -4,6 +4,9 @@ from napari_allencell_annotator._style import Style
 
 
 class OmeZarrDirectoryOrFileDialog(QFileDialog):
+    """
+    A custom QFileDialog that allows the user to select files and zarr directories.
+    """
     def __init__(self, parent, title):
         super().__init__(parent, title)
         self.setStyleSheet(Style.get_stylesheet("main.qss"))
@@ -25,6 +28,9 @@ class OmeZarrDirectoryOrFileDialog(QFileDialog):
             f_tree_view.setSelectionMode(QAbstractItemView.ExtendedSelection)
 
     def accept(self):
+        """
+        Called whenever the user is done selecting files and directories.
+        """
         self.setFileMode(QFileDialog.Directory | QFileDialog.ExistingFiles)
 
         self.setNameFilter("Directories and files (*)")
