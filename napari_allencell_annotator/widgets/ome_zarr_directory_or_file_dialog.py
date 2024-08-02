@@ -1,9 +1,5 @@
-import os
-from pathlib import Path
-
 from PyQt5.QtWidgets import QListView, QAbstractItemView, QTreeView
 from qtpy.QtWidgets import QFileDialog
-from napari_allencell_annotator.util.file_utils import FileUtils
 from napari_allencell_annotator._style import Style
 
 
@@ -24,7 +20,7 @@ class OmeZarrDirectoryOrFileDialog(QFileDialog):
         self.setOption(QFileDialog.DontUseNativeDialog, True)
         self.findChild(QListView, "listView").setSelectionMode(QAbstractItemView.ExtendedSelection)
 
-        f_tree_view = self.findChild(QTreeView)
+        f_tree_view: QTreeView = self.findChild(QTreeView)
         if f_tree_view:
             f_tree_view.setSelectionMode(QAbstractItemView.ExtendedSelection)
 
@@ -35,7 +31,7 @@ class OmeZarrDirectoryOrFileDialog(QFileDialog):
         self.setOption(QFileDialog.DontUseNativeDialog, True)
         self.findChild(QListView, "listView").setSelectionMode(QAbstractItemView.ExtendedSelection)
 
-        f_tree_view = self.findChild(QTreeView)
+        f_tree_view: QTreeView = self.findChild(QTreeView)
         if f_tree_view:
             f_tree_view.setSelectionMode(QAbstractItemView.ExtendedSelection)
 

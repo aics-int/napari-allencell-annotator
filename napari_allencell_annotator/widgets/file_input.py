@@ -78,7 +78,7 @@ class FileInput(QWidget):
             self._select_csv_or_json()
 
     def _select_file(self) -> None:
-        custom_file_dialog = OmeZarrDirectoryOrFileDialog(self, "Select a file")
+        custom_file_dialog: OmeZarrDirectoryOrFileDialog = OmeZarrDirectoryOrFileDialog(self, "Select a file")
 
         if custom_file_dialog.exec_() == QFileDialog.Accepted:
             files: List[str] = custom_file_dialog.selectedFiles()

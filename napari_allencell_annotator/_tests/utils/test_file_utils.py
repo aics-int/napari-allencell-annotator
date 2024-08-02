@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import List
 
 from napari_allencell_annotator.util.file_utils import FileUtils
 import napari_allencell_annotator
@@ -6,7 +7,7 @@ import napari_allencell_annotator
 
 def test_select_only_valid_files() -> None:
     # ARRANGE
-    all_files = [
+    all_files: List[Path] = [
         Path("test.tiff"),
         Path("test.png"),
         Path("test.jpeg"),
@@ -19,7 +20,7 @@ def test_select_only_valid_files() -> None:
     ]
 
     # ACT
-    valid_files = FileUtils.select_valid_images(all_files)
+    valid_files: List[Path] = FileUtils.select_valid_images(all_files)
 
     # ASSERT
     assert valid_files == [
