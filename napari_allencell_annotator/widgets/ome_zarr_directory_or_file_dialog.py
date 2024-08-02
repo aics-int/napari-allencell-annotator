@@ -13,11 +13,11 @@ class OmeZarrDirectoryOrFileDialog(QFileDialog):
         self.setFileMode(QFileDialog.Directory)
         self.setNameFilter("Directories and files (*)")
         self.setOption(QFileDialog.DontUseNativeDialog, True)
-        self.findChild(QListView, "listView").setSelectionMode(QAbstractItemView.MultiSelection)
+        self.findChild(QListView, "listView").setSelectionMode(QAbstractItemView.ExtendedSelection)
 
         f_tree_view = self.findChild(QTreeView)
         if f_tree_view:
-            f_tree_view.setSelectionMode(QAbstractItemView.MultiSelection)
+            f_tree_view.setSelectionMode(QAbstractItemView.ExtendedSelection)
 
     def _selected(self, name: str) -> None:
         """
@@ -28,22 +28,15 @@ class OmeZarrDirectoryOrFileDialog(QFileDialog):
             self.setFileMode(QFileDialog.Directory)
             self.setNameFilter("Directories and files (*)")
             self.setOption(QFileDialog.DontUseNativeDialog, True)
-            self.findChild(QListView, "listView").setSelectionMode(QAbstractItemView.MultiSelection)
+            self.findChild(QListView, "listView").setSelectionMode(QAbstractItemView.ExtendedSelection)
 
             f_tree_view = self.findChild(QTreeView)
             if f_tree_view:
-                f_tree_view.setSelectionMode(QAbstractItemView.MultiSelection)
+                f_tree_view.setSelectionMode(QAbstractItemView.ExtendedSelection)
         else:
             self.setFileMode(QFileDialog.ExistingFiles)
 
     def accept(self):
         self.setFileMode(QFileDialog.Directory)
-        self.setNameFilter("Directories and files (*)")
-        self.setOption(QFileDialog.DontUseNativeDialog, True)
-        self.findChild(QListView, "listView").setSelectionMode(QAbstractItemView.MultiSelection)
-
-        f_tree_view = self.findChild(QTreeView)
-        if f_tree_view:
-            f_tree_view.setSelectionMode(QAbstractItemView.MultiSelection)
 
         super().accept()
