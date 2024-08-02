@@ -19,8 +19,6 @@ class OmeZarrDirectoryOrFileDialog(QFileDialog):
         """
         Called whenever the user selects a new option in the File Dialog menu.
         """
-        path: Path = Path(name)
-
         self.setFileMode(QFileDialog.Directory | QFileDialog.ExistingFiles)
         self.setNameFilter("Directories and files (*)")
         self.setOption(QFileDialog.DontUseNativeDialog, True)
