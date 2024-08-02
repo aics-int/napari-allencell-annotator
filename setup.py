@@ -25,6 +25,7 @@ requirements = [
     "bioio",
     "bioio-ome-tiff",
     "bioio-czi",
+    "bioio-ome-zarr",
     "tifffile>=2021.8.30",
     "bioio-imageio",
 ]
