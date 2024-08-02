@@ -32,7 +32,6 @@ class OmeZarrDirectoryOrFileDialog(QFileDialog):
         Called whenever the user is done selecting files and directories.
         """
         self.setFileMode(QFileDialog.Directory | QFileDialog.ExistingFiles)
-
         self.setNameFilter("Directories and files (*)")
         self.setOption(QFileDialog.DontUseNativeDialog, True)
         self.findChild(QListView, "listView").setSelectionMode(QAbstractItemView.ExtendedSelection)
