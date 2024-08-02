@@ -138,5 +138,12 @@ class Viewer(IViewer):
         ordered_points: List[tuple] = list(map(tuple, point_layer.data))
         return ordered_points
 
-    def get_all_point_annotations(self, points_layer: Points):
-        pass
+    def get_all_point_annotations(self) -> dict[str, list[tuple]]:
+        all_point_annotations = {}
+
+        all_points_layers = self.get_all_points_layers()
+        for points_layer in all_points_layers:
+            all_point_annotations[points_layer.name] = self.get_selected_points(points_layer)
+
+        return all_point_annotations
+
