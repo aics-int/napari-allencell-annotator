@@ -152,24 +152,14 @@ def test_add_new_item(images_view: ImagesView, annotator_model: AnnotatorModel) 
     assert images_view.file_widget.item(0).label.text() == "test_img1"
 
 
-def test_add_selected_files_invalid_files(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
-    # ACT
-    images_view._add_selected_files(
-        [
-            Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "invalid_img_dir" / "test_dir",
-            Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "invalid_img_dir" / ".test.csv",
-        ]
-    )
-
-    # ASSERT
-    assert len(images_view.viewer.alerts) == 0
-    assert annotator_model.get_num_images() == 0
-
-
 def test_add_selected_files_unsupported_files(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
     # ACT
     images_view._add_selected_files(
-        [Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "invalid_img_dir" / "test.csv"]
+        [
+            Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "invalid_img_dir" / "test.csv",
+            Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "invalid_img_dir" / "test_dir",
+            Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "invalid_img_dir" / ".test.csv",
+        ]
     )
 
     # ASSERT

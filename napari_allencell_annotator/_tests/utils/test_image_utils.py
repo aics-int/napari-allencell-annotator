@@ -12,7 +12,7 @@ def test_get_dask_data_tiff() -> None:
     )
 
     # ACT
-    test_image = ImageUtils(test_path).get_dask_data()
+    test_image = ImageUtils(test_path).get_image_dask_data()
 
     # ASSERT
     np.testing.assert_array_equal(test_image[0, 0, :, :, :, :], np.zeros((2, 2, 2, 2)))

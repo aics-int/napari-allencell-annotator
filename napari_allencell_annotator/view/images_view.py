@@ -258,11 +258,13 @@ class ImagesView(QFrame):
         file_list : List[Path]
             The list of files
         """
-        for file_path in FileUtils.select_valid_images(file_list=file_list):
+        valid_images: list[Path] = FileUtils.select_valid_images(file_list=file_list)
+        for file_path in valid_images:
             if file_path not in self._annotator_model.get_all_images():
                 self.add_new_item(file_path)
-            else:
-                self.viewer.alert("Unsupported file type(s)")
+
+        if len(valid_images) != len(file_list):
+            self.viewer.alert("Unsupported file type(s)")
 
     def _handle_shuffle_clicked(self) -> None:
         """
