@@ -4,13 +4,24 @@ from pathlib import Path
 from PyQt5.QtWidgets import QListView, QAbstractItemView, QTreeView
 from qtpy.QtWidgets import QFileDialog
 from napari_allencell_annotator.util.file_utils import FileUtils
+from napari_allencell_annotator._style import Style
 
 
 class OmeZarrDirectoryOrFileDialog(QFileDialog):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent, title):
+        super().__init__(parent, title)
+        self.setStyleSheet(Style.get_stylesheet("main.qss"))
         self.currentChanged.connect(self._selected)
-        self.setFileMode(QFileDialog.Directory)
+        self.setNameFilter("Directories and files (*)")
+        self.setOption(QFileDialog.DontUseNativeDialog, True)
+
+    def _selected(self, name: str) -> None:
+        """
+        Called whenever the user selects a new option in the File Dialog menu.
+        """
+        path: Path = Path(name)
+
+        self.setFileMode(QFileDialog.Directory | QFileDialog.ExistingFiles)
         self.setNameFilter("Directories and files (*)")
         self.setOption(QFileDialog.DontUseNativeDialog, True)
         self.findChild(QListView, "listView").setSelectionMode(QAbstractItemView.ExtendedSelection)
@@ -19,24 +30,15 @@ class OmeZarrDirectoryOrFileDialog(QFileDialog):
         if f_tree_view:
             f_tree_view.setSelectionMode(QAbstractItemView.ExtendedSelection)
 
-    def _selected(self, name: str) -> None:
-        """
-        Called whenever the user selects a new option in the File Dialog menu.
-        """
-        path: Path = Path(name)
-        if os.path.isdir(path) and FileUtils.is_ome_zarr(path):
-            self.setFileMode(QFileDialog.Directory)
-            self.setNameFilter("Directories and files (*)")
-            self.setOption(QFileDialog.DontUseNativeDialog, True)
-            self.findChild(QListView, "listView").setSelectionMode(QAbstractItemView.ExtendedSelection)
-
-            f_tree_view = self.findChild(QTreeView)
-            if f_tree_view:
-                f_tree_view.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        else:
-            self.setFileMode(QFileDialog.ExistingFiles)
-
     def accept(self):
-        self.setFileMode(QFileDialog.Directory)
+        self.setFileMode(QFileDialog.Directory | QFileDialog.ExistingFiles)
 
-        super().accept()
+        self.setNameFilter("Directories and files (*)")
+        self.setOption(QFileDialog.DontUseNativeDialog, True)
+        self.findChild(QListView, "listView").setSelectionMode(QAbstractItemView.ExtendedSelection)
+
+        f_tree_view = self.findChild(QTreeView)
+        if f_tree_view:
+            f_tree_view.setSelectionMode(QAbstractItemView.ExtendedSelection)
+
+        super().done(QFileDialog.Accepted)
