@@ -19,7 +19,6 @@ class OmeZarrDirectoryOrFileDialog(QFileDialog):
         if f_tree_view:
             f_tree_view.setSelectionMode(QAbstractItemView.MultiSelection)
 
-
     def _selected(self, name: str) -> None:
         """
         Called whenever the user selects a new option in the File Dialog menu.
@@ -48,4 +47,3 @@ class OmeZarrDirectoryOrFileDialog(QFileDialog):
             f_tree_view.setSelectionMode(QAbstractItemView.MultiSelection)
 
         super().accept()
-

@@ -93,4 +93,3 @@ class FileUtils:
     @staticmethod
     def get_raw_zarr_from_outer_dir(path: Path) -> Path:
         return path.glob("*.zarr").__next__()
-
