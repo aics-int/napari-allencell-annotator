@@ -263,7 +263,7 @@ class ImagesView(QFrame):
             if file_path not in self._annotator_model.get_all_images():
                 self.add_new_item(file_path)
 
-        if len(valid_images) != len(file_list):
+        if len(valid_images) != len([file for file in file_list if not file.name.startswith(".")]):
             self.viewer.alert("Unsupported file type(s)")
 
     def _handle_shuffle_clicked(self) -> None:
