@@ -201,8 +201,7 @@ class ImagesView(QFrame):
 
         current: Path = self._annotator_model.get_curr_img()
         if current is not None:
-            img: ImageUtils = ImageUtils(current)
-            self.viewer.add_image(img.get_image_dask_data())
+            self.viewer.add_image(ImageUtils(current).get_image_dask_data())
 
     def update_num_files_label(self, num_files: int) -> None:
         """

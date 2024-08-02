@@ -99,7 +99,9 @@ class FileInput(QWidget):
             "Select a directory",
             options=QFileDialog.Option.DontUseNativeDialog | QFileDialog.Option.DontUseCustomDirectoryIcons,
         )
-        self.dir_selected.emit(Path(dir_path_str))
+
+        if dir_path_str != "":
+            self.dir_selected.emit(Path(dir_path_str))
 
     def _select_csv(self) -> None:
         file_path_str: str
