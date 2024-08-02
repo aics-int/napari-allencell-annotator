@@ -5,7 +5,7 @@ from napari_allencell_annotator.util.file_utils import FileUtils
 import napari_allencell_annotator
 
 
-def test_select_only_valid_files() -> None:
+def test_select_valid_images() -> None:
     # ARRANGE
     all_files: List[Path] = [
         Path("test.tiff"),
