@@ -7,6 +7,7 @@ class OmeZarrDirectoryOrFileDialog(QFileDialog):
     """
     A custom QFileDialog that allows the user to select files and zarr directories.
     """
+
     def __init__(self, parent, title):
         super().__init__(parent, title)
         self.setStyleSheet(Style.get_stylesheet("main.qss"))
