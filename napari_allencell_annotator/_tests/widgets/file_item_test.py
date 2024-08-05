@@ -10,8 +10,8 @@ from napari_allencell_annotator.widgets.file_item import FileItem, QLabel, QChec
 
 def test_get_name():
     # ACT
-    tiff_file_name: str = FileItem(Path("parent/test.tiff"), None, True).get_name()
-    zarr_file_name: str = FileItem(Path("parent/test.zarr"), None, True).get_name()
+    tiff_file_name: str = FileItem(Path("parent/test.tiff"), QListWidget(), True).get_name()
+    zarr_file_name: str = FileItem(Path("parent/test.zarr"), QListWidget(), True).get_name()
 
     # ASSERT
     assert tiff_file_name == "test"
