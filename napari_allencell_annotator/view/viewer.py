@@ -19,9 +19,9 @@ class PointsLayerMode(Enum):
     PAN_ZOOM is the default mode and allows normal interactivity with the canvas.
     """
 
-    ADD = "ADD"
-    SELECT = "SELECT"
-    PAN_ZOOM = "PAN_ZOOM"
+    ADD = "add"
+    SELECT = "select"
+    PAN_ZOOM = "pan_zoom"
 
 
 class Viewer(IViewer):
@@ -121,7 +121,7 @@ class Viewer(IViewer):
         """
         points_layer.mode = mode.value
 
-    def get_selected_points(self, point_layer: Points) -> List[Tuple]:
+    def get_selected_points(self, point_layer: Points) -> list[tuple]:
         """
         Returns a list of points in the point layer.
 
