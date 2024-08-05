@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from napari_allencell_annotator.util.file_utils import FileUtils
 from qtpy.QtGui import QFont
 from qtpy.QtWidgets import QLayout
 from qtpy.QtWidgets import (
@@ -66,13 +67,6 @@ class FileItem(QListWidgetItem):
     def get_file_path_str(self) -> str:
         return str(self._file_path)
 
-    def get_name(self) -> str:
-        """Return parent file name for zarr. Otherwise, return file name."""
-        if self._file_path.suffix == ".zarr":
-            return self._file_path.parent.stem
-        else:
-            return self._file_path.stem
-
     def unhide(self) -> None:
         """Display the file name instead of hidden name."""
         self.label.setText(self._make_display_name())
@@ -91,7 +85,7 @@ class FileItem(QListWidgetItem):
         str
             truncated file name
         """
-        path: str = self.get_name()
+        path: str = FileUtils.get_display_name(self.file_path)
         if len(path) > 35:
             path = path[0:15] + "..." + path[-17:]
         return path
