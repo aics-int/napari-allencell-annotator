@@ -52,7 +52,6 @@ class FileUtils:
         extension: str = file_path.suffix
         return extension in SUPPORTED_FILE_TYPES
 
-
     @staticmethod
     def shuffle_file_list(files: list[Path]) -> list[Path]:
         """
