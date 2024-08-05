@@ -83,17 +83,9 @@ class FileUtils:
             The path to an image file
         """
         if path.suffix == ".zarr":
-            return path.parent.stem
+            return path.parent.name
         else:
             return path.name
-
-    @staticmethod
-    def get_display_name(file_path: Path) -> str:
-        """Return parent file name for zarr. Otherwise, return file name."""
-        if file_path.suffix == ".zarr":
-            return file_path.parent.stem
-        else:
-            return file_path.stem
 
     @staticmethod
     def _is_outer_zarr(path: Path) -> bool:

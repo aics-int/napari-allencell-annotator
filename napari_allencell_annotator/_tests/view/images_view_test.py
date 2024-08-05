@@ -149,7 +149,7 @@ def test_add_new_item(images_view: ImagesView, annotator_model: AnnotatorModel) 
     assert annotator_model.get_num_images() == 1
     assert annotator_model.get_all_images()[annotator_model.get_num_images() - 1] == test_file
     assert images_view.file_widget.count() == 1
-    assert images_view.file_widget.item(0).label.text() == "test_img1"
+    assert images_view.file_widget.item(0).label.text() == "test_img1.tiff"
 
 
 def test_add_selected_files_unsupported_files(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:

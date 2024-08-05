@@ -85,7 +85,7 @@ class FileItem(QListWidgetItem):
         str
             truncated file name
         """
-        path: str = FileUtils.get_display_name(self.file_path)
+        path: str = FileUtils.get_file_name(self.file_path)
         if len(path) > 35:
             path = path[0:15] + "..." + path[-17:]
         return path
