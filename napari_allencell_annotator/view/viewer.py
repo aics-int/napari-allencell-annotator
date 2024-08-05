@@ -135,8 +135,8 @@ class Viewer(IViewer):
         List[Tuple[float]]
             A list of tuples representing points in the point layer
         """
-        ordered_points: List[tuple] = list(map(tuple, point_layer.data))
-        return ordered_points
+        selected_points: List[tuple] = list(map(tuple, point_layer.data))
+        return selected_points
 
     def get_all_point_annotations(self) -> dict[str, list[tuple]]:
         """
