@@ -37,7 +37,7 @@ class Viewer(IViewer):
 
         Parameters
         ----------
-        image: np.ndarray
+        image: BioImage
             An image to be added
         """
         # layer: Optional[napari.layers.Layer] = None
@@ -139,11 +139,10 @@ class Viewer(IViewer):
         return ordered_points
 
     def get_all_point_annotations(self) -> dict[str, list[tuple]]:
-        all_point_annotations = {}
+        all_point_annotations: dict[str, list[tuple]] = {}
 
-        all_points_layers = self.get_all_points_layers()
+        all_points_layers: list[Points] = self.get_all_points_layers()
         for points_layer in all_points_layers:
             all_point_annotations[points_layer.name] = self.get_selected_points(points_layer)
 
         return all_point_annotations
-
