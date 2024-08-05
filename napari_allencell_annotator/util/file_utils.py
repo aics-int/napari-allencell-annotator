@@ -85,7 +85,7 @@ class FileUtils:
         return shuffled_list
 
     @staticmethod
-    def get_file_name(path: Path):
+    def get_file_name(path: Path) -> str:
         """
         Return the parent file name for zarr. Otherwise, return the file name.
 
