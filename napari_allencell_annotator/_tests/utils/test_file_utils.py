@@ -9,13 +9,11 @@ def test_get_valid_images_sorted() -> None:
     # ARRANGE
     all_files: List[Path] = [
         Path("c.tiff"),
-        Path("b.png"),
-        Path("a.jpeg"),
-        Path("d.czi"),
-        Path("e/raw.ome.zarr"),
+        Path("b.czi"),
+        Path("a/raw.ome.zarr"),
+        Path(".test.tiff"),
         Path("test.csv"),
-        Path("test.json"),
-        Path("valid_img_dir"),
+        Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / Path("valid_img_dir"),
         Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "zarr_dir",
     ]
 
@@ -24,11 +22,9 @@ def test_get_valid_images_sorted() -> None:
 
     # ASSERT
     assert valid_files == [
-        Path("a.jpeg"),
-        Path("b.png"),
+        Path("a/raw.ome.zarr"),
+        Path("b.czi"),
         Path("c.tiff"),
-        Path("d.czi"),
-        Path("e/raw.ome.zarr"),
         Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "zarr_dir" / "raw.ome.zarr",
     ]
 
