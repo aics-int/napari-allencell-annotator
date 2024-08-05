@@ -203,7 +203,6 @@ class ImagesView(QFrame):
         if current is not None:
             self.viewer.add_image(ImageUtils(current).get_image())
 
-
     def update_num_files_label(self, num_files: int) -> None:
         """
         Update num_files_label to show the number of image files

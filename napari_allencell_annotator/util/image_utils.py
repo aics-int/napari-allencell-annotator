@@ -40,4 +40,3 @@ class ImageUtils:
         Returns Bioimage object loaded with correct reader
         """
         return self._image
-
