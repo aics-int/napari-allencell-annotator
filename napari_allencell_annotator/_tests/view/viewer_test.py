@@ -12,6 +12,20 @@ def viewer() -> Viewer:
     return Viewer(napari.Viewer(show=False))
 
 
+def test_all_points_layer(viewer: Viewer) -> None:
+    # ARRANGE
+    viewer.viewer.add_shapes()
+    points_layer1 = viewer.create_points_layer("test1", "blue", True, 2)
+    points_layer2 = viewer.create_points_layer("test2", "blue", True, 2)
+
+    # ACT
+    all_points_layer = viewer.get_all_points_layers()
+
+    # ASSERT
+    assert len(all_points_layer) == 2
+    assert points_layer1 in all_points_layer
+    assert points_layer2 in all_points_layer
+
 def test_create_points_layer(viewer: Viewer) -> None:
     # ACT
     points_layer: Points = viewer.create_points_layer("test", "blue", True, 2)
