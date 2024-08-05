@@ -9,7 +9,7 @@ class FileUtils:
     """
 
     @staticmethod
-    def select_valid_images(file_list: list[Path]) -> list[Path]:
+    def get_valid_images_sorted(file_list: list[Path]) -> list[Path]:
         """
         Return a list of paths to files that are not hidden and is either a valid image file or a valid zarr image.
 
@@ -29,7 +29,7 @@ class FileUtils:
                 elif FileUtils._is_outer_zarr(file):
                     valid_files.append(FileUtils._get_raw_zarr_from_outer_dir(file))
 
-        return valid_files
+        return sorted(valid_files, key=FileUtils.get_file_name)
 
     @staticmethod
     def is_supported(file_path: Path) -> bool:
@@ -52,18 +52,6 @@ class FileUtils:
         extension: str = file_path.suffix
         return extension in SUPPORTED_FILE_TYPES
 
-    @staticmethod
-    def get_sorted_dirs_and_files_in_dir(dir_path: Path) -> list[Path]:
-        """
-        Return a sorted list of paths to files in a directory.
-
-        Parameters
-        ----------
-        dir_path: list[Path]
-            The path to a directory
-        """
-
-        return sorted(list(dir_path.glob("*")))
 
     @staticmethod
     def shuffle_file_list(files: list[Path]) -> list[Path]:

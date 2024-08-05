@@ -224,7 +224,7 @@ class ImagesView(QFrame):
             The directory path
         """
         # get both files and folders
-        all_files_in_dir: list[Path] = FileUtils.get_sorted_dirs_and_files_in_dir(dir_path)
+        all_files_in_dir: list[Path] = list(dir_path.glob("*"))
 
         if len(all_files_in_dir) < 1:
             self.viewer.alert("Folder is empty")
@@ -258,7 +258,7 @@ class ImagesView(QFrame):
         file_list : List[Path]
             The list of files
         """
-        valid_images: list[Path] = FileUtils.select_valid_images(file_list=file_list)
+        valid_images: list[Path] = FileUtils.get_valid_images_sorted(file_list=file_list)
         for file_path in valid_images:
             if file_path not in self._annotator_model.get_all_images():
                 self.add_new_item(file_path)

@@ -5,28 +5,14 @@ from napari_allencell_annotator.util.file_utils import FileUtils
 import napari_allencell_annotator
 
 
-def test_sorted_dirs_and_files_in_dir():
-    # ACT
-    sorted_file_list: List[Path] = FileUtils.get_sorted_dirs_and_files_in_dir(
-        Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "sort_img_dir"
-    )
-
-    # ASSERT
-    assert sorted_file_list == [
-        Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "sort_img_dir" / "a",
-        Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "sort_img_dir" / "b.ome.tiff",
-        Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "sort_img_dir" / "c.ome.tiff",
-    ]
-
-
-def test_select_valid_images() -> None:
+def test_get_valid_images_sorted() -> None:
     # ARRANGE
     all_files: List[Path] = [
-        Path("test.tiff"),
-        Path("test.png"),
-        Path("test.jpeg"),
-        Path("test.czi"),
-        Path("test/raw.ome.zarr"),
+        Path("c.tiff"),
+        Path("b.png"),
+        Path("a.jpeg"),
+        Path("d.czi"),
+        Path("e/raw.ome.zarr"),
         Path("test.csv"),
         Path("test.json"),
         Path("valid_img_dir"),
@@ -34,15 +20,15 @@ def test_select_valid_images() -> None:
     ]
 
     # ACT
-    valid_files: List[Path] = FileUtils.select_valid_images(all_files)
+    valid_files: List[Path] = FileUtils.get_valid_images_sorted(all_files)
 
     # ASSERT
     assert valid_files == [
-        Path("test.tiff"),
-        Path("test.png"),
-        Path("test.jpeg"),
-        Path("test.czi"),
-        Path("test/raw.ome.zarr"),
+        Path("a.jpeg"),
+        Path("b.png"),
+        Path("c.tiff"),
+        Path("d.czi"),
+        Path("e/raw.ome.zarr"),
         Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "zarr_dir" / "raw.ome.zarr",
     ]
 
