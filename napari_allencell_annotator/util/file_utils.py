@@ -11,7 +11,7 @@ class FileUtils:
     @staticmethod
     def get_valid_images_sorted(file_list: list[Path]) -> list[Path]:
         """
-        Return a list of paths to files that are not hidden and is either a valid image file or a valid zarr image.
+        Return a sorted list of paths to files that are not hidden and is either a valid image file or a valid zarr image.
 
         Parameters
         ----------
