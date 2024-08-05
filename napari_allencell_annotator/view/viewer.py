@@ -139,6 +139,9 @@ class Viewer(IViewer):
         return ordered_points
 
     def get_all_point_annotations(self) -> dict[str, list[tuple]]:
+        """
+        Returns a dictionary of point layer names mapping to a list of selected coordinates.
+        """
         all_point_annotations: dict[str, list[tuple]] = {}
 
         all_points_layers: list[Points] = self.get_all_points_layers()
