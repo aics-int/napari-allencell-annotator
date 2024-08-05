@@ -8,15 +8,31 @@ from pytestqt import qtbot
 from napari_allencell_annotator.widgets.file_item import FileItem, QLabel, QCheckBox
 
 
+def test_get_name():
+    # ACT
+    tiff_file_name: str = FileItem(Path("parent/test.tiff"), QListWidget(), True).get_name()
+    png_file_name: str = FileItem(Path("parent/test.png"), QListWidget(), True).get_name()
+    jpeg_file_name: str = FileItem(Path("parent/test.jpeg"), QListWidget(), True).get_name()
+    czi_file_name: str = FileItem(Path("parent/test.czi"), QListWidget(), True).get_name()
+    zarr_file_name: str = FileItem(Path("parent/test.zarr"), QListWidget(), True).get_name()
+
+    # ASSERT
+    assert tiff_file_name == "test"
+    assert png_file_name == "test"
+    assert jpeg_file_name == "test"
+    assert czi_file_name == "test"
+    assert zarr_file_name == "parent"
+
+
 class TestFileItem:
     def setup_method(self):
         with mock.patch.object(FileItem, "__init__", lambda x: None):
             self._widget = FileItem()
             self._widget._file_path = "path"
 
-    def test_get_name(self):
-        self._widget._file_path = Path("dir/path.png")
-        assert self._widget.get_name() == "path"
+    # def test_get_name(self):
+    #     self._widget._file_path = Path("dir/path.png")
+    #     assert self._widget.get_name() == "path"
 
     def test_hide_check(self):
         self._widget.check = create_autospec(QCheckBox)
