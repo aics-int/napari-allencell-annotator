@@ -51,7 +51,7 @@ def test_create_points_layer(viewer: Viewer) -> None:
     assert len(viewer._get_all_points_layers()) == 1
     assert test_points_layer.name == "test"
     assert test_points_layer.visible
-    assert test_points_layer.ndim == 2
+    assert test_points_layer.ndim == 6
     assert len(test_points_layer.data) == 0
     assert test_points_layer.mode == PointsLayerMode.ADD.value
 
