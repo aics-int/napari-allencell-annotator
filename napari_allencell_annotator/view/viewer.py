@@ -102,7 +102,9 @@ class Viewer(IViewer):
         Points
             A new point layer
         """
-        points_layer: Points = self.viewer.add_points(data=data, name=name, face_color=color, visible=visible, ndim=self.viewer.dims.ndim)
+        points_layer: Points = self.viewer.add_points(
+            data=data, name=name, face_color=color, visible=visible, ndim=self.viewer.dims.ndim
+        )
         return points_layer
 
     def set_points_layer_mode(self, points_layer: Points, mode: PointsLayerMode) -> None:

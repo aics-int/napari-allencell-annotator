@@ -28,17 +28,22 @@ def test_get_all_points_layer(viewer: Viewer) -> None:
 
 
 def test_add_image(viewer: Viewer) -> None:
+    # ARRANGE
+    test_image = np.zeros(shape=(2, 2))
     # ACT
-    viewer.add_image(np.zeros(shape=(2, 2)))
+    viewer.add_image(test_image)
 
     # ASSERT
     assert len(viewer.get_layers()) == 1
-    np.testing.assert_array_equal(viewer.get_layers()[0].data, np.zeros(shape=(2, 2)))
+    np.testing.assert_array_equal(viewer.get_layers()[0].data, test_image)
 
 
 def test_create_points_layer(viewer: Viewer) -> None:
+    # ARRANGE
+    test_points_data = np.zeros(shape=(1, 2))
+
     # ACT
-    test_points_layer: Points = viewer.create_points_layer("test", "blue", True, np.zeros(shape=(1, 2)))
+    test_points_layer: Points = viewer.create_points_layer("test", "blue", True, test_points_data)
 
     # ASSERT
     assert test_points_layer in viewer.get_all_points_layers()
@@ -46,7 +51,7 @@ def test_create_points_layer(viewer: Viewer) -> None:
     assert test_points_layer.name == "test"
     np.testing.assert_array_equal(test_points_layer.face_color[0], Colormap("blue").colors[0])
     assert test_points_layer.visible
-    np.testing.assert_array_equal(test_points_layer.data, np.zeros(shape=(1, 2)))
+    np.testing.assert_array_equal(test_points_layer.data, test_points_data)
     assert test_points_layer.ndim == 2
 
 
