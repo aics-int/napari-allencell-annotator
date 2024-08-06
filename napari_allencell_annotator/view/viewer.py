@@ -134,6 +134,7 @@ class Viewer(IViewer):
         List[Tuple[float]]
             A list of tuples representing points in the point layer
         """
+        # return ex. [(0, 0, 0, 0, 0, 0), (1, 1, 1, 1, 1, 1)]
         selected_points: List[tuple] = list(map(tuple, point_layer.data))
         return selected_points
 
