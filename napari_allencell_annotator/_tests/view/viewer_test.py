@@ -1,6 +1,12 @@
+from pathlib import Path
+
 import napari
+from bioio import BioImage
+
+import napari_allencell_annotator
 from napari.layers import Points
 
+from napari_allencell_annotator.util.image_utils import ImageUtils
 from napari_allencell_annotator.view.viewer import Viewer, PointsLayerMode
 import numpy as np
 import pytest
@@ -25,6 +31,21 @@ def test_all_points_layer(viewer: Viewer) -> None:
     assert len(all_points_layer) == 2
     assert test_points_layer1 in all_points_layer
     assert test_points_layer2 in all_points_layer
+
+
+def test_add_image(viewer: Viewer) -> None:
+    # ARRANGE
+    test_path: Path = (
+        Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "image_types" / "img.ome.tiff"
+    )
+    test_image: BioImage = ImageUtils(test_path).get_image()
+
+    # ACT
+    viewer.add_image(test_image)
+
+    # ASSERT
+    assert len(viewer.get_layers()) == 1
+    np.testing.assert_array_equal(viewer.get_layers()[0].data.compute(), test_image.get_dask_stack().compute())
 
 
 def test_create_points_layer(viewer: Viewer) -> None:
