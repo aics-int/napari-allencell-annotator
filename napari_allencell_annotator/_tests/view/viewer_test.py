@@ -20,7 +20,7 @@ def viewer(make_napari_viewer: napari.Viewer) -> Viewer:
 
 def test_get_all_points_layer(viewer: Viewer) -> None:
     # ARRANGE
-    viewer.viewer.add_shapes()
+    viewer.add_image(np.zeros(shape=(2, 2, 2, 2)))
     test_points_layer1: Points = viewer.create_points_layer("test1", "blue", True)
     test_points_layer2: Points = viewer.create_points_layer("test2", "blue", True)
 
