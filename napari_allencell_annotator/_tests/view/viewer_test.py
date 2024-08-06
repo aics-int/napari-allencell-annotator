@@ -38,7 +38,7 @@ def test_add_image(viewer: Viewer) -> None:
 
 def test_create_points_layer(viewer: Viewer) -> None:
     # ACT
-    test_points_layer: Points = viewer.create_points_layer("test", "blue", True, np.zeros(shape=(1, 6)))
+    test_points_layer: Points = viewer.create_points_layer("test", "blue", True, np.zeros(shape=(1, 2)))
 
     # ASSERT
     assert test_points_layer in viewer._get_all_points_layers()
@@ -46,8 +46,8 @@ def test_create_points_layer(viewer: Viewer) -> None:
     assert test_points_layer.name == "test"
     np.testing.assert_array_equal(test_points_layer.face_color[0], Colormap("blue").colors[0])
     assert test_points_layer.visible
-    np.testing.assert_array_equal(test_points_layer.data, np.zeros(shape=(1, 6)))
-    assert test_points_layer.ndim == 6
+    np.testing.assert_array_equal(test_points_layer.data, np.zeros(shape=(1, 2)))
+    assert test_points_layer.ndim == 2
 
 
 def test_set_points_layer_mode(viewer: Viewer) -> None:
@@ -63,22 +63,22 @@ def test_set_points_layer_mode(viewer: Viewer) -> None:
 
 def test_get_selected_points(viewer: Viewer) -> None:
     # ARRANGE
-    test_points_layer: Points = viewer.create_points_layer("test", "blue", True, np.array([np.zeros(6), np.ones(6)]))
+    test_points_layer: Points = viewer.create_points_layer("test", "blue", True, np.array([np.zeros(2), np.ones(2)]))
 
     # ACT
     selected_points: list[tuple] = viewer.get_selected_points(test_points_layer)
 
     # ASSERT
-    assert selected_points == [(0, 0, 0, 0, 0, 0), (1, 1, 1, 1, 1, 1)]
+    assert selected_points == [(0, 0), (1, 1)]
 
 
 def test_get_all_point_annotations(viewer: Viewer) -> None:
     # ARRANGE
-    test_points_layer1: Points = viewer.create_points_layer("test1", "blue", True, np.zeros(shape=(1, 6)))
-    test_points_layer2: Points = viewer.create_points_layer("test2", "blue", True, np.ones(shape=(1, 6)))
+    test_points_layer1: Points = viewer.create_points_layer("test1", "blue", True, np.zeros(shape=(1, 2)))
+    test_points_layer2: Points = viewer.create_points_layer("test2", "blue", True, np.ones(shape=(1, 2)))
 
     # ACT
     all_point_annotations: dict[str, list[tuple]] = viewer.get_all_point_annotations()
 
     # ASSERT
-    assert all_point_annotations == {"test1": [(0, 0, 0, 0, 0, 0)], "test2": [(1, 1, 1, 1, 1, 1)]}
+    assert all_point_annotations == {"test1": [(0, 0)], "test2": [(1, 1)]}
