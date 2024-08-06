@@ -45,4 +45,3 @@ class FakeViewer(IViewer):
             all_point_annotations[points_layer.name] = self.get_selected_points(points_layer)
 
         return all_point_annotations
-
