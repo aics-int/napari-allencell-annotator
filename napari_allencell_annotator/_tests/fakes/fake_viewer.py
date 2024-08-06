@@ -26,7 +26,7 @@ class FakeViewer(IViewer):
     def get_layers(self) -> List[Layer]:
         return self._layers
 
-    def get_all_points_layers(self) -> List[Points]:
+    def _get_all_points_layers(self) -> List[Points]:
         return [layer for layer in self.get_layers() if isinstance(layer, Points)]
 
     def create_points_layer(self, name: str, color: str, visible: bool, ndim: int) -> Points:
@@ -40,7 +40,7 @@ class FakeViewer(IViewer):
     def get_all_point_annotations(self) -> dict[str, list[tuple]]:
         all_point_annotations: dict[str, list[tuple]] = {}
 
-        all_points_layers: list[Points] = self.get_all_points_layers()
+        all_points_layers: list[Points] = self._get_all_points_layers()
         for points_layer in all_points_layers:
             all_point_annotations[points_layer.name] = self.get_selected_points(points_layer)
 

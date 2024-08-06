@@ -78,7 +78,7 @@ class Viewer(IViewer):
         """
         return list(self.viewer.layers)
 
-    def get_all_points_layers(self) -> List[Points]:
+    def _get_all_points_layers(self) -> List[Points]:
         """
         Returns a list of all point layers in the viewer.
         """
@@ -144,7 +144,7 @@ class Viewer(IViewer):
         """
         all_point_annotations: dict[str, list[tuple]] = {}
 
-        all_points_layers: list[Points] = self.get_all_points_layers()
+        all_points_layers: list[Points] = self._get_all_points_layers()
         for points_layer in all_points_layers:
             all_point_annotations[points_layer.name] = self.get_selected_points(points_layer)
 

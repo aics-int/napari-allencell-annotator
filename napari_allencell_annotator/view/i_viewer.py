@@ -27,7 +27,7 @@ class IViewer(ABC):
         pass
 
     @abstractmethod
-    def get_all_points_layers(self) -> List[Points]:
+    def _get_all_points_layers(self) -> List[Points]:
         pass
 
     @abstractmethod
