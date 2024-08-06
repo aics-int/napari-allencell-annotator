@@ -36,3 +36,13 @@ class FakeViewer(IViewer):
 
     def get_selected_points(self, point_layer: Points) -> List[Tuple]:
         return list(map(tuple, point_layer.data))
+
+    def get_all_point_annotations(self) -> dict[str, list[tuple]]:
+        all_point_annotations: dict[str, list[tuple]] = {}
+
+        all_points_layers: list[Points] = self.get_all_points_layers()
+        for points_layer in all_points_layers:
+            all_point_annotations[points_layer.name] = self.get_selected_points(points_layer)
+
+        return all_point_annotations
+

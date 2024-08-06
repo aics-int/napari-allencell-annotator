@@ -37,3 +37,7 @@ class IViewer(ABC):
     @abstractmethod
     def get_selected_points(self, point_layer: Points) -> List[Tuple]:
         pass
+
+    @abstractmethod
+    def get_all_point_annotations(self) -> dict[str, list[tuple]]:
+        pass
