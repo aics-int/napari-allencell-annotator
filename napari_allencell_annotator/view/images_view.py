@@ -106,7 +106,9 @@ class ImagesView(QFrame):
     def _connect_slots(self) -> None:
         """Connect signals to slots."""
         self.input_dir.dir_selected.connect(self._add_selected_dir_to_ui)
-        self.input_file.files_selected.connect(self._add_selected_files)
+        self.input_file.files_selected.connect(
+            lambda file_list: self._add_selected_files(FileUtils.get_valid_images_sorted(file_list))
+        )
         self.shuffle.clicked.connect(self._handle_shuffle_clicked)
         self.delete.clicked.connect(self._handle_delete_clicked)
         self.file_widget.files_selected.connect(self._toggle_delete_button_text)
@@ -224,7 +226,7 @@ class ImagesView(QFrame):
             The directory path
         """
         # get both files and folders
-        all_files_in_dir: list[Path] = list(dir_path.glob("*"))
+        all_files_in_dir: list[Path] = FileUtils.get_valid_images_sorted(list(dir_path.glob("*")))
 
         if len(all_files_in_dir) < 1:
             self.viewer.alert("Folder is empty")
@@ -258,12 +260,11 @@ class ImagesView(QFrame):
         file_list : List[Path]
             The list of files
         """
-        valid_images: list[Path] = FileUtils.get_valid_images_sorted(file_list=file_list)
-        for file_path in valid_images:
+        for file_path in file_list:
             if file_path not in self._annotator_model.get_all_images():
                 self.add_new_item(file_path)
 
-        if len(valid_images) != len([file for file in file_list if not file.name.startswith(".")]):
+        if len(file_list) != len([file for file in file_list if not file.name.startswith(".")]):
             self.viewer.alert("Unsupported file type(s)")
 
     def _handle_shuffle_clicked(self) -> None:
