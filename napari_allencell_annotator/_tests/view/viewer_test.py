@@ -34,18 +34,12 @@ def test_get_all_points_layer(viewer: Viewer) -> None:
 
 
 def test_add_image(viewer: Viewer) -> None:
-    # ARRANGE
-    test_path: Path = (
-        Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "image_types" / "img.ome.tiff"
-    )
-    test_image: BioImage = ImageUtils(test_path).get_image()
-
     # ACT
-    viewer.add_image(test_image)
+    viewer.add_image(np.zeros(shape=(2, 2, 2, 2)))
 
     # ASSERT
     assert len(viewer.get_layers()) == 1
-    np.testing.assert_array_equal(viewer.get_layers()[0].data.compute(), test_image.get_dask_stack().compute())
+    np.testing.assert_array_equal(viewer.get_layers()[0].data, np.zeros(shape=(2, 2, 2, 2)))
 
 
 def test_create_points_layer(viewer: Viewer) -> None:
