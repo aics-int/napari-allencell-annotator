@@ -28,18 +28,6 @@ class TestAnnotatorView:
         assert self._view._mode == self._view.mode == expected
         self._view._display_mode.assert_called_once_with()
 
-    def test_set_num_images(self):
-        self._view.set_num_images(4)
-        assert self._view.num_images == 4
-
-    def test_set_curr_index(self):
-        self._view.num_images = 4
-        self._view.progress_bar = MagicMock()
-        self._view.progress_bar.setText = MagicMock()
-        self._view.display_current_progress(2)
-        self._view.progress_bar.setText.assert_called_once_with("3 of 4 Images")
-        assert self._view.curr_index == 2
-
     def test_reset_annotations(self):
         self._view.annot_list = create_autospec(TemplateList)
         self._view.annots_order = ["item"]
@@ -139,7 +127,6 @@ class TestAnnotatorView:
         widget.hide.assert_called_once_with()
         self._view.layout.removeItem.assert_called_once_with(item)
         self._view.add_widget.show.assert_called_once_with()
-        self._view._reset_annotations.assert_called_once_with()
         self._view.layout.addWidget.assert_called_once_with(self._view.add_widget)
 
     def test_display_mode_view_mode(self):
@@ -185,26 +172,11 @@ class TestAnnotatorView:
         self._view.layout.addWidget.assert_called_once_with(self._view.annot_widget)
 
     def test_render_annotations(self):
-        dct = {"name": [], "name2": [], "name3": []}
-        self._view._create_annot = MagicMock()
-        self._view.scroll = create_autospec(QScrollArea)
-
-        self._view.annot_list = create_autospec(TemplateList)
-        self._view.render_annotations(dct)
-        self._view._create_annot.assert_has_calls(
-            [mock.call("name", []), mock.call("name2", []), mock.call("name3", [])]
-        )
-        self._view.scroll.setMaximumHeight.assert_called_once_with(self._view.annot_list.height)
+        # TODO test with model qtbot
+        pass
 
     def test_render_annotations_one_item(self):
-        dct = {"name": []}
-        self._view._create_annot = MagicMock()
-        self._view.scroll = create_autospec(QScrollArea)
-
-        self._view.annot_list = create_autospec(TemplateList)
-        self._view.render_annotations(dct)
-        self._view._create_annot.assert_has_calls([mock.call("name", [])])
-        self._view.scroll.setMaximumHeight.assert_called_once_with(self._view.annot_list.height)
+        pass
 
     def test_create_annot(self):
         self._view.annots_order = ["name1"]

@@ -11,7 +11,6 @@ class FakeViewer(IViewer):
         super().__init__()
 
         self._layers = []
-        self._points_layers = []
         self.alerts = []
 
     def add_image(self, image: np.ndarray) -> None:
@@ -27,12 +26,21 @@ class FakeViewer(IViewer):
         return self._layers
 
     def get_all_points_layers(self) -> List[Points]:
-        return self._points_layers
+        return [layer for layer in self.get_layers() if isinstance(layer, Points)]
 
-    def create_points_layer(self, name: str, color: str, visible: bool) -> Points:
-        points: Points = Points(data=None, name=name, color=color, visible=visible)
-        self._points_layers.append(points)
+    def create_points_layer(self, name: str, color: str, visible: bool, data: np.ndarray = None) -> Points:
+        points: Points = Points(data=data, name=name, color=color, visible=visible, ndim=6)
+        self._layers.append(points)
         return points
 
-    def get_selected_points(self, point_layer: Points, image_dims_order: str) -> List[Tuple]:
-        return [(0.0, 0.0, 0.0, 0.0, 0.0)]
+    def get_selected_points(self, point_layer: Points) -> List[Tuple]:
+        return list(map(tuple, point_layer.data))
+
+    def get_all_point_annotations(self) -> dict[str, list[tuple]]:
+        all_point_annotations: dict[str, list[tuple]] = {}
+
+        all_points_layers: list[Points] = self.get_all_points_layers()
+        for points_layer in all_points_layers:
+            all_point_annotations[points_layer.name] = self.get_selected_points(points_layer)
+
+        return all_point_annotations

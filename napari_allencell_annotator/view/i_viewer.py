@@ -30,9 +30,13 @@ class IViewer(ABC):
         pass
 
     @abstractmethod
-    def create_points_layer(self, name: str, color: str, visible: bool) -> Points:
+    def create_points_layer(self, name: str, color: str, visible: bool, data: np.ndarray = None) -> Points:
         pass
 
     @abstractmethod
-    def get_selected_points(self, point_layer: Points, image_dims_order: str) -> List[Tuple]:
+    def get_selected_points(self, point_layer: Points) -> List[Tuple]:
+        pass
+
+    @abstractmethod
+    def get_all_point_annotations(self) -> dict[str, list[tuple]]:
         pass
