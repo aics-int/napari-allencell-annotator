@@ -154,18 +154,11 @@ def test_add_new_item(images_view: ImagesView, annotator_model: AnnotatorModel) 
 
 def test_add_selected_files_repeated_files(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
     # ARRANGE
-    test_image_path: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "invalid_img_dir" / "test.csv"
+    test_image_path: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
+
     # ACT
-    images_view._add_selected_files(
-        [
-            test_image_path
-        ]
-    )
-    images_view._add_selected_files(
-        [
-            test_image_path,
-        ]
-    )
+    images_view._add_selected_files([test_image_path])
+    images_view._add_selected_files([test_image_path])
 
     # ASSERT
     assert annotator_model.get_num_images() == 1

@@ -218,9 +218,7 @@ class ImagesView(QFrame):
         all_sorted_valid_files: list[Path] = FileUtils.get_valid_images_sorted(file_list)
         self._add_selected_files(all_sorted_valid_files)
 
-        if len(all_sorted_valid_files) != len(
-            [file for file in file_list if not file.name.startswith(".")]
-        ):
+        if len(all_sorted_valid_files) != len([file for file in file_list if not file.name.startswith(".")]):
             self.viewer.alert("Unsupported file type(s)")
 
     def _add_sorted_valid_images_in_dir(self, dir_path: Path) -> None:
@@ -241,9 +239,7 @@ class ImagesView(QFrame):
         else:
             self._add_selected_files(all_sorted_valid_files_in_dir)
 
-        if len(all_sorted_valid_files_in_dir) != len(
-            [file for file in dir_files if not file.name.startswith(".")]
-        ):
+        if len(all_sorted_valid_files_in_dir) != len([file for file in dir_files if not file.name.startswith(".")]):
             self.viewer.alert("Unsupported file type(s)")
 
     def add_new_item(self, file: Path, hidden: Optional[bool] = False) -> None:
