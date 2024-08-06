@@ -113,7 +113,6 @@ class TemplateList(QListWidget):
         else:
             annot_type = ItemType.POINT
             widget = QPushButton("Select")
-            widget.setEnabled(False)
 
         item = TemplateItem(self, name, annot_type, default, widget)
 
