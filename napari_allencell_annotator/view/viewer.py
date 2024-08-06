@@ -82,7 +82,7 @@ class Viewer(IViewer):
         """
         return [layer for layer in self.get_layers() if isinstance(layer, Points)]
 
-    def create_points_layer(self, name: str, color: str, visible: bool) -> Points:
+    def create_points_layer(self, name: str, color: str, visible: bool, data: np.ndarray = None) -> Points:
         """
         Creates a new point layer and sets to ADD mode to allow users to select points.
 
@@ -94,15 +94,15 @@ class Viewer(IViewer):
             The face color of the points
         visible: bool
             Whether the point layer is visible in the viewer
-        ndim: int
-            The number of image dimensions
+        data: np.ndarray = None
+            A numpy array of point coordinates
 
         Returns
         -------
         Points
             A new point layer
         """
-        points_layer: Points = self.viewer.add_points(None, name=name, face_color=color, visible=visible, ndim=6)
+        points_layer: Points = self.viewer.add_points(data=data, name=name, face_color=color, visible=visible, ndim=6)
         return points_layer
 
     def set_points_layer_mode(self, points_layer: Points, mode: PointsLayerMode) -> None:
