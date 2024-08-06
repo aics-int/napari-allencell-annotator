@@ -30,7 +30,7 @@ class IViewer(ABC):
         pass
 
     @abstractmethod
-    def create_points_layer(self, name: str, color: str, visible: bool, ndim: int) -> Points:
+    def create_points_layer(self, name: str, color: str, visible: bool) -> Points:
         pass
 
     @abstractmethod

@@ -83,7 +83,7 @@ class Viewer(IViewer):
         """
         return [layer for layer in self.get_layers() if isinstance(layer, Points)]
 
-    def create_points_layer(self, name: str, color: str, visible: bool, ndim: int) -> Points:
+    def create_points_layer(self, name: str, color: str, visible: bool) -> Points:
         """
         Creates a new point layer and sets to ADD mode to allow users to select points.
 
@@ -103,7 +103,7 @@ class Viewer(IViewer):
         Points
             A new point layer
         """
-        points_layer: Points = self.viewer.add_points(None, name=name, face_color=color, visible=visible, ndim=ndim)
+        points_layer: Points = self.viewer.add_points(None, name=name, face_color=color, visible=visible)
         self.set_points_layer_mode(points_layer=points_layer, mode=PointsLayerMode.ADD)
         return points_layer
 

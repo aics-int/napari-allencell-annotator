@@ -21,8 +21,8 @@ def viewer(make_napari_viewer: napari.Viewer) -> Viewer:
 def test_get_all_points_layer(viewer: Viewer) -> None:
     # ARRANGE
     viewer.viewer.add_shapes()
-    test_points_layer1: Points = viewer.create_points_layer("test1", "blue", True, 2)
-    test_points_layer2: Points = viewer.create_points_layer("test2", "blue", True, 2)
+    test_points_layer1: Points = viewer.create_points_layer("test1", "blue", True)
+    test_points_layer2: Points = viewer.create_points_layer("test2", "blue", True)
 
     # ACT
     all_points_layer: list[Points] = viewer._get_all_points_layers()
@@ -44,7 +44,7 @@ def test_add_image(viewer: Viewer) -> None:
 
 def test_create_points_layer(viewer: Viewer) -> None:
     # ACT
-    test_points_layer: Points = viewer.create_points_layer("test", "blue", True, 2)
+    test_points_layer: Points = viewer.create_points_layer("test", "blue", True)
 
     # ASSERT
     assert test_points_layer in viewer._get_all_points_layers()
@@ -58,7 +58,7 @@ def test_create_points_layer(viewer: Viewer) -> None:
 
 def test_create_points_layer_color(viewer: Viewer) -> None:
     # ACT
-    test_points_layer: Points = viewer.create_points_layer("test", "blue", True, 2)
+    test_points_layer: Points = viewer.create_points_layer("test", "blue", True)
     test_points_layer.data = np.array([[1, 1]])
 
     # ASSERT
@@ -67,7 +67,7 @@ def test_create_points_layer_color(viewer: Viewer) -> None:
 
 def test_set_points_layer_mode(viewer: Viewer) -> None:
     # ARRANGE
-    test_points_layer: Points = viewer.create_points_layer("test", "blue", True, 2)
+    test_points_layer: Points = viewer.create_points_layer("test", "blue", True)
 
     # ACT
     viewer.set_points_layer_mode(test_points_layer, PointsLayerMode.ADD)
@@ -78,7 +78,7 @@ def test_set_points_layer_mode(viewer: Viewer) -> None:
 
 def test_get_selected_points(viewer: Viewer) -> None:
     # ARRANGE
-    test_points_layer: Points = viewer.create_points_layer("test", "blue", True, 2)
+    test_points_layer: Points = viewer.create_points_layer("test", "blue", True)
     points: np.array = np.array([[1, 2], [3, 4]])
     test_points_layer.data = points
 
@@ -91,8 +91,8 @@ def test_get_selected_points(viewer: Viewer) -> None:
 
 def test_get_all_point_annotations(viewer: Viewer) -> None:
     # ARRANGE
-    test_points_layer1: Points = viewer.create_points_layer("test1", "blue", True, 2)
-    test_points_layer2: Points = viewer.create_points_layer("test2", "blue", True, 2)
+    test_points_layer1: Points = viewer.create_points_layer("test1", "blue", True)
+    test_points_layer2: Points = viewer.create_points_layer("test2", "blue", True)
 
     points1: np.array = np.array([[1, 2], [3, 4]])
     points2: np.array = np.array([[5, 6], [7, 8]])
