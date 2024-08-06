@@ -4,7 +4,6 @@ import numpy as np
 from napari.layers import Layer, Points
 
 from napari_allencell_annotator.view.i_viewer import IViewer
-from bioio import BioImage
 
 
 class FakeViewer(IViewer):
@@ -14,7 +13,7 @@ class FakeViewer(IViewer):
         self._layers = []
         self.alerts = []
 
-    def add_image(self, image: BioImage) -> None:
+    def add_image(self, image: np.ndarray) -> None:
         self._layers.append(image)
 
     def clear_layers(self) -> None:

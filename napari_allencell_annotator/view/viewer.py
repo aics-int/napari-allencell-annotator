@@ -3,7 +3,6 @@ from enum import Enum
 
 import dask.array
 import numpy as np
-from bioio import BioImage
 from napari.layers import Layer, Points
 from napari_allencell_annotator.view.i_viewer import IViewer
 from napari.utils.notifications import show_info
@@ -31,13 +30,13 @@ class Viewer(IViewer):
         super().__init__()
         self.viewer: napari.Viewer = viewer
 
-    def add_image(self, image: BioImage) -> None:
+    def add_image(self, image: np.ndarray) -> None:
         """
         Add an image to the napari viewer
 
         Parameters
         ----------
-        image: BioImage
+        image: np.ndarray
             An image to be added
         """
         # layer: Optional[napari.layers.Layer] = None
@@ -51,7 +50,7 @@ class Viewer(IViewer):
         # # for all other images <=5 dims
         #     layer = self.viewer.add(image.get_dask_stack())
 
-        self.viewer.add_image(image.get_dask_stack())
+        self.viewer.add_image(image)
 
         # layer.axis_labels = image.dims.order
 

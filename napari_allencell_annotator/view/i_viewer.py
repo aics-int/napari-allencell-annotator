@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 import numpy as np
 from napari.layers import Layer, Points
 from typing import List, Tuple
-from bioio import BioImage
 
 
 class IViewer(ABC):
@@ -11,7 +10,7 @@ class IViewer(ABC):
         super().__init__()
 
     @abstractmethod
-    def add_image(self, image: BioImage) -> None:
+    def add_image(self, image: np.ndarray) -> None:
         pass
 
     @abstractmethod
