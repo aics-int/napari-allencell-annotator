@@ -12,6 +12,7 @@ class ItemType(Enum):
     NUMBER = "number"
     BOOL = "bool"
     LIST = "list"
+    POINT = "point"
 
 
 class TemplateItem(QListWidgetItem):
@@ -39,8 +40,8 @@ class TemplateItem(QListWidgetItem):
         self.name = QLabel(name)
         self.layout.addWidget(self.name)
         self.layout.addWidget(self.editable_widget)
-
-        self.editable_widget.setEnabled(True)
+        if self.type != ItemType.POINT:
+            self.editable_widget.setEnabled(True)
         self.layout.setContentsMargins(2, 12, 8, 12)
         self.layout.setSpacing(2)
         self.layout.setSizeConstraint(QLayout.SetMinimumSize)

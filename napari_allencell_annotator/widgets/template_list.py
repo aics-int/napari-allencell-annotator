@@ -1,5 +1,6 @@
 from typing import Any, List
 
+from PyQt5.QtWidgets import QPushButton
 from qtpy import QtWidgets
 from qtpy.QtWidgets import QLineEdit, QCheckBox, QComboBox, QSpinBox
 from qtpy.QtWidgets import QSizePolicy
@@ -109,6 +110,11 @@ class TemplateList(QListWidget):
                 for opt in key.get_options():
                     widget.addItem(opt)
             widget.setCurrentText(default)
+        else:
+            annot_type = ItemType.POINT
+            widget = QPushButton("Select")
+            widget.setEnabled(False)
+
         item = TemplateItem(self, name, annot_type, default, widget)
 
         self._items.append(item)
