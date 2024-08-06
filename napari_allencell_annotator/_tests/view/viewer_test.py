@@ -19,7 +19,7 @@ def test_get_all_points_layer(viewer: Viewer) -> None:
     test_points_layer2: Points = viewer.create_points_layer("test2", "blue", True)
 
     # ACT
-    all_points_layer: list[Points] = viewer._get_all_points_layers()
+    all_points_layer: list[Points] = viewer.get_all_points_layers()
 
     # ASSERT
     assert len(all_points_layer) == 2
@@ -41,8 +41,8 @@ def test_create_points_layer(viewer: Viewer) -> None:
     test_points_layer: Points = viewer.create_points_layer("test", "blue", True, np.zeros(shape=(1, 2)))
 
     # ASSERT
-    assert test_points_layer in viewer._get_all_points_layers()
-    assert len(viewer._get_all_points_layers()) == 1
+    assert test_points_layer in viewer.get_all_points_layers()
+    assert len(viewer.get_all_points_layers()) == 1
     assert test_points_layer.name == "test"
     np.testing.assert_array_equal(test_points_layer.face_color[0], Colormap("blue").colors[0])
     assert test_points_layer.visible
