@@ -116,7 +116,7 @@ def test_add_selected_dir_to_ui_empty_dir(images_view: ImagesView, annotator_mod
     empty_dir: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "empty_dir"
 
     # ACT
-    images_view._add_selected_dir_to_ui(empty_dir)
+    images_view._add_sorted_valid_images_in_dir(empty_dir)
 
     # ASSERT
     assert len(images_view.viewer.alerts) == 1
@@ -129,7 +129,7 @@ def test_add_selected_dir_to_ui_non_empty_dir(images_view: ImagesView, annotator
     img_dir: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "valid_img_dir"
 
     # ACT
-    images_view._add_selected_dir_to_ui(img_dir)
+    images_view._add_sorted_valid_images_in_dir(img_dir)
 
     # ASSERT
     assert len(images_view.viewer.alerts) == 0
@@ -149,33 +149,20 @@ def test_add_new_item(images_view: ImagesView, annotator_model: AnnotatorModel) 
     assert annotator_model.get_num_images() == 1
     assert annotator_model.get_all_images()[annotator_model.get_num_images() - 1] == test_file
     assert images_view.file_widget.count() == 1
-    assert images_view.file_widget.item(0).label.text() == "test_img1"
+    assert images_view.file_widget.item(0).label.text() == "test_img1.tiff"
 
 
-def test_add_selected_files_invalid_files(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
+def test_add_selected_files_repeated_files(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
+    # ARRANGE
+    test_image_path: Path = Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "test_img1.tiff"
+
     # ACT
-    images_view._add_selected_files(
-        [
-            Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "invalid_img_dir" / "test_dir",
-            Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "invalid_img_dir" / ".test.csv",
-        ]
-    )
+    images_view._add_selected_files([test_image_path])
+    images_view._add_selected_files([test_image_path])
 
     # ASSERT
-    assert len(images_view.viewer.alerts) == 0
-    assert annotator_model.get_num_images() == 0
-
-
-def test_add_selected_files_unsupported_files(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:
-    # ACT
-    images_view._add_selected_files(
-        [Path(napari_allencell_annotator.__file__).parent / "_tests" / "assets" / "invalid_img_dir" / "test.csv"]
-    )
-
-    # ASSERT
-    assert len(images_view.viewer.alerts) == 1
-    assert images_view.viewer.alerts[-1] == "Unsupported file type(s)"
-    assert annotator_model.get_num_images() == 0
+    assert annotator_model.get_num_images() == 1
+    assert annotator_model.get_all_images()[0] == test_image_path
 
 
 def test_add_selected_files_valid_files(images_view: ImagesView, annotator_model: AnnotatorModel) -> None:

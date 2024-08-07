@@ -6,6 +6,7 @@ from bioio import BioImage
 import bioio_ome_tiff
 import bioio_czi
 import bioio_imageio
+import bioio_ome_zarr
 
 
 class ImageUtils:
@@ -32,10 +33,12 @@ class ImageUtils:
             self._image = BioImage(filepath, reader=bioio_ome_tiff.Reader)
         elif extension == ".czi":
             self._image = BioImage(filepath, reader=bioio_czi.Reader)
+        elif extension == ".zarr":
+            self._image = BioImage(filepath, reader=bioio_ome_zarr.Reader)
         else:
             self._image = BioImage(filepath, reader=bioio_imageio.Reader)
 
-    def get_dask_data(self) -> da.Array:
+    def get_image_dask_data(self) -> da.Array:
         """
         Returns image data as a dask array
         """

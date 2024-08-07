@@ -1,1 +1,1 @@
-SUPPORTED_FILE_TYPES = {".jpeg", ".png", ".jpg", ".czi", ".tiff", ".tif"}
+SUPPORTED_FILE_TYPES = {".jpeg", ".png", ".jpg", ".czi", ".tiff", ".tif", ".zarr"}
