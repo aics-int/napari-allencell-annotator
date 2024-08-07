@@ -153,7 +153,15 @@ class AnnotationItem(QListWidgetItem):
         self.default_text.setText(default)
         self.default_options.setText(", ".join(options))
 
-    def fill_vals_point(self, name: str):
+    def fill_vals_point(self, name: str) -> None:
+        """
+        Fill in name for point.
+
+        Parameters
+        ----------
+        name : str
+            a name for the annotation
+        """
         self.type_selection_combo.setCurrentText("point")
         self.name.setText(name)
 
