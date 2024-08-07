@@ -218,7 +218,7 @@ class AnnotationItem(QListWidgetItem):
             str: error msg if applicable
         """
 
-        # na- bkim 7/1/20-24
+        # TODO: refactor this mess- bkim 7/1/20-24
         # bool valid if all annotation values are in the correct format
         error = ""
         valid: bool = True
