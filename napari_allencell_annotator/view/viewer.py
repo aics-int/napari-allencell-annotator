@@ -39,19 +39,7 @@ class Viewer(IViewer):
         image: np.ndarray
             An image to be added
         """
-        # layer: Optional[napari.layers.Layer] = None
-        # # For multiscene images
-        # if len(image.scenes) > 0:
-        #     for i in range(len(image.scenes)):
-        #         # add each scene separately
-        #         data: dask.array.Array = image.get_image_dask_data(image.dims.order.replace("S", ""), S=i)
-        #         layer = self.viewer.add(data)
-        # else:
-        # # for all other images <=5 dims
-        #     layer = self.viewer.add(image.get_dask_stack())
-
         self.viewer.add_image(image)
-        # layer.axis_labels = image.dims.order
 
     def clear_layers(self) -> None:
         """

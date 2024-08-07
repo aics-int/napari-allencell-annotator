@@ -105,8 +105,8 @@ class ImagesView(QFrame):
 
     def _connect_slots(self) -> None:
         """Connect signals to slots."""
-        self.input_dir.dir_selected.connect(self._add_selected_dir_to_ui)
-        self.input_file.files_selected.connect(self._add_selected_files)
+        self.input_dir.dir_selected.connect(self._add_sorted_valid_images_in_dir)
+        self.input_file.files_selected.connect(self._add_sorted_valid_images_in_files)
         self.shuffle.clicked.connect(self._handle_shuffle_clicked)
         self.delete.clicked.connect(self._handle_delete_clicked)
         self.file_widget.files_selected.connect(self._toggle_delete_button_text)
@@ -201,7 +201,7 @@ class ImagesView(QFrame):
 
         current: Path = self._annotator_model.get_curr_img()
         if current is not None:
-            self.viewer.add_image(ImageUtils(current).get_dask_data())
+            self.viewer.add_image(ImageUtils(current).get_image_dask_data())
 
     def update_num_files_label(self, num_files: int) -> None:
         """
@@ -214,21 +214,33 @@ class ImagesView(QFrame):
         """
         self.num_files_label.setText(f"Image files: {num_files}")
 
-    def _add_selected_dir_to_ui(self, dir_path: Path) -> None:
+    def _add_sorted_valid_images_in_files(self, file_list: list[Path]) -> None:
+        all_sorted_valid_files: list[Path] = FileUtils.get_valid_images_sorted(file_list)
+        self._add_selected_files(all_sorted_valid_files)
+
+        if len(all_sorted_valid_files) != len([file for file in file_list if not file.name.startswith(".")]):
+            self.viewer.alert("Unsupported file type(s)")
+
+    def _add_sorted_valid_images_in_dir(self, dir_path: Path) -> None:
         """
         Adds all files in a directory to the GUI.
 
         Parameters
         ----------
-        dir_list : List[Path]
-            The input list with dir[0] holding directory name.
+        dir_path : Path
+            The directory path
         """
-        all_files_in_dir: list[Path] = FileUtils.get_sorted_files_in_dir(dir_path)
+        # get both files and folders
+        dir_files = list(dir_path.glob("*"))
+        all_sorted_valid_files_in_dir: list[Path] = FileUtils.get_valid_images_sorted(dir_files)
 
-        if len(all_files_in_dir) < 1:
+        if len(all_sorted_valid_files_in_dir) < 1:
             self.viewer.alert("Folder is empty")
         else:
-            self._add_selected_files(all_files_in_dir)
+            self._add_selected_files(all_sorted_valid_files_in_dir)
+
+        if len(all_sorted_valid_files_in_dir) != len([file for file in dir_files if not file.name.startswith(".")]):
+            self.viewer.alert("Unsupported file type(s)")
 
     def add_new_item(self, file: Path, hidden: Optional[bool] = False) -> None:
         """
@@ -257,13 +269,9 @@ class ImagesView(QFrame):
         file_list : List[Path]
             The list of files
         """
-        # ignore hidden files and directories
-        for file_path in FileUtils.select_only_valid_files(file_list=file_list):
-            if FileUtils.is_supported(file_path):
-                if file_path not in self._annotator_model.get_all_images():
-                    self.add_new_item(file_path)
-            else:
-                self.viewer.alert("Unsupported file type(s)")
+        for file_path in file_list:
+            if file_path not in self._annotator_model.get_all_images():
+                self.add_new_item(file_path)
 
     def _handle_shuffle_clicked(self) -> None:
         """

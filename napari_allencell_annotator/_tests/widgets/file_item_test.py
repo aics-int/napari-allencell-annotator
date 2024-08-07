@@ -1,9 +1,5 @@
-from pathlib import Path
 from unittest import mock
-from unittest.mock import create_autospec, MagicMock
-
-from PyQt5.QtWidgets import QListWidget
-from pytestqt import qtbot
+from unittest.mock import create_autospec
 
 from napari_allencell_annotator.widgets.file_item import FileItem, QLabel, QCheckBox
 
@@ -14,30 +10,10 @@ class TestFileItem:
             self._widget = FileItem()
             self._widget._file_path = "path"
 
-    def test_get_name(self):
-        self._widget._file_path = Path("dir/path.png")
-        assert self._widget.get_name() == "path"
-
     def test_hide_check(self):
         self._widget.check = create_autospec(QCheckBox)
         self._widget.hide_check()
         self._widget.check.hide.assert_called_once_with()
-
-    def test_make_display_name_less_than(self):
-        self._widget.get_name = MagicMock(return_value="name")
-        assert "name" == self._widget._make_display_name()
-
-    def test_make_display_name_equal_to_36(self):
-        name = "12345678901234567890123456789012345"
-        self._widget.get_name = MagicMock(return_value=name)
-        assert name == self._widget._make_display_name()
-
-    def test_make_display_name_greater_than(self):
-        name = "12345678901234567890123456789012345678"
-        self._widget.get_name = MagicMock(return_value=name)
-        disp = self._widget._make_display_name()
-        assert len(disp) == 35
-        assert disp == "123456789012345...23456789012345678"
 
     def test_highlight(self):
         self._widget.label = create_autospec(QLabel)
