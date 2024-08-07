@@ -37,6 +37,7 @@ def test_add_item_string(template_list: TemplateList):
     assert item.type == ItemType.STRING
     assert item.default == "test_value"
     assert isinstance(item.editable_widget, QLineEdit)
+    assert item.editable_widget.text() == "test_value"
     assert template_list.items[0] == item
 
 
