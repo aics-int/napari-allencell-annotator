@@ -1,9 +1,63 @@
 from unittest import mock
 from unittest.mock import MagicMock, create_autospec
 
+from napari_allencell_annotator.model.combo_key import ComboKey
+
+from napari_allencell_annotator.model.key import Key
 from qtpy.QtCore import QSize
 
 from napari_allencell_annotator.widgets.annotation_widget import AnnotationWidget, AnnotationItem
+import pytest
+
+
+@pytest.fixture
+def annotation_widget(qtbot) -> AnnotationWidget:
+    return AnnotationWidget()
+
+
+def test_add_existing_item_string(annotation_widget: AnnotationWidget) -> None:
+    # ACT
+    annotation_widget.add_existing_item("test_string", Key("string", "test_value"))
+
+    # ASSERT
+    assert annotation_widget.count() == 1
+    assert annotation_widget.item(0).name.text() == "test_string"
+
+
+def test_add_existing_item_number(annotation_widget: AnnotationWidget) -> None:
+    # ACT
+    annotation_widget.add_existing_item("test_number", Key("number", 0))
+
+    # ASSERT
+    assert annotation_widget.count() == 1
+    assert annotation_widget.item(0).name.text() == "test_number"
+
+
+def test_add_existing_item_bool(annotation_widget: AnnotationWidget) -> None:
+    # ACT
+    annotation_widget.add_existing_item("test_bool", Key("bool", 0))
+
+    # ASSERT
+    assert annotation_widget.count() == 1
+    assert annotation_widget.item(0).name.text() == "test_bool"
+
+
+def test_add_existing_item_list(annotation_widget: AnnotationWidget) -> None:
+    # ACT
+    annotation_widget.add_existing_item("test_list", ComboKey(list, ["a", "b"], "a"))
+
+    # ASSERT
+    assert annotation_widget.count() == 1
+    assert annotation_widget.item(0).name.text() == "test_list"
+
+
+def test_add_existing_item_point(annotation_widget: AnnotationWidget) -> None:
+    # ACT
+    annotation_widget.add_existing_item("test_point", Key("point", None))
+
+    # ASSERT
+    assert annotation_widget.count() == 1
+    assert annotation_widget.item(0).name.text() == "test_point"
 
 
 class TestAnnotationWidget:
