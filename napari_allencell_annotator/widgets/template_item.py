@@ -49,7 +49,6 @@ class TemplateItem(QListWidgetItem):
             self.layout.addWidget(self.editable_widget, 1, alignment=Qt.AlignCenter)
             self.editable_widget.setEnabled(False)
 
-
         self.layout.setContentsMargins(2, 12, 8, 12)
         self.layout.setSpacing(2)
         self.layout.setSizeConstraint(QLayout.SetMinimumSize)
