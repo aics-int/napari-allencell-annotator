@@ -1,14 +1,9 @@
 from unittest import mock
-from unittest.mock import MagicMock, create_autospec
-
-from PyQt5.QtWidgets import QListWidget
+from unittest.mock import create_autospec
 
 from napari_allencell_annotator.widgets.annotation_item import (
     AnnotationItem,
     QLineEdit,
-    QGridLayout,
-    QWidget,
-    QLabel,
     QSpinBox,
     QComboBox,
 )
