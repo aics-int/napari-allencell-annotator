@@ -1,7 +1,7 @@
-from typing import List
+from typing import List, Tuple
 
 import numpy as np
-from napari.layers import Layer
+from napari.layers import Layer, Points
 
 from napari_allencell_annotator.view.i_viewer import IViewer
 
@@ -24,3 +24,23 @@ class FakeViewer(IViewer):
 
     def get_layers(self) -> List[Layer]:
         return self._layers
+
+    def get_all_points_layers(self) -> List[Points]:
+        return [layer for layer in self.get_layers() if isinstance(layer, Points)]
+
+    def create_points_layer(self, name: str, color: str, visible: bool, data: np.ndarray = None) -> Points:
+        points: Points = Points(data=data, name=name, color=color, visible=visible, ndim=6)
+        self._layers.append(points)
+        return points
+
+    def get_selected_points(self, point_layer: Points) -> List[Tuple]:
+        return list(map(tuple, point_layer.data))
+
+    def get_all_point_annotations(self) -> dict[str, list[tuple]]:
+        all_point_annotations: dict[str, list[tuple]] = {}
+
+        all_points_layers: list[Points] = self.get_all_points_layers()
+        for points_layer in all_points_layers:
+            all_point_annotations[points_layer.name] = self.get_selected_points(points_layer)
+
+        return all_point_annotations

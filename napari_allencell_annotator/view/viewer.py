@@ -1,11 +1,26 @@
-from typing import List
+from typing import List, Tuple, Dict, Optional
+from enum import Enum
 
+import dask.array
 import numpy as np
-from napari.layers import Layer
-
+from napari.layers import Layer, Points
 from napari_allencell_annotator.view.i_viewer import IViewer
 from napari.utils.notifications import show_info
 import napari
+
+
+class PointsLayerMode(Enum):
+    """
+    Mode for view.
+
+    ADD is used to add points.
+    SELECT is used to move, edit, or delete points.
+    PAN_ZOOM is the default mode and allows normal interactivity with the canvas.
+    """
+
+    ADD = "add"
+    SELECT = "select"
+    PAN_ZOOM = "pan_zoom"
 
 
 class Viewer(IViewer):
@@ -44,4 +59,81 @@ class Viewer(IViewer):
         show_info(alert_msg)
 
     def get_layers(self) -> List[Layer]:
+        """
+        Returns a list of all layers in the viewer.
+        """
         return list(self.viewer.layers)
+
+    def get_all_points_layers(self) -> List[Points]:
+        """
+        Returns a list of all point layers in the viewer.
+        """
+        return [layer for layer in self.get_layers() if isinstance(layer, Points)]
+
+    def create_points_layer(self, name: str, color: str, visible: bool, data: np.ndarray = None) -> Points:
+        """
+        Creates a new point layer and sets to ADD mode to allow users to select points.
+
+        Parameters
+        ----------
+        name: str
+            The name of the point layer
+        color: str
+            The face color of the points
+        visible: bool
+            Whether the point layer is visible in the viewer
+        data: np.ndarray = None
+            A numpy array of point coordinates
+
+        Returns
+        -------
+        Points
+            A new point layer
+        """
+        points_layer: Points = self.viewer.add_points(
+            data=data, name=name, face_color=color, visible=visible, ndim=self.viewer.dims.ndim
+        )
+        return points_layer
+
+    def set_points_layer_mode(self, points_layer: Points, mode: PointsLayerMode) -> None:
+        """
+        Sets a point layer's mode.
+
+        Parameters
+        ----------
+        points_layer: Points
+            The Points layer
+        mode: str
+            The mode
+        """
+        points_layer.mode = mode.value
+
+    def get_selected_points(self, point_layer: Points) -> list[tuple]:
+        """
+        Returns a list of points in the point layer.
+
+        Parameters
+        ----------
+        point_layer: Points
+            The point layer
+
+        Returns
+        -------
+        List[Tuple[float]]
+            A list of tuples representing points in the point layer
+        """
+        # return ex. [(0, 0, 0, 0, 0, 0), (1, 1, 1, 1, 1, 1)]
+        selected_points: List[tuple] = list(map(tuple, point_layer.data))
+        return selected_points
+
+    def get_all_point_annotations(self) -> dict[str, list[tuple]]:
+        """
+        Returns a dictionary of point layer names mapping to a list of selected coordinates.
+        """
+        all_point_annotations: dict[str, list[tuple]] = {}
+
+        all_points_layers: list[Points] = self.get_all_points_layers()
+        for points_layer in all_points_layers:
+            all_point_annotations[points_layer.name] = self.get_selected_points(points_layer)
+
+        return all_point_annotations
