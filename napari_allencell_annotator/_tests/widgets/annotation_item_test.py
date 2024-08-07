@@ -1,6 +1,8 @@
 from unittest import mock
 from unittest.mock import MagicMock, create_autospec
 
+from PyQt5.QtWidgets import QListWidget
+
 from napari_allencell_annotator.widgets.annotation_item import (
     AnnotationItem,
     QLineEdit,
@@ -10,6 +12,83 @@ from napari_allencell_annotator.widgets.annotation_item import (
     QSpinBox,
     QComboBox,
 )
+from napari_allencell_annotator.widgets.annotation_widget import AnnotationWidget
+
+import pytest
+
+
+@pytest.fixture
+def annotation_widget() -> AnnotationWidget:
+    return AnnotationWidget()
+
+
+@pytest.fixture
+def annotation_item(annotation_widget, qtbot) -> AnnotationItem:
+    return AnnotationItem(annotation_widget)
+
+
+def test_type_changed_text(annotation_item: AnnotationItem) -> None:
+    # ACT
+    annotation_item._type_changed("text")
+
+    # ASSERT
+    assert not annotation_item.default_label.isHidden()
+    assert annotation_item.default_options.isHidden()
+    assert annotation_item.default_options_label.isHidden()
+    assert annotation_item.layout.itemAtPosition(0, 7).widget() == annotation_item.default_text
+
+
+def test_type_changed_number(annotation_item: AnnotationItem) -> None:
+    # ACT
+    annotation_item._type_changed("number")
+
+    # ASSERT
+    assert not annotation_item.default_label.isHidden()
+    assert annotation_item.default_options.isHidden()
+    assert annotation_item.default_options_label.isHidden()
+    assert annotation_item.layout.itemAtPosition(0, 7).widget() == annotation_item.default_num
+
+
+def test_type_changed_checkbox(annotation_item: AnnotationItem) -> None:
+    # ACT
+    annotation_item._type_changed("checkbox")
+
+    # ASSERT
+    assert not annotation_item.default_label.isHidden()
+    assert annotation_item.default_options.isHidden()
+    assert annotation_item.default_options_label.isHidden()
+    assert annotation_item.layout.itemAtPosition(0, 7).widget() == annotation_item.default_check
+
+
+def test_type_changed_dropdown(annotation_item: AnnotationItem) -> None:
+    # ACT
+    annotation_item._type_changed("dropdown")
+
+    # ASSERT
+    assert not annotation_item.default_label.isHidden()
+    assert not annotation_item.default_options.isHidden()
+    assert not annotation_item.default_options_label.isHidden()
+    assert annotation_item.layout.itemAtPosition(0, 7).widget() == annotation_item.default_text
+
+
+def test_type_changed_point(annotation_item: AnnotationItem) -> None:
+    # ACT
+    annotation_item._type_changed("point")
+
+    # ASSERT
+    assert annotation_item.default_label.isHidden()
+    assert annotation_item.default_options.isHidden()
+    assert annotation_item.default_options_label.isHidden()
+    assert annotation_item.layout.itemAtPosition(0, 7) is None
+
+
+def test_fill_vals_point(annotation_item: AnnotationItem) -> None:
+    # ACT
+    annotation_item.fill_vals_point("test")
+
+    # ASSERT
+    assert annotation_item.type_selection_combo.currentText() == "point"
+    assert annotation_item.name.text() == "test"
 
 
 class TestAnnotationItem:
@@ -51,66 +130,6 @@ class TestAnnotationItem:
         self._item.name.setText.assert_called_once_with("name")
         self._item.default_text.setText.assert_called_once_with("one")
         self._item.default_options.setText.assert_called_once_with("one, two, three")
-
-    def test_type_changed_dropdown(self):
-        self._item.layout = create_autospec(QGridLayout)
-        widget = create_autospec(QWidget)
-        self._item.layout.itemAtPosition(0, 7).widget = MagicMock(return_value=widget)
-        self._item.default_options_label = create_autospec(QLabel)
-
-        self._item._type_changed("dropdown")
-
-        widget.setParent.assert_called_once_with(None)
-        self._item.layout.removeWidget.assert_called_once_with(widget)
-
-        self._item.default_options.show.assert_called_once_with()
-        self._item.default_options_label.show.assert_called_once_with()
-        self._item.layout.addWidget.assert_called_once_with(self._item.default_text, 0, 7, 1, 2)
-
-    def test_type_changed_checkbox(self):
-        self._item.layout = create_autospec(QGridLayout)
-        widget = create_autospec(QWidget)
-        self._item.layout.itemAtPosition(0, 7).widget = MagicMock(return_value=widget)
-        self._item.default_options_label = create_autospec(QLabel)
-        self._item.default_check = MagicMock()
-        self._item._type_changed("checkbox")
-
-        widget.setParent.assert_called_once_with(None)
-        self._item.layout.removeWidget.assert_called_once_with(widget)
-
-        self._item.default_options.hide.assert_called_once_with()
-        self._item.default_options_label.hide.assert_called_once_with()
-        self._item.layout.addWidget.assert_called_once_with(self._item.default_check, 0, 7, 1, 2)
-
-    def test_type_changed_number(self):
-        self._item.layout = create_autospec(QGridLayout)
-        widget = create_autospec(QWidget)
-        self._item.layout.itemAtPosition(0, 7).widget = MagicMock(return_value=widget)
-        self._item.default_options_label = create_autospec(QLabel)
-        self._item.default_num = MagicMock()
-        self._item._type_changed("number")
-
-        widget.setParent.assert_called_once_with(None)
-        self._item.layout.removeWidget.assert_called_once_with(widget)
-
-        self._item.default_options.hide.assert_called_once_with()
-        self._item.default_options_label.hide.assert_called_once_with()
-        self._item.layout.addWidget.assert_called_once_with(self._item.default_num, 0, 7, 1, 2)
-
-    def test_type_changed_text(self):
-        self._item.layout = create_autospec(QGridLayout)
-        widget = create_autospec(QWidget)
-        self._item.layout.itemAtPosition(0, 7).widget = MagicMock(return_value=widget)
-        self._item.default_options_label = create_autospec(QLabel)
-
-        self._item._type_changed("text")
-
-        widget.setParent.assert_called_once_with(None)
-        self._item.layout.removeWidget.assert_called_once_with(widget)
-
-        self._item.default_options.hide.assert_called_once_with()
-        self._item.default_options_label.hide.assert_called_once_with()
-        self._item.layout.addWidget.assert_called_once_with(self._item.default_text, 0, 7, 1, 2)
 
     # TODO: refactor the tests below to match current code.
     # def test_get_data_none_name_text_none_default(self):
