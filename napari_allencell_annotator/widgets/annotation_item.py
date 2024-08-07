@@ -1,5 +1,6 @@
 from typing import Tuple, List, Optional, Any
 
+from PyQt5.QtWidgets import QLayoutItem
 from qtpy.QtWidgets import QLayout
 from qtpy import QtWidgets
 from qtpy.QtWidgets import (
@@ -51,7 +52,7 @@ class AnnotationItem(QListWidgetItem):
         self.layout.addWidget(self.name, 0, 1, 1, 2)
         self.layout.addWidget(type_label, 0, 3, 1, 1)
         self.layout.addWidget(self.type_selection_combo, 0, 4, 1, 2)
-        self.default_label = QLabel("Default:")
+        self.default_label: QLabel = QLabel("Default:")
         self.default_text = QLineEdit()
         self.default_text.setPlaceholderText("Optional: Default Text")
         self.default_num = QSpinBox()
@@ -165,9 +166,9 @@ class AnnotationItem(QListWidgetItem):
         text : str
             the new type selected.
         """
-        default_item = self.layout.itemAtPosition(0, 7)
+        default_item: QLayoutItem = self.layout.itemAtPosition(0, 7)
         if default_item is not None:
-            default_widget = default_item.widget()
+            default_widget: QWidget = default_item.widget()
             default_widget.setParent(None)
             self.layout.removeWidget(default_widget)
 
