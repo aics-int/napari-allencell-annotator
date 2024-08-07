@@ -200,7 +200,6 @@ class AnnotationItem(QListWidgetItem):
             self.default_options.hide()
             self.default_options_label.hide()
 
-
     def get_data(self) -> Tuple[bool, str, Key, str]:
         """
         Highlight any invalid entries and return the data.
