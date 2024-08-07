@@ -279,7 +279,7 @@ class AnnotationItem(QListWidgetItem):
             # number defaults are required by spinbox, always valid
             type = "number"
             default = self.default_num.value()
-        elif type == "bool":
+        elif type == "checkbox":
             # checkbox type default required by the drop down, always valid
             type = "bool"
             if self.default_check.currentText() == "checked":
