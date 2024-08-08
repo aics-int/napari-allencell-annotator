@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Optional, Any
 
 from PyQt5.QtCore import QObject
+from napari.layers import Points
 from qtpy.QtCore import Signal
 
 from napari_allencell_annotator.model.key import Key
@@ -40,6 +41,9 @@ class AnnotatorModel(QObject):
         self._csv_save_path: Optional[Path] = None
 
         self._annotation_started = False
+
+        # dict storing current point layers {name: PointsLayer}
+        self._curr_img_points_layer: dict[str, Points] = {}
 
     def get_annotation_keys(self) -> dict[str, Key]:
         return self._annotation_keys
@@ -154,3 +158,9 @@ class AnnotatorModel(QObject):
     def set_annotation_started(self, started: bool) -> None:
         self._annotation_started = started
         self.annotation_started_changed.emit(started)
+
+    def get_all_curr_img_points_layers(self) -> dict[str, Points]:
+        return self._curr_img_points_layer
+
+    def set_points_layer(self, name: str, points_layer: Points):
+        self._curr_img_points_layer[name] = points_layer

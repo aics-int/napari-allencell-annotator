@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from napari_allencell_annotator.view.i_viewer import IViewer
+
 from napari_allencell_annotator.model.annotation_model import AnnotatorModel
 from napari_allencell_annotator.model.key import Key
 from napari_allencell_annotator.util.file_utils import FileUtils
@@ -59,7 +61,7 @@ class AnnotatorController:
         Writes header and annotations to the csv file.
     """
 
-    def __init__(self, model: AnnotatorModel, viewer: napari.Viewer):
+    def __init__(self, model: AnnotatorModel, viewer: IViewer):
         self._annotation_model = model
 
         # open in view mode

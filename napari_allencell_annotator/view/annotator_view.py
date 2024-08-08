@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import Dict, List, Any
 
+from napari_allencell_annotator.view.i_viewer import IViewer
 from qtpy.QtWidgets import QFrame
 from qtpy import QtCore
 from qtpy.QtWidgets import (
@@ -81,7 +82,7 @@ class AnnotatorView(QFrame):
     def __init__(
         self,
         model: AnnotatorModel,
-        viewer: Viewer,
+        viewer: IViewer,
         mode: AnnotatorViewMode = AnnotatorViewMode.ADD,
     ):
         super().__init__()
@@ -174,7 +175,7 @@ class AnnotatorView(QFrame):
 
         self.annots_order: List[str] = []
         self.setLayout(self.layout)
-        self.viewer: Viewer = viewer
+        self.viewer: IViewer = viewer
 
     @property
     def mode(self) -> AnnotatorViewMode:
@@ -300,4 +301,11 @@ class AnnotatorView(QFrame):
 
         if key.get_type() == ItemType.POINT.value:
             self._annotator_model.annotation_started_changed.connect(annot_item.editable_widget.setEnabled)
+            annot_item.editable_widget.clicked.connect(self._handle_point_selection)
 
+    def _handle_point_selection(self, annot_item: TemplateItem):
+        if annot_item.name not in self._annotator_model.get_all_curr_img_points_layers():
+            self._annotator_model.set_points_layer(
+                annot_item.name, self.viewer.create_points_layer(annot_item.name, "blue", True)
+            )
+        pass
