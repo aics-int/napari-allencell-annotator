@@ -305,7 +305,7 @@ class AnnotatorView(QFrame):
     def _handle_point_selection(self, annot_name: str):
         if annot_name not in self._annotator_model.get_all_curr_img_points_layers():
             self._annotator_model.add_points_layer(
-                annot_name, self.viewer.create_points_layer(annot_name, "blue", True)
+                annot_name, self.viewer.create_points_layer(annot_name, True)
             )
 
         annot_points_layer: Points = self._annotator_model.get_points_layer(annot_name)

@@ -46,7 +46,7 @@ class IViewer(ABC):
         pass
 
     @abstractmethod
-    def create_points_layer(self, name: str, color: str, visible: bool, data: np.ndarray = None) -> Points:
+    def create_points_layer(self, name: str, visible: bool, data: np.ndarray = None) -> Points:
         pass
 
     @abstractmethod

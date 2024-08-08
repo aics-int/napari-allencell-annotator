@@ -1,12 +1,12 @@
-from typing import List, Tuple, Dict, Optional
+from typing import List, Tuple
 from enum import Enum
 
-import dask.array
 import numpy as np
 from napari.layers import Layer, Points
 from napari_allencell_annotator.view.i_viewer import IViewer
 from napari.utils.notifications import show_info
 import napari
+from napari.utils.colormaps import label_colormap
 
 
 class PointsLayerMode(Enum):
@@ -70,7 +70,7 @@ class Viewer(IViewer):
         """
         return [layer for layer in self.get_layers() if isinstance(layer, Points)]
 
-    def create_points_layer(self, name: str, color: str, visible: bool, data: np.ndarray = None) -> Points:
+    def create_points_layer(self, name: str, visible: bool, data: np.ndarray = None) -> Points:
         """
         Creates a new point layer and sets to ADD mode to allow users to select points.
 
@@ -78,8 +78,6 @@ class Viewer(IViewer):
         ----------
         name: str
             The name of the point layer
-        color: str
-            The face color of the points
         visible: bool
             Whether the point layer is visible in the viewer
         data: np.ndarray = None
@@ -91,7 +89,7 @@ class Viewer(IViewer):
             A new point layer
         """
         points_layer: Points = self.viewer.add_points(
-            data=data, name=name, face_color=color, visible=visible, ndim=self.viewer.dims.ndim
+            data=data, name=name, face_color=label_colormap(256).colors[np.random.randint(0, 256)], visible=visible, ndim=self.viewer.dims.ndim
         )
         return points_layer
 

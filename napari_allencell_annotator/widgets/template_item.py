@@ -4,7 +4,7 @@ from typing import Any
 from napari_allencell_annotator.model.annotation_model import AnnotatorModel
 from qtpy.QtWidgets import QLayout
 from qtpy.QtWidgets import QListWidgetItem, QListWidget, QWidget, QHBoxLayout, QLabel
-from qtpy.QtCore import Qt, Signal
+from qtpy.QtCore import Qt
 
 
 class ItemType(Enum):
