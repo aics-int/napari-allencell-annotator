@@ -20,6 +20,7 @@ from napari_allencell_annotator.widgets.file_input import (
     FileInput,
     FileInputMode,
 )
+from napari_allencell_annotator.widgets.template_item import ItemType, TemplateItem
 from napari_allencell_annotator.widgets.template_list import TemplateList
 from napari_allencell_annotator._style import Style
 
@@ -295,4 +296,8 @@ class AnnotatorView(QFrame):
             annotation type, default, and options.
         """
         self.annots_order.append(name)
-        self.annot_list.add_item(name, key)
+        annot_item: TemplateItem = self.annot_list.add_item(name, key)
+
+        if key.get_type() == ItemType.POINT.value:
+            self._annotator_model.annotation_started_changed.connect(annot_item.editable_widget.setEnabled)
+

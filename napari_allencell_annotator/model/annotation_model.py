@@ -13,6 +13,7 @@ class AnnotatorModel(QObject):
     image_count_changed: Signal = Signal(int)
     images_shuffled: Signal = Signal(bool)
     image_set_added: Signal = Signal()
+    annotation_started_changed: Signal = Signal(bool)
 
     def __init__(self):
         super().__init__()
@@ -152,3 +153,4 @@ class AnnotatorModel(QObject):
 
     def set_annotation_started(self, started: bool) -> None:
         self._annotation_started = started
+        self.annotation_started_changed.emit(started)

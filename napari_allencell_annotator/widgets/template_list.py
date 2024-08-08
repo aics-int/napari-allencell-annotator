@@ -78,7 +78,7 @@ class TemplateList(QListWidget):
 
         self.height = 0
 
-    def add_item(self, name: str, key: Key | ComboKey):
+    def add_item(self, name: str, key: Key | ComboKey) -> TemplateItem:
         """
         Add annotation template item from dictionary entries.
 
@@ -121,3 +121,5 @@ class TemplateList(QListWidget):
 
         self.height = self.height + item.widget.sizeHint().height()
         self.setMaximumHeight(self.height)
+
+        return item
