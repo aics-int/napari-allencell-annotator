@@ -108,7 +108,7 @@ class Viewer(IViewer):
         """
         points_layer.mode = mode.value
 
-    def get_points_layer_mode(self, points_layer: Points):
+    def get_points_layer_mode(self, points_layer: Points) -> str:
         return points_layer.mode
 
     def get_selected_points(self, point_layer: Points) -> list[tuple]:

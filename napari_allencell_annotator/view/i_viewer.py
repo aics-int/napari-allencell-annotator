@@ -3,6 +3,8 @@ import numpy as np
 from napari.layers import Layer, Points
 from typing import List, Tuple
 
+from napari_allencell_annotator.view.viewer import PointsLayerMode
+
 
 class IViewer(ABC):
     def __init__(self):
@@ -31,6 +33,14 @@ class IViewer(ABC):
 
     @abstractmethod
     def create_points_layer(self, name: str, color: str, visible: bool, data: np.ndarray = None) -> Points:
+        pass
+
+    @abstractmethod
+    def set_points_layer_mode(self, points_layer: Points, mode: PointsLayerMode) -> None:
+        pass
+
+    @abstractmethod
+    def get_points_layer_mode(self, points_layer: Points) -> str:
         pass
 
     @abstractmethod
