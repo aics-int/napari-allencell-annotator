@@ -164,3 +164,6 @@ class AnnotatorModel(QObject):
 
     def set_points_layer(self, name: str, points_layer: Points):
         self._curr_img_points_layer[name] = points_layer
+
+    def get_points_layer(self, name: str) -> Points:
+        return self._curr_img_points_layer[name]

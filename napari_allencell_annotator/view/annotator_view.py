@@ -309,4 +309,5 @@ class AnnotatorView(QFrame):
                 annot_item.name, self.viewer.create_points_layer(annot_item.name, "blue", True)
             )
 
-        # if self.viewer.set
+        annot_points_layer: Point = self._annotator_model.get_points_layer()
+        if self.viewer.get_points_layer_mode()
