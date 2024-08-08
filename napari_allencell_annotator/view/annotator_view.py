@@ -1,6 +1,8 @@
 from enum import Enum
 from typing import Dict, List, Any
 
+from napari.layers import Points
+
 from napari_allencell_annotator.view.i_viewer import IViewer
 from qtpy.QtWidgets import QFrame
 from qtpy import QtCore
@@ -13,10 +15,10 @@ from qtpy.QtWidgets import (
     QPushButton,
     QVBoxLayout,
 )
-from napari import Viewer
 
 from napari_allencell_annotator.model.annotation_model import AnnotatorModel
 from napari_allencell_annotator.model.key import Key
+from napari_allencell_annotator.view.viewer import PointsLayerMode
 from napari_allencell_annotator.widgets.file_input import (
     FileInput,
     FileInputMode,
@@ -94,7 +96,8 @@ class AnnotatorView(QFrame):
         self.layout = QVBoxLayout()
         self.layout.addWidget(label)
         self.setStyleSheet(Style.get_stylesheet("main.qss"))
-        self.annot_list = TemplateList()
+        self.annot_list = TemplateList(model)
+        self.annot_list.point_select_clicked.connect(self._handle_point_selection)
         self.scroll = QScrollArea()
         self.scroll.setWidget(self.annot_list)
         self.scroll.setWidgetResizable(True)
@@ -297,17 +300,16 @@ class AnnotatorView(QFrame):
             annotation type, default, and options.
         """
         self.annots_order.append(name)
-        annot_item: TemplateItem = self.annot_list.add_item(name, key)
+        self.annot_list.add_item(name, key)
 
-        if key.get_type() == ItemType.POINT.value:
-            self._annotator_model.annotation_started_changed.connect(annot_item.editable_widget.setEnabled)
-            annot_item.editable_widget.clicked.connect(self._handle_point_selection)
-
-    def _handle_point_selection(self, annot_item: TemplateItem):
-        if annot_item.name not in self._annotator_model.get_all_curr_img_points_layers():
-            self._annotator_model.set_points_layer(
-                annot_item.name, self.viewer.create_points_layer(annot_item.name, "blue", True)
+    def _handle_point_selection(self, annot_name: str):
+        if annot_name not in self._annotator_model.get_all_curr_img_points_layers():
+            self._annotator_model.add_points_layer(
+                annot_name, self.viewer.create_points_layer(annot_name, "blue", True)
             )
 
-        annot_points_layer: Point = self._annotator_model.get_points_layer()
-        if self.viewer.get_points_layer_mode()
+        annot_points_layer: Points = self._annotator_model.get_points_layer(annot_name)
+        if self.viewer.get_points_layer_mode(annot_points_layer) == PointsLayerMode.PAN_ZOOM.value:
+            self.viewer.set_points_layer_mode(annot_points_layer, PointsLayerMode.ADD)
+        else:
+            self.viewer.set_points_layer_mode(annot_points_layer, PointsLayerMode.PAN_ZOOM)

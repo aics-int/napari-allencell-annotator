@@ -1,9 +1,23 @@
 from abc import ABC, abstractmethod
+from enum import Enum
+
 import numpy as np
 from napari.layers import Layer, Points
 from typing import List, Tuple
 
-from napari_allencell_annotator.view.viewer import PointsLayerMode
+
+class PointsLayerMode(Enum):
+    """
+    Mode for view.
+
+    ADD is used to add points.
+    SELECT is used to move, edit, or delete points.
+    PAN_ZOOM is the default mode and allows normal interactivity with the canvas.
+    """
+
+    ADD = "add"
+    SELECT = "select"
+    PAN_ZOOM = "pan_zoom"
 
 
 class IViewer(ABC):

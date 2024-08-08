@@ -114,6 +114,9 @@ class TemplateItem(QListWidgetItem):
             self.editable_widget.stateChanged.connect(lambda: self.parent.setCurrentItem(self))
         elif self._type == ItemType.LIST:
             self.editable_widget.activated.connect(lambda: self.parent.setCurrentItem(self))
+        elif self._type == ItemType.POINT:
+            self.editable_widget.clicked.connect(lambda: self.parent.setCurrentItem(self))
+            self.editable_widget.clicked.connect(lambda: self.parent.point_select_clicked.emit(self.name.text()))
 
     def set_focus(self):
         """Set the annotating focus on the widget of the current item."""

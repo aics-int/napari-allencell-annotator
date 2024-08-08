@@ -1,11 +1,13 @@
 from typing import Any, List
 
-from PyQt5.QtWidgets import QPushButton
+from napari.layers import Points
 from qtpy import QtWidgets
-from qtpy.QtWidgets import QLineEdit, QCheckBox, QComboBox, QSpinBox
+from qtpy.QtWidgets import QLineEdit, QCheckBox, QComboBox, QSpinBox, QPushButton
 from qtpy.QtWidgets import QSizePolicy
 from qtpy.QtWidgets import QListWidget
+from qtpy.QtCore import Signal
 
+from napari_allencell_annotator.model.annotation_model import AnnotatorModel
 from napari_allencell_annotator.model.combo_key import ComboKey
 from napari_allencell_annotator.model.key import Key
 from napari_allencell_annotator.widgets.template_item import TemplateItem, ItemType
@@ -22,9 +24,12 @@ class TemplateList(QListWidget):
 
     """
 
-    def __init__(self):
+    point_select_clicked: Signal = Signal(str)
+
+    def __init__(self, annotator_model: AnnotatorModel):
         QListWidget.__init__(self)
 
+        self._annotator_model: AnnotatorModel = annotator_model
         self.setStyleSheet(Style.get_stylesheet("main.qss"))
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # todo single selection
@@ -114,6 +119,7 @@ class TemplateList(QListWidget):
             annot_type = ItemType.POINT
             widget = QPushButton("Select")
             widget.setFixedWidth(200)
+            self._annotator_model.annotation_started_changed.connect(widget.setEnabled)
 
         item = TemplateItem(self, name, annot_type, default, widget)
 
@@ -121,5 +127,3 @@ class TemplateList(QListWidget):
 
         self.height = self.height + item.widget.sizeHint().height()
         self.setMaximumHeight(self.height)
-
-        return item
