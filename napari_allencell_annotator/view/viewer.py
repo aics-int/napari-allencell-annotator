@@ -146,9 +146,11 @@ class Viewer(IViewer):
             self.viewer.layers.selection.clear()
             self.viewer.layers.selection.add(annot_points_layer)
         else:
+            annot_points_layer.selected_data = []
             self.set_points_layer_mode(annot_points_layer, PointsLayerMode.PAN_ZOOM)
 
     def set_all_points_layer_to_pan_zoom(self):
         for points_layer in self.get_all_points_layers():
             self.set_points_layer_mode(points_layer, PointsLayerMode.PAN_ZOOM)
+            points_layer.selected_data = []
 
