@@ -24,8 +24,6 @@ class TemplateList(QListWidget):
 
     """
 
-    point_select_clicked: Signal = Signal(TemplateItem)
-
     def __init__(self, annotator_model: AnnotatorModel):
         QListWidget.__init__(self)
 
@@ -119,13 +117,10 @@ class TemplateList(QListWidget):
             annot_type = ItemType.POINT
             widget = QPushButton("Select")
             widget.setFixedWidth(200)
-            self._annotator_model.annotation_started_changed.connect(widget.setEnabled)
 
-        item = TemplateItem(self, name, annot_type, default, widget)
+        item = TemplateItem(self, name, annot_type, default, widget, self._annotator_model)
 
         self._items.append(item)
 
         self.height = self.height + item.widget.sizeHint().height()
         self.setMaximumHeight(self.height)
-
-        return item

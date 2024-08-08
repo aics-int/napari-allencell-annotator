@@ -90,6 +90,7 @@ class AnnotatorView(QFrame):
         super().__init__()
         self._annotator_model = model
         self._annotator_model.image_changed.connect(self._handle_image_changed)
+        self._annotator_model.edit_points_layer_changed.connect(self._handle_point_selection)
         self._mode = mode
         label = QLabel("Annotations")
         label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
@@ -299,22 +300,13 @@ class AnnotatorView(QFrame):
             annotation type, default, and options.
         """
         self.annots_order.append(name)
-        item = self.annot_list.add_item(name, key)
+        self.annot_list.add_item(name, key)
 
-        if item.type == ItemType.POINT:
-            self.annot_list.point_select_clicked.connect(self._handle_point_selection)
-
-    def _handle_point_selection(self, annot_item: TemplateItem):
-        annot_name = annot_item.name.text()
+    def _handle_point_selection(self, annot_name: str):
         if annot_name not in self._annotator_model.get_all_curr_img_points_layers():
             self._annotator_model.add_points_layer(
                 annot_name, self.viewer.create_points_layer(annot_name, "blue", True)
             )
 
         annot_points_layer: Points = self._annotator_model.get_points_layer(annot_name)
-        if self.viewer.get_points_layer_mode(annot_points_layer) == PointsLayerMode.PAN_ZOOM.value:
-            self.viewer.set_points_layer_mode(annot_points_layer, PointsLayerMode.ADD)
-            annot_item.editable_widget.setText("Finish")
-        else:
-            self.viewer.set_points_layer_mode(annot_points_layer, PointsLayerMode.PAN_ZOOM)
-            annot_item.editable_widget.setText("Select")
+        self.viewer.edit_points_layer(annot_points_layer)

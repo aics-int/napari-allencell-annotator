@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import Any
 
+from napari_allencell_annotator.model.annotation_model import AnnotatorModel
 from qtpy.QtWidgets import QLayout
 from qtpy.QtWidgets import QListWidgetItem, QListWidget, QWidget, QHBoxLayout, QLabel
 from qtpy.QtCore import Qt, Signal
@@ -28,7 +29,15 @@ class TemplateItem(QListWidgetItem):
     value
     """
 
-    def __init__(self, parent: QListWidget, name: str, type: ItemType, default: Any, editable_widget: QWidget):
+    def __init__(
+        self,
+        parent: QListWidget,
+        name: str,
+        type: ItemType,
+        default: Any,
+        editable_widget: QWidget,
+        annotator_model: AnnotatorModel,
+    ):
         QListWidgetItem.__init__(self, parent)
         self._type: ItemType = type
         self.default: Any = default
@@ -36,6 +45,7 @@ class TemplateItem(QListWidgetItem):
         self.editable_widget: QWidget = editable_widget
         self.widget = QWidget()
         self.parent = parent
+        self._annotation_model = annotator_model
 
         self.layout = QHBoxLayout()
         self.name = QLabel(name)
@@ -116,7 +126,21 @@ class TemplateItem(QListWidgetItem):
             self.editable_widget.activated.connect(lambda: self.parent.setCurrentItem(self))
         elif self._type == ItemType.POINT:
             self.editable_widget.clicked.connect(lambda: self.parent.setCurrentItem(self))
-            self.editable_widget.clicked.connect(lambda: self.parent.point_select_clicked.emit(self))
+            self.editable_widget.clicked.connect(self._handle_select_button_clicked)
+            self._annotation_model.annotation_started_changed.connect(self._handle_select_button_enabled)
+
+    def _handle_select_button_enabled(self):
+        if self.editable_widget.isEnabled():
+            self.editable_widget.setEnabled(False)
+        else:
+            self.editable_widget.setEnabled(True)
+
+    def _handle_select_button_clicked(self):
+        self._annotation_model.edit_points_layer(self.name.text())
+        if self.editable_widget.text() == "Select":
+            self.editable_widget.setText("Finish")
+        else:
+            self.editable_widget.setText("Select")
 
     def set_focus(self):
         """Set the annotating focus on the widget of the current item."""
