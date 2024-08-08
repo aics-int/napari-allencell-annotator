@@ -139,10 +139,12 @@ class Viewer(IViewer):
 
         return all_point_annotations
 
-    def edit_points_layer(self, annot_points_layer: Points):
+    def toggle_points_layer(self, annot_points_layer: Points):
         if self.get_points_layer_mode(annot_points_layer) == PointsLayerMode.PAN_ZOOM.value:
             self.set_all_points_layer_to_pan_zoom()
             self.set_points_layer_mode(annot_points_layer, PointsLayerMode.ADD)
+            self.viewer.layers.selection.clear()
+            self.viewer.layers.selection.add(annot_points_layer)
         else:
             self.set_points_layer_mode(annot_points_layer, PointsLayerMode.PAN_ZOOM)
 

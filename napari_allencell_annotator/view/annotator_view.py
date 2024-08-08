@@ -309,4 +309,4 @@ class AnnotatorView(QFrame):
             )
 
         annot_points_layer: Points = self._annotator_model.get_points_layer(annot_name)
-        self.viewer.edit_points_layer(annot_points_layer)
+        self.viewer.toggle_points_layer(annot_points_layer)
