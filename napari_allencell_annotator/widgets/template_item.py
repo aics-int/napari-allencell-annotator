@@ -3,7 +3,7 @@ from typing import Any
 
 from qtpy.QtWidgets import QLayout
 from qtpy.QtWidgets import QListWidgetItem, QListWidget, QWidget, QHBoxLayout, QLabel
-from qtpy.QtCore import Qt
+from qtpy.QtCore import Qt, Signal
 
 
 class ItemType(Enum):
@@ -116,7 +116,7 @@ class TemplateItem(QListWidgetItem):
             self.editable_widget.activated.connect(lambda: self.parent.setCurrentItem(self))
         elif self._type == ItemType.POINT:
             self.editable_widget.clicked.connect(lambda: self.parent.setCurrentItem(self))
-            self.editable_widget.clicked.connect(lambda: self.parent.point_select_clicked.emit(self.name.text()))
+            self.editable_widget.clicked.connect(lambda: self.parent.point_select_clicked.emit(self))
 
     def set_focus(self):
         """Set the annotating focus on the widget of the current item."""

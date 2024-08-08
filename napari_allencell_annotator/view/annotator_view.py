@@ -97,7 +97,6 @@ class AnnotatorView(QFrame):
         self.layout.addWidget(label)
         self.setStyleSheet(Style.get_stylesheet("main.qss"))
         self.annot_list = TemplateList(model)
-        self.annot_list.point_select_clicked.connect(self._handle_point_selection)
         self.scroll = QScrollArea()
         self.scroll.setWidget(self.annot_list)
         self.scroll.setWidgetResizable(True)
@@ -300,9 +299,13 @@ class AnnotatorView(QFrame):
             annotation type, default, and options.
         """
         self.annots_order.append(name)
-        self.annot_list.add_item(name, key)
+        item = self.annot_list.add_item(name, key)
 
-    def _handle_point_selection(self, annot_name: str):
+        if item.type == ItemType.POINT:
+            self.annot_list.point_select_clicked.connect(self._handle_point_selection)
+
+    def _handle_point_selection(self, annot_item: TemplateItem):
+        annot_name = annot_item.name.text()
         if annot_name not in self._annotator_model.get_all_curr_img_points_layers():
             self._annotator_model.add_points_layer(
                 annot_name, self.viewer.create_points_layer(annot_name, "blue", True)
@@ -311,5 +314,7 @@ class AnnotatorView(QFrame):
         annot_points_layer: Points = self._annotator_model.get_points_layer(annot_name)
         if self.viewer.get_points_layer_mode(annot_points_layer) == PointsLayerMode.PAN_ZOOM.value:
             self.viewer.set_points_layer_mode(annot_points_layer, PointsLayerMode.ADD)
+            annot_item.editable_widget.setText("Finish")
         else:
             self.viewer.set_points_layer_mode(annot_points_layer, PointsLayerMode.PAN_ZOOM)
+            annot_item.editable_widget.setText("Select")

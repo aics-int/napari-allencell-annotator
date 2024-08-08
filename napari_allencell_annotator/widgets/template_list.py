@@ -24,7 +24,7 @@ class TemplateList(QListWidget):
 
     """
 
-    point_select_clicked: Signal = Signal(str)
+    point_select_clicked: Signal = Signal(TemplateItem)
 
     def __init__(self, annotator_model: AnnotatorModel):
         QListWidget.__init__(self)
@@ -127,3 +127,5 @@ class TemplateList(QListWidget):
 
         self.height = self.height + item.widget.sizeHint().height()
         self.setMaximumHeight(self.height)
+
+        return item
