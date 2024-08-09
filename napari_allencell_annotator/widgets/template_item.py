@@ -127,16 +127,21 @@ class TemplateItem(QListWidgetItem):
             self.editable_widget.activated.connect(lambda: self.parent.setCurrentItem(self))
         elif self._type == ItemType.POINT:
             self.editable_widget.clicked.connect(lambda: self.parent.setCurrentItem(self))
-            self.editable_widget.clicked.connect(lambda: self._annotation_model.edit_points_layer(self.name.text()))
+            self.editable_widget.clicked.connect(lambda: self._handle_select_button_clicked(self.name.text()))
             self._annotation_model.annotation_started_changed.connect(self._handle_select_button_enabled)
-            self._annotation_model.edit_points_layer_changed.connect(
-                lambda name: self._handle_select_button_clicked(name)
+            self.parent.currentItemChanged.connect(
+                self._toggle_button_off
             )
 
     def _handle_select_button_enabled(self):
         self.editable_widget.setEnabled(self._annotation_model.is_annotation_started())
 
+    def _toggle_button_off(self):
+        if self != self.parent.currentItem():
+            self.editable_widget.setText("Select")
+
     def _handle_select_button_clicked(self, annot_name):
+        self._annotation_model.edit_points_layer(self.name.text())
         if self.name.text() == annot_name and self.editable_widget.text() == "Select":
             self.editable_widget.setText("Finish")
         else:
