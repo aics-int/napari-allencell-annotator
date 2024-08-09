@@ -239,7 +239,12 @@ class AnnotatorView(QFrame):
             if item_data is None or item_data == "":
                 item.set_default_value()
             else:
-                item.set_value(item_data)
+                if item.type == ItemType.POINT:
+                    annot_name = item.name.text()
+                    self._annotator_model.add_points_layer(annot_name, self.viewer.create_points_layer(annot_name, True))
+                else:
+                    item.set_value(item_data)
+
         # self.annot_list.setCurrentItem(self.annot_list.items[0])
 
     def get_curr_annots(self) -> List[Any]:
@@ -252,8 +257,17 @@ class AnnotatorView(QFrame):
             a list of annotation values.
         """
         annots = []
-        for i in self.annot_list.items:
-            annots.append(i.get_value())
+        # point_annots = self.viewer.get_all_point_annotations()
+
+        for item in self.annot_list.items:
+            if item.type == ItemType.POINT:
+                annot_name = item.name.text()
+                if annot_name in self._annotator_model.get_all_curr_img_points_layers():
+                    annots.append(self.viewer.get_selected_points(self._annotator_model.get_points_layer(annot_name)))
+                else:
+                    annots.append(None)
+            else:
+                annots.append(item.get_value())
         return annots
 
     def _display_mode(self):

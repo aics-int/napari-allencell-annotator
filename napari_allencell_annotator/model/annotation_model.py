@@ -163,6 +163,9 @@ class AnnotatorModel(QObject):
     def get_all_curr_img_points_layers(self) -> dict[str, Points]:
         return self._curr_img_points_layer
 
+    def clear_all_cur_img_points_layers(self) -> None:
+        self._curr_img_points_layer = {}
+
     def add_points_layer(self, name: str, points_layer: Points):
         self._curr_img_points_layer[name] = points_layer
 

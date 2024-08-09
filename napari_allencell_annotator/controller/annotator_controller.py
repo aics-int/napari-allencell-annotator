@@ -211,6 +211,7 @@ class AnnotatorController:
             self._annotation_model.add_annotation(
                 self._annotation_model.get_all_images()[record_idx], self.view.get_curr_annots()
             )
+            self._annotation_model.clear_all_cur_img_points_layers()
 
     def read_json(self, file_path: Path):
         # TODO change param to path
