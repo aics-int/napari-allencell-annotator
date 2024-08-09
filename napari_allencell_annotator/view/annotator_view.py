@@ -241,7 +241,7 @@ class AnnotatorView(QFrame):
             else:
                 if item.type == ItemType.POINT:
                     annot_name = item.name.text()
-                    self._annotator_model.add_points_layer(annot_name, self.viewer.create_points_layer(annot_name, True))
+                    self._annotator_model.add_points_layer(annot_name, self.viewer.create_points_layer(annot_name, True, item_data))
                 else:
                     item.set_value(item_data)
 
