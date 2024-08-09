@@ -198,6 +198,7 @@ class AnnotatorView(QFrame):
     def _handle_image_changed(self):
         if self._annotator_model.get_curr_img_index() == -1:
             self.render_default_values()
+        self.annot_list.setCurrentItem(None)
 
     def display_current_progress(self):
         """

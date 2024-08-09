@@ -129,6 +129,7 @@ class TemplateItem(QListWidgetItem):
             self.editable_widget.clicked.connect(lambda: self.parent.setCurrentItem(self))
             self.editable_widget.clicked.connect(lambda: self._handle_select_button_clicked(self.name.text()))
             self._annotation_model.annotation_started_changed.connect(self._handle_select_button_enabled)
+            self._annotation_model.image_changed.connect(self._toggle_button_off)
             self.parent.currentItemChanged.connect(
                 self._toggle_button_off
             )
