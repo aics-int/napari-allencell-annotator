@@ -257,13 +257,13 @@ class AnnotatorView(QFrame):
             a list of annotation values.
         """
         annots = []
-        # point_annots = self.viewer.get_all_point_annotations()
+        point_annots = self.viewer.get_all_point_annotations()
 
         for item in self.annot_list.items:
             if item.type == ItemType.POINT:
                 annot_name = item.name.text()
-                if annot_name in self._annotator_model.get_all_curr_img_points_layers():
-                    annots.append(self.viewer.get_selected_points(self._annotator_model.get_points_layer(annot_name)))
+                if annot_name in point_annots:
+                    annots.append(point_annots[annot_name])
                 else:
                     annots.append(None)
             else:

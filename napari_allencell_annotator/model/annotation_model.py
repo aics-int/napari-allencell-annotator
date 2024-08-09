@@ -16,6 +16,7 @@ class AnnotatorModel(QObject):
     image_set_added: Signal = Signal()
     annotation_started_changed: Signal = Signal()
     edit_points_layer_changed: Signal = Signal(str)
+    annotation_recorded: Signal = Signal()
 
     def __init__(self):
         super().__init__()
@@ -174,3 +175,6 @@ class AnnotatorModel(QObject):
 
     def edit_points_layer(self, annot_name: str):
         self.edit_points_layer_changed.emit(annot_name)
+
+    def annotation_saved(self):
+        self.annotation_recorded.emit()
