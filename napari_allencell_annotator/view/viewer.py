@@ -54,11 +54,25 @@ class Viewer(IViewer):
         """
         self.viewer.add_image(image)
 
+
     def clear_layers(self) -> None:
         """
         Clear all images from the napari viewer
         """
         self.viewer.layers.clear()
+        self.colors: list[str] = [
+            "blue",
+            "fuchsia",
+            "green",
+            "lime",
+            "purple",
+            "red",
+            "royalblue",
+            "sandybrown",
+            "tomato",
+            "turquoise",
+            "yellow",
+        ]
 
     def alert(self, alert_msg: str) -> None:
         """
