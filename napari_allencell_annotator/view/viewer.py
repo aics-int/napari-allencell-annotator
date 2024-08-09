@@ -6,7 +6,7 @@ from napari.layers import Layer, Points
 from napari_allencell_annotator.view.i_viewer import IViewer
 from napari.utils.notifications import show_info
 import napari
-from napari.utils.colormaps import label_colormap
+from napari.utils.colormaps.standardize_color import get_color_namelist
 
 
 class PointsLayerMode(Enum):
@@ -29,6 +29,19 @@ class Viewer(IViewer):
     def __init__(self, viewer: napari.Viewer):
         super().__init__()
         self.viewer: napari.Viewer = viewer
+        self.colors: list[str] = [
+            "blue",
+            "fuchsia",
+            "green",
+            "lime",
+            "purple",
+            "red",
+            "royalblue",
+            "sandybrown",
+            "tomato",
+            "turquoise",
+            "yellow",
+        ]
 
     def add_image(self, image: np.ndarray) -> None:
         """
@@ -88,8 +101,10 @@ class Viewer(IViewer):
         Points
             A new point layer
         """
+        color: str = np.random.choice(self.colors)
+        self.colors.remove(color)
         points_layer: Points = self.viewer.add_points(
-            data=data, name=name, face_color=label_colormap(256).colors[np.random.randint(0, 256)], visible=visible, ndim=self.viewer.dims.ndim
+            data=data, name=name, face_color=color, visible=visible, ndim=self.viewer.dims.ndim
         )
         return points_layer
 
@@ -153,4 +168,3 @@ class Viewer(IViewer):
         for points_layer in self.get_all_points_layers():
             self.set_points_layer_mode(points_layer, PointsLayerMode.PAN_ZOOM)
             points_layer.selected_data = []
-

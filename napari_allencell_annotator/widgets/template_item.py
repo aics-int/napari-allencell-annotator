@@ -128,7 +128,9 @@ class TemplateItem(QListWidgetItem):
             self.editable_widget.clicked.connect(lambda: self.parent.setCurrentItem(self))
             self.editable_widget.clicked.connect(lambda: self._annotation_model.edit_points_layer(self.name.text()))
             self._annotation_model.annotation_started_changed.connect(self._handle_select_button_enabled)
-            self._annotation_model.edit_points_layer_changed.connect(lambda name: self._handle_select_button_clicked(name))
+            self._annotation_model.edit_points_layer_changed.connect(
+                lambda name: self._handle_select_button_clicked(name)
+            )
 
     def _handle_select_button_enabled(self):
         if self.editable_widget.isEnabled():
