@@ -133,10 +133,7 @@ class TemplateItem(QListWidgetItem):
             )
 
     def _handle_select_button_enabled(self):
-        if self.editable_widget.isEnabled():
-            self.editable_widget.setEnabled(False)
-        else:
-            self.editable_widget.setEnabled(True)
+        self.editable_widget.setEnabled(self._annotation_model.is_annotation_started())
 
     def _handle_select_button_clicked(self, annot_name):
         if self.name.text() == annot_name and self.editable_widget.text() == "Select":
