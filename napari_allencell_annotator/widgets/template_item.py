@@ -65,6 +65,7 @@ class TemplateItem(QListWidgetItem):
         self.widget.setLayout(self.layout)
         self.setSizeHint(self.widget.minimumSizeHint())
         parent.setItemWidget(self, self.widget)
+        self.create_evt_listener()
 
     @property
     def type(self) -> ItemType:
