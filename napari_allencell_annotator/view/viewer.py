@@ -59,18 +59,6 @@ class Viewer(IViewer):
         Clear all images from the napari viewer
         """
         self.viewer.layers.clear()
-        self.colors: list[str] = [
-            "lime",
-            "fuchsia",
-            "red",
-            "royalblue",
-            "sandybrown",
-            "tomato",
-            "turquoise",
-            "yellow",
-            "blue",
-            "purple",
-        ]
 
     def alert(self, alert_msg: str) -> None:
         """
@@ -113,8 +101,7 @@ class Viewer(IViewer):
         Points
             A new point layer
         """
-        color: str = self.colors[0]
-        self.colors.remove(color)
+        color: str = self.colors[len(self.get_all_points_layers())]
         points_layer: Points = self.viewer.add_points(
             data=data, name=name, face_color=color, visible=visible, ndim=self.viewer.dims.ndim
         )
