@@ -45,8 +45,9 @@ class TemplateItem(QListWidgetItem):
             self.layout.addWidget(self.editable_widget)
             self.editable_widget.setEnabled(True)
         else:
-            self.layout.addWidget(self.name, 0)
-            self.layout.addWidget(self.editable_widget, 1, alignment=Qt.AlignCenter)
+            self.layout.addWidget(self.name)
+            self.layout.addWidget(self.editable_widget)
+            self.editable_widget.setFixedWidth(200)
             self.editable_widget.setEnabled(False)
 
         self.layout.setContentsMargins(2, 12, 8, 12)

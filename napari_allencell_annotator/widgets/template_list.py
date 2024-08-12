@@ -113,7 +113,6 @@ class TemplateList(QListWidget):
         elif annot_type == "point":
             annot_type = ItemType.POINT
             widget = QPushButton("Select")
-            widget.setFixedWidth(200)
 
         item = TemplateItem(self, name, annot_type, default, widget)
 
