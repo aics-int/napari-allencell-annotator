@@ -121,7 +121,6 @@ class ImagesView(QFrame):
         if self._annotator_model.is_annotation_started():
             self._display_img()
 
-
     def _handle_shuffle_ui(self, checked: bool) -> None:
         """
         Update shuffle button text to reflect toggle state.

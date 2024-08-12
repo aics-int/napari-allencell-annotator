@@ -53,7 +53,6 @@ class Viewer(IViewer):
         """
         self.viewer.add_image(image)
 
-
     def clear_layers(self) -> None:
         """
         Clear all images from the napari viewer

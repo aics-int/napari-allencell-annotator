@@ -244,7 +244,9 @@ class AnnotatorView(QFrame):
             else:
                 if item.type == ItemType.POINT:
                     annot_name = item.name.text()
-                    self._annotator_model.add_points_layer(annot_name, self.viewer.create_points_layer(annot_name, True, item_data))
+                    self._annotator_model.add_points_layer(
+                        annot_name, self.viewer.create_points_layer(annot_name, True, item_data)
+                    )
                 else:
                     item.set_value(item_data)
 
@@ -330,4 +332,3 @@ class AnnotatorView(QFrame):
         # for items other than points
         if self.annot_list.currentItem() is None or self.annot_list.currentItem().type != ItemType.POINT:
             self.viewer.set_all_points_layer_to_pan_zoom()
-
