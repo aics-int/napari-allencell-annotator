@@ -82,7 +82,7 @@ class TemplateList(QListWidget):
 
         self.height = 0
 
-    def add_item(self, name: str, key: Key | ComboKey) -> TemplateItem:
+    def add_item(self, name: str, key: Key | ComboKey):
         """
         Add annotation template item from dictionary entries.
 
