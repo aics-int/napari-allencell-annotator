@@ -46,20 +46,12 @@ def test_get_curr_annots(annotator_view: AnnotatorView) -> None:
     annotator_view.annot_list.add_item("number", Key("number", 1))
     annotator_view.annot_list.add_item("bool", Key("bool", True))
     annotator_view.annot_list.add_item("list", ComboKey("list", ["a", "b", "c"], "a"))
-    annotator_view.annot_list.add_item("point", Key("point_created", None))
-    annotator_view.annot_list.add_item("point", Key("point_none", None))
+    annotator_view.annot_list.add_item("point_created", Key("point", None))
+    annotator_view.annot_list.add_item("point_none", Key("point", None))
     annotator_view.viewer.create_points_layer("point_created", True, [(0, 0, 0, 0, 0, 0)])
-    print(annotator_view.viewer.get_all_point_annotations())
-
-    # add create points
-    assert annotator_view.get_curr_annots() == ["", 1, True, "a", [(0, 0, 0, 0, 0, 0)], None]
-
-    # annotator_view.annot_list.item(0).set_value("")
-    # annotator_view.annot_list.item(1).set_value(1)
-    # annotator_view.annot_list.item(2).set_value(True)
-    # annotator_view.annot_list.item().set_value("text")
 
     # ASSERT
+    assert annotator_view.get_curr_annots() == ["", 1, True, "a", [(0, 0, 0, 0, 0, 0)], None]
 
 
 class TestAnnotatorView:
