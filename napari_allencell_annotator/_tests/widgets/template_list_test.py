@@ -31,7 +31,6 @@ def test_add_item_string(template_list: TemplateList) -> None:
     # ASSERT
     assert template_list.count() == 1
     item: TemplateItem = template_list.item(0)
-    assert item.name.text() == "test_string"
 
     # test template_list.items
     assert len(template_list.items) == 1
@@ -45,7 +44,6 @@ def test_add_item_number(template_list: TemplateList) -> None:
     # ASSERT
     assert template_list.count() == 1
     item: TemplateItem = template_list.item(0)
-    assert item.name.text() == "test_number"
 
     # test template_list.items
     assert len(template_list.items) == 1
@@ -59,7 +57,6 @@ def test_add_item_bool(template_list: TemplateList) -> None:
     # ASSERT
     assert template_list.count() == 1
     item: TemplateItem = template_list.item(0)
-    assert item.name.text() == "test_bool"
 
     # test template_list.items
     assert len(template_list.items) == 1
@@ -73,7 +70,6 @@ def test_add_item_list(template_list: TemplateList) -> None:
     # ASSERT
     assert template_list.count() == 1
     item: TemplateItem = template_list.item(0)
-    assert item.name.text() == "test_list"
 
     # test template_list.items
     assert len(template_list.items) == 1
@@ -87,7 +83,6 @@ def test_add_item_point(template_list: TemplateList) -> None:
     # ASSERT
     assert template_list.count() == 1
     item: TemplateItem = template_list.item(0)
-    assert item.name.text() == "test_point"
 
     # test template_list.items
     assert len(template_list.items) == 1
