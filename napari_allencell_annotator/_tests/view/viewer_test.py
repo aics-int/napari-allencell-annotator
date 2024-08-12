@@ -53,7 +53,6 @@ def test_create_points_layer(viewer: Viewer) -> None:
     np.testing.assert_array_equal(test_points_layer2.face_color[0], Colormap("fuchsia").colors[0])
 
 
-
 def test_set_points_layer_mode(viewer: Viewer) -> None:
     # ARRANGE
     test_points_layer: Points = viewer.create_points_layer("test", True)
@@ -63,6 +62,18 @@ def test_set_points_layer_mode(viewer: Viewer) -> None:
 
     # ASSERT
     assert test_points_layer.mode == PointsLayerMode.ADD.value
+
+
+def test_get_points_layer_mode(viewer: Viewer) -> None:
+    # ARRANGE
+    test_points_layer: Points = viewer.create_points_layer("test", True)
+
+    # ACT
+    mode: str = viewer.get_points_layer_mode(test_points_layer)
+
+    # ASSERT
+    # default mode is pan_zoom
+    assert mode == "pan_zoom"
 
 
 def test_get_selected_points(viewer: Viewer) -> None:
@@ -86,3 +97,29 @@ def test_get_all_point_annotations(viewer: Viewer) -> None:
 
     # ASSERT
     assert all_point_annotations == {"test1": [(0, 0)], "test2": [(1, 1)]}
+
+def test_toggle_points_layer_pan_zoom(viewer: Viewer) -> None:
+    # ARRANGE
+    test_points_layer_pan_zoom: Points = viewer.create_points_layer("pan_zoom", True, np.zeros(shape=(1, 2)))
+    test_points_layer_other: Points = viewer.create_points_layer("other", True, np.ones(shape=(1, 2)))
+
+    # ACT
+    viewer.toggle_points_layer(test_points_layer_pan_zoom)
+
+    # ASSERT
+    assert viewer.get_points_layer_mode(test_points_layer_pan_zoom) == "add"
+    assert viewer.get_points_layer_mode(test_points_layer_other) == "pan_zoom"
+    assert viewer.viewer.layers.selection.pop() == test_points_layer_pan_zoom
+
+
+def test_toggle_points_layer_add(viewer: Viewer) -> None:
+    # ARRANGE
+    test_points_layer_add: Points = viewer.create_points_layer("add", True, np.zeros(shape=(1, 2)))
+    viewer.set_points_layer_mode(test_points_layer_add, PointsLayerMode.ADD)
+
+    # ACT
+    viewer.toggle_points_layer(test_points_layer_add)
+
+    # ASSERT
+    assert len(test_points_layer_add.selected_data) == 0
+    assert viewer.get_points_layer_mode(test_points_layer_add) == "pan_zoom"

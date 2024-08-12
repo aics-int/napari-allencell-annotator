@@ -54,8 +54,6 @@ def test_render_values(annotator_view: AnnotatorView) -> None:
     assert "point_created" in annotator_view._annotator_model.get_all_curr_img_points_layers()
 
 
-
-
 def test_get_curr_annots(annotator_view: AnnotatorView) -> None:
 
     # ARRANGE
