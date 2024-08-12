@@ -1,6 +1,18 @@
 from unittest import mock
 from unittest.mock import MagicMock, create_autospec
 
+import pytest
+
+from napari_allencell_annotator.model.combo_key import ComboKey
+
+from napari_allencell_annotator.model.key import Key
+
+from napari_allencell_annotator.view.i_viewer import IViewer
+
+from napari_allencell_annotator._tests.fakes.fake_viewer import FakeViewer
+
+from napari_allencell_annotator.model.annotation_model import AnnotatorModel
+
 from napari_allencell_annotator.view.annotator_view import (
     AnnotatorView,
     AnnotatorViewMode,
@@ -10,6 +22,44 @@ from napari_allencell_annotator.view.annotator_view import (
     QScrollArea,
 )
 from napari_allencell_annotator.widgets.template_item import TemplateItem
+
+
+@pytest.fixture
+def annotator_model(qtbot) -> AnnotatorModel:
+    return AnnotatorModel()
+
+
+@pytest.fixture
+def viewer(qtbot) -> IViewer:
+    return FakeViewer()
+
+
+@pytest.fixture
+def annotator_view(qtbot, annotator_model: AnnotatorModel, viewer: IViewer) -> AnnotatorView:
+    return AnnotatorView(annotator_model, viewer)
+
+
+def test_get_curr_annots(annotator_view: AnnotatorView) -> None:
+
+    # ACT
+    annotator_view.annot_list.add_item("text", Key("string", ""))
+    annotator_view.annot_list.add_item("number", Key("number", 1))
+    annotator_view.annot_list.add_item("bool", Key("bool", True))
+    annotator_view.annot_list.add_item("list", ComboKey("list", ["a", "b", "c"], "a"))
+    annotator_view.annot_list.add_item("point", Key("point_created", None))
+    annotator_view.annot_list.add_item("point", Key("point_none", None))
+    annotator_view.viewer.create_points_layer("point_created", True, [(0, 0, 0, 0, 0, 0)])
+    print(annotator_view.viewer.get_all_point_annotations())
+
+    # add create points
+    assert annotator_view.get_curr_annots() == ["", 1, True, "a", [(0, 0, 0, 0, 0, 0)], None]
+
+    # annotator_view.annot_list.item(0).set_value("")
+    # annotator_view.annot_list.item(1).set_value(1)
+    # annotator_view.annot_list.item(2).set_value(True)
+    # annotator_view.annot_list.item().set_value("text")
+
+    # ASSERT
 
 
 class TestAnnotatorView:
