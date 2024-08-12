@@ -72,7 +72,7 @@ class AnnotatorController:
         self.view.cancel_btn.clicked.connect(self.stop_viewing)
         # we want to save the annotation for the image that we just switched off of.
         self._annotation_model.image_changed.connect(
-            lambda: self.record_annotations(self._annotation_model.get_previous_image_index())
+            lambda: self._record_annotations(self._annotation_model.get_previous_image_index())
         )
 
     def write_json(self, file_path: str):
@@ -119,13 +119,13 @@ class AnnotatorController:
     def save_annotations(self):
         """Save current annotation data"""
         # save annotations for file we're on
-        self.record_annotations(self._annotation_model.get_curr_img_index())
+        self._record_annotations(self._annotation_model.get_curr_img_index())
         self.write_csv()
 
     def stop_annotating(self):
         """Reset values from annotating and change mode to ADD."""
         # TODO: DO WE WANT TO SAVE ALL IMAGES WITHOUT ANNOTATIONS
-        self.record_annotations(self._annotation_model.get_curr_img_index())
+        self._record_annotations(self._annotation_model.get_curr_img_index())
 
         # Save rest of annotations, even if empty
         for idx in range(self._annotation_model.get_num_images()):
@@ -195,7 +195,7 @@ class AnnotatorController:
             else:
                 self.view.prev_btn.setEnabled(True)
 
-    def record_annotations(self, record_idx: int):
+    def _record_annotations(self, record_idx: int):
         """
         Add the image's annotation values to the annotation dictionary
 
