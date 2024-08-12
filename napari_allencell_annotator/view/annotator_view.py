@@ -329,6 +329,7 @@ class AnnotatorView(QFrame):
         self.viewer.toggle_points_layer(annot_points_layer)
 
     def _handle_item_changed(self):
+        # for items other than points
         if self.annot_list.currentItem() is None or self.annot_list.currentItem().type != ItemType.POINT:
             self.viewer.set_all_points_layer_to_pan_zoom()
 

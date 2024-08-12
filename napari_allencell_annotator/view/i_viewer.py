@@ -64,3 +64,11 @@ class IViewer(ABC):
     @abstractmethod
     def get_all_point_annotations(self) -> dict[str, list[tuple]]:
         pass
+
+    @abstractmethod
+    def toggle_points_layer(self, annot_points_layer: Points):
+        pass
+
+    @abstractmethod
+    def set_all_points_layer_to_pan_zoom(self):
+        pass
