@@ -39,9 +39,26 @@ def annotator_view(qtbot, annotator_model: AnnotatorModel, viewer: IViewer) -> A
     return AnnotatorView(annotator_model, viewer)
 
 
-def test_get_curr_annots(annotator_view: AnnotatorView) -> None:
+def test_render_values(annotator_view: AnnotatorView) -> None:
+    # ARRANGE
+    annotator_view.annot_list.add_item("text", Key("string", "text"))
+    annotator_view.annot_list.add_item("number", Key("number", 1))
+    annotator_view.annot_list.add_item("point_created", Key("point", None))
 
     # ACT
+    annotator_view.render_values(["", 2, [(0, 0, 0, 0, 0, 0)]])
+
+    # ASSERT
+    assert annotator_view.annot_list.item(0).editable_widget.text() == "text"
+    assert annotator_view.annot_list.item(1).editable_widget.value() == 2
+    assert "point_created" in annotator_view._annotator_model.get_all_curr_img_points_layers()
+
+
+
+
+def test_get_curr_annots(annotator_view: AnnotatorView) -> None:
+
+    # ARRANGE
     annotator_view.annot_list.add_item("text", Key("string", ""))
     annotator_view.annot_list.add_item("number", Key("number", 1))
     annotator_view.annot_list.add_item("bool", Key("bool", True))
