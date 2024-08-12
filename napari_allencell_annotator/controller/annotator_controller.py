@@ -135,7 +135,6 @@ class AnnotatorController:
         self.write_csv()
         # reset optional fields in model to None (pre-annottion state)
         self._annotation_model.set_annotation_started(False)
-        self.view.viewer.set_all_points_layer_to_pan_zoom()
         self._annotation_model.set_csv_save_path(None)
         self.view.set_mode(AnnotatorViewMode.VIEW)
 
