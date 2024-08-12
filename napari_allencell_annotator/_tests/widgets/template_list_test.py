@@ -18,9 +18,11 @@ from napari_allencell_annotator.widgets.template_list import (
 )
 import pytest
 
+
 @pytest.fixture()
 def annotator_model(qtbot) -> AnnotatorModel:
     return AnnotatorModel()
+
 
 @pytest.fixture()
 def template_list(qtbot, annotator_model: AnnotatorModel) -> TemplateList:
