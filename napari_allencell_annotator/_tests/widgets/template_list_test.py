@@ -2,6 +2,7 @@ from unittest import mock
 from unittest.mock import MagicMock, patch, create_autospec
 
 from PyQt5.QtWidgets import QPushButton, QLineEdit
+from napari_allencell_annotator.model.annotation_model import AnnotatorModel
 
 from napari_allencell_annotator.model.combo_key import ComboKey
 
@@ -17,10 +18,13 @@ from napari_allencell_annotator.widgets.template_list import (
 )
 import pytest
 
+@pytest.fixture()
+def annotator_model(qtbot) -> AnnotatorModel:
+    return AnnotatorModel()
 
 @pytest.fixture()
-def template_list(qtbot) -> TemplateList:
-    return TemplateList()
+def template_list(qtbot, annotator_model: AnnotatorModel) -> TemplateList:
+    return TemplateList(annotator_model)
 
 
 def test_add_item_string(template_list: TemplateList) -> None:
