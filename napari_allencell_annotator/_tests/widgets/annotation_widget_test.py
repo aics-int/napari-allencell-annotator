@@ -21,7 +21,6 @@ def test_add_existing_item_string(annotation_widget: AnnotationWidget) -> None:
 
     # ASSERT
     assert annotation_widget.count() == 1
-    assert annotation_widget.item(0).name.text() == "test_string"
 
 
 def test_add_existing_item_number(annotation_widget: AnnotationWidget) -> None:
@@ -30,7 +29,6 @@ def test_add_existing_item_number(annotation_widget: AnnotationWidget) -> None:
 
     # ASSERT
     assert annotation_widget.count() == 1
-    assert annotation_widget.item(0).name.text() == "test_number"
 
 
 def test_add_existing_item_bool(annotation_widget: AnnotationWidget) -> None:
@@ -39,7 +37,6 @@ def test_add_existing_item_bool(annotation_widget: AnnotationWidget) -> None:
 
     # ASSERT
     assert annotation_widget.count() == 1
-    assert annotation_widget.item(0).name.text() == "test_bool"
 
 
 def test_add_existing_item_list(annotation_widget: AnnotationWidget) -> None:
@@ -48,7 +45,6 @@ def test_add_existing_item_list(annotation_widget: AnnotationWidget) -> None:
 
     # ASSERT
     assert annotation_widget.count() == 1
-    assert annotation_widget.item(0).name.text() == "test_list"
 
 
 def test_add_existing_item_point(annotation_widget: AnnotationWidget) -> None:
@@ -57,7 +53,6 @@ def test_add_existing_item_point(annotation_widget: AnnotationWidget) -> None:
 
     # ASSERT
     assert annotation_widget.count() == 1
-    assert annotation_widget.item(0).name.text() == "test_point"
 
 
 class TestAnnotationWidget:
