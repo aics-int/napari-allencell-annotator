@@ -1,10 +1,7 @@
 from typing import Any, List
 
-from PyQt5.QtWidgets import QPushButton
 from qtpy import QtWidgets
-from qtpy.QtWidgets import QLineEdit, QCheckBox, QComboBox, QSpinBox
-from qtpy.QtWidgets import QSizePolicy
-from qtpy.QtWidgets import QListWidget
+from qtpy.QtWidgets import QLineEdit, QCheckBox, QComboBox, QSpinBox, QPushButton, QSizePolicy, QListWidget
 
 from napari_allencell_annotator.model.combo_key import ComboKey
 from napari_allencell_annotator.model.key import Key
