@@ -204,7 +204,7 @@ class AnnotationItem(QListWidgetItem):
             self.default_options_label.show()
             self.layout.addWidget(self.default_text, 0, 7, 1, 2)
 
-        else:
+        elif text == "point":
             self.default_label.hide()
             self.default_options.hide()
             self.default_options_label.hide()
@@ -299,7 +299,7 @@ class AnnotationItem(QListWidgetItem):
             else:
                 default = False
 
-        else:
+        elif type == "point":
             type = "point"
             default = None
 
