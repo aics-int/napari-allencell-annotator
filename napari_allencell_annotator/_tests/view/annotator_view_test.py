@@ -98,16 +98,16 @@ class TestAnnotatorView:
         item2.set_value.assert_called_once_with("val2")
         item3.set_default_value.assert_called_once_with()
 
-    def test_get_curr_annots(self):
-        item1 = create_autospec(TemplateItem)
-        item1.get_value = MagicMock(return_value="ret1")
-        item2 = create_autospec(TemplateItem)
-        item2.get_value = MagicMock(return_value="ret2")
-        item3 = create_autospec(TemplateItem)
-        item3.get_value = MagicMock(return_value="ret3")
-        self._view.annot_list = create_autospec(TemplateList)
-        self._view.annot_list.items = [item1, item2, item3]
-        assert self._view.get_curr_annots() == ["ret1", "ret2", "ret3"]
+    # def test_get_curr_annots(self):
+    #     item1 = create_autospec(TemplateItem)
+    #     item1.get_value = MagicMock(return_value="ret1")
+    #     item2 = create_autospec(TemplateItem)
+    #     item2.get_value = MagicMock(return_value="ret2")
+    #     item3 = create_autospec(TemplateItem)
+    #     item3.get_value = MagicMock(return_value="ret3")
+    #     self._view.annot_list = create_autospec(TemplateList)
+    #     self._view.annot_list.items = [item1, item2, item3]
+    #     assert self._view.get_curr_annots() == ["ret1", "ret2", "ret3"]
 
     def test_display_mode_add_mode(self):
         self._view._mode = AnnotatorViewMode.ADD

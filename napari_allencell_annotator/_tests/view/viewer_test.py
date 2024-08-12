@@ -49,7 +49,7 @@ def test_create_points_layer(viewer: Viewer) -> None:
     assert test_points_layer in viewer.get_all_points_layers()
     assert len(viewer.get_all_points_layers()) == 1
     assert test_points_layer.name == "test"
-    np.testing.assert_array_equal(test_points_layer.face_color[0], Colormap("blue").colors[0])
+    np.testing.assert_array_equal(test_points_layer.face_color[0], Colormap("lime").colors[0])
     assert test_points_layer.visible
     np.testing.assert_array_equal(test_points_layer.data, test_points_data)
     assert test_points_layer.ndim == 2
