@@ -282,7 +282,7 @@ class AnnotatorView(QFrame):
             self.add_widget.show()
             self.layout.addWidget(self.add_widget)
             self.annot_list.setCurrentItem(None)
-            self.viewer.set_all_points_layer_to_pan_zoom(None)
+            self.viewer.set_all_points_layer_to_pan_zoom()
         elif self._mode == AnnotatorViewMode.VIEW:
             self.save_json_btn.setEnabled(True)
             self.view_widget.show()
@@ -329,7 +329,6 @@ class AnnotatorView(QFrame):
         self.viewer.toggle_points_layer(annot_points_layer)
 
     def _handle_item_changed(self):
-        if self.annot_list.currentItem() is not None:
-            self.viewer.set_all_points_layer_to_pan_zoom(self.annot_list.currentItem().name.text())
-        else:
-            self.viewer.set_all_points_layer_to_pan_zoom(None)
+        if self.annot_list.currentItem() is None or self.annot_list.currentItem().type != ItemType.POINT:
+            self.viewer.set_all_points_layer_to_pan_zoom()
+
