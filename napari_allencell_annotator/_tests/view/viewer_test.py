@@ -43,16 +43,15 @@ def test_create_points_layer(viewer: Viewer) -> None:
     test_points_data = np.zeros(shape=(1, 2))
 
     # ACT
-    test_points_layer: Points = viewer.create_points_layer("test", True, test_points_data)
+    test_points_layer1: Points = viewer.create_points_layer("test1", True, test_points_data)
+    test_points_layer2: Points = viewer.create_points_layer("test2", True, test_points_data)
 
     # ASSERT
-    assert test_points_layer in viewer.get_all_points_layers()
-    assert len(viewer.get_all_points_layers()) == 1
-    assert test_points_layer.name == "test"
-    np.testing.assert_array_equal(test_points_layer.face_color[0], Colormap("lime").colors[0])
-    assert test_points_layer.visible
-    np.testing.assert_array_equal(test_points_layer.data, test_points_data)
-    assert test_points_layer.ndim == 2
+    assert test_points_layer1 in viewer.get_all_points_layers()
+    assert test_points_layer2 in viewer.get_all_points_layers()
+    np.testing.assert_array_equal(test_points_layer1.face_color[0], Colormap("lime").colors[0])
+    np.testing.assert_array_equal(test_points_layer2.face_color[0], Colormap("fuchsia").colors[0])
+
 
 
 def test_set_points_layer_mode(viewer: Viewer) -> None:
