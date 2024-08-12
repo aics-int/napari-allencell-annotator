@@ -30,17 +30,16 @@ class Viewer(IViewer):
         super().__init__()
         self.viewer: napari.Viewer = viewer
         self.colors: list[str] = [
-            "blue",
-            "fuchsia",
-            "green",
             "lime",
-            "purple",
+            "fuchsia",
             "red",
             "royalblue",
             "sandybrown",
             "tomato",
             "turquoise",
             "yellow",
+            "blue",
+            "purple",
         ]
 
     def add_image(self, image: np.ndarray) -> None:
@@ -61,17 +60,16 @@ class Viewer(IViewer):
         """
         self.viewer.layers.clear()
         self.colors: list[str] = [
-            "blue",
-            "fuchsia",
-            "green",
             "lime",
-            "purple",
+            "fuchsia",
             "red",
             "royalblue",
             "sandybrown",
             "tomato",
             "turquoise",
             "yellow",
+            "blue",
+            "purple",
         ]
 
     def alert(self, alert_msg: str) -> None:
@@ -115,7 +113,7 @@ class Viewer(IViewer):
         Points
             A new point layer
         """
-        color: str = np.random.choice(self.colors)
+        color: str = self.colors[0]
         self.colors.remove(color)
         points_layer: Points = self.viewer.add_points(
             data=data, name=name, face_color=color, visible=visible, ndim=self.viewer.dims.ndim
