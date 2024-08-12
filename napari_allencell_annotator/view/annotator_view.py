@@ -91,6 +91,7 @@ class AnnotatorView(QFrame):
         self._annotator_model = model
         self._annotator_model.image_changed.connect(self._handle_image_changed)
         self._annotator_model.edit_points_layer_changed.connect(self._handle_point_selection)
+        self._annotator_model.current_annot_changed.connect(self._handle_item_changed)
         self._mode = mode
         label = QLabel("Annotations")
         label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
@@ -117,6 +118,8 @@ class AnnotatorView(QFrame):
         self.layout.addWidget(self.scroll)
 
         self.curr_index: int = None
+
+        self.viewer: IViewer = viewer
 
         # Add widget visible in ADD mode
         self.add_widget = QWidget()
@@ -178,7 +181,6 @@ class AnnotatorView(QFrame):
 
         self.annots_order: List[str] = []
         self.setLayout(self.layout)
-        self.viewer: IViewer = viewer
 
     @property
     def mode(self) -> AnnotatorViewMode:
@@ -279,6 +281,8 @@ class AnnotatorView(QFrame):
         if self._mode == AnnotatorViewMode.ADD:
             self.add_widget.show()
             self.layout.addWidget(self.add_widget)
+            self.annot_list.setCurrentItem(None)
+            self.viewer.set_all_points_layer_to_pan_zoom(None)
         elif self._mode == AnnotatorViewMode.VIEW:
             self.save_json_btn.setEnabled(True)
             self.view_widget.show()
@@ -323,3 +327,9 @@ class AnnotatorView(QFrame):
 
         annot_points_layer: Points = self._annotator_model.get_points_layer(annot_name)
         self.viewer.toggle_points_layer(annot_points_layer)
+
+    def _handle_item_changed(self):
+        if self.annot_list.currentItem() is not None:
+            self.viewer.set_all_points_layer_to_pan_zoom(self.annot_list.currentItem().name.text())
+        else:
+            self.viewer.set_all_points_layer_to_pan_zoom(None)

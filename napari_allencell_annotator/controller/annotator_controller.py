@@ -135,6 +135,7 @@ class AnnotatorController:
         self.write_csv()
         # reset optional fields in model to None (pre-annottion state)
         self._annotation_model.set_annotation_started(False)
+        self.view.viewer.set_all_points_layer_to_pan_zoom(None)
         self._annotation_model.set_csv_save_path(None)
         self.view.set_mode(AnnotatorViewMode.VIEW)
 
@@ -211,8 +212,10 @@ class AnnotatorController:
             self._annotation_model.add_annotation(
                 self._annotation_model.get_all_images()[record_idx], self.view.get_curr_annots()
             )
-            self._annotation_model.clear_all_cur_img_points_layers()
-        self._annotation_model.annotation_saved()
+            self.view.annot_list.setCurrentItem(None)
+            # self._annotation_model.clear_all_cur_img_points_layers()
+        if record_idx == self._annotation_model.get_previous_image_index():
+            self._annotation_model.annotation_saved()
 
     def read_json(self, file_path: Path):
         # TODO change param to path

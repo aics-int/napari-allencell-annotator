@@ -112,10 +112,15 @@ class ImagesView(QFrame):
         self.file_widget.files_selected.connect(self._toggle_delete_button_text)
 
         self._annotator_model.annotation_recorded.connect(self._display_img)
-        self._annotator_model.annotation_started_changed.connect(self._display_img)
+        self._annotator_model.annotation_started_changed.connect(self._handle_annotation_started)
         self._annotator_model.image_count_changed.connect(self._handle_image_count_changed)
         self._annotator_model.images_shuffled.connect(self._handle_shuffle_ui)
         self._annotator_model.images_shuffled.connect(self.viewer.clear_layers)
+
+    def _handle_annotation_started(self):
+        if self._annotator_model.is_annotation_started():
+            self._display_img()
+
 
     def _handle_shuffle_ui(self, checked: bool) -> None:
         """

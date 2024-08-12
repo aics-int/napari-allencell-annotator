@@ -17,6 +17,7 @@ class AnnotatorModel(QObject):
     annotation_started_changed: Signal = Signal()
     edit_points_layer_changed: Signal = Signal(str)
     annotation_recorded: Signal = Signal()
+    current_annot_changed: Signal = Signal()
 
     def __init__(self):
         super().__init__()
@@ -122,6 +123,7 @@ class AnnotatorModel(QObject):
 
     def set_curr_img_index(self, idx: int) -> None:
         self._curr_img_index = idx
+        self.clear_all_cur_img_points_layers()
         self.image_changed.emit()
 
     def get_curr_img(self) -> Optional[Path]:
@@ -178,3 +180,6 @@ class AnnotatorModel(QObject):
 
     def annotation_saved(self):
         self.annotation_recorded.emit()
+
+    def change_current_annot_item(self):
+        self.current_annot_changed.emit()
