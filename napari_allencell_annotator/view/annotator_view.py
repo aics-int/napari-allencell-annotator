@@ -281,8 +281,6 @@ class AnnotatorView(QFrame):
         if self._mode == AnnotatorViewMode.ADD:
             self.add_widget.show()
             self.layout.addWidget(self.add_widget)
-            self.annot_list.setCurrentItem(None)
-            self.viewer.set_all_points_layer_to_pan_zoom()
         elif self._mode == AnnotatorViewMode.VIEW:
             self.save_json_btn.setEnabled(True)
             self.view_widget.show()
