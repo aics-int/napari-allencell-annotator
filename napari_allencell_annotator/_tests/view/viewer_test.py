@@ -124,3 +124,20 @@ def test_toggle_points_layer_add(viewer: Viewer) -> None:
     # ASSERT
     assert len(test_points_layer_add.selected_data) == 0
     assert viewer.get_points_layer_mode(test_points_layer_add) == "pan_zoom"
+
+
+def test_set_all_points_layer_to_pan_zoom(viewer: Viewer) -> None:
+    # ARRANGE
+    test_points_layer_add1: Points = viewer.create_points_layer("add1", True, np.zeros(shape=(1, 2)))
+    test_points_layer_add2: Points = viewer.create_points_layer("add2", True, np.zeros(shape=(1, 2)))
+    viewer.set_points_layer_mode(test_points_layer_add1, PointsLayerMode.ADD)
+    viewer.set_points_layer_mode(test_points_layer_add2, PointsLayerMode.ADD)
+
+    # ACT
+    viewer.set_all_points_layer_to_pan_zoom()
+
+    # ASSERT
+    assert viewer.get_points_layer_mode(test_points_layer_add1) == "pan_zoom"
+    assert len(test_points_layer_add1.selected_data) == 0
+    assert viewer.get_points_layer_mode(test_points_layer_add2) == "pan_zoom"
+    assert len(test_points_layer_add2.selected_data) == 0
