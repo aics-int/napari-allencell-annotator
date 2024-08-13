@@ -65,7 +65,6 @@ class TemplateList(QListWidget):
             next_row = curr_row - 1
             self.setCurrentRow(next_row)
 
-
     def clear_all(self):
         """
         Clear all data.

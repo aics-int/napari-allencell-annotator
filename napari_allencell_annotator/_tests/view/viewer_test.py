@@ -98,6 +98,7 @@ def test_get_all_point_annotations(viewer: Viewer) -> None:
     # ASSERT
     assert all_point_annotations == {"test1": [(0, 0)], "test2": [(1, 1)]}
 
+
 def test_toggle_points_layer_pan_zoom(viewer: Viewer) -> None:
     # ARRANGE
     test_points_layer_pan_zoom: Points = viewer.create_points_layer("pan_zoom", True, np.zeros(shape=(1, 2)))
