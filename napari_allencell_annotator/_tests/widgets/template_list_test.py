@@ -168,9 +168,9 @@ class TestTemplateList:
         item3 = create_autospec(TemplateItem)
         self._list._items = [item1, item2, item3]
         self._list.create_evt_listeners()
-        item1.create_evt_listener.assert_called_once_with()
-        item2.create_evt_listener.assert_called_once_with()
-        item3.create_evt_listener.assert_called_once_with()
+        item1._create_evt_listener.assert_called_once_with()
+        item2._create_evt_listener.assert_called_once_with()
+        item3._create_evt_listener.assert_called_once_with()
 
     def test_clear_all(self):
         self._list._items = ["item"]

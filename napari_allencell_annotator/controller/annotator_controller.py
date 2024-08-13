@@ -113,7 +113,6 @@ class AnnotatorController:
         """
         self.view.set_mode(mode=AnnotatorViewMode.ANNOTATE)
 
-        # self.view.annot_list.create_evt_listeners()
         # self.view.annot_list.currentItemChanged.connect(self._curr_item_changed)
 
     def save_annotations(self):

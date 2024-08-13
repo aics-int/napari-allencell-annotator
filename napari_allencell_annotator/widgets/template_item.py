@@ -65,7 +65,7 @@ class TemplateItem(QListWidgetItem):
         self.widget.setLayout(self.layout)
         self.setSizeHint(self.widget.minimumSizeHint())
         parent.setItemWidget(self, self.widget)
-        self.create_evt_listener()
+        self._create_evt_listener()
 
     @property
     def type(self) -> ItemType:
@@ -115,7 +115,7 @@ class TemplateItem(QListWidgetItem):
         elif self._type == ItemType.LIST:
             return self.editable_widget.currentText()
 
-    def create_evt_listener(self):
+    def _create_evt_listener(self):
         """Create event listener for editable widget edits to set the current item."""
         if self._type == ItemType.STRING:
             self.editable_widget.textEdited.connect(lambda: self.parent.setCurrentItem(self))

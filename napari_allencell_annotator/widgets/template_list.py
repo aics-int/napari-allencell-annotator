@@ -65,10 +65,6 @@ class TemplateList(QListWidget):
             next_row = curr_row - 1
             self.setCurrentRow(next_row)
 
-    def create_evt_listeners(self):
-        """Create annotating event listeners for each item."""
-        for item in self.items:
-            item.create_evt_listener()
 
     def clear_all(self):
         """
