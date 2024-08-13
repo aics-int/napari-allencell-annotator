@@ -21,7 +21,9 @@ def viewer(qtbot) -> IViewer:
 
 @pytest.fixture
 def annotator_controller(qtbot, annotator_model: AnnotatorModel, viewer: IViewer) -> AnnotatorController:
-    return AnnotatorController(annotator_model, viewer)
+    annotator_controller_fixture = AnnotatorController(annotator_model, viewer)
+    annotator_controller_fixture.view.hide()
+    return annotator_controller_fixture
 
 
 def test_start_annotating(annotator_controller: AnnotatorController) -> None:
