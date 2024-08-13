@@ -1,11 +1,7 @@
 from typing import Any, List
 
-from napari.layers import Points
 from qtpy import QtWidgets
-from qtpy.QtWidgets import QLineEdit, QCheckBox, QComboBox, QSpinBox, QPushButton
-from qtpy.QtWidgets import QSizePolicy
-from qtpy.QtWidgets import QListWidget
-from qtpy.QtCore import Signal
+from qtpy.QtWidgets import QLineEdit, QCheckBox, QComboBox, QSpinBox, QPushButton, QSizePolicy, QListWidget
 
 from napari_allencell_annotator.model.annotation_model import AnnotatorModel
 from napari_allencell_annotator.model.combo_key import ComboKey
@@ -109,10 +105,9 @@ class TemplateList(QListWidget):
                 for opt in key.get_options():
                     widget.addItem(opt)
             widget.setCurrentText(default)
-        else:
+        elif annot_type == "point":
             annot_type = ItemType.POINT
             widget = QPushButton("Select")
-            widget.setFixedWidth(200)
 
         item = TemplateItem(self, name, annot_type, default, widget, self._annotator_model)
 

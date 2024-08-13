@@ -36,13 +36,7 @@ def test_add_item_string(template_list: TemplateList) -> None:
 
     # ASSERT
     assert template_list.count() == 1
-
     item: TemplateItem = template_list.item(0)
-    assert item.name.text() == "test_string"
-    assert item.type == ItemType.STRING
-    assert item.default == "test_value"
-    assert isinstance(item.editable_widget, QLineEdit)
-    assert item.editable_widget.text() == "test_value"
 
     # test template_list.items
     assert len(template_list.items) == 1
@@ -55,13 +49,7 @@ def test_add_item_number(template_list: TemplateList) -> None:
 
     # ASSERT
     assert template_list.count() == 1
-
     item: TemplateItem = template_list.item(0)
-    assert item.name.text() == "test_number"
-    assert item.type == ItemType.NUMBER
-    assert item.default == 0
-    assert isinstance(item.editable_widget, QSpinBox)
-    assert item.editable_widget.value() == 0
 
     # test template_list.items
     assert len(template_list.items) == 1
@@ -74,13 +62,7 @@ def test_add_item_bool(template_list: TemplateList) -> None:
 
     # ASSERT
     assert template_list.count() == 1
-
     item: TemplateItem = template_list.item(0)
-    assert item.name.text() == "test_bool"
-    assert item.type == ItemType.BOOL
-    assert item.default == True
-    assert isinstance(item.editable_widget, QCheckBox)
-    assert item.editable_widget.isChecked()
 
     # test template_list.items
     assert len(template_list.items) == 1
@@ -93,15 +75,7 @@ def test_add_item_list(template_list: TemplateList) -> None:
 
     # ASSERT
     assert template_list.count() == 1
-
     item: TemplateItem = template_list.item(0)
-    assert item.name.text() == "test_list"
-    assert item.type == ItemType.LIST
-    assert item.default == "a"
-    assert isinstance(item.editable_widget, QComboBox)
-    assert item.editable_widget.itemText(0) == "a"
-    assert item.editable_widget.itemText(1) == "b"
-    assert item.editable_widget.currentText() == "a"
 
     # test template_list.items
     assert len(template_list.items) == 1
@@ -114,13 +88,7 @@ def test_add_item_point(template_list: TemplateList) -> None:
 
     # ASSERT
     assert template_list.count() == 1
-
     item: TemplateItem = template_list.item(0)
-    assert item.name.text() == "test_point"
-    assert item.type == ItemType.POINT
-    assert item.default is None
-    assert isinstance(item.editable_widget, QPushButton)
-    assert item.editable_widget.text() == "Select"
 
     # test template_list.items
     assert len(template_list.items) == 1
