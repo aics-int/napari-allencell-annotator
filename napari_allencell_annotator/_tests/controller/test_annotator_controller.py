@@ -7,7 +7,6 @@ import pytest
 from pytestqt import qtbot
 
 
-
 def test_start_annotating(qtbot) -> None:
     # ARRANGE
     main_view_simulated: MainView = MainView(FakeViewer())
