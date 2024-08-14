@@ -164,7 +164,20 @@ class MainView(QFrame):
 
             self.annots.start_viewing(use_annots)
 
-    def _process_points_annotations(self, annotations):
+    def _process_points_annotations(self, annotations: list[any]) -> list[any]:
+        """
+        Convert string representations of point annotations to lists of tuples
+
+        Parameters
+        ----------
+        annotations: list[any]
+            The list of annotations read from the CSV
+
+        Returns
+        -------
+        list[any]:
+            The same list of annotations with points annotations as lists of tuples
+        """
         if len(annotations) > 0:
             for annotation_index, key in enumerate(self._annotator_model.get_annotation_keys().values()):
                 if key.get_type() == "point" and annotations[annotation_index] != "":
