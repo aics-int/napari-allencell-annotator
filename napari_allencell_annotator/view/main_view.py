@@ -1,3 +1,4 @@
+import ast
 import csv
 from pathlib import Path
 
@@ -149,7 +150,7 @@ class MainView(QFrame):
                     path: Path = Path(row[1])
                     image_list.append(path)
                     if use_annots:
-                        self._annotator_model.add_annotation(path, row[2:])
+                        self._annotator_model.add_annotation(path, self._process_points_annotations(row[2:]))
                     # self._images_view.add_new_item(path)
                 # start at row 0 if annotation data was not used from csv
                 file.close()
@@ -162,6 +163,14 @@ class MainView(QFrame):
                     self._annotator_model.set_shuffled_images(None)
 
             self.annots.start_viewing(use_annots)
+
+    def _process_points_annotations(self, annotations):
+        if len(annotations) > 0:
+            for annotation_index, key in enumerate(self._annotator_model.get_annotation_keys().values()):
+                if key.get_type() == "point" and annotations[annotation_index] != "":
+                    annotations[annotation_index] = ast.literal_eval(annotations[annotation_index])
+
+        return annotations
 
     def _shuffle_toggled(self, checked: bool):
         """
