@@ -268,14 +268,21 @@ class AnnotatorView(QFrame):
         point_annots: dict[str, list[tuple[int]]] = self.viewer.get_all_point_annotations()
 
         for item in self.annot_list.items:
-            if item.type == ItemType.POINT:
-                annot_name: str = item.name.text()
-                if annot_name in point_annots:
-                    annots.append(point_annots[annot_name])
-                else:
-                    annots.append(None)
-            else:
+            annot_name: str = item.name.text()
+
+            # if the item is not a point annotation, append the annotation from its widget to the annotation list.
+            if item.type != ItemType.POINT:
                 annots.append(item.get_value())
+
+            # if the item is a point annotation and has already been annotated, add the point coordinates to
+            # the annotation list.
+            elif annot_name in point_annots:
+                annots.append(point_annots[annot_name])
+
+            # if the item is a point annotation but has not been annotated, add None to the annotation list.
+            else:
+                annots.append(None)
+
         return annots
 
     def _display_mode(self):
