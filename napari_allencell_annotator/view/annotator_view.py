@@ -91,7 +91,6 @@ class AnnotatorView(QFrame):
         self._annotator_model = model
         self._annotator_model.image_changed.connect(self._handle_image_changed)
         self._annotator_model.edit_points_layer_changed.connect(self._handle_point_selection)
-        self._annotator_model.current_annot_changed.connect(self._handle_item_changed)
         self._mode = mode
         label = QLabel("Annotations")
         label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
@@ -99,6 +98,7 @@ class AnnotatorView(QFrame):
         self.layout.addWidget(label)
         self.setStyleSheet(Style.get_stylesheet("main.qss"))
         self.annot_list = TemplateList(model)
+        self.annot_list.currentItemChanged.connect(self._handle_item_changed)
         self.scroll = QScrollArea()
         self.scroll.setWidget(self.annot_list)
         self.scroll.setWidgetResizable(True)

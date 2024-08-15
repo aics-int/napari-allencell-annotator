@@ -30,7 +30,6 @@ class TemplateList(QListWidget):
         self._items: List[TemplateItem] = []
         self.height: int = 0
         self.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
-        self.currentItemChanged.connect(self._annotator_model.change_current_annot_item)
 
     @property
     def items(self) -> List[TemplateItem]:
