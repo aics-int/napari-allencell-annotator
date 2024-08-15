@@ -26,11 +26,15 @@ def template_list(qtbot) -> TemplateList:
 def test_add_item_string(template_list: TemplateList) -> None:
 
     # ACT
-    template_list.add_item("test_string", Key("string", "test_value"))
+    template_list.add_item("test_name", Key("string", "test_default"))
 
     # ASSERT
     assert template_list.count() == 1
     item: TemplateItem = template_list.item(0)
+    assert item.name.text() == "test_name"
+    assert item.type == ItemType.STRING
+    assert item.default == "test_default"
+    assert isinstance(item.editable_widget, QLineEdit)
 
     # test template_list.items
     assert len(template_list.items) == 1
@@ -39,11 +43,16 @@ def test_add_item_string(template_list: TemplateList) -> None:
 
 def test_add_item_number(template_list: TemplateList) -> None:
     # ACT
-    template_list.add_item("test_number", Key("number", 0))
+    template_list.add_item("test_name", Key("number", 0))
 
     # ASSERT
     assert template_list.count() == 1
     item: TemplateItem = template_list.item(0)
+    assert item.name.text() == "test_name"
+    assert item.type == ItemType.NUMBER
+    assert item.default == 0
+    assert isinstance(item.editable_widget, QSpinBox)
+    assert item.editable_widget.value() == 0
 
     # test template_list.items
     assert len(template_list.items) == 1
@@ -52,11 +61,16 @@ def test_add_item_number(template_list: TemplateList) -> None:
 
 def test_add_item_bool(template_list: TemplateList) -> None:
     # ACT
-    template_list.add_item("test_bool", Key("bool", True))
+    template_list.add_item("test_name", Key("bool", True))
 
     # ASSERT
     assert template_list.count() == 1
     item: TemplateItem = template_list.item(0)
+    assert item.name.text() == "test_name"
+    assert item.type == ItemType.BOOL
+    assert item.default
+    assert isinstance(item.editable_widget, QCheckBox)
+    assert item.editable_widget.isChecked()
 
     # test template_list.items
     assert len(template_list.items) == 1
@@ -65,11 +79,18 @@ def test_add_item_bool(template_list: TemplateList) -> None:
 
 def test_add_item_list(template_list: TemplateList) -> None:
     # ACT
-    template_list.add_item("test_list", ComboKey(list, ["a", "b"], "a"))
+    template_list.add_item("test_name", ComboKey(list, ["test_default", "test_other_option"], "test_default"))
 
     # ASSERT
     assert template_list.count() == 1
     item: TemplateItem = template_list.item(0)
+    assert item.name.text() == "test_name"
+    assert item.type == ItemType.LIST
+    assert item.default == "test_default"
+    assert isinstance(item.editable_widget, QComboBox)
+    assert item.editable_widget.itemText(0) == "test_default"
+    assert item.editable_widget.itemText(1) == "test_other_option"
+    assert item.editable_widget.currentText() == "test_default"
 
     # test template_list.items
     assert len(template_list.items) == 1
@@ -78,11 +99,16 @@ def test_add_item_list(template_list: TemplateList) -> None:
 
 def test_add_item_point(template_list: TemplateList) -> None:
     # ACT
-    template_list.add_item("test_point", Key("point", None))
+    template_list.add_item("test_name", Key("point", None))
 
     # ASSERT
     assert template_list.count() == 1
     item: TemplateItem = template_list.item(0)
+    assert item.name.text() == "test_name"
+    assert item.type == ItemType.POINT
+    assert item.default is None
+    assert isinstance(item.editable_widget, QPushButton)
+    assert item.editable_widget.text() == "Select"
 
     # test template_list.items
     assert len(template_list.items) == 1
