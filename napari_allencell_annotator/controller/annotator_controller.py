@@ -194,7 +194,7 @@ class AnnotatorController:
             else:
                 self.view.prev_btn.setEnabled(True)
 
-    def _record_annotations(self, record_idx: int):
+    def _record_annotations(self, record_idx: int) -> None:
         """
         Add the image's annotation values to the annotation dictionary
 

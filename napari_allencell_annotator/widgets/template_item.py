@@ -45,7 +45,7 @@ class TemplateItem(QListWidgetItem):
         self.editable_widget: QWidget = editable_widget
         self.widget = QWidget()
         self.parent = parent
-        self._annotation_model = annotator_model
+        self._annotation_model: AnnotatorModel = annotator_model
 
         self.layout = QHBoxLayout()
         self.name = QLabel(name)

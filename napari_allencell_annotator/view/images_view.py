@@ -117,7 +117,7 @@ class ImagesView(QFrame):
         self._annotator_model.images_shuffled.connect(self._handle_shuffle_ui)
         self._annotator_model.images_shuffled.connect(self.viewer.clear_layers)
 
-    def _handle_annotation_started(self):
+    def _handle_annotation_started(self) -> None:
         if self._annotator_model.is_annotation_started():
             self._display_img()
 

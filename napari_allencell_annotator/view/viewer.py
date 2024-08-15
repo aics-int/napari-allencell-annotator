@@ -153,6 +153,15 @@ class Viewer(IViewer):
         return all_point_annotations
 
     def toggle_points_layer(self, annot_points_layer: Points) -> None:
+        """
+        If the points layer mode is pan_zoom, set it to add, change other layers to pan_zoom, and select the current
+        points layer. Otherwise, unselected the latest point and set the mode to pan_zoom.
+
+        Parameters
+        ----------
+        annot_points_layer: Points
+            The target points layer
+        """
         if self.get_points_layer_mode(annot_points_layer) == PointsLayerMode.PAN_ZOOM.value:
             self.set_all_points_layer_to_pan_zoom()
             self.set_points_layer_mode(annot_points_layer, PointsLayerMode.ADD)
@@ -163,6 +172,9 @@ class Viewer(IViewer):
             self.set_points_layer_mode(annot_points_layer, PointsLayerMode.PAN_ZOOM)
 
     def set_all_points_layer_to_pan_zoom(self) -> None:
+        """
+        Sets all points layers to pan_zoom mode and unselected the selected points.
+        """
         for points_layer in self.get_all_points_layers():
             self.set_points_layer_mode(points_layer, PointsLayerMode.PAN_ZOOM)
             points_layer.selected_data = []
