@@ -53,17 +53,17 @@ class FakeViewer(IViewer):
 
         return all_point_annotations
 
-    def toggle_points_layer(self, annot_points_layer: Points):
+    def toggle_points_layer(self, annot_points_layer: Points) -> None:
         if self.get_points_layer_mode(annot_points_layer) == PointsLayerMode.PAN_ZOOM.value:
             self.set_all_points_layer_to_pan_zoom()
             self.set_points_layer_mode(annot_points_layer, PointsLayerMode.ADD)
-            self._layers_selection = []
+            self._layers_selection: list[Layer] = []
             self._layers_selection.append(annot_points_layer)
         else:
             annot_points_layer.selected_data = []
             self.set_points_layer_mode(annot_points_layer, PointsLayerMode.PAN_ZOOM)
 
-    def set_all_points_layer_to_pan_zoom(self):
+    def set_all_points_layer_to_pan_zoom(self) -> None:
         for points_layer in self.get_all_points_layers():
             self.set_points_layer_mode(points_layer, PointsLayerMode.PAN_ZOOM)
             points_layer.selected_data = []

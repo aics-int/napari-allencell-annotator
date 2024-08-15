@@ -66,9 +66,9 @@ class IViewer(ABC):
         pass
 
     @abstractmethod
-    def toggle_points_layer(self, annot_points_layer: Points):
+    def toggle_points_layer(self, annot_points_layer: Points) -> None:
         pass
 
     @abstractmethod
-    def set_all_points_layer_to_pan_zoom(self):
+    def set_all_points_layer_to_pan_zoom(self) -> None:
         pass
