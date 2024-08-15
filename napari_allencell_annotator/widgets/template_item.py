@@ -136,9 +136,10 @@ class TemplateItem(QListWidgetItem):
         """
         Enable and disable the Select button when annotation starts and stops. When the button is disabled, the text is set to Select.
         """
-        self.editable_widget.setEnabled(self._annotation_model.is_annotation_started())
+        annotation_started: bool = self._annotation_model.is_annotation_started()
+        self.editable_widget.setEnabled(annotation_started)
 
-        if not self.editable_widget.isEnabled():
+        if not annotation_started:
             self.editable_widget.setText("Select")
 
     def _toggle_button_off(self) -> None:
