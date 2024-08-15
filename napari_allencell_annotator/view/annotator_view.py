@@ -238,16 +238,20 @@ class AnnotatorView(QFrame):
             the values for the annotations.
         """
         for item, annotation in zip(self.annot_list.items, vals):
+            # if the item hasn't been annotated, render the default value.
             if annotation is None or annotation == "":
                 item.set_default_value()
+
+            # if the item has been annotated and is a point annotation, creates and add the points layer to the viewer.
+            elif item.type == ItemType.POINT:
+                annot_name: str = item.name.text()
+                self._annotator_model.add_points_layer(
+                    annot_name, self.viewer.create_points_layer(annot_name, True, annotation)
+                )
+
+            # if the item has been annotated but is not a point annotation, render the annotation value.
             else:
-                if item.type == ItemType.POINT:
-                    annot_name: str = item.name.text()
-                    self._annotator_model.add_points_layer(
-                        annot_name, self.viewer.create_points_layer(annot_name, True, annotation)
-                    )
-                else:
-                    item.set_value(annotation)
+                item.set_value(annotation)
 
         # self.annot_list.setCurrentItem(self.annot_list.items[0])
 
