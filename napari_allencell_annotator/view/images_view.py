@@ -118,6 +118,9 @@ class ImagesView(QFrame):
         self._annotator_model.images_shuffled.connect(self.viewer.clear_layers)
 
     def _handle_annotation_started(self) -> None:
+        """
+        Display the current image when annotation starts.
+        """
         if self._annotator_model.is_annotation_started():
             self._display_img()
 
