@@ -144,8 +144,7 @@ class TemplateItem(QListWidgetItem):
 
     def _toggle_button_off(self) -> None:
         """Change button texts to Select except for the current annotation item."""
-        if self != self.parent.currentItem():
-            self.editable_widget.setText("Select")
+        self.editable_widget.setText("Select")
 
     def _handle_select_button_clicked(self) -> None:
         """
