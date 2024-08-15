@@ -162,13 +162,21 @@ class Viewer(IViewer):
         annot_points_layer: Points
             The target points layer
         """
+
+        # if the target points layer is in the PAN_ZOOM mode, start point annotating.
         if self.get_points_layer_mode(annot_points_layer) == PointsLayerMode.PAN_ZOOM.value:
+            # set all points layer to PAN_ZOOM
             self.set_all_points_layer_to_pan_zoom()
+            # change the target points layer to ADD
             self.set_points_layer_mode(annot_points_layer, PointsLayerMode.ADD)
+            # change the currently selected points layer to the target points layer
             self.viewer.layers.selection.clear()
             self.viewer.layers.selection.add(annot_points_layer)
+        # if the target points layer is in the ADD mode, stop point annotating.
         else:
+            # unselect the most recently added points
             annot_points_layer.selected_data = []
+            # change the target points layer to PAN_ZOOM mode
             self.set_points_layer_mode(annot_points_layer, PointsLayerMode.PAN_ZOOM)
 
     def set_all_points_layer_to_pan_zoom(self) -> None:
