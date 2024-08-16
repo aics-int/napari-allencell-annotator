@@ -3,6 +3,7 @@ from typing import Any
 
 from qtpy.QtWidgets import QLayout
 from qtpy.QtWidgets import QListWidgetItem, QListWidget, QWidget, QHBoxLayout, QLabel
+from qtpy.QtCore import Qt
 
 
 class ItemType(Enum):
@@ -12,6 +13,7 @@ class ItemType(Enum):
     NUMBER = "number"
     BOOL = "bool"
     LIST = "list"
+    POINT = "point"
 
 
 class TemplateItem(QListWidgetItem):
@@ -37,10 +39,17 @@ class TemplateItem(QListWidgetItem):
 
         self.layout = QHBoxLayout()
         self.name = QLabel(name)
-        self.layout.addWidget(self.name)
-        self.layout.addWidget(self.editable_widget)
 
-        self.editable_widget.setEnabled(True)
+        if self.type != ItemType.POINT:
+            self.layout.addWidget(self.name)
+            self.layout.addWidget(self.editable_widget)
+            self.editable_widget.setEnabled(True)
+        else:
+            self.layout.addWidget(self.name)
+            self.layout.addWidget(self.editable_widget)
+            self.editable_widget.setFixedWidth(200)
+            self.editable_widget.setEnabled(False)
+
         self.layout.setContentsMargins(2, 12, 8, 12)
         self.layout.setSpacing(2)
         self.layout.setSizeConstraint(QLayout.SetMinimumSize)

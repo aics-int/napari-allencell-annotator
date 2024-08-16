@@ -1,6 +1,13 @@
 from unittest import mock
 from unittest.mock import MagicMock, patch, create_autospec
 
+from PyQt5.QtWidgets import QPushButton, QLineEdit
+
+from napari_allencell_annotator.model.combo_key import ComboKey
+
+from napari_allencell_annotator.model.key import Key
+from napari_allencell_annotator.widgets.template_item import ItemType
+
 from napari_allencell_annotator.widgets.template_list import (
     TemplateList,
     TemplateItem,
@@ -8,6 +15,104 @@ from napari_allencell_annotator.widgets.template_list import (
     QCheckBox,
     QComboBox,
 )
+import pytest
+
+
+@pytest.fixture()
+def template_list(qtbot) -> TemplateList:
+    return TemplateList()
+
+
+def test_add_item_string(template_list: TemplateList) -> None:
+
+    # ACT
+    template_list.add_item("test_name", Key("string", "test_default"))
+
+    # ASSERT
+    assert template_list.count() == 1
+    item: TemplateItem = template_list.item(0)
+    assert item.name.text() == "test_name"
+    assert item.type == ItemType.STRING
+    assert item.default == "test_default"
+    assert isinstance(item.editable_widget, QLineEdit)
+
+    # test template_list.items
+    assert len(template_list.items) == 1
+    assert template_list.items[0] == item
+
+
+def test_add_item_number(template_list: TemplateList) -> None:
+    # ACT
+    template_list.add_item("test_name", Key("number", 0))
+
+    # ASSERT
+    assert template_list.count() == 1
+    item: TemplateItem = template_list.item(0)
+    assert item.name.text() == "test_name"
+    assert item.type == ItemType.NUMBER
+    assert item.default == 0
+    assert isinstance(item.editable_widget, QSpinBox)
+    assert item.editable_widget.value() == 0
+
+    # test template_list.items
+    assert len(template_list.items) == 1
+    assert template_list.items[0] == item
+
+
+def test_add_item_bool(template_list: TemplateList) -> None:
+    # ACT
+    template_list.add_item("test_name", Key("bool", True))
+
+    # ASSERT
+    assert template_list.count() == 1
+    item: TemplateItem = template_list.item(0)
+    assert item.name.text() == "test_name"
+    assert item.type == ItemType.BOOL
+    assert item.default
+    assert isinstance(item.editable_widget, QCheckBox)
+    assert item.editable_widget.isChecked()
+
+    # test template_list.items
+    assert len(template_list.items) == 1
+    assert template_list.items[0] == item
+
+
+def test_add_item_list(template_list: TemplateList) -> None:
+    # ACT
+    template_list.add_item("test_name", ComboKey(list, ["test_default", "test_other_option"], "test_default"))
+
+    # ASSERT
+    assert template_list.count() == 1
+    item: TemplateItem = template_list.item(0)
+    assert item.name.text() == "test_name"
+    assert item.type == ItemType.LIST
+    assert item.default == "test_default"
+    assert isinstance(item.editable_widget, QComboBox)
+    assert item.editable_widget.itemText(0) == "test_default"
+    assert item.editable_widget.itemText(1) == "test_other_option"
+    assert item.editable_widget.currentText() == "test_default"
+
+    # test template_list.items
+    assert len(template_list.items) == 1
+    assert template_list.items[0] == item
+
+
+def test_add_item_point(template_list: TemplateList) -> None:
+    # ACT
+    template_list.add_item("test_name", Key("point", None))
+
+    # ASSERT
+    assert template_list.count() == 1
+    item: TemplateItem = template_list.item(0)
+    assert item.name.text() == "test_name"
+    assert item.type == ItemType.POINT
+    assert item.default is None
+    assert isinstance(item.editable_widget, QPushButton)
+    assert item.editable_widget.text() == "Select"
+
+    # test template_list.items
+    assert len(template_list.items) == 1
+    assert template_list.items[0] == item
 
 
 class TestTemplateList:

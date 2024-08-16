@@ -1,5 +1,6 @@
 from typing import Tuple, List, Optional, Any
 
+from PyQt5.QtWidgets import QLayoutItem
 from qtpy.QtWidgets import QLayout
 from qtpy import QtWidgets
 from qtpy.QtWidgets import (
@@ -35,7 +36,7 @@ class AnnotationItem(QListWidgetItem):
 
         type_label = QLabel("Type:")
         self.type_selection_combo = QComboBox()
-        self.type_selection_combo.addItems(["text", "number", "checkbox", "dropdown"])
+        self.type_selection_combo.addItems(["text", "number", "checkbox", "dropdown", "point"])
         self.name.setWhatsThis("name")
         self.type_selection_combo.setWhatsThis("type")
         self.name_widget = QWidget()
@@ -51,7 +52,7 @@ class AnnotationItem(QListWidgetItem):
         self.layout.addWidget(self.name, 0, 1, 1, 2)
         self.layout.addWidget(type_label, 0, 3, 1, 1)
         self.layout.addWidget(self.type_selection_combo, 0, 4, 1, 2)
-        default_label = QLabel("Default:")
+        self.default_label: QLabel = QLabel("Default:")
         self.default_text = QLineEdit()
         self.default_text.setPlaceholderText("Optional: Default Text")
         self.default_num = QSpinBox()
@@ -70,7 +71,7 @@ class AnnotationItem(QListWidgetItem):
         self.default_options.setSizePolicy(sp_retain)
         self.default_options_label.setSizePolicy(sp_retain)
 
-        self.layout.addWidget(default_label, 0, 6, 1, 1)
+        self.layout.addWidget(self.default_label, 0, 6, 1, 1)
         self.layout.addWidget(self.default_text, 0, 7, 1, 2)
         self.layout.addWidget(self.default_options_label, 1, 1, 1, 1)
         self.layout.addWidget(self.default_options, 1, 2, 1, 7)
@@ -152,6 +153,18 @@ class AnnotationItem(QListWidgetItem):
         self.default_text.setText(default)
         self.default_options.setText(", ".join(options))
 
+    def fill_vals_point(self, name: str) -> None:
+        """
+        Fill in name for point.
+
+        Parameters
+        ----------
+        name : str
+            a name for the annotation
+        """
+        self.type_selection_combo.setCurrentText("point")
+        self.name.setText(name)
+
     def _type_changed(self, text: str):
         """
         Render the widgets which correspond to the new type
@@ -161,28 +174,40 @@ class AnnotationItem(QListWidgetItem):
         text : str
             the new type selected.
         """
-        default_widget = self.layout.itemAtPosition(0, 7).widget()
-        default_widget.setParent(None)
-        self.layout.removeWidget(default_widget)
+        default_item: QLayoutItem = self.layout.itemAtPosition(0, 7)
+        if default_item is not None:
+            default_widget: QWidget = default_item.widget()
+            default_widget.setParent(None)
+            self.layout.removeWidget(default_widget)
 
         if text == "text":
+            self.default_label.show()
             self.default_options.hide()
             self.default_options_label.hide()
             self.layout.addWidget(self.default_text, 0, 7, 1, 2)
 
         elif text == "number":
+            self.default_label.show()
             self.default_options.hide()
             self.default_options_label.hide()
             self.layout.addWidget(self.default_num, 0, 7, 1, 2)
 
         elif text == "checkbox":
+            self.default_label.show()
             self.default_options.hide()
             self.default_options_label.hide()
             self.layout.addWidget(self.default_check, 0, 7, 1, 2)
-        else:
+
+        elif text == "dropdown":
+            self.default_label.show()
             self.default_options.show()
             self.default_options_label.show()
             self.layout.addWidget(self.default_text, 0, 7, 1, 2)
+
+        elif text == "point":
+            self.default_label.hide()
+            self.default_options.hide()
+            self.default_options_label.hide()
 
     def get_data(self) -> Tuple[bool, str, Key, str]:
         """
@@ -266,13 +291,17 @@ class AnnotationItem(QListWidgetItem):
             # number defaults are required by spinbox, always valid
             type = "number"
             default = self.default_num.value()
-        else:
+        elif type == "checkbox":
             # checkbox type default required by the drop down, always valid
             type = "bool"
             if self.default_check.currentText() == "checked":
                 default = True
             else:
                 default = False
+
+        elif type == "point":
+            type = "point"
+            default = None
 
         if type == "list":
             key = ComboKey("list", options, default)

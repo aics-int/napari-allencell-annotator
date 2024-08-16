@@ -52,6 +52,8 @@ class AnnotationWidget(QListWidget):
             item.fill_vals_check(name, key_info.get_default_value())
         elif annot_type == "list":
             item.fill_vals_list(name, key_info.get_default_value(), key_info.get_options())
+        elif annot_type == "point":
+            item.fill_vals_point(name)
 
     def add_new_item(self) -> AnnotationItem:
         """

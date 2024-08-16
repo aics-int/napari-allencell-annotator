@@ -1,9 +1,7 @@
 from typing import Any, List
 
 from qtpy import QtWidgets
-from qtpy.QtWidgets import QLineEdit, QCheckBox, QComboBox, QSpinBox
-from qtpy.QtWidgets import QSizePolicy
-from qtpy.QtWidgets import QListWidget
+from qtpy.QtWidgets import QLineEdit, QCheckBox, QComboBox, QSpinBox, QPushButton, QSizePolicy, QListWidget
 
 from napari_allencell_annotator.model.combo_key import ComboKey
 from napari_allencell_annotator.model.key import Key
@@ -109,6 +107,10 @@ class TemplateList(QListWidget):
                 for opt in key.get_options():
                     widget.addItem(opt)
             widget.setCurrentText(default)
+        elif annot_type == "point":
+            annot_type = ItemType.POINT
+            widget = QPushButton("Select")
+
         item = TemplateItem(self, name, annot_type, default, widget)
 
         self._items.append(item)
