@@ -91,7 +91,6 @@ class AnnotatorView(QFrame):
         self._annotator_model = model
         self._annotator_model.image_changed.connect(self._handle_image_changed)
         self._annotator_model.edit_points_layer_changed.connect(self._handle_point_selection)
-        self._annotator_model.current_annot_changed.connect(self._handle_item_changed)
         self._mode = mode
         label = QLabel("Annotations")
         label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
@@ -99,6 +98,7 @@ class AnnotatorView(QFrame):
         self.layout.addWidget(label)
         self.setStyleSheet(Style.get_stylesheet("main.qss"))
         self.annot_list = TemplateList(model)
+        self.annot_list.currentItemChanged.connect(self._handle_item_changed)
         self.scroll = QScrollArea()
         self.scroll.setWidget(self.annot_list)
         self.scroll.setWidgetResizable(True)
@@ -228,7 +228,7 @@ class AnnotatorView(QFrame):
         # TODO why do we need this?
         # self.annot_list.setCurrentItem(self.annot_list.items[0])
 
-    def render_values(self, vals: list[Any]):
+    def render_values(self, vals: list[Any]) -> None:
         """
         Set the values of the annotation widgets.
 
@@ -238,17 +238,20 @@ class AnnotatorView(QFrame):
             the values for the annotations.
         """
         for item, annotation in zip(self.annot_list.items, vals):
-            item_data = annotation
-            if item_data is None or item_data == "":
+            # if the item hasn't been annotated, render the default value.
+            if annotation is None or annotation == "":
                 item.set_default_value()
+
+            # if the item has been annotated and is a point annotation, creates and add the points layer to the viewer.
+            elif item.type == ItemType.POINT:
+                annot_name: str = item.name.text()
+                self._annotator_model.add_points_layer(
+                    annot_name, self.viewer.create_points_layer(annot_name, True, annotation)
+                )
+
+            # if the item has been annotated but is not a point annotation, render the annotation value.
             else:
-                if item.type == ItemType.POINT:
-                    annot_name = item.name.text()
-                    self._annotator_model.add_points_layer(
-                        annot_name, self.viewer.create_points_layer(annot_name, True, item_data)
-                    )
-                else:
-                    item.set_value(item_data)
+                item.set_value(annotation)
 
         # self.annot_list.setCurrentItem(self.annot_list.items[0])
 
@@ -262,17 +265,24 @@ class AnnotatorView(QFrame):
             a list of annotation values.
         """
         annots = []
-        point_annots = self.viewer.get_all_point_annotations()
+        point_annots: dict[str, list[tuple[int]]] = self.viewer.get_all_point_annotations()
 
         for item in self.annot_list.items:
-            if item.type == ItemType.POINT:
-                annot_name = item.name.text()
-                if annot_name in point_annots:
-                    annots.append(point_annots[annot_name])
-                else:
-                    annots.append(None)
-            else:
+            annot_name: str = item.name.text()
+
+            # if the item is not a point annotation, append the annotation from its widget to the annotation list.
+            if item.type != ItemType.POINT:
                 annots.append(item.get_value())
+
+            # if the item is a point annotation and has already been annotated, add the point coordinates to
+            # the annotation list.
+            elif annot_name in point_annots:
+                annots.append(point_annots[annot_name])
+
+            # if the item is a point annotation but has not been annotated, add None to the annotation list.
+            else:
+                annots.append(None)
+
         return annots
 
     def _display_mode(self):
@@ -321,14 +331,14 @@ class AnnotatorView(QFrame):
         self.annots_order.append(name)
         self.annot_list.add_item(name, key)
 
-    def _handle_point_selection(self, annot_name: str):
+    def _handle_point_selection(self, annot_name: str) -> None:
         if annot_name not in self._annotator_model.get_all_curr_img_points_layers():
             self._annotator_model.add_points_layer(annot_name, self.viewer.create_points_layer(annot_name, True))
 
         annot_points_layer: Points = self._annotator_model.get_points_layer(annot_name)
         self.viewer.toggle_points_layer(annot_points_layer)
 
-    def _handle_item_changed(self):
+    def _handle_item_changed(self) -> None:
         # for items other than points
         if self.annot_list.currentItem() is None or self.annot_list.currentItem().type != ItemType.POINT:
             self.viewer.set_all_points_layer_to_pan_zoom()

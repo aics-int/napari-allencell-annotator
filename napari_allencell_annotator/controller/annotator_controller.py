@@ -194,7 +194,7 @@ class AnnotatorController:
             else:
                 self.view.prev_btn.setEnabled(True)
 
-    def _record_annotations(self, record_idx: int):
+    def _record_annotations(self, record_idx: int) -> None:
         """
         Add the image's annotation values to the annotation dictionary
 
@@ -211,9 +211,13 @@ class AnnotatorController:
                 self._annotation_model.get_all_images()[record_idx], self.view.get_curr_annots()
             )
             # self._annotation_model.clear_all_cur_img_points_layers()
+
+        # if the user changes to another image, send the annotation_recorded signal to clear all layers and
+        # display the new image after recording annotation.
         if record_idx == self._annotation_model.get_previous_image_index():
             self._annotation_model.annotation_saved()
 
+        # after recording annotations, not annotation item should be selected.
         self.view.annot_list.setCurrentItem(None)
 
     def read_json(self, file_path: Path):

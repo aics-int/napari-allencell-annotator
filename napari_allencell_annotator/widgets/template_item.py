@@ -45,7 +45,7 @@ class TemplateItem(QListWidgetItem):
         self.editable_widget: QWidget = editable_widget
         self.widget = QWidget()
         self.parent = parent
-        self._annotation_model = annotator_model
+        self._annotation_model: AnnotatorModel = annotator_model
 
         self.layout = QHBoxLayout()
         self.name = QLabel(name)
@@ -132,17 +132,24 @@ class TemplateItem(QListWidgetItem):
             self._annotation_model.annotation_started_changed.connect(self._handle_select_button_enabled)
             self.parent.currentItemChanged.connect(self._toggle_button_off)
 
-    def _handle_select_button_enabled(self):
-        self.editable_widget.setEnabled(self._annotation_model.is_annotation_started())
+    def _handle_select_button_enabled(self) -> None:
+        """
+        Enable and disable the Select button when annotation starts and stops. When the button is disabled, the text is set to Select.
+        """
+        annotation_started: bool = self._annotation_model.is_annotation_started()
+        self.editable_widget.setEnabled(annotation_started)
 
-        if not self.editable_widget.isEnabled():
+        if not annotation_started:
             self.editable_widget.setText("Select")
 
-    def _toggle_button_off(self):
-        if self != self.parent.currentItem():
-            self.editable_widget.setText("Select")
+    def _toggle_button_off(self) -> None:
+        """Change button texts to Select except for the current annotation item."""
+        self.editable_widget.setText("Select")
 
-    def _handle_select_button_clicked(self):
+    def _handle_select_button_clicked(self) -> None:
+        """
+        Update the status of the points layer being edited in the model and toggle the button.
+        """
         self._annotation_model.edit_points_layer(self.name.text())
         if self.editable_widget.text() == "Select":
             self.editable_widget.setText("Finish")
