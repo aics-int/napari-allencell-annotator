@@ -1,6 +1,6 @@
 #!/bin/bash
 # script to install napari as well as napari-allencell-annotator
-conda create -n napari_annotator python=3.9 anaconda
+conda create -n napari_annotator python=3.10 anaconda
 conda activate napari_annotator
 
 # if no python 3.9 install it and activate it
