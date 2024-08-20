@@ -56,7 +56,7 @@ The plugin requires [Conda](https://docs.anaconda.com/anaconda/install/).
 
 ### 2. Install the plugin
 Click the link corresponding to your OS.
-#### [Windows](https://alleninstitute-my.sharepoint.com/:u:/g/personal/beatrice_bridge_alleninstitute_org/EVOKZ8-PZB5AvO6z6OAjZ_YB2EHbaU9XRc_Z281oM0ctOg?e=skbKzh)
+#### [Windows](https://alleninstitute-my.sharepoint.com/:u:/g/personal/r_dhamrongsirivadh_alleninstitute_org/EexXIxeeIbNEs4KMjimcXOcBMn2J2QwxJhNEkOcRHC1eVg?e=JKa5WI)
 - From the link above, click the three dots on the top menu bar and select download. 
 - Open a file explorer and go to the Downloads folder. Use **Option 1** below. A prompt window should open and start installing. If this fails use **Option 2**. 
   - **Option 1**: Double-click the file _install_napari.sh_
@@ -69,7 +69,7 @@ Click the link corresponding to your OS.
     - napari
   - **Still not working?** Try using conda forge instead of pip. 
     - Ex: conda install -c conda-forge napari instead of python -m pip install "napari[all]"
-#### [MacOS/Unix](https://alleninstitute-my.sharepoint.com/:u:/g/personal/beatrice_bridge_alleninstitute_org/EaeV_RPXZz9DijxYy7qfoeMB3Hbq4vMpmJERqDyhL97KAg?e=HuKY2k)
+#### [MacOS/Unix](https://alleninstitute-my.sharepoint.com/:u:/g/personal/r_dhamrongsirivadh_alleninstitute_org/ESeAYWwWFuRFhgpqgbiKQ6QBXdU8Dg8OU9ilpJ5VmoY-cA?e=BHpReg)
 - From the link above, download the file. 
 - Open terminal. 
 - Run _chmod +x ./Downloads/install_napari.command_ 
