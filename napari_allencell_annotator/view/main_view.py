@@ -1,4 +1,3 @@
-import ast
 import csv
 from pathlib import Path
 
@@ -183,7 +182,7 @@ class MainView(QFrame):
             for annotation_index, key in enumerate(self._annotator_model.get_annotation_keys().values()):
                 # if the annotation is point annotation and has been annotated, convert string to list of tuples.
                 if key.get_type() == "point" and annotations[annotation_index] != "":
-                    annotations[annotation_index] = ast.literal_eval(annotations[annotation_index])
+                    annotations[annotation_index] = eval(annotations[annotation_index])
 
         return annotations
 
