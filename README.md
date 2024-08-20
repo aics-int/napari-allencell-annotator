@@ -81,9 +81,9 @@ Click the link corresponding to your OS.
 ### 3. Launch the Plugin
 
 Once the napari window opens, go to **Plugins**.
-- If **Annotator (napari-napari_allencell_annotator)** is listed click it to launch. 
+- If **napari-allencell-annotator** is listed click it to launch. 
 - If it is not listed 
-- **Install/Uninstall Plugins** ⇨ check the box next to **napari-allencell-annotator** ⇨ **close** ⇨ **Plugins** ⇨ **Annotator (napari-napari_allencell_annotator)** .
+- **Install/Uninstall Plugins** ⇨ check the box next to **napari-allencell-annotator** ⇨ **close** ⇨ **Plugins** ⇨ **napari-allencell-annotator** .
 
 ### 4. Re-opening the Plugin After Installing
 - Windows
@@ -93,13 +93,13 @@ Once the napari window opens, go to **Plugins**.
   - Click on the annotator environment and wait for it to load
   - Press the play button
   - Type _napari_ in the prompt that opens
-  - Click **Plugins** ⇨ **Annotator (napari-napari_allencell_annotator)**
+  - Click **Plugins** ⇨ **napari-allencell-annotator**
 - MacOS
   - Open terminal
   - Run these commands one line at a time
     - conda activate napari_annotator
     - napari
-  - Click **Plugins** ⇨ **Annotator (napari-napari_allencell_annotator)**
+  - Click **Plugins** ⇨ **napari-allencell-annotator**
 
 ## Installation from Napari Hub
 If you have previously installed Napari on your machine, you can follow these steps to install the plugin from Napari Hub.
@@ -112,7 +112,7 @@ If you have previously installed Napari on your machine, you can follow these st
 - Close the window after the installation finishes
 
 ### 2. Launch the Plugin
-- Click **Plugins** ⇨ **Annotator (napari-napari_allencell_annotator)**
+- Click **Plugins** ⇨ **napari-allencell-annotator**
   - You might have to restart Napari for the annotator to appear in the plugin list.
   - If you still can't see the plugin, go to **Install/Uninstall Plugins** ⇨ check the box next to **napari-allencell-annotator**.
 
@@ -120,7 +120,7 @@ If you have previously installed Napari on your machine, you can follow these st
 
 1. Open napari
 2. Start the plugin 
-   - Open napari, go to **Plugins** ⇨ **Annotator (napari-napari_allencell_annotator)**.
+   - Open napari, go to **Plugins** ⇨ **napari-allencell-annotator**.
 3. Create or import annotations and add images to annotate.
 
 For more detailed usage instructions, check out this [document](napari_allencell_annotator/assets/AnnotatorInstructions.pdf) 
