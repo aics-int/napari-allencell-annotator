@@ -16,7 +16,7 @@ image sets using these templates, and save image annotations to a csv file.
 The Allen Cell Image Annotator is a Python-based open source toolkit 
 developed at the Allen Institute for Cell Science for both blind, unbiased and un-blind 
 microscope image annotating. This toolkit supports easy image set selection
-from a file finder and creation of annotation templates (text, checkbox, drop-down, and spinbox).
+from a file finder and creation of annotation templates (text, checkbox, drop-down, spinbox, and point).
 With napari's multi-dimensional image viewing capabilities, the plugin seamlessly allows users to
 view each image and write annotations into the custom template.
 Annotation templates can be written to a json file for sharing or re-using. After annotating,
@@ -28,7 +28,8 @@ are conveniently saved to csv file, which can be re-opened for further annotatin
     - `TIFF`
     - `CZI` 
     - `PNG` 
-    -   `JPEG` 
+    - `JPEG`
+    - `OME-ZARR`
 
 
 ----------------------------------
@@ -43,7 +44,7 @@ and review the napari docs for plugin developers:
 https://napari.org/plugins/index.html
 -->
 
-## Installation
+## Installation using Command Line
 ### 1. Prerequisites
 
 The plugin requires [Conda](https://docs.anaconda.com/anaconda/install/).
@@ -55,12 +56,12 @@ The plugin requires [Conda](https://docs.anaconda.com/anaconda/install/).
 
 ### 2. Install the plugin
 Click the link corresponding to your OS.
-#### [Windows](https://alleninstitute-my.sharepoint.com/:u:/g/personal/beatrice_bridge_alleninstitute_org/EVOKZ8-PZB5AvO6z6OAjZ_YB2EHbaU9XRc_Z281oM0ctOg?e=skbKzh)
+#### [Windows](https://alleninstitute-my.sharepoint.com/:u:/g/personal/r_dhamrongsirivadh_alleninstitute_org/EexXIxeeIbNEs4KMjimcXOcBMn2J2QwxJhNEkOcRHC1eVg?e=JKa5WI)
 - From the link above, click the three dots on the top menu bar and select download. 
 - Open a file explorer and go to the Downloads folder. Use **Option 1** below. A prompt window should open and start installing. If this fails use **Option 2**. 
   - **Option 1**: Double-click the file _install_napari.sh_
   - **Option 2**: Search the file finder for Anaconda Prompt. Open version 3. Run the following commands one line at a time. 
-    - conda create -n napari_annotator python=3.9 anaconda
+    - conda create -n napari_annotator python=3.10 anaconda
     - conda activate napari_annotator
     - python -m pip install --upgrade pip
     - python -m pip install "napari[all]"
@@ -68,7 +69,7 @@ Click the link corresponding to your OS.
     - napari
   - **Still not working?** Try using conda forge instead of pip. 
     - Ex: conda install -c conda-forge napari instead of python -m pip install "napari[all]"
-#### [MacOS/Unix](https://alleninstitute-my.sharepoint.com/:u:/g/personal/beatrice_bridge_alleninstitute_org/EaeV_RPXZz9DijxYy7qfoeMB3Hbq4vMpmJERqDyhL97KAg?e=HuKY2k)
+#### [MacOS/Unix](https://alleninstitute-my.sharepoint.com/:u:/g/personal/r_dhamrongsirivadh_alleninstitute_org/ESeAYWwWFuRFhgpqgbiKQ6QBXdU8Dg8OU9ilpJ5VmoY-cA?e=BHpReg)
 - From the link above, download the file. 
 - Open terminal. 
 - Run _chmod +x ./Downloads/install_napari.command_ 
@@ -80,9 +81,9 @@ Click the link corresponding to your OS.
 ### 3. Launch the Plugin
 
 Once the napari window opens, go to **Plugins**.
-- If **napari-allencell-annotator: Annotator** is listed click it to launch. 
+- If **napari-allencell-annotator** is listed click it to launch. 
 - If it is not listed 
-- **Install/Uninstall Plugins** ⇨ check the box next to **napari-allencell-annotator** ⇨ **close** ⇨ **Plugins** ⇨ **napari-allencell-annotator: Annotator** .
+- **Install/Uninstall Plugins** ⇨ check the box next to **napari-allencell-annotator** ⇨ **close** ⇨ **Plugins** ⇨ **napari-allencell-annotator** .
 
 ### 4. Re-opening the Plugin After Installing
 - Windows
@@ -92,19 +93,34 @@ Once the napari window opens, go to **Plugins**.
   - Click on the annotator environment and wait for it to load
   - Press the play button
   - Type _napari_ in the prompt that opens
-  - Click **Plugins** ⇨ **napari-allencell-annotator: Annotator**
+  - Click **Plugins** ⇨ **napari-allencell-annotator**
 - MacOS
   - Open terminal
   - Run these commands one line at a time
     - conda activate napari_annotator
     - napari
-  - Click **Plugins** ⇨ **napari-allencell-annotator: Annotator**
+  - Click **Plugins** ⇨ **napari-allencell-annotator**
+
+## Installation from Napari Hub
+If you have previously installed Napari on your machine, you can follow these steps to install the plugin from Napari Hub.
+
+### 1. Install the Plugin
+- Open Napari
+- Go to **Plugins** ⇨ **Install/Uninstall Plugins...**
+- Find **napari-allencell-annotator** in **Available Plugins**
+- Click **Install**
+- Close the window after the installation finishes
+
+### 2. Launch the Plugin
+- Click **Plugins** ⇨ **napari-allencell-annotator**
+  - You might have to restart Napari for the annotator to appear in the plugin list.
+  - If you still can't see the plugin, go to **Install/Uninstall Plugins** ⇨ check the box next to **napari-allencell-annotator**.
 
 ## Quick Start
 
 1. Open napari
 2. Start the plugin 
-   - Open napari, go to "Plugins" ⇨ "napari-allencell-annotator".
+   - Open napari, go to **Plugins** ⇨ **napari-allencell-annotator**.
 3. Create or import annotations and add images to annotate.
 
 For more detailed usage instructions, check out this [document](napari_allencell_annotator/assets/AnnotatorInstructions.pdf) 
