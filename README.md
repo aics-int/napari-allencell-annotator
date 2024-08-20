@@ -101,9 +101,21 @@ Once the napari window opens, go to **Plugins**.
     - napari
   - Click **Plugins** ⇨ **napari-allencell-annotator: Annotator**
 
-## Installation using Command Line
-1. Open napari
-2. 
+## Installation from Napari Hub
+If you have previously installed Napari on your machine, you can follow these steps to install the plugin.
+
+### 1. Install the Plugin
+- Open Napari
+- Go to **Plugins** ⇨ **Install/Uninstall Plugins...**
+- Find **napari-allencell-annotator** in **Available Plugins**
+- Click **Install**
+- Close the window after the installation finishes
+
+### 2. Launch the Plugin
+- Click **Plugins** ⇨ **Annotator (napari-napari_allencell_annotator)**
+  - You might have to restart Napari for the annotator to appear in the plugin list.
+  - If you still can't see the plugin, go to **Install/Uninstall Plugins** ⇨ check the box next to **napari-allencell-annotator**.
+
 ## Quick Start
 
 1. Open napari
