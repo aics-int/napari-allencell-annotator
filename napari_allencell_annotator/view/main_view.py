@@ -149,7 +149,7 @@ class MainView(QFrame):
                     path: Path = Path(row[1])
                     image_list.append(path)
                     if use_annots:
-                        self._annotator_model.add_annotation(path, row[2:])
+                        self._annotator_model.add_annotation(path, self._process_points_annotations(row[2:]))
                     # self._images_view.add_new_item(path)
                 # start at row 0 if annotation data was not used from csv
                 file.close()
@@ -162,6 +162,29 @@ class MainView(QFrame):
                     self._annotator_model.set_shuffled_images(None)
 
             self.annots.start_viewing(use_annots)
+
+    def _process_points_annotations(self, annotations: list[any]) -> list[any]:
+        """
+        Convert string representations of point annotations to lists of tuples
+
+        Parameters
+        ----------
+        annotations: list[any]
+            The list of annotations read from the CSV
+
+        Returns
+        -------
+        list[any]:
+            The same list of annotations with points annotations as lists of tuples
+        """
+        # if that image has been annotated
+        if len(annotations) > 0:
+            for annotation_index, key in enumerate(self._annotator_model.get_annotation_keys().values()):
+                # if the annotation is point annotation and has been annotated, convert string to list of tuples.
+                if key.get_type() == "point" and annotations[annotation_index] != "":
+                    annotations[annotation_index] = eval(annotations[annotation_index])
+
+        return annotations
 
     def _shuffle_toggled(self, checked: bool):
         """
