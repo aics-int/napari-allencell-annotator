@@ -81,7 +81,7 @@ Click the link corresponding to your OS.
 ### 3. Launch the Plugin
 
 Once the napari window opens, go to **Plugins**.
-- If **napari-allencell-annotator: Annotator** is listed click it to launch. 
+- If **Annotator (napari-napari_allencell_annotator)** is listed click it to launch. 
 - If it is not listed 
 - **Install/Uninstall Plugins** ⇨ check the box next to **napari-allencell-annotator** ⇨ **close** ⇨ **Plugins** ⇨ **Annotator (napari-napari_allencell_annotator)** .
 
