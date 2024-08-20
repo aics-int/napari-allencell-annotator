@@ -34,13 +34,9 @@ def viewer(qtbot) -> IViewer:
     return FakeViewer()
 
 
-@pytest.fixture
-def annotator_view(qtbot, annotator_model: AnnotatorModel, viewer: IViewer) -> AnnotatorView:
-    return AnnotatorView(annotator_model, viewer)
-
-
-def test_render_values(annotator_view: AnnotatorView) -> None:
+def test_render_values(annotator_model: AnnotatorModel, viewer: IViewer) -> None:
     # ARRANGE
+    annotator_view: AnnotatorView = AnnotatorView(annotator_model, viewer)
     annotator_view.annot_list.add_item("text", Key("string", "text"))
     annotator_view.annot_list.add_item("number", Key("number", 1))
     annotator_view.annot_list.add_item("point_created", Key("point", None))
@@ -54,9 +50,10 @@ def test_render_values(annotator_view: AnnotatorView) -> None:
     assert "point_created" in annotator_view._annotator_model.get_all_curr_img_points_layers()
 
 
-def test_get_curr_annots(annotator_view: AnnotatorView) -> None:
+def test_get_curr_annots(annotator_model: AnnotatorModel, viewer: IViewer) -> None:
 
     # ARRANGE
+    annotator_view: AnnotatorView = AnnotatorView(annotator_model, viewer)
     annotator_view.annot_list.add_item("text", Key("string", ""))
     annotator_view.annot_list.add_item("number", Key("number", 1))
     annotator_view.annot_list.add_item("bool", Key("bool", True))
