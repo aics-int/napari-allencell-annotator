@@ -120,7 +120,7 @@ If you have previously installed Napari on your machine, you can follow these st
 
 1. Open napari
 2. Start the plugin 
-   - Open napari, go to "Plugins" ⇨ "napari-allencell-annotator".
+   - Open napari, go to **Plugins** ⇨ **Annotator (napari-napari_allencell_annotator)**.
 3. Create or import annotations and add images to annotate.
 
 For more detailed usage instructions, check out this [document](napari_allencell_annotator/assets/AnnotatorInstructions.pdf) 
