@@ -61,7 +61,7 @@ Click the link corresponding to your OS.
 - Open a file explorer and go to the Downloads folder. Use **Option 1** below. A prompt window should open and start installing. If this fails use **Option 2**. 
   - **Option 1**: Double-click the file _install_napari.sh_
   - **Option 2**: Search the file finder for Anaconda Prompt. Open version 3. Run the following commands one line at a time. 
-    - conda create -n napari_annotator python=3.9 anaconda
+    - conda create -n napari_annotator python=3.10 anaconda
     - conda activate napari_annotator
     - python -m pip install --upgrade pip
     - python -m pip install "napari[all]"
