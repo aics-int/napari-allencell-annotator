@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from napari_allencell_annotator.view.i_viewer import IViewer
+
 from napari_allencell_annotator.model.annotation_model import AnnotatorModel
 from napari_allencell_annotator.model.key import Key
 from napari_allencell_annotator.util.file_utils import FileUtils
@@ -59,7 +61,7 @@ class AnnotatorController:
         Writes header and annotations to the csv file.
     """
 
-    def __init__(self, model: AnnotatorModel, viewer: napari.Viewer):
+    def __init__(self, model: AnnotatorModel, viewer: IViewer):
         self._annotation_model = model
 
         # open in view mode
@@ -70,7 +72,7 @@ class AnnotatorController:
         self.view.cancel_btn.clicked.connect(self.stop_viewing)
         # we want to save the annotation for the image that we just switched off of.
         self._annotation_model.image_changed.connect(
-            lambda: self.record_annotations(self._annotation_model.get_previous_image_index())
+            lambda: self._record_annotations(self._annotation_model.get_previous_image_index())
         )
 
     def write_json(self, file_path: str):
@@ -111,19 +113,18 @@ class AnnotatorController:
         """
         self.view.set_mode(mode=AnnotatorViewMode.ANNOTATE)
 
-        self.view.annot_list.create_evt_listeners()
         # self.view.annot_list.currentItemChanged.connect(self._curr_item_changed)
 
     def save_annotations(self):
         """Save current annotation data"""
         # save annotations for file we're on
-        self.record_annotations(self._annotation_model.get_curr_img_index())
+        self._record_annotations(self._annotation_model.get_curr_img_index())
         self.write_csv()
 
     def stop_annotating(self):
         """Reset values from annotating and change mode to ADD."""
         # TODO: DO WE WANT TO SAVE ALL IMAGES WITHOUT ANNOTATIONS
-        self.record_annotations(self._annotation_model.get_curr_img_index())
+        self._record_annotations(self._annotation_model.get_curr_img_index())
 
         # Save rest of annotations, even if empty
         for idx in range(self._annotation_model.get_num_images()):
@@ -193,7 +194,7 @@ class AnnotatorController:
             else:
                 self.view.prev_btn.setEnabled(True)
 
-    def record_annotations(self, record_idx: int):
+    def _record_annotations(self, record_idx: int) -> None:
         """
         Add the image's annotation values to the annotation dictionary
 
@@ -209,6 +210,15 @@ class AnnotatorController:
             self._annotation_model.add_annotation(
                 self._annotation_model.get_all_images()[record_idx], self.view.get_curr_annots()
             )
+            # self._annotation_model.clear_all_cur_img_points_layers()
+
+        # if the user changes to another image, send the annotation_recorded signal to clear all layers and
+        # display the new image after recording annotation.
+        if record_idx == self._annotation_model.get_previous_image_index():
+            self._annotation_model.annotation_saved()
+
+        # after recording annotations, not annotation item should be selected.
+        self.view.annot_list.setCurrentItem(None)
 
     def read_json(self, file_path: Path):
         # TODO change param to path

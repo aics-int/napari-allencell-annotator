@@ -101,28 +101,28 @@ class TestTemplateItem:
         self._item._type = ItemType.STRING
         self._item.editable_widget = create_autospec(QLineEdit)
         self._item.editable_widget.textEdited.connect = MagicMock()
-        self._item.create_evt_listener()
+        self._item._create_evt_listener()
         self._item.editable_widget.textEdited.connect.assert_called_once()
 
     def test_create_evt_listener_num(self):
         self._item._type = ItemType.NUMBER
         self._item.editable_widget = create_autospec(QSpinBox)
         self._item.editable_widget.valueChanged.connect = MagicMock()
-        self._item.create_evt_listener()
+        self._item._create_evt_listener()
         self._item.editable_widget.valueChanged.connect.assert_called_once()
 
     def test_create_evt_listener_bool(self):
         self._item._type = ItemType.BOOL
         self._item.editable_widget = create_autospec(QCheckBox)
         self._item.editable_widget.stateChanged.connect = MagicMock()
-        self._item.create_evt_listener()
+        self._item._create_evt_listener()
         self._item.editable_widget.stateChanged.connect.assert_called_once()
 
     def test_create_evt_listener_list(self):
         self._item._type = ItemType.LIST
         self._item.editable_widget = create_autospec(QComboBox)
         self._item.editable_widget.activated.connect = MagicMock()
-        self._item.create_evt_listener()
+        self._item._create_evt_listener()
         self._item.editable_widget.activated.connect.assert_called_once()
 
     def test_set_focus_str(self):

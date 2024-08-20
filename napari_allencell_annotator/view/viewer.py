@@ -1,12 +1,12 @@
-from typing import List, Tuple, Dict, Optional
+from typing import List, Tuple
 from enum import Enum
 
-import dask.array
 import numpy as np
 from napari.layers import Layer, Points
 from napari_allencell_annotator.view.i_viewer import IViewer
 from napari.utils.notifications import show_info
 import napari
+from napari.utils.colormaps.standardize_color import get_color_namelist
 
 
 class PointsLayerMode(Enum):
@@ -29,6 +29,18 @@ class Viewer(IViewer):
     def __init__(self, viewer: napari.Viewer):
         super().__init__()
         self.viewer: napari.Viewer = viewer
+        self.colors: list[str] = [
+            "lime",
+            "fuchsia",
+            "red",
+            "royalblue",
+            "sandybrown",
+            "tomato",
+            "turquoise",
+            "yellow",
+            "blue",
+            "purple",
+        ]
 
     def add_image(self, image: np.ndarray) -> None:
         """
@@ -70,7 +82,7 @@ class Viewer(IViewer):
         """
         return [layer for layer in self.get_layers() if isinstance(layer, Points)]
 
-    def create_points_layer(self, name: str, color: str, visible: bool, data: np.ndarray = None) -> Points:
+    def create_points_layer(self, name: str, visible: bool, data: np.ndarray = None) -> Points:
         """
         Creates a new point layer and sets to ADD mode to allow users to select points.
 
@@ -78,8 +90,6 @@ class Viewer(IViewer):
         ----------
         name: str
             The name of the point layer
-        color: str
-            The face color of the points
         visible: bool
             Whether the point layer is visible in the viewer
         data: np.ndarray = None
@@ -90,6 +100,7 @@ class Viewer(IViewer):
         Points
             A new point layer
         """
+        color: str = self.colors[len(self.get_all_points_layers())]
         points_layer: Points = self.viewer.add_points(
             data=data, name=name, face_color=color, visible=visible, ndim=self.viewer.dims.ndim
         )
@@ -107,6 +118,9 @@ class Viewer(IViewer):
             The mode
         """
         points_layer.mode = mode.value
+
+    def get_points_layer_mode(self, points_layer: Points) -> str:
+        return points_layer.mode
 
     def get_selected_points(self, point_layer: Points) -> list[tuple]:
         """
@@ -137,3 +151,38 @@ class Viewer(IViewer):
             all_point_annotations[points_layer.name] = self.get_selected_points(points_layer)
 
         return all_point_annotations
+
+    def toggle_points_layer(self, annot_points_layer: Points) -> None:
+        """
+        If the points layer mode is pan_zoom, set it to add, change other layers to pan_zoom, and select the current
+        points layer. Otherwise, unselected the latest point and set the mode to pan_zoom.
+
+        Parameters
+        ----------
+        annot_points_layer: Points
+            The target points layer
+        """
+
+        # if the target points layer is in the PAN_ZOOM mode, start point annotating.
+        if self.get_points_layer_mode(annot_points_layer) == PointsLayerMode.PAN_ZOOM.value:
+            # set all points layer to PAN_ZOOM
+            self.set_all_points_layer_to_pan_zoom()
+            # change the target points layer to ADD
+            self.set_points_layer_mode(annot_points_layer, PointsLayerMode.ADD)
+            # change the currently selected points layer to the target points layer
+            self.viewer.layers.selection.clear()
+            self.viewer.layers.selection.add(annot_points_layer)
+        # if the target points layer is in the ADD mode, stop point annotating.
+        else:
+            # unselect the most recently added points
+            annot_points_layer.selected_data = []
+            # change the target points layer to PAN_ZOOM mode
+            self.set_points_layer_mode(annot_points_layer, PointsLayerMode.PAN_ZOOM)
+
+    def set_all_points_layer_to_pan_zoom(self) -> None:
+        """
+        Sets all points layers to pan_zoom mode and unselected the selected points.
+        """
+        for points_layer in self.get_all_points_layers():
+            self.set_points_layer_mode(points_layer, PointsLayerMode.PAN_ZOOM)
+            points_layer.selected_data = []

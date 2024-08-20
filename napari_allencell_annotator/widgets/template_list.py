@@ -3,6 +3,7 @@ from typing import Any, List
 from qtpy import QtWidgets
 from qtpy.QtWidgets import QLineEdit, QCheckBox, QComboBox, QSpinBox, QPushButton, QSizePolicy, QListWidget
 
+from napari_allencell_annotator.model.annotation_model import AnnotatorModel
 from napari_allencell_annotator.model.combo_key import ComboKey
 from napari_allencell_annotator.model.key import Key
 from napari_allencell_annotator.widgets.template_item import TemplateItem, ItemType
@@ -19,9 +20,10 @@ class TemplateList(QListWidget):
 
     """
 
-    def __init__(self):
+    def __init__(self, annotator_model: AnnotatorModel):
         QListWidget.__init__(self)
 
+        self._annotator_model: AnnotatorModel = annotator_model
         self.setStyleSheet(Style.get_stylesheet("main.qss"))
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         # todo single selection
@@ -57,11 +59,6 @@ class TemplateList(QListWidget):
         if curr_row > 0:
             next_row = curr_row - 1
             self.setCurrentRow(next_row)
-
-    def create_evt_listeners(self):
-        """Create annotating event listeners for each item."""
-        for item in self.items:
-            item.create_evt_listener()
 
     def clear_all(self):
         """
@@ -111,7 +108,7 @@ class TemplateList(QListWidget):
             annot_type = ItemType.POINT
             widget = QPushButton("Select")
 
-        item = TemplateItem(self, name, annot_type, default, widget)
+        item = TemplateItem(self, name, annot_type, default, widget, self._annotator_model)
 
         self._items.append(item)
 

@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Optional, Any
 
 from PyQt5.QtCore import QObject
+from napari.layers import Points
 from qtpy.QtCore import Signal
 
 from napari_allencell_annotator.model.key import Key
@@ -13,6 +14,9 @@ class AnnotatorModel(QObject):
     image_count_changed: Signal = Signal(int)
     images_shuffled: Signal = Signal(bool)
     image_set_added: Signal = Signal()
+    annotation_started_changed: Signal = Signal()
+    edit_points_layer_changed: Signal = Signal(str)
+    annotation_recorded: Signal = Signal()
 
     def __init__(self):
         super().__init__()
@@ -39,6 +43,9 @@ class AnnotatorModel(QObject):
         self._csv_save_path: Optional[Path] = None
 
         self._annotation_started = False
+
+        # dict storing current point layers {name: PointsLayer}
+        self._curr_img_points_layer: dict[str, Points] = {}
 
     def get_annotation_keys(self) -> dict[str, Key]:
         return self._annotation_keys
@@ -115,6 +122,7 @@ class AnnotatorModel(QObject):
 
     def set_curr_img_index(self, idx: int) -> None:
         self._curr_img_index = idx
+        self.clear_all_cur_img_points_layers()
         self.image_changed.emit()
 
     def get_curr_img(self) -> Optional[Path]:
@@ -152,3 +160,22 @@ class AnnotatorModel(QObject):
 
     def set_annotation_started(self, started: bool) -> None:
         self._annotation_started = started
+        self.annotation_started_changed.emit()
+
+    def get_all_curr_img_points_layers(self) -> dict[str, Points]:
+        return self._curr_img_points_layer
+
+    def clear_all_cur_img_points_layers(self) -> None:
+        self._curr_img_points_layer = {}
+
+    def add_points_layer(self, name: str, points_layer: Points):
+        self._curr_img_points_layer[name] = points_layer
+
+    def get_points_layer(self, name: str) -> Points:
+        return self._curr_img_points_layer[name]
+
+    def edit_points_layer(self, annot_name: str) -> None:
+        self.edit_points_layer_changed.emit(annot_name)
+
+    def annotation_saved(self) -> None:
+        self.annotation_recorded.emit()

@@ -1,6 +1,18 @@
 from unittest import mock
 from unittest.mock import MagicMock, create_autospec
 
+import pytest
+
+from napari_allencell_annotator.model.combo_key import ComboKey
+
+from napari_allencell_annotator.model.key import Key
+
+from napari_allencell_annotator.view.i_viewer import IViewer
+
+from napari_allencell_annotator._tests.fakes.fake_viewer import FakeViewer
+
+from napari_allencell_annotator.model.annotation_model import AnnotatorModel
+
 from napari_allencell_annotator.view.annotator_view import (
     AnnotatorView,
     AnnotatorViewMode,
@@ -10,6 +22,48 @@ from napari_allencell_annotator.view.annotator_view import (
     QScrollArea,
 )
 from napari_allencell_annotator.widgets.template_item import TemplateItem
+
+
+@pytest.fixture
+def annotator_model(qtbot) -> AnnotatorModel:
+    return AnnotatorModel()
+
+
+@pytest.fixture
+def viewer(qtbot) -> IViewer:
+    return FakeViewer()
+
+
+def test_render_values(annotator_model: AnnotatorModel, viewer: IViewer) -> None:
+    # ARRANGE
+    annotator_view: AnnotatorView = AnnotatorView(annotator_model, viewer)
+    annotator_view.annot_list.add_item("text", Key("string", "text"))
+    annotator_view.annot_list.add_item("number", Key("number", 1))
+    annotator_view.annot_list.add_item("point_created", Key("point", None))
+
+    # ACT
+    annotator_view.render_values(["", 2, [(0, 0, 0, 0, 0, 0)]])
+
+    # ASSERT
+    assert annotator_view.annot_list.item(0).editable_widget.text() == "text"
+    assert annotator_view.annot_list.item(1).editable_widget.value() == 2
+    assert "point_created" in annotator_view._annotator_model.get_all_curr_img_points_layers()
+
+
+def test_get_curr_annots(annotator_model: AnnotatorModel, viewer: IViewer) -> None:
+
+    # ARRANGE
+    annotator_view: AnnotatorView = AnnotatorView(annotator_model, viewer)
+    annotator_view.annot_list.add_item("text", Key("string", ""))
+    annotator_view.annot_list.add_item("number", Key("number", 1))
+    annotator_view.annot_list.add_item("bool", Key("bool", True))
+    annotator_view.annot_list.add_item("list", ComboKey("list", ["a", "b", "c"], "a"))
+    annotator_view.annot_list.add_item("point_created", Key("point", None))
+    annotator_view.annot_list.add_item("point_none", Key("point", None))
+    annotator_view.viewer.create_points_layer("point_created", True, [(0, 0, 0, 0, 0, 0)])
+
+    # ASSERT
+    assert annotator_view.get_curr_annots() == ["", 1, True, "a", [(0, 0, 0, 0, 0, 0)], None]
 
 
 class TestAnnotatorView:
@@ -98,16 +152,16 @@ class TestAnnotatorView:
         item2.set_value.assert_called_once_with("val2")
         item3.set_default_value.assert_called_once_with()
 
-    def test_get_curr_annots(self):
-        item1 = create_autospec(TemplateItem)
-        item1.get_value = MagicMock(return_value="ret1")
-        item2 = create_autospec(TemplateItem)
-        item2.get_value = MagicMock(return_value="ret2")
-        item3 = create_autospec(TemplateItem)
-        item3.get_value = MagicMock(return_value="ret3")
-        self._view.annot_list = create_autospec(TemplateList)
-        self._view.annot_list.items = [item1, item2, item3]
-        assert self._view.get_curr_annots() == ["ret1", "ret2", "ret3"]
+    # def test_get_curr_annots(self):
+    #     item1 = create_autospec(TemplateItem)
+    #     item1.get_value = MagicMock(return_value="ret1")
+    #     item2 = create_autospec(TemplateItem)
+    #     item2.get_value = MagicMock(return_value="ret2")
+    #     item3 = create_autospec(TemplateItem)
+    #     item3.get_value = MagicMock(return_value="ret3")
+    #     self._view.annot_list = create_autospec(TemplateList)
+    #     self._view.annot_list.items = [item1, item2, item3]
+    #     assert self._view.get_curr_annots() == ["ret1", "ret2", "ret3"]
 
     def test_display_mode_add_mode(self):
         self._view._mode = AnnotatorViewMode.ADD
