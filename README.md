@@ -102,7 +102,7 @@ Once the napari window opens, go to **Plugins**.
   - Click **Plugins** ⇨ **Annotator (napari-napari_allencell_annotator)**
 
 ## Installation from Napari Hub
-If you have previously installed Napari on your machine, you can follow these steps to install the plugin.
+If you have previously installed Napari on your machine, you can follow these steps to install the plugin from Napari Hub.
 
 ### 1. Install the Plugin
 - Open Napari
