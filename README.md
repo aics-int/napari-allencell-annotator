@@ -16,7 +16,7 @@ image sets using these templates, and save image annotations to a csv file.
 The Allen Cell Image Annotator is a Python-based open source toolkit 
 developed at the Allen Institute for Cell Science for both blind, unbiased and un-blind 
 microscope image annotating. This toolkit supports easy image set selection
-from a file finder and creation of annotation templates (text, checkbox, drop-down, and spinbox).
+from a file finder and creation of annotation templates (text, checkbox, drop-down, spinbox, and point).
 With napari's multi-dimensional image viewing capabilities, the plugin seamlessly allows users to
 view each image and write annotations into the custom template.
 Annotation templates can be written to a json file for sharing or re-using. After annotating,
@@ -28,7 +28,8 @@ are conveniently saved to csv file, which can be re-opened for further annotatin
     - `TIFF`
     - `CZI` 
     - `PNG` 
-    -   `JPEG` 
+    - `JPEG`
+    - `OME-ZARR`
 
 
 ----------------------------------
@@ -43,7 +44,7 @@ and review the napari docs for plugin developers:
 https://napari.org/plugins/index.html
 -->
 
-## Installation
+## Installation using Command Line
 ### 1. Prerequisites
 
 The plugin requires [Conda](https://docs.anaconda.com/anaconda/install/).
@@ -100,6 +101,9 @@ Once the napari window opens, go to **Plugins**.
     - napari
   - Click **Plugins** ⇨ **napari-allencell-annotator: Annotator**
 
+## Installation using Command Line
+1. Open napari
+2. 
 ## Quick Start
 
 1. Open napari
