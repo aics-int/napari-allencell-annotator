@@ -113,6 +113,6 @@ setup(
     ],
     # Do not edit this string manually, always use bumpversion
     # Details in CONTRIBUTING.rst
-    version="2.0.0",
+    version="2.0.1",
     zip_safe=False,
 )
