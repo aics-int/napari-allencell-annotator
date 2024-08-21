@@ -58,7 +58,7 @@ dev_requirements = [
     "pytest-runner>=4.4",
     "pytest-qt>=3.3.0",
     "quilt3>=3.1.12",
-    "Sphinx>=2.0.0b1,<3",
+    "Sphinx>=2.0.1b1,<3",
     "sphinx_rtd_theme>=0.1.2",
     "tox>=3.5.2",
     "twine>=1.13.0",
@@ -113,6 +113,6 @@ setup(
     ],
     # Do not edit this string manually, always use bumpversion
     # Details in CONTRIBUTING.rst
-    version="2.0.0",
+    version="2.0.1",
     zip_safe=False,
 )
