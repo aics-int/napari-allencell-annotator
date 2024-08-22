@@ -44,47 +44,45 @@ https://napari.org/plugins/index.html
 -->
 
 ## Installation
-### 1. Prerequisites
 
-The plugin requires [Conda](https://docs.anaconda.com/anaconda/install/).
-- [Installing on Windows ](https://docs.anaconda.com/anaconda/install/windows/) 
-  - Follow the steps linked above except
-  - On step 8, check top the box to add to PATH
-  - ![Alt text](napari_allencell_annotator/assets/windowsstep8.png)
-- [Installing on Mac ](https://docs.anaconda.com/anaconda/install/mac-os/) 
-
-### 2. Install the plugin
-Click the link corresponding to your OS.
-#### [Windows](https://alleninstitute-my.sharepoint.com/:u:/g/personal/beatrice_bridge_alleninstitute_org/EVOKZ8-PZB5AvO6z6OAjZ_YB2EHbaU9XRc_Z281oM0ctOg?e=skbKzh)
-- From the link above, click the three dots on the top menu bar and select download. 
-- Open a file explorer and go to the Downloads folder. Use **Option 1** below. A prompt window should open and start installing. If this fails use **Option 2**. 
-  - **Option 1**: Double-click the file _install_napari.sh_
-  - **Option 2**: Search the file finder for Anaconda Prompt. Open version 3. Run the following commands one line at a time. 
-    - conda create -n napari_annotator python=3.9 anaconda
+### 1. Install the plugin
+#### Windows
+- Open terminal
+- Create a virtual environment. We recommend using conda and python 3.10.
+  - To create a conda virtual environment, run the following commands one line at a time. 
+    - conda create -n napari_annotator python=3.10 anaconda
     - conda activate napari_annotator
-    - python -m pip install --upgrade pip
+  - To create a venv virtual environment, run the following commands.
+    - python -m venv venv
+    - venv\Scripts\activate
+- Install Napari and the annotator plugin by running
     - python -m pip install "napari[all]"
     - python -m pip install napari-allencell-annotator
     - napari
-  - **Still not working?** Try using conda forge instead of pip. 
-    - Ex: conda install -c conda-forge napari instead of python -m pip install "napari[all]"
-#### [MacOS/Unix](https://alleninstitute-my.sharepoint.com/:u:/g/personal/beatrice_bridge_alleninstitute_org/EaeV_RPXZz9DijxYy7qfoeMB3Hbq4vMpmJERqDyhL97KAg?e=HuKY2k)
-- From the link above, download the file. 
-- Open terminal. 
-- Run _chmod +x ./Downloads/install_napari.command_ 
-  - If you get a file not found error try adjusting the path to match where install_napari.command was downloaded.
-- Open finder, navigate to the file, double-click _install_napari.command_ . 
-  - A terminal window should open and start installing. 
-  
+- **Not working?** Try using conda forge instead of pip. 
+  - Ex: conda install -c conda-forge napari instead of python -m pip install "napari[all]"
+#### MacOS/Unix
+- Open terminal
+- Create a virtual environment. We recommend using conda and python 3.10.
+  - To create a conda virtual environment, run the following commands one line at a time. 
+    - conda create -n napari_annotator python=3.10 anaconda
+    - conda activate napari_annotator
+  - To create a venv virtual environment, run the following commands.
+    - python -m venv venv
+    - source venv/bin/activate
+- Install Napari and the annotator plugin by running
+    - python -m pip install "napari[all]"
+    - python -m pip install napari-allencell-annotator
+    - napari
 
-### 3. Launch the Plugin
+### 2. Launch the Plugin
 
 Once the napari window opens, go to **Plugins**.
 - If **napari-allencell-annotator: Annotator** is listed click it to launch. 
 - If it is not listed 
 - **Install/Uninstall Plugins** ⇨ check the box next to **napari-allencell-annotator** ⇨ **close** ⇨ **Plugins** ⇨ **napari-allencell-annotator: Annotator** .
 
-### 4. Re-opening the Plugin After Installing
+### 3. Re-opening the Plugin After Installing
 - Windows
   - Search for anaconda navigator in file finder
   - Click on navigator version 3
