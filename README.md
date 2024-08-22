@@ -46,34 +46,35 @@ https://napari.org/plugins/index.html
 
 ## Installation using Command Line
 ### 1. Install the plugin
-#### Windows
-- Open terminal
 - Create a virtual environment. We recommend using conda and python 3.10.
-  - To create a conda virtual environment, run the following commands one line at a time. 
-    - conda create -n napari_annotator python=3.10 anaconda
-    - conda activate napari_annotator
-  - To create a venv virtual environment, run the following commands.
-    - python -m venv venv
-    - venv\Scripts\activate
+  - To create a conda virtual environment, run the following commands one line at a time.
+
+      ```
+      conda create -n napari_annotator python=3.10 anaconda
+      conda activate napari_annotator
+      ```
+    
+  - To create and activate a venv virtual environment , run the following commands.
+    - Windows
+        ```
+        python -m venv venv
+        venv\Scripts\activate
+        ```
+    - MacOS/Unix
+        ```
+        python -m venv venv
+        source venv/bin/activate
+        ```
+
 - Install Napari and the annotator plugin by running
-    - python -m pip install "napari[all]"
-    - python -m pip install napari-allencell-annotator
-    - napari
+  ```
+  python -m pip install "napari[all]"
+  python -m pip install napari-allencell-annotator
+  ```
+
 - **Not working?** Try using conda forge instead of pip. 
-  - Ex: conda install -c conda-forge napari instead of python -m pip install "napari[all]"
-#### MacOS/Unix
-- Open terminal
-- Create a virtual environment. We recommend using conda and python 3.10.
-  - To create a conda virtual environment, run the following commands one line at a time. 
-    - conda create -n napari_annotator python=3.10 anaconda
-    - conda activate napari_annotator
-  - To create a venv virtual environment, run the following commands.
-    - python -m venv venv
-    - source venv/bin/activate
-- Install Napari and the annotator plugin by running
-    - python -m pip install "napari[all]"
-    - python -m pip install napari-allencell-annotator
-    - napari
+  - Ex: ```conda install -c conda-forge napari instead of python -m pip install "napari[all]"```
+
 
 ### 2. Launch the Plugin
 
