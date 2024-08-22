@@ -72,17 +72,16 @@ https://napari.org/plugins/index.html
   python -m pip install napari-allencell-annotator
   ```
 
+- Open Napari by running ```napari``` and verify that **napari-allencell-annotator** is listed in the **Plugins** tab.
 - **Not working?** Try using conda forge instead of pip. 
   - Ex: ```conda install -c conda-forge napari instead of python -m pip install "napari[all]"```
 
 
 ### 2. Launch the Plugin
 
-- To open Napari, run ```napari```.
-- Once the napari window opens, go to **Plugins**.
-- If **napari-allencell-annotator** is listed click it to launch. 
+- If **napari-allencell-annotator** is listed in **Plugins**, click it to launch. 
 - If it is not listed 
-- **Install/Uninstall Plugins** ⇨ check the box next to **napari-allencell-annotator** ⇨ **close** ⇨ **Plugins** ⇨ **napari-allencell-annotator** .
+  - **Install/Uninstall Plugins** ⇨ check the box next to **napari-allencell-annotator** ⇨ **close** ⇨ **Plugins** ⇨ **napari-allencell-annotator** .
 
 
 ## Installation from Napari Hub
