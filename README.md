@@ -54,7 +54,7 @@ https://napari.org/plugins/index.html
       conda activate napari_annotator
       ```
     
-  - To create and activate a venv virtual environment , run the following commands.
+  - To create and activate a venv virtual environment, run the following commands.
     - Windows
         ```
         python -m venv venv
