@@ -46,8 +46,8 @@ https://napari.org/plugins/index.html
 
 ## Installation using Command Line
 ### 1. Install the plugin
-- Create a virtual environment. We recommend using conda and python 3.10.
-  - To create a conda virtual environment, run the following commands one line at a time.
+- Create and activate a virtual environment. We recommend using conda and python 3.10.
+  - To create and activate a conda virtual environment, run the following commands one line at a time.
 
       ```
       conda create -n napari_annotator python=3.10 anaconda
