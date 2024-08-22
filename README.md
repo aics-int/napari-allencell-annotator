@@ -81,7 +81,7 @@ https://napari.org/plugins/index.html
 
 - If **napari-allencell-annotator** is listed in **Plugins**, click it to launch. 
 - If it is not listed 
-  - **Install/Uninstall Plugins** ⇨ check the box next to **napari-allencell-annotator** ⇨ **close** ⇨ **Plugins** ⇨ **napari-allencell-annotator** .
+  - **Install/Uninstall Plugins** ⇨ check the box next to **napari-allencell-annotator** ⇨ **close** ⇨ **Plugins** ⇨ **napari-allencell-annotator**.
 
 
 ## Installation from Napari Hub
