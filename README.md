@@ -50,7 +50,7 @@ https://napari.org/plugins/index.html
   - To create and activate a conda virtual environment, run the following commands one line at a time.
 
       ```
-      conda create -n napari_annotator python=3.10 anaconda
+      conda create -n napari_annotator python=3.10
       conda activate napari_annotator
       ```
     
