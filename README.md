@@ -78,28 +78,12 @@ https://napari.org/plugins/index.html
 
 ### 2. Launch the Plugin
 
-- Open Napari
-  - To open Napari from the command line, run ```napari```.
+- To open Napari, run ```napari```.
 - Once the napari window opens, go to **Plugins**.
 - If **napari-allencell-annotator** is listed click it to launch. 
 - If it is not listed 
 - **Install/Uninstall Plugins** ⇨ check the box next to **napari-allencell-annotator** ⇨ **close** ⇨ **Plugins** ⇨ **napari-allencell-annotator** .
 
-### 3. Re-opening the Plugin After Installing
-- Windows
-  - Search for anaconda navigator in file finder
-  - Click on navigator version 3
-  - Once the navigator opens, click **Environments** on the left side
-  - Click on the annotator environment and wait for it to load
-  - Press the play button
-  - Type _napari_ in the prompt that opens
-  - Click **Plugins** ⇨ **napari-allencell-annotator**
-- MacOS
-  - Open terminal
-  - Run these commands one line at a time
-    - conda activate napari_annotator
-    - napari
-  - Click **Plugins** ⇨ **napari-allencell-annotator**
 
 ## Installation from Napari Hub
 If you have previously installed Napari on your machine, you can follow these steps to install the plugin from Napari Hub.
